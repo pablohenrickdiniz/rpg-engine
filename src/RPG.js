@@ -48,9 +48,11 @@
             var self = this;
             if(self.layers[layer] !== undefined){
                 var context = self.layers[layer].getContext();
-                //context.clearRect(character.position.lx,character.position.ly,32,32);
-                context.strokeStyle = 'blue';
+                context.clearRect(character.last.x,character.last.y,32,32);
                 context.fillRect(character.position.x,character.position.y,32,32);
+                character.last.x = character.position.x;
+                character.last.y = character.position.y;
+                character.refreshed = true;
             }
         }
     };
@@ -202,15 +204,15 @@
         self.speed = 5;
         self.position = {
             x:0,
-            y:0,
-            lx:0,
-            ly:0
+            y:0
         };
         self.layer = 3;
         self.animate_step = null;
         self.animate_sync = null;
         self.moving = false;
         self.direction = Direction.DOWN;
+        self.refreshed = false;
+        self.last = {x:0,y:0};
     };
 
 
@@ -235,10 +237,12 @@
         var self = this;
         var now = (new Date()).getTime();
         var diff = now - init;
+
         if (diff < time) {
             var frame = (diff * frameRate) / 1000;
-            self.position.x = sx + (dx * frame);
-            self.position.y = sy + (dy * frame);
+            self.position.x = Math.round(sx + (dx * frame));
+            self.position.y = Math.round(sy + (dy * frame));
+            self.refreshed = false;
             window.requestAnimationFrame(function () {
                 self.stepMove(sx, sy, dx, dy, framesN, stepTime, init, time, frameRate,callback);
             });
@@ -246,6 +250,7 @@
         else {
             self.position.x = sx + (dx * framesN);
             self.position.y = sy + (dy * framesN);
+            self.refreshed = false;
             clearInterval(self.animate_step);
             window.cancelAnimationFrame(self.animate_sync);
             if(callback){
@@ -429,6 +434,7 @@
         self.variables = [];
         self.currentMap = null;
         self.canvasEngine = null;
+        self.key_reader = null;
         self.start_time = null;
         self.fps = fps;
         self.interval1 = null;
@@ -451,27 +457,7 @@
             for(var i = 0; i < 10;i++){
                 self.canvasEngine.createLayer();
             }
-            var key_reader = self.canvasEngine.getKeyReader();
-            key_reader.on([KeyReader.Keys.KEY_LEFT],function(){
-                if(self.command === null){
-                    self.command = 'MOVE_PLAYER_LEFT';
-                }
-            });
-            key_reader.on([KeyReader.Keys.KEY_RIGHT],function(){
-                if(self.command === null){
-                    self.command = 'MOVE_PLAYER_RIGHT';
-                }
-            });
-            key_reader.on([KeyReader.Keys.KEY_DOWN],function(){
-                if(self.command === null){
-                    self.command = 'MOVE_PLAYER_DOWN';
-                }
-            });
-            key_reader.on([KeyReader.Keys.KEY_UP],function(){
-                if(self.command === null){
-                    self.command = 'MOVE_PLAYER_UP';
-                }
-            });
+            self.key_reader = self.canvasEngine.getKeyReader();
         }
     };
 
@@ -540,29 +526,22 @@
             self.interval2 = window.requestAnimationFrame(function () {
                 self.step();
             });
-            if(self.command !== null){
-                self.executeCommand(self.command);
-                self.command = null;
+
+            if(!self.character.moving){
+                if(self.key_reader.isActive(KeyReader.Keys.KEY_LEFT)){
+                    self.character.step(Direction.LEFT);
+                }
+                else if(self.key_reader.isActive(KeyReader.Keys.KEY_RIGHT)){
+                    self.character.step(Direction.RIGHT);
+                }
+                else if(self.key_reader.isActive(KeyReader.Keys.KEY_DOWN)){
+                    self.character.step(Direction.DOWN);
+                }
+                else if(self.key_reader.isActive(KeyReader.Keys.KEY_UP)){
+                    self.character.step(Direction.UP);
+                }
             }
             self.canvasEngine.drawCharacter(self.character);
-        }
-    };
-
-    Game.prototype.executeCommand = function(command){
-        var self = this;
-        switch(command){
-            case 'MOVE_PLAYER_DOWN':
-                self.character.step(Direction.DOWN);
-                break;
-            case 'MOVE_PLAYER_UP':
-                self.character.step(Direction.UP);
-                break;
-            case 'MOVE_PLAYER_RIGHT':
-                self.character.step(Direction.RIGHT);
-                break;
-            case 'MOVE_PLAYER_LEFT':
-                self.character.step(Direction.LEFT);
-                break;
         }
     };
 
