@@ -43,8 +43,18 @@
     };
 
     CanvasEngineRpg.prototype.drawCharacter = function(character){
-
+        if(!character.refreshed){
+            var layer = character.layer;
+            var self = this;
+            if(self.layers[layer] !== undefined){
+                var context = self.layers[layer].getContext();
+                //context.clearRect(character.position.lx,character.position.ly,32,32);
+                context.strokeStyle = 'blue';
+                context.fillRect(character.position.x,character.position.y,32,32);
+            }
+        }
     };
+
 
     var Page = function(event){
         var self = this;
@@ -183,55 +193,115 @@
         UP:0,
         LEFT:1,
         RIGHT:2,
-        BOTTOM:4
+        DOWN:4
     };
 
     var Character = function(options){
         var self = this;
         self.graphic = null;
-        self.speed = 1;
+        self.speed = 5;
+        self.position = {
+            x:0,
+            y:0,
+            lx:0,
+            ly:0
+        };
+        self.layer = 3;
+        self.animate_step = null;
+        self.animate_sync = null;
+        self.moving = false;
+        self.direction = Direction.DOWN;
     };
+
+
+    Character.prototype.moveTo = function (options,callback) {
+        var self = this;
+        var x = options.x === undefined ? self.position.x : options.x;
+        var y = options.y === undefined ? self.position.y : options.y;
+        var frameRate = options.frameRate === undefined ? 30 : options.frameRate;
+        var time = options.time === undefined ? 1000 : options.time;
+        var framesN = (frameRate * time) / 1000;
+        var stepTime = 1000/frameRate;
+        var init = (new Date()).getTime();
+        var end = (new Date()).getTime();
+        var dx = (x - self.position.x) / framesN;
+        var dy = (y - self.position.y) / framesN;
+        var sx = self.position.x;
+        var sy = self.position.y;
+        self.stepMove(sx, sy, dx, dy, framesN, stepTime, init, time, frameRate,callback);
+    };
+
+    Character.prototype.stepMove = function (sx, sy, dx, dy, framesN, stepTime, init, time, frameRate,callback) {
+        var self = this;
+        var now = (new Date()).getTime();
+        var diff = now - init;
+        if (diff < time) {
+            var frame = (diff * frameRate) / 1000;
+            self.position.x = sx + (dx * frame);
+            self.position.y = sy + (dy * frame);
+            window.requestAnimationFrame(function () {
+                self.stepMove(sx, sy, dx, dy, framesN, stepTime, init, time, frameRate,callback);
+            });
+        }
+        else {
+            self.position.x = sx + (dx * framesN);
+            self.position.y = sy + (dy * framesN);
+            clearInterval(self.animate_step);
+            window.cancelAnimationFrame(self.animate_sync);
+            if(callback){
+                callback();
+            }
+        }
+    };
+
 
     Character.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
     };
 
-    Character.prototype.stepUp = function(){
+
+    Character.prototype.step = function(direction,times,end,allow){
         var self = this;
-        self.position.y-= self.speed;
+        allow = allow == undefined?false:allow;
+        if(!self.moving || allow){
+            self.moving = true;
+            var mov = {x:self.position.x, y:self.position.y,time:1000/self.speed};
+            times = times === undefined?1:times;
+            switch(direction){
+                case Direction.UP:
+                    mov.y -= 32;
+                    break;
+                case Direction.RIGHT:
+                    mov.x += 32;
+                    break;
+                case Direction.LEFT:
+                    mov.x-= 32;
+                    break;
+                case Direction.DOWN:
+                    mov.y+=32;
+                    break;
+            }
+            self.direction = direction;
+            self.moveTo(mov,function(){
+                if(times > 1){
+                    times--;
+                    self.step(direction,times,end,true);
+                }
+                else{
+                    self.moving = false;
+                    if(typeof end === 'function'){
+                        end();
+                    }
+                }
+            });
+        }
     };
 
-    Character.prototype.stepDown = function(){
-        var self = this;
-        self.position.y-= self.speed;
-    };
-
-    Character.prototype.stepLeft = function(){
-        var self = this;
-        self.position.x-= self.speed;
-    };
-
-    Character.prototype.stepRight = function(){
-        var self = this;
-        self.position.x+= self.speed;
-    };
 
     Character.prototype.stepForward = function(){
         var self = this;
-        switch(self.direction){
-            case Direction.UP:
-                self.stepUp();
-                break;
-            case Direction.LEFT:
-                self.stepLeft();
-                break;
-            case Direction.RIGHT:
-                self.stepRight();
-                break;
-            case Direction.DOWN:
-                self.stepDown();
-        }
+        self.step(self.direction);
     };
 
     var Map = function (options) {
@@ -348,13 +418,30 @@
     };
 
 
-    var Game = function(){
+    var Game = function(options){
         var self = this;
+        options = options === undefined?{}:options;
+        var fps = options.fps === undefined?30:options.fps;
+
+
         self.switches = [];
         self.switchesCallbacks = [];
         self.variables = [];
         self.currentMap = null;
         self.canvasEngine = null;
+        self.start_time = null;
+        self.fps = fps;
+        self.interval1 = null;
+        self.interval2 = null;
+        self.paused = true;
+        self.running = false;
+        self.character = null;
+        self.command = null;
+    };
+
+    Game.prototype.setCharacter = function(character){
+        var self = this;
+        self.character = character;
     };
 
     Game.prototype.initialize = function(){
@@ -365,7 +452,26 @@
                 self.canvasEngine.createLayer();
             }
             var key_reader = self.canvasEngine.getKeyReader();
-            key_reader.on(CE.KeyReader);
+            key_reader.on([KeyReader.Keys.KEY_LEFT],function(){
+                if(self.command === null){
+                    self.command = 'MOVE_PLAYER_LEFT';
+                }
+            });
+            key_reader.on([KeyReader.Keys.KEY_RIGHT],function(){
+                if(self.command === null){
+                    self.command = 'MOVE_PLAYER_RIGHT';
+                }
+            });
+            key_reader.on([KeyReader.Keys.KEY_DOWN],function(){
+                if(self.command === null){
+                    self.command = 'MOVE_PLAYER_DOWN';
+                }
+            });
+            key_reader.on([KeyReader.Keys.KEY_UP],function(){
+                if(self.command === null){
+                    self.command = 'MOVE_PLAYER_UP';
+                }
+            });
         }
     };
 
@@ -412,22 +518,58 @@
         self.switchesCallbacks[name][pos].push(callback);
     };
 
-    Game.prototype.save = function(){
-
+    Game.prototype.start = function(){
+        var self = this;
+        self.start_time = (new Date()).getTime();
+        if(!self.running){
+            self.running = true;
+            self.step();
+        }
     };
 
     Game.prototype.pause = function(){
-
+        var self = this;
+        self.running = false;
+        clearInterval(self.frameInterval);
+        window.cancelAnimationFrame(self.frameSync);
     };
 
-    Game.prototype.begin = function(){
-
+    Game.prototype.step = function(){
+        var self = this;
+        if(self.running){
+            self.interval2 = window.requestAnimationFrame(function () {
+                self.step();
+            });
+            if(self.command !== null){
+                self.executeCommand(self.command);
+                self.command = null;
+            }
+            self.canvasEngine.drawCharacter(self.character);
+        }
     };
 
-    Game.prototype.end = function(){
-
+    Game.prototype.executeCommand = function(command){
+        var self = this;
+        switch(command){
+            case 'MOVE_PLAYER_DOWN':
+                self.character.step(Direction.DOWN);
+                break;
+            case 'MOVE_PLAYER_UP':
+                self.character.step(Direction.UP);
+                break;
+            case 'MOVE_PLAYER_RIGHT':
+                self.character.step(Direction.RIGHT);
+                break;
+            case 'MOVE_PLAYER_LEFT':
+                self.character.step(Direction.LEFT);
+                break;
+        }
     };
 
+    Game.prototype.getSeconds = function(){
+        var self = this;
+        return parseInt(((new Date()).getTime() - self.start_time)/1000);
+    };
 
     var Window = function(options,parent){
         var self = this;
