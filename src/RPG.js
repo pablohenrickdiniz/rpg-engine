@@ -43,16 +43,38 @@
     };
 
     CanvasEngineRpg.prototype.drawCharacter = function(character){
-        if(!character.refreshed){
-            var layer = character.layer;
+        if(!character.refreshed && character.graphic !== null){
+            var layer_index = character.layer;
             var self = this;
-            if(self.layers[layer] !== undefined){
-                var context = self.layers[layer].getContext();
-                context.clearRect(character.last.x,character.last.y,32,32);
-                context.fillRect(character.position.x,character.position.y,32,32);
-                character.last.x = character.position.x;
-                character.last.y = character.position.y;
-                character.refreshed = true;
+            if(self.layers[layer_index] !== undefined){
+                var layer = self.layers[layer_index];
+                var graphic = character.graphic;
+                layer.clearRect({
+                    x:character.position.lx,
+                    y:character.position.ly,
+                    width:graphic.width,
+                    height:graphic.height
+                });
+                var frame = character.getCurrentFrame();
+
+                if(frame !== undefined){
+                    var image = {
+                        image:frame.image,
+                        sx:frame.sx,
+                        sy:frame.sy,
+                        dx:character.position.x,
+                        dy:character.position.y,
+                        dWidth:frame.dWidth,
+                        dHeight:frame.dHeight,
+                        sWidth:frame.sWidth,
+                        sHeight:frame.sHeight
+                    };
+                    layer.image(image);
+                    character.position.lx = character.position.x;
+                    character.position.ly = character.position.y;
+                    character.refreshed = true;
+                }
+
             }
         }
     };
@@ -190,13 +212,124 @@
         self.game = game;
     };
 
+    var Animation = function(options){
+        var self = this;
+        var frames = options.frames === undefined?[]:options.frames;
+        var fps = parseFloat(options.fps);
+        fps = isNaN(fps) || fps <= 0?3:fps;
+        self.fps = fps;
+        self.frames = frames;
+        self.start_time = null;
+        self.end_time = null;
+        self.running = false;
+    };
+
+    Animation.prototype.getIndexFrame = function(){
+        var self = this;
+        var size = self.frames.length;
+        var diff = null;
+        if(self.running){
+            diff = (new Date()).getTime() - self.start_time;
+        }
+        else{
+            diff = self.end_time - self.start_time;
+        }
+
+        var mod = ((diff/1000)*self.fps) % size;
+        mod =  mod === 0? size-1:mod-1;
+        return Math.abs(Math.ceil(mod));
+    };
+
+    Animation.prototype.stop = function(){
+        var self = this;
+        self.pause();
+    };
+
+    Animation.prototype.execute = function(){
+        var self = this;
+        if(!self.running){
+            self.start_time = (new Date()).getTime();
+            self.running = true;
+        }
+    };
+
+    Animation.prototype.pause = function(){
+        var self = this;
+        if(self.running){
+            self.end_time = (new Date()).getTime();
+            self.running = false;
+        }
+    };
+
+    Animation.prototype.pauseToFrame = function(index){
+        var self = this;
+        if(self.frames[index] !== undefined){
+            var diff = (index/self.fps)*1000;
+            self.end_time = self.start_time + diff;
+            self.running = false;
+        }
+    };
+
 
     var Direction = {
-        UP:0,
+        DOWN:0,
         LEFT:1,
         RIGHT:2,
-        DOWN:4
+        UP:3
     };
+
+    var CharacterGraphic = function(options){
+        var self = this;
+        var image = options.image;
+        var rows = parseInt(options.rows);
+        var cols = parseInt(options.cols);
+        rows = isNaN(rows)?1:rows;
+        cols = isNaN(cols)?1:cols;
+        var up = parseInt(options.up);
+        var left = parseInt(options.left);
+        var right = parseInt(options.right);
+        var down = parseInt(options.down);
+        down = isNaN(down)?Direction.DOWN:down;
+        left = isNaN(left)?Direction.LEFT:left;
+        right = isNaN(right)?Direction.RIGHT:right;
+        up = isNaN(up)?Direction.UP:up;
+        self.up = up;
+        self.down = down;
+        self.right = right;
+        self.left = left;
+        self.image = image;
+        self.rows = rows;
+        self.cols = cols;
+        self.width = image.width/self.cols;
+        self.height = image.height/self.rows;
+        self.animations = [];
+        self.initialize();
+    };
+
+    CharacterGraphic.prototype.initialize = function(){
+        var self = this;
+        for(var i = 0; i< self.rows;i++){
+            var frames = [];
+            for(var j = 0; j < self.cols;j++){
+                var frame = {
+                    image:self.image,
+                    sWidth:self.width,
+                    sHeight:self.height,
+                    dWidth:self.width,
+                    dHeight:self.height,
+                    sx:j*self.width,
+                    sy:i*self.height
+                };
+                frames.push(frame);
+            }
+            self.animations[i] = new Animation({
+                frames:frames,
+                fps:self.cols*2
+            });
+        }
+
+    };
+
 
     var Character = function(options){
         var self = this;
@@ -204,7 +337,9 @@
         self.speed = 5;
         self.position = {
             x:0,
-            y:0
+            y:0,
+            lx:0,
+            ly:0
         };
         self.layer = 3;
         self.animate_step = null;
@@ -212,7 +347,6 @@
         self.moving = false;
         self.direction = Direction.DOWN;
         self.refreshed = false;
-        self.last = {x:0,y:0};
     };
 
 
@@ -259,12 +393,16 @@
         }
     };
 
-
     Character.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
     };
 
+    Character.prototype.getCurrentFrame = function(){
+        var self = this;
+        var animation = self.graphic.animations[self.direction];
+        return animation.frames[animation.getIndexFrame()];
+    };
 
     Character.prototype.step = function(direction,times,end,allow){
         var self = this;
@@ -287,6 +425,7 @@
                     mov.y+=32;
                     break;
             }
+            self.graphic.animations[direction].execute();
             self.direction = direction;
             self.moveTo(mov,function(){
                 if(times > 1){
@@ -520,28 +659,42 @@
         window.cancelAnimationFrame(self.frameSync);
     };
 
+    Game.prototype.stepEvents = function(){
+        var self = this;
+        if(!self.character.moving){
+            if(self.key_reader.isActive(KeyReader.Keys.KEY_LEFT)){
+                self.character.step(Direction.LEFT);
+            }
+            else if(self.key_reader.isActive(KeyReader.Keys.KEY_RIGHT)){
+                self.character.step(Direction.RIGHT);
+            }
+            else if(self.key_reader.isActive(KeyReader.Keys.KEY_DOWN)){
+                self.character.step(Direction.DOWN);
+            }
+            else if(self.key_reader.isActive(KeyReader.Keys.KEY_UP)){
+                self.character.step(Direction.UP);
+            }
+            else{
+                self.character.graphic.animations[self.character.direction].pauseToFrame(3);
+            }
+        }
+    };
+
+    Game.prototype.drawEvents = function(){
+        var self = this;
+        if(!self.character.refreshed){
+            self.canvasEngine.drawCharacter(self.character);
+        }
+    };
+
     Game.prototype.step = function(){
         var self = this;
         if(self.running){
             self.interval2 = window.requestAnimationFrame(function () {
                 self.step();
             });
-
-            if(!self.character.moving){
-                if(self.key_reader.isActive(KeyReader.Keys.KEY_LEFT)){
-                    self.character.step(Direction.LEFT);
-                }
-                else if(self.key_reader.isActive(KeyReader.Keys.KEY_RIGHT)){
-                    self.character.step(Direction.RIGHT);
-                }
-                else if(self.key_reader.isActive(KeyReader.Keys.KEY_DOWN)){
-                    self.character.step(Direction.DOWN);
-                }
-                else if(self.key_reader.isActive(KeyReader.Keys.KEY_UP)){
-                    self.character.step(Direction.UP);
-                }
-            }
-            self.canvasEngine.drawCharacter(self.character);
+            self.stepEvents();
+            self.drawEvents();
         }
     };
 
@@ -683,6 +836,7 @@
     };
 
     RPG.Direction = Direction;
+    RPG.CharacterGraphic = CharacterGraphic;
     RPG.Character = Character;
     RPG.CanvasEngine = CanvasEngineRpg;
     RPG.Event = Event;
