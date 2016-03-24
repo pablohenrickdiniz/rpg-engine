@@ -331,7 +331,19 @@
     };
 
 
+    var Colision = {
+        colideRect:function(a,b){
+            return !((a.x > (b.x + b.width) || b.x > (a.x + a.width) || a.y > (a.y + a.height) || b.y > (b.y + b.height)));
+        }
+    };
+
+
     var Character = function(options){
+        var self = this;
+        self.initialize();
+    };
+
+    Character.prototype.initialize = function(){
         var self = this;
         self.graphic = null;
         self.speed = 5;
@@ -341,57 +353,80 @@
             lx:0,
             ly:0
         };
+
         self.layer = 3;
-        self.animate_step = null;
-        self.animate_sync = null;
         self.moving = false;
         self.direction = Direction.DOWN;
         self.refreshed = false;
+        self.currentMap = null;
+        self.stepDistance = 32;
+        self.start_moving_time = (new Date()).getTime();
+        self.moving_time = 0;
+        self.moving_callback = null;
+        self.start_position = {x:0, y:0};
+        self.end_position = {x:0,y:0};
     };
 
-
-    Character.prototype.moveTo = function (options,callback) {
+    Character.prototype.getArea = function(){
         var self = this;
-        var x = options.x === undefined ? self.position.x : options.x;
-        var y = options.y === undefined ? self.position.y : options.y;
-        var frameRate = options.frameRate === undefined ? 30 : options.frameRate;
-        var time = options.time === undefined ? 1000 : options.time;
-        var framesN = (frameRate * time) / 1000;
-        var stepTime = 1000/frameRate;
-        var init = (new Date()).getTime();
-        var end = (new Date()).getTime();
-        var dx = (x - self.position.x) / framesN;
-        var dy = (y - self.position.y) / framesN;
-        var sx = self.position.x;
-        var sy = self.position.y;
-        self.stepMove(sx, sy, dx, dy, framesN, stepTime, init, time, frameRate,callback);
+        return {
+            x:self.position.x,
+            y:self.position.y,
+            width:self.graphic.width,
+            height:self.graphic.height
+        };
     };
 
-    Character.prototype.stepMove = function (sx, sy, dx, dy, framesN, stepTime, init, time, frameRate,callback) {
+    Character.prototype.setMap = function(map){
+        var self = this;
+        self.map = map;
+        if(self.map.character !== self){
+            self.map.setCharacter(self);
+        }
+    };
+
+
+    Character.prototype.moveTo = function (x,y,time,callback) {
+
+        console.log('move to');
+        var self = this;
+        self.start_moving_time = (new Date()).getTime();
+        self.moving_time = time;
+        self.start_position = {
+            x:self.position.x,
+            y:self.position.y
+        };
+        self.end_position = {
+            x:x,
+            y:y
+        };
+        self.moving_callback = callback;
+    };
+
+    Character.prototype.timeStepMove = function(){
         var self = this;
         var now = (new Date()).getTime();
-        var diff = now - init;
-
-        if (diff < time) {
-            var frame = (diff * frameRate) / 1000;
-            self.position.x = Math.round(sx + (dx * frame));
-            self.position.y = Math.round(sy + (dy * frame));
-            self.refreshed = false;
-            window.requestAnimationFrame(function () {
-                self.stepMove(sx, sy, dx, dy, framesN, stepTime, init, time, frameRate,callback);
-            });
-        }
-        else {
-            self.position.x = sx + (dx * framesN);
-            self.position.y = sy + (dy * framesN);
-            self.refreshed = false;
-            clearInterval(self.animate_step);
-            window.cancelAnimationFrame(self.animate_sync);
-            if(callback){
+        var diff = now - self.start_moving_time;
+        if(diff >= self.moving_time){
+            self.position.x = self.end_position.x;
+            self.position.y = self.end_position.y;
+            var callback = self.moving_callback;
+            self.moving_callback = null;
+            if(typeof callback === 'function'){
                 callback();
             }
         }
+        else{
+            var distance_x = (self.end_position.x-self.start_position.x);
+            var distance_y = (self.end_position.y-self.start_position.y);
+            var x =  self.start_position.x + ((distance_x*diff)/self.moving_time);
+            var y =  self.start_position.y + ((distance_y*diff)/self.moving_time);
+            self.position.x = x;
+            self.position.y = y;
+        }
+
     };
+
 
     Character.prototype.setGraphic = function(graphic){
         var self = this;
@@ -409,25 +444,28 @@
         allow = allow == undefined?false:allow;
         if(!self.moving || allow){
             self.moving = true;
-            var mov = {x:self.position.x, y:self.position.y,time:1000/self.speed};
+            var x = self.position.x;
+            var y = self.position.y;
+            var time = 1000/self.speed;
+
             times = times === undefined?1:times;
             switch(direction){
                 case Direction.UP:
-                    mov.y -= 32;
+                    y -= self.stepDistance;
                     break;
                 case Direction.RIGHT:
-                    mov.x += 32;
+                    x += self.stepDistance;
                     break;
                 case Direction.LEFT:
-                    mov.x-= 32;
+                    x-= self.stepDistance;
                     break;
                 case Direction.DOWN:
-                    mov.y+=32;
+                    y+= self.stepDistance;
                     break;
             }
             self.graphic.animations[direction].execute();
             self.direction = direction;
-            self.moveTo(mov,function(){
+            self.moveTo(x,y,time,function(){
                 if(times > 1){
                     times--;
                     self.step(direction,times,end,true);
@@ -587,6 +625,9 @@
     Game.prototype.setCharacter = function(character){
         var self = this;
         self.character = character;
+        if(character.map !== self){
+            character.setMap(self);
+        }
     };
 
     Game.prototype.initialize = function(){
@@ -661,6 +702,7 @@
 
     Game.prototype.stepEvents = function(){
         var self = this;
+
         if(!self.character.moving){
             if(self.key_reader.isActive(KeyReader.Keys.KEY_LEFT)){
                 self.character.step(Direction.LEFT);
@@ -676,7 +718,12 @@
             }
             else{
                 self.character.graphic.animations[self.character.direction].pauseToFrame(3);
+                self.character.refreshed = false;
             }
+        }
+        else{
+            self.character.timeStepMove();
+            self.character.refreshed = false;
         }
     };
 
