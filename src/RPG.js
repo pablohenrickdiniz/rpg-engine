@@ -2,7 +2,247 @@
     var CE = window.CE,
         CanvasEngine = CE.CE;
 
-    var RPG = {};
+    var Utils = {
+        calculate_final_position: function (bounds, ex, ey, time, quadtree) {
+            var final = {x: ex, y: ey, width: bounds.width, height: bounds.height};
+            var vec = {x: ex - bounds.x, y: ey - bounds.y};
+
+            QuadTree.remove(bounds);
+            quadtree.insert(final);
+            var colisions = QuadTree.getCollisions(final);
+            QuadTree.remove(final);
+            quadtree.insert(bounds);
+            colisions.forEach(function (colision) {
+                if (vec.x > 0 && colision.x < (final.x + bounds.width)) {
+                    final.x = colision.x - bounds.width;
+                }
+                else if (vec.x < 0 && ((colision.x + colision.width) > final.x)) {
+                    final.x = colision.x + colision.width;
+                }
+
+                if (vec.y > 0 && colision.y < (final.y + bounds.height)) {
+                    final.y = colision.y - bounds.height;
+                }
+                else if (vec.y < 0 && ((colision.y + colision.height) > final.y)) {
+                    final.y = colision.y + colision.height;
+                }
+            });
+
+            final.x = vec.x > 0 ? Math.max(final.x, bounds.x) : vec.x < 0 ? Math.min(final.x, bounds.x) : bounds.x;
+            final.y = vec.y > 0 ? Math.max(final.y, bounds.y) : vec.y < 0 ? Math.min(final.y, bounds.y) : bounds.y;
+            var self = this;
+            var distance_a = self.distance({x:bounds.x,y:bounds.y},{x:ex,y:ey});
+            var distance_b = self.distance({x:bounds.x,y:bounds.y},{x:final.x,y:final.y});
+            time = (time*distance_b)/distance_a;
+
+            return {
+                x:final.x,
+                y:final.y,
+                time:time
+            };
+        },
+        distance: function (va, vb) {
+            return Math.sqrt(Object.keys(va).reduce(function (p, c) {
+                return p + Math.pow(va[c] - vb[c], 2);
+            }, 0));
+        }
+    };
+
+    var RPG = {
+        Globals:{
+            current_map:null,
+            current_character:null,
+            switches:[],
+            variables:[],
+            paused:true,
+            start_time:null
+        },
+        _screen_width:600,
+        _screen_height:600,
+        _switches_callbacks:[],
+        _canvas_engine:null,
+        _key_reader:null,
+        _interval:null,
+        _running:false,
+        _debug:false,
+        _layers:{
+            BG1:null,
+            BG2:null,
+            BG3:null,
+            EV1:null,
+            EV2:null,
+            BG4:null,
+            BG5:null,
+            BG6:null,
+            BG7:null,
+            BG8:null,
+            QUAD:null,
+            menu1:null,
+            menu2:null,
+            menu3:null
+        },
+        _switchCallback:function(name,status,event,callback){
+            var self = this;
+            if(RPG._switches_callbacks[name] === undefined){
+                RPG._switches_callbacks[name] = [];
+            }
+            var pos = status?1:0;
+            if(RPG._switches_callbacks[name][pos] === undefined){
+                RPG._switches_callbacks[name][pos] = [];
+            }
+
+            RPG._switches_callbacks[name][pos].push(callback);
+        },
+        initialize:function(container){
+            var engine = CE.createEngine({
+                width:RPG._screen_width,
+                height:RPG._screen_height,
+                container:container
+            },CanvasEngineRpg);
+            var key_reader =  engine.getKeyReader();
+            RPG._layers.BG1 = engine.createLayer();
+            RPG._layers.BG2 = engine.createLayer();
+            RPG._layers.BG3 = engine.createLayer();
+            RPG._layers.EV1 = engine.createLayer();
+            RPG._layers.EV2 = engine.createLayer();
+            RPG._layers.BG4 = engine.createLayer();
+            RPG._layers.BG5 = engine.createLayer();
+            RPG._layers.BG6 = engine.createLayer();
+            RPG._layers.BG7 = engine.createLayer();
+            RPG._layers.BG8 = engine.createLayer();
+            RPG._layers.QUAD = engine.createLayer();
+            RPG._layers.menu1 = engine.createLayer();
+            RPG._layers.menu2 = engine.createLayer();
+            RPG._layers.menu3 = engine.createLayer();
+            key_reader.on(['KEY_ENTER'],function(){
+                if(RPG.Globals.paused){
+                    RPG.start();
+                }
+                else{
+                    RPG.pause();
+                }
+            });
+
+            RPG._key_reader = key_reader;
+            RPG._canvas_engine = engine;
+        },
+        loadMap:function(map){
+            RPG.Globals.current_map = map;
+
+            RPG._canvas_engine.layers.forEach(function(layer){
+                layer.set({
+                    width:map.getFullWidth(),
+                    height:map.getFullHeight()
+                });
+            });
+
+            RPG._canvas_engine.drawMap(map);
+            map._colideTree.insert(RPG.Globals.current_character.bounds);
+        },
+        enableSwitch:function(name){
+            var self = this;
+            RPG.Globals.switches[name] = true;
+            if(RPG._switches_callbacks[name] !== undefined && RPG._switches_callbacks[name][1] !== undefined){
+                RPG._switches_callbacks[name][1].forEach(function(callback){
+                    callback();
+                });
+            }
+        },
+        disableSwitch:function(name){
+            var self = this;
+            RPG.Globals.switches[name] = false;
+            if(RPG._switches_callbacks[name] !== undefined && RPG._switches_callbacks[name][0] !== undefined){
+                RPG._switches_callbacks[name][0].forEach(function(callback){
+                    callback();
+                });
+            }
+        },
+        run:function(){
+            RPG.Globals.start_time = (new Date()).getTime();
+            console.log('game started');
+            if(!RPG._running){
+                RPG._running = true;
+                RPG.step();
+            }
+        },
+        end:function(){
+            var self = this;
+            RPG._running = false;
+            window.cancelAnimationFrame(RPG._interval);
+        },
+        stepEvents:function(){
+            var self = this;
+            var current_character = RPG.Globals.current_character;
+            var key_reader = RPG._key_reader;
+
+            if(!current_character.moving){
+                if(key_reader.isActive('KEY_LEFT')){
+                    current_character.step(Direction.LEFT);
+                }
+                else if(key_reader.isActive('KEY_RIGHT')){
+                    current_character.step(Direction.RIGHT);
+                }
+                else if(key_reader.isActive('KEY_DOWN')){
+                    current_character.step(Direction.DOWN);
+                }
+                else if(key_reader.isActive('KEY_UP')){
+                    current_character.step(Direction.UP);
+                }
+                else{
+                    current_character.graphic.animations[current_character.direction].pauseToFrame(1);
+                    current_character.refreshed = false;
+                }
+            }
+            else{
+                current_character.timeStepMove();
+                current_character.refreshed = false;
+            }
+        },
+        drawEvents:function(){
+            var current_character = RPG.Globals.current_character;
+            if(!current_character.refreshed){
+                RPG._canvas_engine.drawCharacter(current_character);
+            }
+        },
+        step:function(){
+            if(RPG._running){
+                RPG._interval = window.requestAnimationFrame(function () {
+                    RPG.step();
+                });
+                RPG.stepEvents();
+                RPG.drawEvents();
+                if(RPG._debug){
+                    RPG._canvas_engine.drawQuadTree(RPG.Globals.current_map._colideTree,10);
+                }
+            }
+        },
+        getSeconds:function(){
+            return parseInt(((new Date()).getTime() - RPG.Globals.start_time)/1000);
+        }
+    };
+
+
+
+    var drawQuadTreeCallback = function(quadtree,layer,first){
+        first = first === undefined?true:first;
+        if(first){
+            layer.clear();
+        }
+        layer.rect(quadtree.bounds);
+
+        if(first){
+            var objects = quadtree.objects;
+            objects.forEach(function(object){
+                layer.rect(object);
+            });
+        }
+
+        if(!quadtree.isLeaf()){
+            for(var i =0; i < quadtree.nodes.length;i++){
+                drawQuadTreeCallback(quadtree.nodes[i],layer,false);
+            }
+        }
+    };
 
 
     var CanvasEngineRpg = function(options){
@@ -42,19 +282,28 @@
         }
     };
 
+    CanvasEngineRpg.prototype.drawQuadTree = function(quadtree,layer){
+        var self = this;
+        layer = self.getLayer(layer);
+        drawQuadTreeCallback(quadtree,layer);
+    };
+
     CanvasEngineRpg.prototype.drawCharacter = function(character){
         if(!character.refreshed && character.graphic !== null){
             var layer_index = character.layer;
             var self = this;
             if(self.layers[layer_index] !== undefined){
                 var layer = self.layers[layer_index];
+                var bounds = character.bounds;
                 var graphic = character.graphic;
+
                 layer.clearRect({
-                    x:character.position.lx,
-                    y:character.position.ly,
-                    width:graphic.width,
-                    height:graphic.height
+                    x:bounds.lx,
+                    y:bounds.ly,
+                    width:bounds.width,
+                    height:bounds.height
                 });
+
                 var frame = character.getCurrentFrame();
 
                 if(frame !== undefined){
@@ -62,16 +311,16 @@
                         image:frame.image,
                         sx:frame.sx,
                         sy:frame.sy,
-                        dx:character.position.x,
-                        dy:character.position.y,
+                        dx:bounds.x,
+                        dy:bounds.y,
                         dWidth:frame.dWidth,
                         dHeight:frame.dHeight,
                         sWidth:frame.sWidth,
                         sHeight:frame.sHeight
                     };
                     layer.image(image);
-                    character.position.lx = character.position.x;
-                    character.position.ly = character.position.y;
+                    bounds.lx = bounds.x;
+                    bounds.ly = bounds.y;
                     character.refreshed = true;
                 }
 
@@ -169,7 +418,7 @@
         self.direction = Event.DOWN;
         self.moving = false;
         self.switches = [];
-        self.switchesCallbacks = [];
+        self.switches_callbacks = [];
         self.game = null;
         self.activePage = null;
     };
@@ -187,15 +436,15 @@
 
     Event.prototype.switchCallback = function(name,status,callback){
         var self = this;
-        if(self.switchesCallbacks[name] === undefined){
-            self.switchesCallbacks[name] = [];
+        if(self.switches_callbacks[name] === undefined){
+            self.switches_callbacks[name] = [];
         }
         var pos = status?1:0;
-        if(self.switchesCallbacks[name][pos] === undefined){
-            self.switchesCallbacks[name][pos] = [];
+        if(self.switches_callbacks[name][pos] === undefined){
+            self.switches_callbacks[name][pos] = [];
         }
 
-        self.switchesCallbacks[name][pos].push(callback);
+        self.switches_callbacks[name][pos].push(callback);
     };
 
     Event.prototype.addPage = function(page){
@@ -331,75 +580,53 @@
     };
 
 
-    var Colision = {
-        colideRect:function(a,b){
-            return !((a.x > (b.x + b.width) || b.x > (a.x + a.width) || a.y > (a.y + a.height) || b.y > (b.y + b.height)));
-        }
-    };
-
 
     var Character = function(options){
         var self = this;
-        self.initialize();
+        options = options == undefined?{}:options;
+        self.initialize(options);
     };
 
-    Character.prototype.initialize = function(){
+    Character.prototype.initialize = function(options){
         var self = this;
+        var speed = parseInt(options.speed);
+        var x = parseInt(options.x);
+        var y = parseInt(options.y);
+        x = isNaN(x)?0:x;
+        y = isNaN(y)?0:y;
+        speed = isNaN(speed)?5:Math.abs(speed);
+        self.speed = speed;
         self.graphic = null;
-        self.speed = 5;
-        self.position = {
-            x:0,
-            y:0,
-            lx:0,
-            ly:0
+
+        self.bounds = {
+            x:x,
+            y:y,
+            width:0,
+            height:0,
+            lx:x,
+            ly:y
         };
 
-        self.layer = 3;
+        self.layer = 2;
         self.moving = false;
         self.direction = Direction.DOWN;
         self.refreshed = false;
-        self.currentMap = null;
-        self.stepDistance = 32;
+        self.h_speed = 32;
+        self.v_speed = 32;
         self.start_moving_time = (new Date()).getTime();
         self.moving_time = 0;
         self.moving_callback = null;
-        self.start_position = {x:0, y:0};
-        self.end_position = {x:0,y:0};
+        self.start_position = {x:x, y:y};
+        self.end_position = {x:x,y:y};
     };
-
-    Character.prototype.getArea = function(){
-        var self = this;
-        return {
-            x:self.position.x,
-            y:self.position.y,
-            width:self.graphic.width,
-            height:self.graphic.height
-        };
-    };
-
-    Character.prototype.setMap = function(map){
-        var self = this;
-        self.map = map;
-        if(self.map.character !== self){
-            self.map.setCharacter(self);
-        }
-    };
-
 
     Character.prototype.moveTo = function (x,y,time,callback) {
-
-        console.log('move to');
         var self = this;
+        var final = Utils.calculate_final_position(self.bounds,x,y,time,RPG.Globals.current_map._colideTree);
         self.start_moving_time = (new Date()).getTime();
-        self.moving_time = time;
-        self.start_position = {
-            x:self.position.x,
-            y:self.position.y
-        };
-        self.end_position = {
-            x:x,
-            y:y
-        };
+        self.moving_time = final.time;
+        self.start_position = {x:self.bounds.x, y:self.bounds.y};
+        self.end_position = {x:final.x, y:final.y};
         self.moving_callback = callback;
     };
 
@@ -408,8 +635,8 @@
         var now = (new Date()).getTime();
         var diff = now - self.start_moving_time;
         if(diff >= self.moving_time){
-            self.position.x = self.end_position.x;
-            self.position.y = self.end_position.y;
+            self.bounds.x = self.end_position.x;
+            self.bounds.y = self.end_position.y;
             var callback = self.moving_callback;
             self.moving_callback = null;
             if(typeof callback === 'function'){
@@ -421,16 +648,35 @@
             var distance_y = (self.end_position.y-self.start_position.y);
             var x =  self.start_position.x + ((distance_x*diff)/self.moving_time);
             var y =  self.start_position.y + ((distance_y*diff)/self.moving_time);
-            self.position.x = x;
-            self.position.y = y;
+            self.bounds.x = x;
+            self.bounds.y = y;
+
+
+            var screen_width = RPG._screen_width;
+            var screen_height = RPG._screen_height;
+            var half_width = screen_width/2;
+            var half_height = screen_height/2;
+            var viewX = -x+half_width-self.bounds.width;
+            var viewY = -y+half_height-self.bounds.height;
+
+
+            RPG._canvas_engine.set({
+                viewX:viewX,
+                viewY:viewY
+            });
+            QuadTree.reInsert(self.bounds);
+            var colisions = QuadTree.getCollisions(self.bounds);
+            colisions.forEach(function(colision){
+                colision.backgroundColor = 'rgba(0,0,255,0.5)';
+            });
         }
-
     };
-
 
     Character.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
+        self.bounds.width = graphic.width;
+        self.bounds.height = graphic.height;
     };
 
     Character.prototype.getCurrentFrame = function(){
@@ -444,39 +690,40 @@
         allow = allow == undefined?false:allow;
         if(!self.moving || allow){
             self.moving = true;
-            var x = self.position.x;
-            var y = self.position.y;
+            var x = self.bounds.x;
+            var y = self.bounds.y;
             var time = 1000/self.speed;
 
             times = times === undefined?1:times;
             switch(direction){
                 case Direction.UP:
-                    y -= self.stepDistance;
+                    y -= self.h_speed;
                     break;
                 case Direction.RIGHT:
-                    x += self.stepDistance;
+                    x += self.h_speed;
                     break;
                 case Direction.LEFT:
-                    x-= self.stepDistance;
+                    x-= self.h_speed;
                     break;
                 case Direction.DOWN:
-                    y+= self.stepDistance;
+                    y+= self.h_speed;
                     break;
             }
-            self.graphic.animations[direction].execute();
-            self.direction = direction;
-            self.moveTo(x,y,time,function(){
-                if(times > 1){
+
+            if(times < 1){
+                self.moving = false;
+                if(typeof end === 'function'){
+                    end();
+                }
+            }
+            else{
+                self.graphic.animations[direction].execute();
+                self.direction = direction;
+                self.moveTo(x,y,time,function(){
                     times--;
                     self.step(direction,times,end,true);
-                }
-                else{
-                    self.moving = false;
-                    if(typeof end === 'function'){
-                        end();
-                    }
-                }
-            });
+                });
+            }
         }
     };
 
@@ -506,6 +753,33 @@
         self.tiles = [];
         self.events = [];
         self.parent = null;
+        self._colideTree = null;
+        self.colision = [];
+    };
+
+    Map.prototype.initializeColision = function(){
+        var self = this;
+        self._colideTree = new QuadTree({
+            x:0,
+            y:0,
+            width:self.getFullWidth(),
+            height:self.getFullHeight()
+        });
+        var size1 = self.colision.length;
+        for(var i = 0; i < size1;i++){
+            var size2 = self.colision[i].length;
+            for(var j = 0; j < size2;j++){
+                var colision = self.colision[i][j];
+                if(colision === true){
+                    self._colideTree.insert({
+                        x:j*self.tile_w,
+                        y:i*self.tile_h,
+                        width:self.tile_w,
+                        height:self.tile_h
+                    });
+                }
+            }
+        }
     };
 
     /*
@@ -563,6 +837,7 @@
         return null;
     };
 
+
     Map.prototype.removeTile = function(i, j,layer){
         var self = this;
         if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][layer] !== undefined){
@@ -597,157 +872,6 @@
                 }
             }
         }
-    };
-
-
-    var Game = function(options){
-        var self = this;
-        options = options === undefined?{}:options;
-        var fps = options.fps === undefined?30:options.fps;
-
-
-        self.switches = [];
-        self.switchesCallbacks = [];
-        self.variables = [];
-        self.currentMap = null;
-        self.canvasEngine = null;
-        self.key_reader = null;
-        self.start_time = null;
-        self.fps = fps;
-        self.interval1 = null;
-        self.interval2 = null;
-        self.paused = true;
-        self.running = false;
-        self.character = null;
-        self.command = null;
-    };
-
-    Game.prototype.setCharacter = function(character){
-        var self = this;
-        self.character = character;
-        if(character.map !== self){
-            character.setMap(self);
-        }
-    };
-
-    Game.prototype.initialize = function(){
-        var self = this;
-        if(self.canvasEngine !== null){
-            self.canvasEngine.removeLayers(self.canvasEngine.layers);
-            for(var i = 0; i < 10;i++){
-                self.canvasEngine.createLayer();
-            }
-            self.key_reader = self.canvasEngine.getKeyReader();
-        }
-    };
-
-    Game.prototype.initializeMap = function(map){
-        var self = this;
-        self.canvasEngine.drawMap(map);
-    };
-
-    Game.prototype.setCanvasEngine = function(engine){
-        var self = this;
-        self.canvasEngine = engine;
-    };
-
-    Game.prototype.enableSwitch = function(name){
-        var self = this;
-        self.switches[name] = true;
-        if(self.switchesCallbacks[name] !== undefined && self.switchesCallbacks[name][1] !== undefined){
-            self.switchesCallbacks[name][1].forEach(function(callback){
-                callback();
-            });
-        }
-    };
-
-    Game.prototype.disableSwitch = function(name){
-        var self = this;
-        self.switches[name] = false;
-        if(self.switchesCallbacks[name] !== undefined && self.switchesCallbacks[name][0] !== undefined){
-            self.switchesCallbacks[name][0].forEach(function(callback){
-                callback();
-            });
-        }
-    };
-
-    Game.prototype.switchCallback = function(name,status,event,callback){
-        var self = this;
-        if(self.switchesCallbacks[name] === undefined){
-            self.switchesCallbacks[name] = [];
-        }
-        var pos = status?1:0;
-        if(self.switchesCallbacks[name][pos] === undefined){
-            self.switchesCallbacks[name][pos] = [];
-        }
-
-        self.switchesCallbacks[name][pos].push(callback);
-    };
-
-    Game.prototype.start = function(){
-        var self = this;
-        self.start_time = (new Date()).getTime();
-        if(!self.running){
-            self.running = true;
-            self.step();
-        }
-    };
-
-    Game.prototype.pause = function(){
-        var self = this;
-        self.running = false;
-        clearInterval(self.frameInterval);
-        window.cancelAnimationFrame(self.frameSync);
-    };
-
-    Game.prototype.stepEvents = function(){
-        var self = this;
-
-        if(!self.character.moving){
-            if(self.key_reader.isActive(KeyReader.Keys.KEY_LEFT)){
-                self.character.step(Direction.LEFT);
-            }
-            else if(self.key_reader.isActive(KeyReader.Keys.KEY_RIGHT)){
-                self.character.step(Direction.RIGHT);
-            }
-            else if(self.key_reader.isActive(KeyReader.Keys.KEY_DOWN)){
-                self.character.step(Direction.DOWN);
-            }
-            else if(self.key_reader.isActive(KeyReader.Keys.KEY_UP)){
-                self.character.step(Direction.UP);
-            }
-            else{
-                self.character.graphic.animations[self.character.direction].pauseToFrame(3);
-                self.character.refreshed = false;
-            }
-        }
-        else{
-            self.character.timeStepMove();
-            self.character.refreshed = false;
-        }
-    };
-
-    Game.prototype.drawEvents = function(){
-        var self = this;
-        if(!self.character.refreshed){
-            self.canvasEngine.drawCharacter(self.character);
-        }
-    };
-
-    Game.prototype.step = function(){
-        var self = this;
-        if(self.running){
-            self.interval2 = window.requestAnimationFrame(function () {
-                self.step();
-            });
-            self.stepEvents();
-            self.drawEvents();
-        }
-    };
-
-    Game.prototype.getSeconds = function(){
-        var self = this;
-        return parseInt(((new Date()).getTime() - self.start_time)/1000);
     };
 
     var Window = function(options,parent){
@@ -845,6 +969,9 @@
             map.tile_h = tile_h;
             var tilesets = data.tilesets !== undefined?data.tilesets:[];
             var tiles = data.tiles !== undefined?data.tiles:[];
+            var colision = data.colision !== undefined?data.colision:[];
+            map.colision = colision;
+
 
             ImageLoader.loadAll(tilesets,function(tilesets){
                 tiles.forEach(function(row,indexA){
@@ -889,7 +1016,6 @@
     RPG.Event = Event;
     RPG.Page = Page;
     RPG.Map = Map;
-    RPG.Game = Game;
     RPG.MapLoader = MapLoader;
 
     window.RPG = RPG;
