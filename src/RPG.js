@@ -3,10 +3,12 @@
         CanvasEngine = CE.CE;
 
     var Utils = {
-        calculate_final_position: function (bounds, ex, ey, time, quadtree) {
+        calculate_final_position: function (bounds, ex, ey, time) {
             var final = {x: ex, y: ey, width: bounds.width, height: bounds.height};
             var vec = {x: ex - bounds.x, y: ey - bounds.y};
 
+
+            var quadtree = RPG.Globals.current_map._colideTree;
             QuadTree.remove(bounds);
             quadtree.insert(final);
             var colisions = QuadTree.getCollisions(final);
@@ -28,8 +30,40 @@
                 }
             });
 
-            final.x = vec.x > 0 ? Math.max(final.x, bounds.x) : vec.x < 0 ? Math.min(final.x, bounds.x) : bounds.x;
-            final.y = vec.y > 0 ? Math.max(final.y, bounds.y) : vec.y < 0 ? Math.min(final.y, bounds.y) : bounds.y;
+
+            if(final.x < 0){
+                final.x = 0;
+            }
+            else if(final.x > RPG.Globals.current_map.getFullWidth()-32){
+                final.x = RPG.Globals.current_map.getFullWidth()-32;
+            }
+            else if(vec.x > 0){
+                final.x = Math.max(final.x, bounds.x);
+            }
+            else if(vec.x < 0){
+                final.x =  Math.min(final.x, bounds.x);
+            }
+            else {
+                final.x = bounds.x;
+            }
+
+            if(final.y < 0){
+                final.y = 0;
+            }
+            else if(final.y > RPG.Globals.current_map.getFullHeight()-32){
+                final.y = RPG.Globals.current_map.getFullHeight()-32;
+            }
+            else if(vec.y > 0){
+                final.y = Math.max(final.y, bounds.y);
+            }
+            else if(vec.y < 0){
+                final.y = Math.min(final.y, bounds.y);
+            }
+            else{
+                final.y = bounds.y;
+            }
+
+;
             var self = this;
             var distance_a = self.distance({x:bounds.x,y:bounds.y},{x:ex,y:ey});
             var distance_b = self.distance({x:bounds.x,y:bounds.y},{x:final.x,y:final.y});
@@ -51,7 +85,7 @@
     var RPG = {
         Globals:{
             current_map:null,
-            current_character:null,
+            current_player:null,
             switches:[],
             variables:[],
             paused:true,
@@ -128,16 +162,22 @@
         },
         loadMap:function(map){
             RPG.Globals.current_map = map;
-
-            RPG._canvas_engine.layers.forEach(function(layer){
-                layer.set({
-                    width:map.getFullWidth(),
-                    height:map.getFullHeight()
-                });
-            });
-
+            var width = map.getFullWidth();
+            var height = map.getFullHeight();
+            RPG._layers.BG1.set({width:width,height:height});
+            RPG._layers.BG2.set({width:width,height:height});
+            RPG._layers.BG3.set({width:width,height:height});
+            RPG._layers.EV1.set({width:width,height:height});
+            RPG._layers.EV2.set({width:width,height:height});
+            RPG._layers.BG4.set({width:width,height:height});
+            RPG._layers.BG5.set({width:width,height:height});
+            RPG._layers.BG6.set({width:width,height:height});
+            RPG._layers.BG7.set({width:width,height:height});
+            RPG._layers.BG8.set({width:width,height:height});
+            RPG._layers.QUAD.set({width:width,height:height});
+            RPG._canvas_engine.set({aligner_width:width,aligner_height:height});
             RPG._canvas_engine.drawMap(map);
-            map._colideTree.insert(RPG.Globals.current_character.bounds);
+            map._colideTree.insert(RPG.Globals.current_player.bounds);
         },
         enableSwitch:function(name){
             var self = this;
@@ -172,36 +212,36 @@
         },
         stepEvents:function(){
             var self = this;
-            var current_character = RPG.Globals.current_character;
+            var current_player = RPG.Globals.current_player;
             var key_reader = RPG._key_reader;
 
-            if(!current_character.moving){
+            if(!current_player.moving){
                 if(key_reader.isActive('KEY_LEFT')){
-                    current_character.step(Direction.LEFT);
+                    current_player.step(Direction.LEFT);
                 }
                 else if(key_reader.isActive('KEY_RIGHT')){
-                    current_character.step(Direction.RIGHT);
+                    current_player.step(Direction.RIGHT);
                 }
                 else if(key_reader.isActive('KEY_DOWN')){
-                    current_character.step(Direction.DOWN);
+                    current_player.step(Direction.DOWN);
                 }
                 else if(key_reader.isActive('KEY_UP')){
-                    current_character.step(Direction.UP);
+                    current_player.step(Direction.UP);
                 }
                 else{
-                    current_character.graphic.animations[current_character.direction].pauseToFrame(1);
-                    current_character.refreshed = false;
+                    current_player.graphic.animations[current_player.direction].pauseToFrame(1);
+                    current_player.refreshed = false;
                 }
             }
             else{
-                current_character.timeStepMove();
-                current_character.refreshed = false;
+                current_player.timeStepMove();
+                current_player.refreshed = false;
             }
         },
         drawEvents:function(){
-            var current_character = RPG.Globals.current_character;
-            if(!current_character.refreshed){
-                RPG._canvas_engine.drawCharacter(current_character);
+            var current_player = RPG.Globals.current_player;
+            if(!current_player.refreshed){
+                RPG._canvas_engine.drawCharacter(current_player);
             }
         },
         step:function(){
@@ -298,29 +338,31 @@
                 var graphic = character.graphic;
 
                 layer.clearRect({
-                    x:bounds.lx,
-                    y:bounds.ly,
-                    width:bounds.width,
-                    height:bounds.height
+                    x:graphic.lx,
+                    y:graphic.ly,
+                    width:graphic.width,
+                    height:graphic.height
                 });
 
                 var frame = character.getCurrentFrame();
+                var x = bounds.x-(Math.max(graphic.width-32,0));
+                var y = bounds.y-(Math.max(graphic.height-32,0));
 
                 if(frame !== undefined){
                     var image = {
                         image:frame.image,
                         sx:frame.sx,
                         sy:frame.sy,
-                        dx:bounds.x,
-                        dy:bounds.y,
+                        dx:x,
+                        dy:y,
                         dWidth:frame.dWidth,
                         dHeight:frame.dHeight,
                         sWidth:frame.sWidth,
                         sHeight:frame.sHeight
                     };
                     layer.image(image);
-                    bounds.lx = bounds.x;
-                    bounds.ly = bounds.y;
+                    graphic.lx = x;
+                    graphic.ly = y;
                     character.refreshed = true;
                 }
 
@@ -371,95 +413,6 @@
     };
 
 
-
-
-
-    var Event = function(options){
-        var self = this;
-        var pages = options.pages;
-        var position = options.position;
-        var direction = options.direction;
-        var parent = options.parent;
-        var activePage = options.activePage;
-
-        if(pages instanceof Array){
-            var size = pages.length;
-            for(var i = 0; i < size;i++){
-                if((pages[i] instanceof Page)){
-                    pages.splice(i,1);
-                    i--;
-                }
-            }
-        }
-        else{
-            pages = [];
-        }
-
-        if(position.constructor === {}.constructor){
-            var x = parseFloat(position.x);
-            var y = parseFloat(position.y);
-            x = isNaN(x)?0:x;
-            y = isNaN(y)?0:y;
-            position.x =x;
-            position.y =y;
-        }
-        else{
-            position = {
-                x:0,
-                y:0
-            };
-        }
-
-        parent = parent === undefined?null:parent;
-        activePage = activePage === undefined?0:activePage;
-
-        self.pages = pages;
-        self.position = position;
-        self.direction = Event.DOWN;
-        self.moving = false;
-        self.switches = [];
-        self.switches_callbacks = [];
-        self.game = null;
-        self.activePage = null;
-    };
-
-
-    Event.prototype.enableSwitch = function(name){
-        var self = this;
-        self.switches[name] = true;
-    };
-
-    Event.prototype.disableSwitch = function(name){
-        var self = this;
-        self.switches[name] = false;
-    };
-
-    Event.prototype.switchCallback = function(name,status,callback){
-        var self = this;
-        if(self.switches_callbacks[name] === undefined){
-            self.switches_callbacks[name] = [];
-        }
-        var pos = status?1:0;
-        if(self.switches_callbacks[name][pos] === undefined){
-            self.switches_callbacks[name][pos] = [];
-        }
-
-        self.switches_callbacks[name][pos].push(callback);
-    };
-
-    Event.prototype.addPage = function(page){
-        var self = this;
-        self.pages.push(page);
-    };
-
-    Event.prototype.destroy = function(){
-
-    };
-
-    Event.prototype.setGame = function(game){
-        var self = this;
-        self.game = game;
-    };
 
     var Animation = function(options){
         var self = this;
@@ -552,6 +505,8 @@
         self.width = image.width/self.cols;
         self.height = image.height/self.rows;
         self.animations = [];
+        self.lx = 0;
+        self.ly = 0;
         self.initialize();
     };
 
@@ -579,11 +534,9 @@
 
     };
 
-
-
     var Character = function(options){
         var self = this;
-        options = options == undefined?{}:options;
+        options = options === undefined?{}:options;
         self.initialize(options);
     };
 
@@ -601,10 +554,8 @@
         self.bounds = {
             x:x,
             y:y,
-            width:0,
-            height:0,
-            lx:x,
-            ly:y
+            width:32,
+            height:32
         };
 
         self.layer = 2;
@@ -622,7 +573,7 @@
 
     Character.prototype.moveTo = function (x,y,time,callback) {
         var self = this;
-        var final = Utils.calculate_final_position(self.bounds,x,y,time,RPG.Globals.current_map._colideTree);
+        var final = Utils.calculate_final_position(self.bounds,x,y,time);
         self.start_moving_time = (new Date()).getTime();
         self.moving_time = final.time;
         self.start_position = {x:self.bounds.x, y:self.bounds.y};
@@ -656,8 +607,8 @@
             var screen_height = RPG._screen_height;
             var half_width = screen_width/2;
             var half_height = screen_height/2;
-            var viewX = -x+half_width-self.bounds.width;
-            var viewY = -y+half_height-self.bounds.height;
+            var viewX = -x+half_width-(self.graphic.width/2);
+            var viewY = -y+half_height-(self.graphic.height/2);
 
 
             RPG._canvas_engine.set({
@@ -675,8 +626,8 @@
     Character.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
-        self.bounds.width = graphic.width;
-        self.bounds.height = graphic.height;
+        graphic.lx = self.bounds.x;
+        graphic.ly = self.bounds.y;
     };
 
     Character.prototype.getCurrentFrame = function(){
@@ -732,6 +683,71 @@
         var self = this;
         self.step(self.direction);
     };
+
+
+
+    var Event = function(options){
+        var self = this;
+        Character.call(self,options);
+        self.switches = [];
+        self._switches_callbacks = [];
+        self.activePage = -1;
+    };
+
+    Event.prototype = Object.create(Character.prototype);
+    Event.constructor = Event;
+
+
+    Event.prototype.enableSwitch = function(name){
+        var self = this;
+        self.switches[name] = true;
+    };
+
+    Event.prototype.disableSwitch = function(name){
+        var self = this;
+        self.switches[name] = false;
+    };
+
+    Event.prototype.switchCallback = function(name,status,callback){
+        var self = this;
+        if(self.switches_callbacks[name] === undefined){
+            self.switches_callbacks[name] = [];
+        }
+        var pos = status?1:0;
+        if(self.switches_callbacks[name][pos] === undefined){
+            self.switches_callbacks[name][pos] = [];
+        }
+
+        self.switches_callbacks[name][pos].push(callback);
+    };
+
+    Event.prototype.addPage = function(page){
+        var self = this;
+        self.pages.push(page);
+    };
+
+    Event.prototype.destroy = function(){
+
+    };
+
+    Event.prototype.setGame = function(game){
+        var self = this;
+        self.game = game;
+    };
+
+    var Player = function(options){
+        var self = this;
+        self.level = 1;
+        self.hp = 100;
+        self.mp = 100;
+        self.items = [];
+        self.equiped_items = [];
+        Character.call(self,options);
+    };
+
+    Player.prototype = Object.create(Character.prototype);
+    Player.constructor = Player;
+
 
     var Map = function (options) {
         var self = this;
@@ -969,8 +985,7 @@
             map.tile_h = tile_h;
             var tilesets = data.tilesets !== undefined?data.tilesets:[];
             var tiles = data.tiles !== undefined?data.tiles:[];
-            var colision = data.colision !== undefined?data.colision:[];
-            map.colision = colision;
+            map.colision = data.colision !== undefined?data.colision:[];
 
 
             ImageLoader.loadAll(tilesets,function(tilesets){
@@ -1017,6 +1032,7 @@
     RPG.Page = Page;
     RPG.Map = Map;
     RPG.MapLoader = MapLoader;
+    RPG.Player = Player;
 
     window.RPG = RPG;
 })(window);
