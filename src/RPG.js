@@ -4,74 +4,72 @@
 
     var Utils = {
         calculate_final_position: function (bounds, ex, ey, time) {
-            var final = {x: ex, y: ey, width: bounds.width, height: bounds.height};
+
+            var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height};
             var vec = {x: ex - bounds.x, y: ey - bounds.y};
-
-
             var quadtree = RPG.Globals.current_map._colideTree;
             QuadTree.remove(bounds);
-            quadtree.insert(final);
-            var colisions = QuadTree.getCollisions(final);
-            QuadTree.remove(final);
+            quadtree.insert(final_bounds);
+            var colisions = QuadTree.getCollisions(final_bounds);
+            QuadTree.remove(final_bounds);
             quadtree.insert(bounds);
             colisions.forEach(function (colision) {
-                if (vec.x > 0 && colision.x < (final.x + bounds.width)) {
-                    final.x = colision.x - bounds.width;
+                if (vec.x > 0 && colision.x < (final_bounds.x + bounds.width)) {
+                    final_bounds.x = colision.x - bounds.width;
                 }
-                else if (vec.x < 0 && ((colision.x + colision.width) > final.x)) {
-                    final.x = colision.x + colision.width;
+                else if (vec.x < 0 && ((colision.x + colision.width) > final_bounds.x)) {
+                    final_bounds.x = colision.x + colision.width;
                 }
 
-                if (vec.y > 0 && colision.y < (final.y + bounds.height)) {
-                    final.y = colision.y - bounds.height;
+                if (vec.y > 0 && colision.y < (final_bounds.y + bounds.height)) {
+                    final_bounds.y = colision.y - bounds.height;
                 }
-                else if (vec.y < 0 && ((colision.y + colision.height) > final.y)) {
-                    final.y = colision.y + colision.height;
+                else if (vec.y < 0 && ((colision.y + colision.height) > final_bounds.y)) {
+                    final_bounds.y = colision.y + colision.height;
                 }
             });
 
 
-            if(final.x < 0){
-                final.x = 0;
+            if(final_bounds.x < 0){
+                final_bounds.x = 0;
             }
-            else if(final.x > RPG.Globals.current_map.getFullWidth()-32){
-                final.x = RPG.Globals.current_map.getFullWidth()-32;
+            else if(final_bounds.x > RPG.Globals.current_map.getFullWidth()-32){
+                final_bounds.x = RPG.Globals.current_map.getFullWidth()-32;
             }
             else if(vec.x > 0){
-                final.x = Math.max(final.x, bounds.x);
+                final_bounds.x = Math.max(final_bounds.x, bounds.x);
             }
             else if(vec.x < 0){
-                final.x =  Math.min(final.x, bounds.x);
+                final_bounds.x =  Math.min(final_bounds.x, bounds.x);
             }
             else {
-                final.x = bounds.x;
+                final_bounds.x = bounds.x;
             }
 
-            if(final.y < 0){
-                final.y = 0;
+            if(final_bounds.y < 0){
+                final_bounds.y = 0;
             }
-            else if(final.y > RPG.Globals.current_map.getFullHeight()-32){
-                final.y = RPG.Globals.current_map.getFullHeight()-32;
+            else if(final_bounds.y > RPG.Globals.current_map.getFullHeight()-32){
+                final_bounds.y = RPG.Globals.current_map.getFullHeight()-32;
             }
             else if(vec.y > 0){
-                final.y = Math.max(final.y, bounds.y);
+                final_bounds.y = Math.max(final_bounds.y, bounds.y);
             }
             else if(vec.y < 0){
-                final.y = Math.min(final.y, bounds.y);
+                final_bounds.y = Math.min(final_bounds.y, bounds.y);
             }
             else{
-                final.y = bounds.y;
+                final_bounds.y = bounds.y;
             }
 
-;
             var self = this;
             var distance_a = self.distance({x:bounds.x,y:bounds.y},{x:ex,y:ey});
-            var distance_b = self.distance({x:bounds.x,y:bounds.y},{x:final.x,y:final.y});
+            var distance_b = self.distance({x:bounds.x,y:bounds.y},{x:final_bounds.x,y:final_bounds.y});
             time = (time*distance_b)/distance_a;
 
             return {
-                x:final.x,
-                y:final.y,
+                x:final_bounds.x,
+                y:final_bounds.y,
                 time:time
             };
         },
@@ -99,6 +97,7 @@
         _interval:null,
         _running:false,
         _debug:false,
+        _focused_event:null,
         _layers:{
             BG1:null,
             BG2:null,
@@ -175,7 +174,6 @@
             RPG._layers.BG7.set({width:width,height:height});
             RPG._layers.BG8.set({width:width,height:height});
             RPG._layers.QUAD.set({width:width,height:height});
-            RPG._canvas_engine.set({aligner_width:width,aligner_height:height});
             RPG._canvas_engine.drawMap(map);
             map._colideTree.insert(RPG.Globals.current_player.bounds);
         },
@@ -215,7 +213,7 @@
             var current_player = RPG.Globals.current_player;
             var key_reader = RPG._key_reader;
 
-            if(!current_player.moving){
+            if(!current_player._moving){
                 if(key_reader.isActive('KEY_LEFT')){
                     current_player.step(Direction.LEFT);
                 }
@@ -229,18 +227,19 @@
                     current_player.step(Direction.UP);
                 }
                 else{
-                    current_player.graphic.animations[current_player.direction].pauseToFrame(1);
-                    current_player.refreshed = false;
+                    var animation_name = 'step_'+current_player.direction;
+                    current_player.graphic.animations[animation_name].pauseToFrame(1);
+                    current_player._refreshed = false;
                 }
             }
             else{
-                current_player.timeStepMove();
-                current_player.refreshed = false;
+                current_player._timeStepMove();
+                current_player._refreshed = false;
             }
         },
         drawEvents:function(){
             var current_player = RPG.Globals.current_player;
-            if(!current_player.refreshed){
+            if(!current_player._refreshed){
                 RPG._canvas_engine.drawCharacter(current_player);
             }
         },
@@ -258,6 +257,14 @@
         },
         getSeconds:function(){
             return parseInt(((new Date()).getTime() - RPG.Globals.start_time)/1000);
+        },
+        _focusOnEvent:function(event){
+            var self = this;
+            if(self._focused_event !== null){
+                self._focused_event._camera_focus = false;
+            }
+            event._camera_focus = true;
+            self._focused_event = event;
         }
     };
 
@@ -329,7 +336,7 @@
     };
 
     CanvasEngineRpg.prototype.drawCharacter = function(character){
-        if(!character.refreshed && character.graphic !== null){
+        if(!character._refreshed && character.graphic !== null){
             var layer_index = character.layer;
             var self = this;
             if(self.layers[layer_index] !== undefined){
@@ -363,7 +370,7 @@
                     layer.image(image);
                     graphic.lx = x;
                     graphic.ly = y;
-                    character.refreshed = true;
+                    character._refreshed = true;
                 }
 
             }
@@ -402,10 +409,10 @@
 
         switch(type){
             case Page.Conditions.LOCAL_SWITCH:
-                self.event.switchCallback(name,value,callback);
+                self.event._switchCallback(name,value,callback);
                 break;
             case Page.Conditions.GLOBAL_SWITH:
-                self.event.game.switchCallback(name,value,callback);
+                self.event._game.switchCallback(name,value,callback);
                 break;
             case Page.Conditions.VARIABLE:
                 break;
@@ -419,6 +426,7 @@
         var frames = options.frames === undefined?[]:options.frames;
         var fps = parseFloat(options.fps);
         fps = isNaN(fps) || fps <= 0?3:fps;
+        self.name = options.name === undefined?'':options.name;
         self.fps = fps;
         self.frames = frames;
         self.start_time = null;
@@ -472,66 +480,83 @@
         }
     };
 
+    Animation.create = function(options){
+        var fps = parseFloat(options.fps);
+        var rows = parseInt(options.rows);
+        var cols = parseInt(options.cols);
+        var si = parseInt(options.si);
+        var ei = parseInt(options.ei);
+        var sj = parseInt(options.sj);
+        var ej = parseInt(options.ej);
+        rows = isNaN(rows)?1:rows;
+        cols = isNaN(cols)?1:cols;
+        fps = isNaN(fps)?cols*2:fps;
+        si = isNaN(si)?0:si;
+        ei = isNaN(ei)?rows-1:ei;
+        sj = isNaN(sj)?0:sj;
+        ej = isNaN(ej)?cols-1:ej;
 
-    var Direction = {
-        DOWN:0,
-        LEFT:1,
-        RIGHT:2,
-        UP:3
+        var image = options.image;
+        var width = image.width/cols;
+        var height = image.height/rows;
+        var name = options.name;
+
+        var frames = [];
+
+        for(var i = si; i <= ei && i < rows;i++){
+            for(var j = sj; j <= ej && j < cols;j++){
+                var frame = {
+                    image:image,
+                    sWidth:width,
+                    sHeight:height,
+                    dWidth:width,
+                    dHeight:height,
+                    sx:j*width,
+                    sy:i*height
+                };
+                frames.push(frame);
+            }
+        }
+        return new Animation({
+            name:'name',
+            frames:frames,
+            fps:fps
+        });
     };
 
-    var CharacterGraphic = function(options){
+
+    var Direction = {
+        DOWN:'down',
+        LEFT:'left',
+        RIGHT:'right',
+        UP:'up'
+    };
+
+    var Graphic = function(options){
         var self = this;
         var image = options.image;
         var rows = parseInt(options.rows);
         var cols = parseInt(options.cols);
         rows = isNaN(rows)?1:rows;
         cols = isNaN(cols)?1:cols;
-        var up = parseInt(options.up);
-        var left = parseInt(options.left);
-        var right = parseInt(options.right);
-        var down = parseInt(options.down);
-        down = isNaN(down)?Direction.DOWN:down;
-        left = isNaN(left)?Direction.LEFT:left;
-        right = isNaN(right)?Direction.RIGHT:right;
-        up = isNaN(up)?Direction.UP:up;
-        self.up = up;
-        self.down = down;
-        self.right = right;
-        self.left = left;
         self.image = image;
         self.rows = rows;
         self.cols = cols;
         self.width = image.width/self.cols;
         self.height = image.height/self.rows;
-        self.animations = [];
+        self.animations = {};
         self.lx = 0;
         self.ly = 0;
-        self.initialize();
+        self._initialize();
     };
 
-    CharacterGraphic.prototype.initialize = function(){
+    Graphic.prototype._initialize = function(){
         var self = this;
-        for(var i = 0; i< self.rows;i++){
-            var frames = [];
-            for(var j = 0; j < self.cols;j++){
-                var frame = {
-                    image:self.image,
-                    sWidth:self.width,
-                    sHeight:self.height,
-                    dWidth:self.width,
-                    dHeight:self.height,
-                    sx:j*self.width,
-                    sy:i*self.height
-                };
-                frames.push(frame);
-            }
-            self.animations[i] = new Animation({
-                frames:frames,
-                fps:self.cols*2
-            });
-        }
-
+        var image = self.image;
+        self.animations.step_down = Animation.create({rows:4, cols:4,si:0,ei:0,image:image});
+        self.animations.step_left = Animation.create({rows:4, cols:4,si:1,ei:1,image:image});
+        self.animations.step_right = Animation.create({rows:4, cols:4,si:2,ei:2,image:image});
+        self.animations.step_up = Animation.create({rows:4, cols:4,si:3,ei:3,image:image});
     };
 
     var Character = function(options){
@@ -539,6 +564,7 @@
         options = options === undefined?{}:options;
         self.initialize(options);
     };
+
 
     Character.prototype.initialize = function(options){
         var self = this;
@@ -559,66 +585,77 @@
         };
 
         self.layer = 2;
-        self.moving = false;
         self.direction = Direction.DOWN;
-        self.refreshed = false;
         self.h_speed = 32;
         self.v_speed = 32;
-        self.start_moving_time = (new Date()).getTime();
-        self.moving_time = 0;
-        self.moving_callback = null;
-        self.start_position = {x:x, y:y};
-        self.end_position = {x:x,y:y};
+
+        self._moving = false;
+        self._refreshed = false;
+        self._start_moving_time = (new Date()).getTime();
+        self._moving_time = 0;
+        self._moving_callback = null;
+        self._start_position = {x:x, y:y};
+        self._end_position = {x:x,y:y};
+        self._camera_focus = false;
+    };
+
+
+    Character.prototype.setPosition = function(x,y){
+        var self = this;
+        self.bounds.x = x;
+        self.bounds.y = y;
+        self.updateFocus();
     };
 
     Character.prototype.moveTo = function (x,y,time,callback) {
         var self = this;
-        var final = Utils.calculate_final_position(self.bounds,x,y,time);
-        self.start_moving_time = (new Date()).getTime();
-        self.moving_time = final.time;
-        self.start_position = {x:self.bounds.x, y:self.bounds.y};
-        self.end_position = {x:final.x, y:final.y};
-        self.moving_callback = callback;
+        var final_bounds = Utils.calculate_final_position(self.bounds,x,y,time);
+        self._start_moving_time = (new Date()).getTime();
+        self._moving_time = final_bounds.time;
+        self._start_position = {x:self.bounds.x, y:self.bounds.y};
+        self._end_position = {x:final_bounds.x, y:final_bounds.y};
+        self._moving_callback = callback;
     };
-
-    Character.prototype.timeStepMove = function(){
+    
+    Character.prototype._timeStepMove = function(){
         var self = this;
         var now = (new Date()).getTime();
-        var diff = now - self.start_moving_time;
-        if(diff >= self.moving_time){
-            self.bounds.x = self.end_position.x;
-            self.bounds.y = self.end_position.y;
-            var callback = self.moving_callback;
-            self.moving_callback = null;
+        var diff = now - self._start_moving_time;
+        if(diff >= self._moving_time){
+            self.bounds.x = self._end_position.x;
+            self.bounds.y = self._end_position.y;
+            var callback = self._moving_callback;
+            self._moving_callback = null;
             if(typeof callback === 'function'){
                 callback();
             }
         }
         else{
-            var distance_x = (self.end_position.x-self.start_position.x);
-            var distance_y = (self.end_position.y-self.start_position.y);
-            var x =  self.start_position.x + ((distance_x*diff)/self.moving_time);
-            var y =  self.start_position.y + ((distance_y*diff)/self.moving_time);
+            var distance_x = (self._end_position.x-self._start_position.x);
+            var distance_y = (self._end_position.y-self._start_position.y);
+            var x =  self._start_position.x + ((distance_x*diff)/self._moving_time);
+            var y =  self._start_position.y + ((distance_y*diff)/self._moving_time);
             self.bounds.x = x;
             self.bounds.y = y;
+            self.updateFocus();
+            QuadTree.reInsert(self.bounds);
+        }
+    };
 
-
+    Character.prototype.updateFocus = function(){
+        var self = this;
+        if(self._camera_focus){
             var screen_width = RPG._screen_width;
             var screen_height = RPG._screen_height;
             var half_width = screen_width/2;
             var half_height = screen_height/2;
+            var x= self.bounds.x;
+            var y = self.bounds.y;
             var viewX = -x+half_width-(self.graphic.width/2);
             var viewY = -y+half_height-(self.graphic.height/2);
-
-
             RPG._canvas_engine.set({
                 viewX:viewX,
                 viewY:viewY
-            });
-            QuadTree.reInsert(self.bounds);
-            var colisions = QuadTree.getCollisions(self.bounds);
-            colisions.forEach(function(colision){
-                colision.backgroundColor = 'rgba(0,0,255,0.5)';
             });
         }
     };
@@ -632,15 +669,16 @@
 
     Character.prototype.getCurrentFrame = function(){
         var self = this;
-        var animation = self.graphic.animations[self.direction];
+        var animation_name = 'step_'+self.direction;
+        var animation = self.graphic.animations[animation_name];
         return animation.frames[animation.getIndexFrame()];
     };
 
     Character.prototype.step = function(direction,times,end,allow){
         var self = this;
-        allow = allow == undefined?false:allow;
-        if(!self.moving || allow){
-            self.moving = true;
+        allow = allow === undefined?false:allow;
+        if(!self._moving || allow){
+            self._moving = true;
             var x = self.bounds.x;
             var y = self.bounds.y;
             var time = 1000/self.speed;
@@ -662,13 +700,14 @@
             }
 
             if(times < 1){
-                self.moving = false;
+                self._moving = false;
                 if(typeof end === 'function'){
                     end();
                 }
             }
             else{
-                self.graphic.animations[direction].execute();
+                var animation_name = 'step_'+direction;
+                self.graphic.animations[animation_name].execute();
                 self.direction = direction;
                 self.moveTo(x,y,time,function(){
                     times--;
@@ -678,12 +717,10 @@
         }
     };
 
-
     Character.prototype.stepForward = function(){
         var self = this;
         self.step(self.direction);
     };
-
 
 
     var Event = function(options){
@@ -708,17 +745,17 @@
         self.switches[name] = false;
     };
 
-    Event.prototype.switchCallback = function(name,status,callback){
+    Event.prototype._switchCallback = function(name,status,callback){
         var self = this;
-        if(self.switches_callbacks[name] === undefined){
-            self.switches_callbacks[name] = [];
+        if(self._switches_callbacks[name] === undefined){
+            self._switches_callbacks[name] = [];
         }
         var pos = status?1:0;
-        if(self.switches_callbacks[name][pos] === undefined){
-            self.switches_callbacks[name][pos] = [];
+        if(self._switches_callbacks[name][pos] === undefined){
+            self._switches_callbacks[name][pos] = [];
         }
 
-        self.switches_callbacks[name][pos].push(callback);
+        self._switches_callbacks[name][pos].push(callback);
     };
 
     Event.prototype.addPage = function(page){
@@ -728,11 +765,6 @@
 
     Event.prototype.destroy = function(){
 
-    };
-
-    Event.prototype.setGame = function(game){
-        var self = this;
-        self.game = game;
     };
 
     var Player = function(options){
@@ -1025,7 +1057,7 @@
     };
 
     RPG.Direction = Direction;
-    RPG.CharacterGraphic = CharacterGraphic;
+    RPG.Graphic = Graphic;
     RPG.Character = Character;
     RPG.CanvasEngine = CanvasEngineRpg;
     RPG.Event = Event;
