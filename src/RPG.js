@@ -4,7 +4,6 @@
 
     var Utils = {
         calculate_final_position: function (bounds, ex, ey, time) {
-
             var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height};
             var vec = {x: ex - bounds.x, y: ey - bounds.y};
             var quadtree = RPG.Globals.current_map._colideTree;
@@ -28,7 +27,6 @@
                     final_bounds.y = colision.y + colision.height;
                 }
             });
-
 
             if(final_bounds.x < 0){
                 final_bounds.x = 0;
@@ -236,12 +234,51 @@
                 current_player._timeStepMove();
                 current_player._refreshed = false;
             }
+            var events = RPG.Globals.current_map.events;
+            events.forEach(function(event){
+                if(!event._moving){
+                    var animation_name = 'step_'+event.direction;
+                    event.graphic.animations[animation_name].pauseToFrame(1);
+                    event._refreshed = false;
+                }
+                else{
+                    event._timeStepMove();
+                    event._refreshed = false;
+                }
+            });
+        },
+        clearEvents:function(){
+            var current_player = RPG.Globals.current_player;
+            var canvas_engine = RPG._canvas_engine;
+            var current_map = RPG.Globals.current_map;
+            canvas_engine.clearGraphic(current_player.layer,current_player.graphic);
+            var events = current_map.events;
+            var size =events.length;
+            for(var i = 0; i < size;i++) {
+                var event = events[i];
+                if(event.current_page !== -1){
+                    var graphic = event.graphic;
+                    if(graphic !== null){
+                        canvas_engine.clearGraphic(event.layer,graphic);
+                    }
+
+                }
+
+            }
         },
         drawEvents:function(){
             var current_player = RPG.Globals.current_player;
-            if(!current_player._refreshed){
-                RPG._canvas_engine.drawCharacter(current_player);
+            var canvas_engine = RPG._canvas_engine;
+            var current_map = RPG.Globals.current_map;
+            var events = current_map.events;
+            var size =events.length;
+            for(var i = 0; i < size;i++) {
+                var event = events[i];
+                if (event.current_page !== -1) {
+                    canvas_engine.drawEvent(event);
+                }
             }
+            canvas_engine.drawCharacter(current_player);
         },
         step:function(){
             if(RPG._running){
@@ -249,6 +286,7 @@
                     RPG.step();
                 });
                 RPG.stepEvents();
+                RPG.clearEvents();
                 RPG.drawEvents();
                 if(RPG._debug){
                     RPG._canvas_engine.drawQuadTree(RPG.Globals.current_map._colideTree,10);
@@ -335,22 +373,61 @@
         drawQuadTreeCallback(quadtree,layer);
     };
 
+    CanvasEngineRpg.prototype.drawEvent = function(event){
+        var graphic = event.pages[event.current_page].graphic;
+        if(graphic !== null){
+            var layer_index = event.layer;
+            var self = this;
+            if(self.layers[layer_index] !== undefined){
+                var layer = self.layers[layer_index];
+                var bounds = event.bounds;
+                var frame = event.getCurrentFrame();
+                var x = bounds.x-(Math.max(graphic.width-32,0));
+                var y = bounds.y-(Math.max(graphic.height-32,0));
+
+                if(frame !== undefined){
+                    var image = {
+                        image:frame.image,
+                        sx:frame.sx,
+                        sy:frame.sy,
+                        dx:x,
+                        dy:y,
+                        dWidth:frame.dWidth,
+                        dHeight:frame.dHeight,
+                        sWidth:frame.sWidth,
+                        sHeight:frame.sHeight
+                    };
+                    layer.image(image);
+                    graphic.lx = x;
+                    graphic.ly = y;
+                    event._refreshed = true;
+                }
+
+            }
+        }
+    };
+
+    CanvasEngineRpg.prototype.clearGraphic = function(layer_index,graphic){
+        var self = this;
+        if(self.layers[layer_index] !== undefined){
+            var layer = self.layers[layer_index];
+            layer.clearRect({
+                x:graphic.lx,
+                y:graphic.ly,
+                width:graphic.width,
+                height:graphic.height
+            });
+        }
+    };
+
     CanvasEngineRpg.prototype.drawCharacter = function(character){
-        if(!character._refreshed && character.graphic !== null){
+        if(character.graphic !== null){
             var layer_index = character.layer;
             var self = this;
             if(self.layers[layer_index] !== undefined){
                 var layer = self.layers[layer_index];
                 var bounds = character.bounds;
                 var graphic = character.graphic;
-
-                layer.clearRect({
-                    x:graphic.lx,
-                    y:graphic.ly,
-                    width:graphic.width,
-                    height:graphic.height
-                });
-
                 var frame = character.getCurrentFrame();
                 var x = bounds.x-(Math.max(graphic.width-32,0));
                 var y = bounds.y-(Math.max(graphic.height-32,0));
@@ -376,50 +453,6 @@
             }
         }
     };
-
-
-    var Page = function(event){
-        var self = this;
-        self.conditions = [];
-        self.graphic = null;
-        self.script = null;
-        self.event = event;
-    };
-
-    Page.Conditions = {
-        LOCAL_SWITCH:1,
-        GLOBAL_SWITH:2,
-        VARIABLE:3
-    };
-
-
-    Page.prototype.addCondition = function(type,name,value){
-        var self = this;
-        var condition = {
-            type:type,
-            name:name,
-            value:value
-        };
-
-        self.conditions.push(condition);
-        var callback = function(){
-            self.event.activePage = self;
-        };
-
-
-        switch(type){
-            case Page.Conditions.LOCAL_SWITCH:
-                self.event._switchCallback(name,value,callback);
-                break;
-            case Page.Conditions.GLOBAL_SWITH:
-                self.event._game.switchCallback(name,value,callback);
-                break;
-            case Page.Conditions.VARIABLE:
-                break;
-        }
-    };
-
-
 
     var Animation = function(options){
         var self = this;
@@ -722,40 +755,124 @@
         self.step(self.direction);
     };
 
+    Character.prototype.stepRandom = function(){
+        var self = this;
+        var directions = Object.keys(Direction);
+        var pos = Math.floor(Math.random()*directions.length);
+        var direction = directions[pos];
+        self.step(Direction[direction]);
+    };
+
+
+    var Page = function(options){
+        var self = this;
+        if(options === undefined || !(options.event instanceof Event)){
+            throw new Error('Page requires an event');
+        }
+
+        var graphic = options.graphic;
+        self.condition = typeof options.conditions === 'array'?options.conditions:[];
+        self.graphic = graphic instanceof Graphic?graphic:null;
+        self.script = null;
+        self.event = options.event;
+    };
+
+    Page.prototype.setGraphic = function(graphic){
+        var self = this;
+        self.graphic = graphic;
+    };
+
+    Page.Conditions = {
+        LOCAL_SWITCH:1,
+        GLOBAL_SWITH:2,
+        VARIABLE:3
+    };
+
+    var Status = {
+        ON:'ON',
+        OFF:'OFF'
+    };
+
 
     var Event = function(options){
         var self = this;
         Character.call(self,options);
-        self.switches = [];
         self._switches_callbacks = [];
-        self.activePage = -1;
+        self.switches = [];
+        self.current_page = -1;
+        self.pages = [];
+        Object.defineProperty(self,'graphic',{
+            get:function(){
+                if(self.current_page !== -1 && self.pages[self.current_page].graphic !== null){
+                    return self.pages[self.current_page].graphic;
+                }
+                return null;
+            }
+        });
     };
 
     Event.prototype = Object.create(Character.prototype);
     Event.constructor = Event;
 
 
-    Event.prototype.enableSwitch = function(name){
+
+
+    Event.prototype.getCurrentFrame = function(){
         var self = this;
-        self.switches[name] = true;
+        if(self.current_page !== -1){
+            var animation_name = 'step_'+self.direction;
+            var animation = self.pages[self.current_page].graphic.animations[animation_name];
+            return animation.frames[animation.getIndexFrame()];
+        }
+        return null;
     };
 
-    Event.prototype.disableSwitch = function(name){
+
+    Event.prototype.enable_switch = function(name){
+        var self = this;
+        self.switches[name] = true;
+        if(self._switches_callbacks[name] !== undefined && self._switches_callbacks[name].on !== undefined){
+            self._switches_callbacks[name].on.forEach(function(callback){
+                callback();
+            });
+        }
+    };
+
+    Event.prototype.disable_switch = function(name){
         var self = this;
         self.switches[name] = false;
+        if(self._switches_callbacks[name] !== undefined && self._switches_callbacks[name].off !== undefined){
+            self._switches_callbacks[name].off.forEach(function(callback){
+                callback();
+            });
+        }
     };
 
     Event.prototype._switchCallback = function(name,status,callback){
         var self = this;
         if(self._switches_callbacks[name] === undefined){
-            self._switches_callbacks[name] = [];
-        }
-        var pos = status?1:0;
-        if(self._switches_callbacks[name][pos] === undefined){
-            self._switches_callbacks[name][pos] = [];
+            self._switches_callbacks[name] = {};
         }
 
-        self._switches_callbacks[name][pos].push(callback);
+        switch(status){
+            case Status.ON:
+                if(self._switches_callbacks[name].on === undefined){
+                    self._switches_callbacks[name].on = [];
+                }
+                self._switches_callbacks[name].on.push(callback);
+                break;
+            case Status.OFF:
+                if(self._switches_callbacks[name].off === undefined){
+                    self._switches_callbacks[name].off = [];
+                }
+                self._switches_callbacks[name].off.push(callback);
+                break;
+            default:
+                throw new Error('Switch status '+status+' is invalid!');
+        }
+
+
+
     };
 
     Event.prototype.addPage = function(page){
@@ -763,9 +880,6 @@
         self.pages.push(page);
     };
 
-    Event.prototype.destroy = function(){
-
-    };
 
     var Player = function(options){
         var self = this;
@@ -907,6 +1021,7 @@
     Map.prototype.addEvent = function(event){
         var self = this;
         self.events.push(event);
+        self._colideTree.insert(event.bounds);
     };
 
     Map.prototype.eachTile = function(callback){
