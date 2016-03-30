@@ -112,17 +112,13 @@
             menu2:null,
             menu3:null
         },
-        _switchCallback:function(name,status,event,callback){
-            var self = this;
-            if(RPG._switches_callbacks[name] === undefined){
-                RPG._switches_callbacks[name] = [];
-            }
-            var pos = status?1:0;
-            if(RPG._switches_callbacks[name][pos] === undefined){
-                RPG._switches_callbacks[name][pos] = [];
+        _switchCallback:function(name,callback){
+            var self = RPG;
+            if(self._switches_callbacks[name] === undefined){
+                self._switches_callbacks[name] = [];
             }
 
-            RPG._switches_callbacks[name][pos].push(callback);
+            self._switches_callbacks[name].push(callback);
         },
         initialize:function(container){
             var engine = CE.createEngine({
@@ -178,8 +174,8 @@
         enableSwitch:function(name){
             var self = this;
             RPG.Globals.switches[name] = true;
-            if(RPG._switches_callbacks[name] !== undefined && RPG._switches_callbacks[name][1] !== undefined){
-                RPG._switches_callbacks[name][1].forEach(function(callback){
+            if(RPG._switches_callbacks[name] !== undefined){
+                RPG._switches_callbacks[name].forEach(function(callback){
                     callback();
                 });
             }
@@ -187,8 +183,8 @@
         disableSwitch:function(name){
             var self = this;
             RPG.Globals.switches[name] = false;
-            if(RPG._switches_callbacks[name] !== undefined && RPG._switches_callbacks[name][0] !== undefined){
-                RPG._switches_callbacks[name][0].forEach(function(callback){
+            if(RPG._switches_callbacks[name] !== undefined){
+                RPG._switches_callbacks[name].forEach(function(callback){
                     callback();
                 });
             }
@@ -236,14 +232,16 @@
             }
             var events = RPG.Globals.current_map.events;
             events.forEach(function(event){
-                if(!event._moving){
-                    var animation_name = 'step_'+event.direction;
-                    event.graphic.animations[animation_name].pauseToFrame(1);
-                    event._refreshed = false;
-                }
-                else{
-                    event._timeStepMove();
-                    event._refreshed = false;
+                if(event.current_page !== null){
+                    if(!event._moving){
+                        var animation_name = 'step_'+event.direction;
+                        event.graphic.animations[animation_name].pauseToFrame(1);
+                        event._refreshed = false;
+                    }
+                    else{
+                        event._timeStepMove();
+                        event._refreshed = false;
+                    }
                 }
             });
         },
@@ -256,7 +254,7 @@
             var size =events.length;
             for(var i = 0; i < size;i++) {
                 var event = events[i];
-                if(event.current_page !== -1){
+                if(event.current_page !== null){
                     var graphic = event.graphic;
                     if(graphic !== null){
                         canvas_engine.clearGraphic(event.layer,graphic);
@@ -274,7 +272,7 @@
             var size =events.length;
             for(var i = 0; i < size;i++) {
                 var event = events[i];
-                if (event.current_page !== -1) {
+                if (event.current_page !== null) {
                     canvas_engine.drawEvent(event);
                 }
             }
@@ -374,7 +372,7 @@
     };
 
     CanvasEngineRpg.prototype.drawEvent = function(event){
-        var graphic = event.pages[event.current_page].graphic;
+        var graphic = event.current_page.graphic;
         if(graphic !== null){
             var layer_index = event.layer;
             var self = this;
@@ -771,10 +769,58 @@
         }
 
         var graphic = options.graphic;
-        self.condition = typeof options.conditions === 'array'?options.conditions:[];
+        self.conditions = options.conditions.constructor === {}.constructor?options.conditions:{};
         self.graphic = graphic instanceof Graphic?graphic:null;
         self.script = null;
         self.event = options.event;
+        self.conditionsCound = 0;
+        self.initializeConditions();
+    };
+
+    Page.prototype.initializeConditions = function(){
+        var self = this;
+        var global_switch = self.conditions.global_switch;
+        var local_switch = self.conditions.local_switch;
+
+        var global_active = false;
+        var local_active = false;
+        var name_global = null;
+        var name_local = null;
+        var status_global = null;
+        var status_local = null;
+        var global_switches = RPG.Globals.switches;
+        var local_switches = self.event.switches;
+
+        if(global_switch !== undefined && global_switch[0] !== undefined && global_switch[1] !== undefined){
+            name_global = global_switch[0];
+            status_global = global_switch[1];
+            global_active = true;
+        }
+
+        if(local_switch !== undefined && local_switch[0] !== undefined && local_switch[1] !== undefined){
+            name_local = local_switch[0];
+            status_local = local_switch[1];
+            local_active = true;
+        }
+
+        var callback = function(){
+            var active = (!global_active || (global_active && global_switches[name_global] === true)) &&
+                         (!local_active || (local_active && local_switches[name_local] === true));
+            console.log(active);
+            if(active){
+                self.event.current_page = self;
+            }
+            else if(self.event.current_page === self){
+                self.event.current_page = null;
+            }
+        };
+
+        if(global_active){
+            RPG._switchCallback(name_global,callback);
+        }
+        if(local_active){
+            self.event._switchCallback(name_local,callback);
+        }
     };
 
     Page.prototype.setGraphic = function(graphic){
@@ -799,15 +845,13 @@
         Character.call(self,options);
         self._switches_callbacks = [];
         self.switches = [];
-        self.current_page = -1;
+        self.current_page = null;
         self.pages = [];
-        self.bounds.groups = [
-            'EV'
-        ];
+        self.bounds.groups = ['EV'];
         Object.defineProperty(self,'graphic',{
             get:function(){
-                if(self.current_page !== -1 && self.pages[self.current_page].graphic !== null){
-                    return self.pages[self.current_page].graphic;
+                if(self.current_page !== null && self.current_page.graphic !== null){
+                    return self.current_page.graphic;
                 }
                 return null;
             }
@@ -822,60 +866,42 @@
 
     Event.prototype.getCurrentFrame = function(){
         var self = this;
-        if(self.current_page !== -1){
+        if(self.current_page !== null){
             var animation_name = 'step_'+self.direction;
-            var animation = self.pages[self.current_page].graphic.animations[animation_name];
+            var animation = self.current_page.graphic.animations[animation_name];
             return animation.frames[animation.getIndexFrame()];
         }
         return null;
     };
 
 
-    Event.prototype.enable_switch = function(name){
+    Event.prototype.enableSwitch = function(name){
         var self = this;
         self.switches[name] = true;
-        if(self._switches_callbacks[name] !== undefined && self._switches_callbacks[name].on !== undefined){
-            self._switches_callbacks[name].on.forEach(function(callback){
+        if(self._switches_callbacks[name] !== undefined){
+            self._switches_callbacks[name].forEach(function(callback){
                 callback();
             });
         }
     };
 
-    Event.prototype.disable_switch = function(name){
+    Event.prototype.disableSwitch = function(name){
         var self = this;
         self.switches[name] = false;
-        if(self._switches_callbacks[name] !== undefined && self._switches_callbacks[name].off !== undefined){
-            self._switches_callbacks[name].off.forEach(function(callback){
+        if(self._switches_callbacks[name] !== undefined){
+            self._switches_callbacks[name].forEach(function(callback){
                 callback();
             });
         }
     };
 
-    Event.prototype._switchCallback = function(name,status,callback){
+    Event.prototype._switchCallback = function(name,callback){
         var self = this;
         if(self._switches_callbacks[name] === undefined){
-            self._switches_callbacks[name] = {};
+            self._switches_callbacks[name] = [];
         }
 
-        switch(status){
-            case Status.ON:
-                if(self._switches_callbacks[name].on === undefined){
-                    self._switches_callbacks[name].on = [];
-                }
-                self._switches_callbacks[name].on.push(callback);
-                break;
-            case Status.OFF:
-                if(self._switches_callbacks[name].off === undefined){
-                    self._switches_callbacks[name].off = [];
-                }
-                self._switches_callbacks[name].off.push(callback);
-                break;
-            default:
-                throw new Error('Switch status '+status+' is invalid!');
-        }
-
-
-
+        self._switches_callbacks[name].push(callback);
     };
 
     Event.prototype.addPage = function(page){
