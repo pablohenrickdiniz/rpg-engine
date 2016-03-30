@@ -9,7 +9,7 @@
             var quadtree = RPG.Globals.current_map._colideTree;
             QuadTree.remove(bounds);
             quadtree.insert(final_bounds);
-            var colisions = QuadTree.getCollisions(final_bounds);
+            var colisions = QuadTree.getCollisions(final_bounds,0);
             QuadTree.remove(final_bounds);
             quadtree.insert(bounds);
             colisions.forEach(function (colision) {
@@ -801,6 +801,9 @@
         self.switches = [];
         self.current_page = -1;
         self.pages = [];
+        self.bounds.groups = [
+            'EV'
+        ];
         Object.defineProperty(self,'graphic',{
             get:function(){
                 if(self.current_page !== -1 && self.pages[self.current_page].graphic !== null){
@@ -937,7 +940,11 @@
                         x:j*self.tile_w,
                         y:i*self.tile_h,
                         width:self.tile_w,
-                        height:self.tile_h
+                        height:self.tile_h,
+                        groups:[
+                            'EV',
+                            0
+                        ]
                     });
                 }
             }
