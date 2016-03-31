@@ -9,10 +9,10 @@
             var quadtree = RPG.Globals.current_map._colideTree;
             QuadTree.remove(bounds);
             quadtree.insert(final_bounds);
-            var colisions = QuadTree.getCollisions(final_bounds,0);
+            var collisions = QuadTree.getCollisions(final_bounds,'MAP');
             QuadTree.remove(final_bounds);
             quadtree.insert(bounds);
-            colisions.forEach(function (colision) {
+            collisions.forEach(function (colision) {
                 if (vec.x > 0 && colision.x < (final_bounds.x + bounds.width)) {
                     final_bounds.x = colision.x - bounds.width;
                 }
@@ -141,13 +141,16 @@
             RPG._layers.menu1 = engine.createLayer();
             RPG._layers.menu2 = engine.createLayer();
             RPG._layers.menu3 = engine.createLayer();
-            key_reader.on(['KEY_ENTER'],function(){
-                if(RPG.Globals.paused){
-                    RPG.start();
+            key_reader.keydown('KEY_ESC',function(){
+                if(!RPG._running){
+                    RPG.run();
                 }
                 else{
-                    RPG.pause();
+                    RPG.end();
                 }
+            });
+            key_reader.keydown('KEY_ENTER',function(){
+                RPG.actionEvents();
             });
 
             RPG._key_reader = key_reader;
@@ -202,11 +205,61 @@
             RPG._running = false;
             window.cancelAnimationFrame(RPG._interval);
         },
-        stepEvents:function(){
-            var self = this;
+        actionEvents:function(){
+            var current_player = RPG.Globals.current_player;
+            var tree = RPG.Globals.current_map._colideTree;
+
+            var bounds_tmp = {
+                x:current_player.bounds.x,
+                y:current_player.bounds.y,
+                width:current_player.bounds.width,
+                height:current_player.bounds.height,
+                groups:['EV']
+            };
+
+            var direction = current_player.direction;
+            switch(direction){
+                case Direction.UP:
+                    bounds_tmp.y -= bounds_tmp.height;
+                    bounds_tmp.height*=2;
+                    break;
+                case Direction.RIGHT:
+                    bounds_tmp.width*=2;
+                    break;
+                case Direction.DOWN:
+                    bounds_tmp.height*=2;
+                    break;
+                case Direction.LEFT:
+                    bounds_tmp.x -= bounds_tmp.width;
+                    bounds_tmp.width*=2;
+                    break;
+            }
+
+            QuadTree.remove(current_player.bounds);
+            tree.insert(bounds_tmp);
+            var collisions = QuadTree.getCollisions(bounds_tmp,'EV');
+            QuadTree.remove(bounds_tmp);
+            tree.insert(current_player.bounds);
+
+            var key_reader = RPG._key_reader;
+            collisions.forEach(function(colision){
+                if(colision._ref !== undefined){
+                    var event = colision._ref;
+                    if(event.current_page !== undefined && event.current_page !== null){
+                        var current_page = event.current_page;
+                        if(current_page.trigger === Trigger.PLAYER_TOUCH){
+                            current_page.script();
+                        }
+                        else if(current_page.trigger === Trigger.ACTI0N_BUTTON && key_reader.isActive('KEY_ENTER')){
+                            current_page.script();
+                        }
+                    }
+                }
+            });
+        },
+        stepPlayer:function(){
             var current_player = RPG.Globals.current_player;
             var key_reader = RPG._key_reader;
-
             if(!current_player._moving){
                 if(key_reader.isActive('KEY_LEFT')){
                     current_player.step(Direction.LEFT);
@@ -230,6 +283,9 @@
                 current_player._timeStepMove();
                 current_player._refreshed = false;
             }
+        },
+        stepEvents:function(){
+            var self = this;
             var events = RPG.Globals.current_map.events;
             events.forEach(function(event){
                 if(event.current_page !== null){
@@ -283,6 +339,7 @@
                 RPG._interval = window.requestAnimationFrame(function () {
                     RPG.step();
                 });
+                RPG.stepPlayer();
                 RPG.stepEvents();
                 RPG.clearEvents();
                 RPG.drawEvents();
@@ -612,7 +669,9 @@
             x:x,
             y:y,
             width:32,
-            height:32
+            height:32,
+            _ref:self,
+            groups:['EV', 'default']
         };
 
         self.layer = 2;
@@ -761,6 +820,17 @@
         self.step(Direction[direction]);
     };
 
+    var Status = {
+        ON:'ON',
+        OFF:'OFF'
+    };
+
+    var Trigger = {
+        AUTO_RUN:'auto_run',
+        PLAYER_TOUCH:'player_touch',
+        ACTI0N_BUTTON:'action_button'
+    };
+
 
     var Page = function(options){
         var self = this;
@@ -769,15 +839,16 @@
         }
 
         var graphic = options.graphic;
-        self.conditions = options.conditions.constructor === {}.constructor?options.conditions:{};
+        self.conditions = options.conditions === undefined?{}:options.conditions;
         self.graphic = graphic instanceof Graphic?graphic:null;
-        self.script = null;
+        self.script = options.script === undefined?function(){}:options.script;
         self.event = options.event;
         self.conditionsCound = 0;
-        self.initializeConditions();
+        self.trigger = options.trigger === undefined? Trigger.AUTO_RUN:options.trigger;
+        self._initializeConditions();
     };
 
-    Page.prototype.initializeConditions = function(){
+    Page.prototype._initializeConditions = function(){
         var self = this;
         var global_switch = self.conditions.global_switch;
         var local_switch = self.conditions.local_switch;
@@ -806,7 +877,6 @@
         var callback = function(){
             var active = (!global_active || (global_active && global_switches[name_global] === true)) &&
                          (!local_active || (local_active && local_switches[name_local] === true));
-            console.log(active);
             if(active){
                 self.event.current_page = self;
             }
@@ -823,22 +893,14 @@
         }
     };
 
+    Page.prototype._initializeTrigger = function(){
+
+    };
+
     Page.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
     };
-
-    Page.Conditions = {
-        LOCAL_SWITCH:1,
-        GLOBAL_SWITH:2,
-        VARIABLE:3
-    };
-
-    var Status = {
-        ON:'ON',
-        OFF:'OFF'
-    };
-
 
     var Event = function(options){
         var self = this;
@@ -847,7 +909,7 @@
         self.switches = [];
         self.current_page = null;
         self.pages = [];
-        self.bounds.groups = ['EV'];
+        self.bounds.groups = ['EV','default'];
         Object.defineProperty(self,'graphic',{
             get:function(){
                 if(self.current_page !== null && self.current_page.graphic !== null){
@@ -967,10 +1029,7 @@
                         y:i*self.tile_h,
                         width:self.tile_w,
                         height:self.tile_h,
-                        groups:[
-                            'EV',
-                            0
-                        ]
+                        groups:['MAP','EV']
                     });
                 }
             }
@@ -1212,7 +1271,9 @@
     RPG.Page = Page;
     RPG.Map = Map;
     RPG.MapLoader = MapLoader;
+    RPG.ImageLoader = ImageLoader;
     RPG.Player = Player;
+    RPG.Trigger = Trigger;
 
     window.RPG = RPG;
 })(window);
