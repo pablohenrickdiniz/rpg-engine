@@ -3,15 +3,15 @@
         CanvasEngine = CE.CE;
 
     var Utils = {
+        /*Calcula a próxima posição livre de colisão*/
         calculate_final_position: function (bounds, ex, ey, time) {
-            var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height};
+            var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height,groups:['STEP']};
             var vec = {x: ex - bounds.x, y: ey - bounds.y};
             var quadtree = RPG.Globals.current_map._colideTree;
-            QuadTree.remove(bounds);
-            quadtree.insert(final_bounds);
-            var collisions = QuadTree.getCollisions(final_bounds,'MAP');
-            QuadTree.remove(final_bounds);
-            quadtree.insert(bounds);
+
+            var collisions = quadtree.retrieve(final_bounds,'STEP');
+
+
             collisions.forEach(function (colision) {
                 if (vec.x > 0 && colision.x < (final_bounds.x + bounds.width)) {
                     final_bounds.x = colision.x - bounds.width;
@@ -80,37 +80,37 @@
 
     var RPG = {
         Globals:{
-            current_map:null,
-            current_player:null,
-            switches:[],
-            variables:[],
-            paused:true,
-            start_time:null
+            current_map:null,//Mapa atual
+            current_player:null,//Jogador Atual
+            switches:[],//Switches
+            variables:[],//Variáveis
+            paused:true,//Jogo Pausado
+            start_time:null//Data de início
         },
-        _screen_width:600,
-        _screen_height:600,
-        _switches_callbacks:[],
-        _canvas_engine:null,
-        _key_reader:null,
-        _interval:null,
-        _running:false,
-        _debug:false,
-        _focused_event:null,
-        _layers:{
-            BG1:null,
-            BG2:null,
-            BG3:null,
-            EV1:null,
-            EV2:null,
-            BG4:null,
-            BG5:null,
-            BG6:null,
-            BG7:null,
-            BG8:null,
-            QUAD:null,
-            menu1:null,
-            menu2:null,
-            menu3:null
+        _screen_width:600,//largura da tela
+        _screen_height:600,//altura da tela
+        _switches_callbacks:[],//callbacks de switches
+        _canvas_engine:null,//engine de canvas
+        _key_reader:null,//leitor de teclado
+        _interval:null,//interval de execução
+        _running:false,//running execução iniciada
+        _debug:false,//modo debug
+        _focused_event:null,//Evento que está sendo focado
+        _layers:{ // camadas
+            BG1:null,//Background 1
+            BG2:null,//Background 2
+            BG3:null,//Background 3
+            EV1:null,//Eventos 1
+            EV2:null,//Eventos 2
+            BG4:null,//Background 4
+            BG5:null,//Background 5
+            BG6:null,//Background 6
+            BG7:null,//Background 7
+            BG8:null,//Background 8
+            QUAD:null,//QuadTree modo debug
+            menu1:null,//Menu 1
+            menu2:null,//Menu 2
+            menu3:null//Menu 3
         },
         _switchCallback:function(name,callback){
             var self = RPG;
@@ -156,6 +156,9 @@
             RPG._key_reader = key_reader;
             RPG._canvas_engine = engine;
         },
+        /*
+            Carrega o conteúdo do mapa
+         */
         loadMap:function(map){
             RPG.Globals.current_map = map;
             var width = map.getFullWidth();
@@ -174,6 +177,9 @@
             RPG._canvas_engine.drawMap(map);
             map._colideTree.insert(RPG.Globals.current_player.bounds);
         },
+        /*
+            Ativa um Switch "name"
+         */
         enableSwitch:function(name){
             var self = this;
             RPG.Globals.switches[name] = true;
@@ -183,6 +189,9 @@
                 });
             }
         },
+        /*
+            Desativa um switch "name"
+         */
         disableSwitch:function(name){
             var self = this;
             RPG.Globals.switches[name] = false;
@@ -192,6 +201,9 @@
                 });
             }
         },
+        /*
+            Inicializa a execução do Jogo
+         */
         run:function(){
             RPG.Globals.start_time = (new Date()).getTime();
             console.log('game started');
@@ -200,11 +212,17 @@
                 RPG.step();
             }
         },
+        /*
+            Finaliza a execução do Jogo
+         */
         end:function(){
             var self = this;
             RPG._running = false;
             window.cancelAnimationFrame(RPG._interval);
         },
+        /*
+            Tratamento de eventos relacionados às ações do jogador
+         */
         actionEvents:function(){
             var current_player = RPG.Globals.current_player;
             var tree = RPG.Globals.current_map._colideTree;
@@ -214,7 +232,7 @@
                 y:current_player.bounds.y,
                 width:current_player.bounds.width,
                 height:current_player.bounds.height,
-                groups:['EV']
+                groups:['ACTION_BUTTON']
             };
 
             var direction = current_player.direction;
@@ -235,12 +253,7 @@
                     break;
             }
 
-            QuadTree.remove(current_player.bounds);
-            tree.insert(bounds_tmp);
-            var collisions = QuadTree.getCollisions(bounds_tmp,'EV');
-            QuadTree.remove(bounds_tmp);
-            tree.insert(current_player.bounds);
-
+            var collisions = tree.retrieve(bounds_tmp,'ACTION_BUTTON');
             var key_reader = RPG._key_reader;
             collisions.forEach(function(colision){
                 if(colision._ref !== undefined){
@@ -257,6 +270,9 @@
                 }
             });
         },
+        /*
+            Tratamento de ações relacionadas ao movimento do jogador
+         */
         stepPlayer:function(){
             var current_player = RPG.Globals.current_player;
             var key_reader = RPG._key_reader;
@@ -284,23 +300,34 @@
                 current_player._refreshed = false;
             }
         },
+        /*
+            Tratamento de ações relacionadas aos eventos do jogo
+         */
         stepEvents:function(){
             var self = this;
             var events = RPG.Globals.current_map.events;
             events.forEach(function(event){
                 if(event.current_page !== null){
                     if(!event._moving){
-                        var animation_name = 'step_'+event.direction;
-                        event.graphic.animations[animation_name].pauseToFrame(1);
-                        event._refreshed = false;
+                        if(event._follow !== null){
+                            event.look(event._follow);
+                            event.stepForward();
+                        }
+                        else{
+                            var animation_name = 'step_'+event.direction;
+                            event.graphic.animations[animation_name].pauseToFrame(1);
+                        }
                     }
-                    else{
+                    else {
                         event._timeStepMove();
                         event._refreshed = false;
                     }
                 }
             });
         },
+        /*
+            Lima todos os eventos do mapa
+         */
         clearEvents:function(){
             var current_player = RPG.Globals.current_player;
             var canvas_engine = RPG._canvas_engine;
@@ -320,6 +347,9 @@
 
             }
         },
+        /*
+            Desenha os eventos no mapa
+         */
         drawEvents:function(){
             var current_player = RPG.Globals.current_player;
             var canvas_engine = RPG._canvas_engine;
@@ -329,11 +359,14 @@
             for(var i = 0; i < size;i++) {
                 var event = events[i];
                 if (event.current_page !== null) {
-                    canvas_engine.drawEvent(event);
+                    canvas_engine.drawCharacter(event);
                 }
             }
             canvas_engine.drawCharacter(current_player);
         },
+        /*
+            executa um passo de tempo no jogo
+         */
         step:function(){
             if(RPG._running){
                 RPG._interval = window.requestAnimationFrame(function () {
@@ -351,6 +384,9 @@
         getSeconds:function(){
             return parseInt(((new Date()).getTime() - RPG.Globals.start_time)/1000);
         },
+        /*
+            Focaliza a câmera em um evento específico
+         */
         _focusOnEvent:function(event){
             var self = this;
             if(self._focused_event !== null){
@@ -361,8 +397,7 @@
         }
     };
 
-
-
+    /*Desenha a árvore de colisão(Modo Debug)*/
     var drawQuadTreeCallback = function(quadtree,layer,first){
         first = first === undefined?true:first;
         if(first){
@@ -393,6 +428,9 @@
     CanvasEngineRpg.prototype = Object.create(CanvasEngine.prototype);
     CanvasEngineRpg.constructor = CanvasEngineRpg;
 
+    /*
+        Desenha o mapa nas camadas de canvas
+     */
     CanvasEngineRpg.prototype.drawMap = function(map){
         var self = this;
         var interval = map.getAreaInterval({
@@ -422,46 +460,18 @@
         }
     };
 
+    /*
+        Desenha a árvore de colisão(Modo debug)
+     */
     CanvasEngineRpg.prototype.drawQuadTree = function(quadtree,layer){
         var self = this;
         layer = self.getLayer(layer);
         drawQuadTreeCallback(quadtree,layer);
     };
 
-    CanvasEngineRpg.prototype.drawEvent = function(event){
-        var graphic = event.current_page.graphic;
-        if(graphic !== null){
-            var layer_index = event.layer;
-            var self = this;
-            if(self.layers[layer_index] !== undefined){
-                var layer = self.layers[layer_index];
-                var bounds = event.bounds;
-                var frame = event.getCurrentFrame();
-                var x = bounds.x-(Math.max(graphic.width-32,0));
-                var y = bounds.y-(Math.max(graphic.height-32,0));
-
-                if(frame !== undefined){
-                    var image = {
-                        image:frame.image,
-                        sx:frame.sx,
-                        sy:frame.sy,
-                        dx:x,
-                        dy:y,
-                        dWidth:frame.dWidth,
-                        dHeight:frame.dHeight,
-                        sWidth:frame.sWidth,
-                        sHeight:frame.sHeight
-                    };
-                    layer.image(image);
-                    graphic.lx = x;
-                    graphic.ly = y;
-                    event._refreshed = true;
-                }
-
-            }
-        }
-    };
-
+    /*
+        Limpa uma região do canvas onde é desenhado um gráfico
+     */
     CanvasEngineRpg.prototype.clearGraphic = function(layer_index,graphic){
         var self = this;
         if(self.layers[layer_index] !== undefined){
@@ -475,6 +485,9 @@
         }
     };
 
+    /*
+        Desenha um character
+     */
     CanvasEngineRpg.prototype.drawCharacter = function(character){
         if(character.graphic !== null){
             var layer_index = character.layer;
@@ -522,6 +535,9 @@
         self.running = false;
     };
 
+    /*
+        getIndexFrame : retorna o índice atual da animação
+     */
     Animation.prototype.getIndexFrame = function(){
         var self = this;
         var size = self.frames.length;
@@ -538,11 +554,17 @@
         return Math.abs(Math.ceil(mod));
     };
 
+    /*
+        stop: para a execução da animação
+     */
     Animation.prototype.stop = function(){
         var self = this;
         self.pause();
     };
 
+    /*
+        execute: Executa a animação
+     */
     Animation.prototype.execute = function(){
         var self = this;
         if(!self.running){
@@ -551,6 +573,9 @@
         }
     };
 
+    /*
+        pause:Pausa a execução da animação
+     */
     Animation.prototype.pause = function(){
         var self = this;
         if(self.running){
@@ -559,6 +584,9 @@
         }
     };
 
+    /*
+        pauseToFrame: Pausa a animação no quadro "index"
+     */
     Animation.prototype.pauseToFrame = function(index){
         var self = this;
         if(self.frames[index] !== undefined){
@@ -568,6 +596,9 @@
         }
     };
 
+    /*
+        Animation.create: Cria uma animação
+     */
     Animation.create = function(options){
         var fps = parseFloat(options.fps);
         var rows = parseInt(options.rows);
@@ -638,6 +669,9 @@
         self._initialize();
     };
 
+    /*
+       Graphic. _initialize: Inicializa as animações do gráfico
+     */
     Graphic.prototype._initialize = function(){
         var self = this;
         var image = self.image;
@@ -653,7 +687,9 @@
         self.initialize(options);
     };
 
-
+    /*
+       initialize: Inicializa o character
+     */
     Character.prototype.initialize = function(options){
         var self = this;
         var speed = parseInt(options.speed);
@@ -671,7 +707,7 @@
             width:32,
             height:32,
             _ref:self,
-            groups:['EV', 'default']
+            groups:['EV']
         };
 
         self.layer = 2;
@@ -687,9 +723,12 @@
         self._start_position = {x:x, y:y};
         self._end_position = {x:x,y:y};
         self._camera_focus = false;
+        self._follow = null;
     };
 
-
+    /*
+        setPosition: Altera a posição x,y do character no mapa
+     */
     Character.prototype.setPosition = function(x,y){
         var self = this;
         self.bounds.x = x;
@@ -697,6 +736,9 @@
         self.updateFocus();
     };
 
+    /*
+        moveTo: Registra o tempo e a posição final do movimento do character
+     */
     Character.prototype.moveTo = function (x,y,time,callback) {
         var self = this;
         var final_bounds = Utils.calculate_final_position(self.bounds,x,y,time);
@@ -706,7 +748,10 @@
         self._end_position = {x:final_bounds.x, y:final_bounds.y};
         self._moving_callback = callback;
     };
-    
+
+    /*
+        _timeStepMove: Executa um passo de tempo no movimento do character
+     */
     Character.prototype._timeStepMove = function(){
         var self = this;
         var now = (new Date()).getTime();
@@ -732,6 +777,9 @@
         }
     };
 
+    /*
+        updateFocus: atualiza a  posição da câmera (se focada nesse character)
+     */
     Character.prototype.updateFocus = function(){
         var self = this;
         if(self._camera_focus){
@@ -749,7 +797,9 @@
             });
         }
     };
-
+    /*
+        setGraphic: Altera o gráfico do character
+     */
     Character.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
@@ -757,6 +807,9 @@
         graphic.ly = self.bounds.y;
     };
 
+    /*
+        getcurrentFrame: Retorna o gráfico atual do character
+     */
     Character.prototype.getCurrentFrame = function(){
         var self = this;
         var animation_name = 'step_'+self.direction;
@@ -764,6 +817,31 @@
         return animation.frames[animation.getIndexFrame()];
     };
 
+    /*
+        look: Faz o character olhar para a direçã/evento direction
+     */
+    Character.prototype.look = function(direction){
+        var self = this;
+        switch(direction){
+            case Direction.UP:
+            case Direction.DOWN:
+            case Direction.RIGHT:
+            case Direction.LEFT:
+                self.direction = direction;
+                break;
+            default:
+                if(direction instanceof Character){
+                    var d_x = self.bounds.x-direction.bounds.x;
+                    var d_y = self.bounds.y-direction.bounds.y;
+                    self.direction = (d_x === d_y || d_x === 0)? d_y < 0? Direction.DOWN:Direction.UP:d_x < 0? Direction.RIGHT:Direction.LEFT;
+                }
+        }
+    };
+
+    /*
+        step(direction string, times int,end function, allow boolean):
+        Move o character um passo na direção "direction"
+     */
     Character.prototype.step = function(direction,times,end,allow){
         var self = this;
         allow = allow === undefined?false:allow;
@@ -807,11 +885,17 @@
         }
     };
 
+    /*
+        stepForward: Move o character um passo para frente
+     */
     Character.prototype.stepForward = function(){
         var self = this;
         self.step(self.direction);
     };
 
+    /*
+        stepRandom: Move o character a um passo aleatório
+     */
     Character.prototype.stepRandom = function(){
         var self = this;
         var directions = Object.keys(Direction);
@@ -819,6 +903,23 @@
         var direction = directions[pos];
         self.step(Direction[direction]);
     };
+
+    /*
+        follow(Character character):Segue um character
+     */
+    Character.prototype.follow = function(character){
+        var self = this;
+        self._follow = character;
+    };
+
+    /*
+     unfollow(): deixa de seguir
+     */
+    Character.prototype.unfollow = function(){
+        var self = this;
+        self._moving = false;
+    };
+
 
     var Status = {
         ON:'ON',
@@ -893,9 +994,6 @@
         }
     };
 
-    Page.prototype._initializeTrigger = function(){
-
-    };
 
     Page.prototype.setGraphic = function(graphic){
         var self = this;
@@ -909,7 +1007,7 @@
         self.switches = [];
         self.current_page = null;
         self.pages = [];
-        self.bounds.groups = ['EV','default'];
+        self.bounds.groups = ['EV','ACTION_BUTTON'];
         Object.defineProperty(self,'graphic',{
             get:function(){
                 if(self.current_page !== null && self.current_page.graphic !== null){
@@ -924,8 +1022,6 @@
     Event.constructor = Event;
 
 
-
-
     Event.prototype.getCurrentFrame = function(){
         var self = this;
         if(self.current_page !== null){
@@ -936,7 +1032,9 @@
         return null;
     };
 
-
+    /*
+        enableSwitch(string name): Ativa o evento local "name"
+     */
     Event.prototype.enableSwitch = function(name){
         var self = this;
         self.switches[name] = true;
@@ -947,6 +1045,9 @@
         }
     };
 
+    /*
+     enableSwitch(string name): Desativa o evento local "name"
+     */
     Event.prototype.disableSwitch = function(name){
         var self = this;
         self.switches[name] = false;
@@ -966,11 +1067,13 @@
         self._switches_callbacks[name].push(callback);
     };
 
+    /*
+        addPage(Page page): Adiciona uma nova página ao evento
+     */
     Event.prototype.addPage = function(page){
         var self = this;
         self.pages.push(page);
     };
-
 
     var Player = function(options){
         var self = this;
@@ -1010,7 +1113,7 @@
         self.colision = [];
     };
 
-    Map.prototype.initializeColision = function(){
+    Map.prototype.initializeCollision = function(){
         var self = this;
         self._colideTree = new QuadTree({
             x:0,
@@ -1029,7 +1132,7 @@
                         y:i*self.tile_h,
                         width:self.tile_w,
                         height:self.tile_h,
-                        groups:['MAP','EV']
+                        groups:['MAP','EV','STEP']
                     });
                 }
             }
@@ -1091,7 +1194,10 @@
         return null;
     };
 
-
+    /*
+        removeTile(int i, int j, int layer):
+        Remove o tile da posição i,j e na camada layer
+     */
     Map.prototype.removeTile = function(i, j,layer){
         var self = this;
         if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][layer] !== undefined){
@@ -1099,17 +1205,29 @@
         }
     };
 
+
+    /*
+        getFullWidth():int
+        Obtém a largura do mapa em pixels
+     */
     Map.prototype.getFullWidth = function () {
         var self = this;
         return self.width * self.tile_w;
     };
 
+    /*
+     getFullHeight():int
+     Obtém a altura do mapa em pixels
+     */
     Map.prototype.getFullHeight = function () {
         var self = this;
         return self.height * self.tile_h;
     };
 
-
+    /*
+     addEvent(Event event):void
+     Adiciona o evento "event" no mapa
+     */
     Map.prototype.addEvent = function(event){
         var self = this;
         self.events.push(event);
@@ -1212,6 +1330,7 @@
             'dy',
             'layer'
         ],
+        /*load:(Object data, Map map,function callback) carrega um mapa*/
         load : function(data,map,callback){
             var self = this;
             map = map === undefined || !(map instanceof  Map)?new Map():map;
