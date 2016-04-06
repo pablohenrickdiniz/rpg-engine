@@ -3,11 +3,14 @@
         CanvasEngine = CE.CE;
 
     var Utils = {
-        /*Calcula a próxima posição livre de colisão*/
+        /*
+         * calculate_final_position(Object bounds,double ex, double ey, int time):Object {x:double, y:double, int: time}
+         * Calcula a posição final do character, analisando as possíveis colisões que podem ocorrer pelo caminho
+         * */
         calculate_final_position: function (bounds, ex, ey, time) {
             var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height,groups:['STEP']};
             var vec = {x: ex - bounds.x, y: ey - bounds.y};
-            var quadtree = RPG.Globals.current_map._colideTree;
+            var quadtree = RPG.Globals.current_map._getCollideTree();
 
             var collisions = quadtree.retrieve(final_bounds,'STEP');
 
@@ -71,6 +74,9 @@
                 time:time
             };
         },
+        /*distance(Object va, Object vb): double
+         * Calcula a distância entre dois pontos
+         * */
         distance: function (va, vb) {
             return Math.sqrt(Object.keys(va).reduce(function (p, c) {
                 return p + Math.pow(va[c] - vb[c], 2);
@@ -88,7 +94,7 @@
             start_time:null//Data de início
         },
         _screen_width:600,//largura da tela
-        _screen_height:600,//altura da tela
+        _screen_height:400,//altura da tela
         _switches_callbacks:[],//callbacks de switches
         _canvas_engine:null,//engine de canvas
         _key_reader:null,//leitor de teclado
@@ -112,6 +118,9 @@
             menu2:null,//Menu 2
             menu3:null//Menu 3
         },
+        /*_switchCallback(String name, function callback)
+         * Registra função de callback para ativar ou desativar switch global
+         * */
         _switchCallback:function(name,callback){
             var self = RPG;
             if(self._switches_callbacks[name] === undefined){
@@ -120,6 +129,10 @@
 
             self._switches_callbacks[name].push(callback);
         },
+        /*
+         initialize(String container):void
+         inicializa a engine de rpg dentro do elemento container
+         */
         initialize:function(container){
             var engine = CE.createEngine({
                 width:RPG._screen_width,
@@ -138,9 +151,9 @@
             RPG._layers.BG7 = engine.createLayer();
             RPG._layers.BG8 = engine.createLayer();
             RPG._layers.QUAD = engine.createLayer();
-            RPG._layers.menu1 = engine.createLayer();
-            RPG._layers.menu2 = engine.createLayer();
-            RPG._layers.menu3 = engine.createLayer();
+            RPG._layers.menu1 = engine.createLayer({fixed:true});
+            RPG._layers.menu2 = engine.createLayer({fixed:true});
+            RPG._layers.menu3 = engine.createLayer({fixed:true});
             key_reader.keydown('KEY_ESC',function(){
                 if(!RPG._running){
                     RPG.run();
@@ -157,7 +170,8 @@
             RPG._canvas_engine = engine;
         },
         /*
-            Carrega o conteúdo do mapa
+         loadMap(Map map):void
+         Carrega e altera o mapa atual
          */
         loadMap:function(map){
             RPG.Globals.current_map = map;
@@ -175,10 +189,11 @@
             RPG._layers.BG8.set({width:width,height:height});
             RPG._layers.QUAD.set({width:width,height:height});
             RPG._canvas_engine.drawMap(map);
-            map._colideTree.insert(RPG.Globals.current_player.bounds);
+            map._getCollideTree().insert(RPG.Globals.current_player.bounds);
         },
         /*
-            Ativa um Switch "name"
+         enableSwitch(String name):void
+         Ativa um Switch "name" global
          */
         enableSwitch:function(name){
             var self = this;
@@ -190,7 +205,8 @@
             }
         },
         /*
-            Desativa um switch "name"
+         disableSwitch(String name):void
+         Desativa um switch "name" global
          */
         disableSwitch:function(name){
             var self = this;
@@ -202,7 +218,8 @@
             }
         },
         /*
-            Inicializa a execução do Jogo
+         run():void
+         Inicializa a execução do Jogo
          */
         run:function(){
             RPG.Globals.start_time = (new Date()).getTime();
@@ -213,19 +230,20 @@
             }
         },
         /*
-            Finaliza a execução do Jogo
+         end():void
+         Finaliza a execução do Jogo
          */
         end:function(){
             var self = this;
             RPG._running = false;
             window.cancelAnimationFrame(RPG._interval);
         },
-        /*
-            Tratamento de eventos relacionados às ações do jogador
+        /*actionEvents():void
+         * Tratamento de eventos relacionados às ações do jogador
          */
         actionEvents:function(){
             var current_player = RPG.Globals.current_player;
-            var tree = RPG.Globals.current_map._colideTree;
+            var tree = RPG.Globals.current_map._getCollideTree();
 
             var bounds_tmp = {
                 x:current_player.bounds.x,
@@ -271,7 +289,8 @@
             });
         },
         /*
-            Tratamento de ações relacionadas ao movimento do jogador
+         stepPlayer():void
+         Tratamento de ações relacionadas ao movimento do jogador
          */
         stepPlayer:function(){
             var current_player = RPG.Globals.current_player;
@@ -289,7 +308,7 @@
                 else if(key_reader.isActive('KEY_UP')){
                     current_player.step(Direction.UP);
                 }
-                else{
+                else if(current_player.graphic !== null){
                     var animation_name = 'step_'+current_player.direction;
                     current_player.graphic.animations[animation_name].pauseToFrame(1);
                     current_player._refreshed = false;
@@ -301,7 +320,8 @@
             }
         },
         /*
-            Tratamento de ações relacionadas aos eventos do jogo
+         stepEvents():void
+         Tratamento de ações relacionadas aos eventos do jogo
          */
         stepEvents:function(){
             var self = this;
@@ -313,7 +333,7 @@
                             event.look(event._follow);
                             event.stepForward();
                         }
-                        else{
+                        else if(event.graphic !== null){
                             var animation_name = 'step_'+event.direction;
                             event.graphic.animations[animation_name].pauseToFrame(1);
                         }
@@ -326,7 +346,8 @@
             });
         },
         /*
-            Lima todos os eventos do mapa
+         clearEvents():void
+         Limpa todos os eventos do mapa
          */
         clearEvents:function(){
             var current_player = RPG.Globals.current_player;
@@ -348,7 +369,8 @@
             }
         },
         /*
-            Desenha os eventos no mapa
+         drawEvents():void
+         Desenha os eventos no mapa
          */
         drawEvents:function(){
             var current_player = RPG.Globals.current_player;
@@ -365,7 +387,8 @@
             canvas_engine.drawCharacter(current_player);
         },
         /*
-            executa um passo de tempo no jogo
+         step():void
+         executa um passo de tempo no jogo
          */
         step:function(){
             if(RPG._running){
@@ -377,15 +400,19 @@
                 RPG.clearEvents();
                 RPG.drawEvents();
                 if(RPG._debug){
-                    RPG._canvas_engine.drawQuadTree(RPG.Globals.current_map._colideTree,10);
+                    RPG._canvas_engine.drawQuadTree(RPG.Globals.current_map._getCollideTree(),10);
                 }
             }
         },
+        /* getSeconds(): int
+         Retorna o tempo que o jogo está executando
+         */
         getSeconds:function(){
             return parseInt(((new Date()).getTime() - RPG.Globals.start_time)/1000);
         },
         /*
-            Focaliza a câmera em um evento específico
+         _focusOnEvent(Character character):void
+         Focaliza a câmera em um character específico
          */
         _focusOnEvent:function(event){
             var self = this;
@@ -397,7 +424,10 @@
         }
     };
 
-    /*Desenha a árvore de colisão(Modo Debug)*/
+    /*
+     drawQuadTreeCallback(QuadTree quadtree, CanvasLayer layer,Boolean first):void
+     Desenha a árvore de colisão(Modo Debug)
+     */
     var drawQuadTreeCallback = function(quadtree,layer,first){
         first = first === undefined?true:first;
         if(first){
@@ -420,6 +450,102 @@
     };
 
 
+
+
+    /*UI*/
+    var UI_Window = function(bounds,parent){
+        var self = this;
+        self.bounds = bounds;
+        self.parent = parent;
+        self.graphic = null;
+        self.text = "";
+    };
+
+    UI_Window.prototype.setGraphic = function(graphic){
+        var self = this;
+        self.graphic = graphic;
+    };
+
+    UI_Window.prototype.setPosition = function(x,y){
+        var self = this;
+        switch(x){
+            case Position.LEFT:
+                self.bounds.x = 0;
+                break;
+            case Position.CENTER:
+                var diff_x = self.parent.width-self.bounds.width*self.size;
+                self.bounds.x = diff_x/2;
+                break;
+            case Position.RIGHT:
+                self.bounds.x = self.parent.width-self.bounds.width*self.size;
+        }
+
+        switch(y){
+            case Position.TOP:
+                self.bounds.y = 0;
+                break;
+            case Position.CENTER:
+                var diff_y = self.parent.height-self.bounds.height*self.size;
+                self.bounds.y = diff_y/2;
+                break;
+            case Position.BOTTOM:
+                self.bounds.y = self.parent.height-self.bounds.height*self.size;
+        }
+    };
+
+    var WindowBuilder = {
+        top_bounds:{sx:144, sy:0, sWidth:16, sHeight:16},
+        right_bounds:{sx:176, sy:16, sWidth:16, sHeight:16},
+        bottom_bounds:{sx:144, sy:48, sWidth:16, sHeight:16},
+        left_bounds:{sx:128, sy:16, sWidth:16, sHeight:16},
+        background_bounds:{sWidth:128, sHeight:128},
+        top_left_bounds:{sx:128, sy:0, sWidth:16, sHeight:16, dWidth:16, dHeight:16},
+        top_right_bounds:{sx:176, sy:0, sWidth:16, sHeight:16, dWidth:16, dHeight:16},
+        bottom_left_bounds:{sx:128, sy:48, sWidth:16, sHeight:16, dWidth:16, dHeight:16},
+        bottom_right_bounds:{sx:176, sy:48, sWidth:16, sHeight:16, dWidth:16, dHeight:16},
+        size:16,
+        setBackgroundsBounds:function(bounds){
+            var self = this;
+            self.background_bounds =bounds;
+        },
+        setTopBounds:function(bounds){
+            var self = this;
+            self.top_bounds = bounds;
+        },
+        setRightBounds:function(bounds){
+            var self = this;
+            self.right_bounds = bounds;
+        },
+        setBottomBounds:function(bounds){
+            var self = this;
+            self.bottom_bounds = bounds;
+        },
+        setLeftBounds:function(bounds){
+            var self = this;
+            self.left_bounds = bounds;
+        },
+        setTopLeftBounds:function(bounds){
+            var self = this;
+            self.top_left_bounds = bounds;
+        },
+        setTopRightBounds :function(bounds){
+            var self = this;
+            self.top_right_bounds = bounds;
+        },
+        setBottomRightBounds : function(bounds){
+            var self = this;
+            self.bottom_right_bounds = bounds;
+        },
+        setBottomLeftBounds : function(bounds){
+            var self = this;
+            self.bottom_left_bounds = bounds;
+        },
+        create:function(options,parent){
+            return new UI_Window(options,parent);
+        }
+    };
+
+
     var CanvasEngineRpg = function(options){
         var self = this;
         CanvasEngine.call(self,options);
@@ -429,7 +555,8 @@
     CanvasEngineRpg.constructor = CanvasEngineRpg;
 
     /*
-        Desenha o mapa nas camadas de canvas
+     drawMap(Map map):void
+     Desenha o mapa nas camadas de canvas
      */
     CanvasEngineRpg.prototype.drawMap = function(map){
         var self = this;
@@ -461,7 +588,8 @@
     };
 
     /*
-        Desenha a árvore de colisão(Modo debug)
+     drawQuadTree(QuadTree quadtree, CanvasLayer layer):void
+     Desenha a árvore de colisão(Modo debug)
      */
     CanvasEngineRpg.prototype.drawQuadTree = function(quadtree,layer){
         var self = this;
@@ -470,11 +598,12 @@
     };
 
     /*
-        Limpa uma região do canvas onde é desenhado um gráfico
+     clearGraphic(int layer index, Graphic graphic):void
+     Limpa uma região do canvas onde é desenhado um gráfico
      */
     CanvasEngineRpg.prototype.clearGraphic = function(layer_index,graphic){
         var self = this;
-        if(self.layers[layer_index] !== undefined){
+        if(graphic != null && self.layers[layer_index] !== undefined){
             var layer = self.layers[layer_index];
             layer.clearRect({
                 x:graphic.lx,
@@ -486,7 +615,8 @@
     };
 
     /*
-        Desenha um character
+     drawCharacter(Character character):void
+     Desenha um character
      */
     CanvasEngineRpg.prototype.drawCharacter = function(character){
         if(character.graphic !== null){
@@ -522,6 +652,162 @@
         }
     };
 
+    CanvasEngineRpg.prototype.drawWindow = function(window){
+        var parent = window.parent;
+        if(window.graphic !== null && window.parent !== null){
+            var bounds,size = WindowBuilder.size,dx,dy,count;
+            var graphic = window.graphic;
+            var x = window.bounds.x;
+            var y = window.bounds.y;
+            var width = window.bounds.width*size;
+            var height = window.bounds.height*size;
+
+            bounds = WindowBuilder.background_bounds;
+            parent.image({
+                image:graphic,
+                sWidth:bounds.sWidth,
+                sHeight:bounds.sHeight,
+                dx:x,
+                dy:y,
+                dWidth:width,
+                dHeight:height,
+                opacity:60
+            });
+
+            bounds = WindowBuilder.top_left_bounds;
+            parent.image({
+                image:graphic,
+                dx:x,
+                dy:y,
+                sx:bounds.sx,
+                sy:bounds.sy,
+                dWidth:bounds.dWidth,
+                dHeight:bounds.dHeight,
+                sWidth:bounds.sWidth,
+                sHeight:bounds.sHeight
+            });
+
+            bounds = WindowBuilder.top_right_bounds;
+            parent.image({
+                image:graphic,
+                dx:(x+width-size),
+                dy:y,
+                sx:bounds.sx,
+                sy:bounds.sy,
+                dWidth:bounds.dWidth,
+                dHeight:bounds.dHeight,
+                sWidth:bounds.sWidth,
+                sHeight:bounds.sHeight
+            });
+
+            bounds = WindowBuilder.bottom_right_bounds;
+            parent.image({
+                image:graphic,
+                dx:(x+width-size),
+                dy:(y+height-size),
+                sx:bounds.sx,
+                sy:bounds.sy,
+                dWidth:bounds.dWidth,
+                dHeight:bounds.dHeight,
+                sWidth:bounds.sWidth,
+                sHeight:bounds.sHeight
+            });
+
+            bounds = WindowBuilder.bottom_left_bounds;
+            parent.image({
+                image:graphic,
+                dx:x,
+                dy:(y+height-size),
+                sx:bounds.sx,
+                sy:bounds.sy,
+                dWidth:bounds.dWidth,
+                dHeight:bounds.dHeight,
+                sWidth:bounds.sWidth,
+                sHeight:bounds.sHeight
+            });
+
+            bounds = WindowBuilder.top_bounds;
+            dx = x+16;
+            count = 1;
+            while(dx < (x+width-16)){
+                parent.image({
+                    image:graphic,
+                    dx:dx,
+                    dy:y,
+                    sx:bounds.sx+(count%2===0?16:0),
+                    sy:bounds.sy,
+                    dWidth:16,
+                    dHeight:16,
+                    sWidth:bounds.sWidth,
+                    sHeight:bounds.sHeight
+                });
+                dx+=16;
+                count++;
+            }
+
+            bounds = WindowBuilder.right_bounds;
+            dy = y+16;
+            count = 1;
+
+            while(dy < (y+height-16)){
+                parent.image({
+                    image:graphic,
+                    dx:x+width-size,
+                    dy:dy,
+                    sx:bounds.sx,
+                    sy:bounds.sy+(count%2==0?16:0),
+                    dWidth:16,
+                    dHeight:16,
+                    sWidth:bounds.sWidth,
+                    sHeight:bounds.sHeight
+                });
+                dy+=size;
+                count++;
+            }
+
+            bounds = WindowBuilder.bottom_bounds;
+            dx = x+16;
+            count = 1;
+            while(dx < (x+width-16)){
+                parent.image({
+                    image:graphic,
+                    dx:dx,
+                    dy:y+height-size,
+                    sx:bounds.sx+(count%2==0?16:0),
+                    sy:bounds.sy,
+                    dWidth:16,
+                    dHeight:16,
+                    sWidth:bounds.sWidth,
+                    sHeight:bounds.sHeight
+                });
+                dx+=size;
+                count++;
+            }
+
+
+            bounds = WindowBuilder.left_bounds;
+            dy = y+16;
+            count = 1;
+            while(dy < (y+height-16)){
+                parent.image({
+                    image:graphic,
+                    dx:x,
+                    dy:dy,
+                    sx:bounds.sx,
+                    sy:bounds.sy+(count%2==0?16:0),
+                    dWidth:16,
+                    dHeight:16,
+                    sWidth:bounds.sWidth,
+                    sHeight:bounds.sHeight
+                });
+                dy+=size;
+                count++;
+            }
+
+        }
+
+    };
+
     var Animation = function(options){
         var self = this;
         var frames = options.frames === undefined?[]:options.frames;
@@ -536,7 +822,8 @@
     };
 
     /*
-        getIndexFrame : retorna o índice atual da animação
+     getIndexFrame():int
+     Retorna o índice do quadro atual da animação
      */
     Animation.prototype.getIndexFrame = function(){
         var self = this;
@@ -555,7 +842,8 @@
     };
 
     /*
-        stop: para a execução da animação
+     stop():void
+     Para a execução da animação
      */
     Animation.prototype.stop = function(){
         var self = this;
@@ -563,7 +851,8 @@
     };
 
     /*
-        execute: Executa a animação
+     execute():void
+     Executa a animação
      */
     Animation.prototype.execute = function(){
         var self = this;
@@ -574,7 +863,7 @@
     };
 
     /*
-        pause:Pausa a execução da animação
+     pause:Pausa a execução da animação
      */
     Animation.prototype.pause = function(){
         var self = this;
@@ -585,7 +874,8 @@
     };
 
     /*
-        pauseToFrame: Pausa a animação no quadro "index"
+     pauseToFrame(int index):void
+     Pausa a animação no quadro index
      */
     Animation.prototype.pauseToFrame = function(index){
         var self = this;
@@ -597,7 +887,8 @@
     };
 
     /*
-        Animation.create: Cria uma animação
+     Animation.create(Object options):Animation
+     Cria uma animação
      */
     Animation.create = function(options){
         var fps = parseFloat(options.fps);
@@ -670,7 +961,8 @@
     };
 
     /*
-       Graphic. _initialize: Inicializa as animações do gráfico
+     _initialize():void
+     Inicializa as animações do gráfico
      */
     Graphic.prototype._initialize = function(){
         var self = this;
@@ -688,7 +980,8 @@
     };
 
     /*
-       initialize: Inicializa o character
+     initialize(Object options):void
+     Inicializa as variáveis do Character
      */
     Character.prototype.initialize = function(options){
         var self = this;
@@ -727,7 +1020,8 @@
     };
 
     /*
-        setPosition: Altera a posição x,y do character no mapa
+     setPosition(double x, double y):void
+     Altera a posição x,y do character
      */
     Character.prototype.setPosition = function(x,y){
         var self = this;
@@ -737,7 +1031,8 @@
     };
 
     /*
-        moveTo: Registra o tempo e a posição final do movimento do character
+     moveTo(double x, double y, int time, function callback):void
+     Registra o tempo e a posição final do movimento do character
      */
     Character.prototype.moveTo = function (x,y,time,callback) {
         var self = this;
@@ -750,7 +1045,8 @@
     };
 
     /*
-        _timeStepMove: Executa um passo de tempo no movimento do character
+     _timeStepMove():void
+     Executa um passo de tempo no movimento do character
      */
     Character.prototype._timeStepMove = function(){
         var self = this;
@@ -778,7 +1074,8 @@
     };
 
     /*
-        updateFocus: atualiza a  posição da câmera (se focada nesse character)
+     updateFocus():void
+     Atualiza a  posição da câmera (se focada nesse character)
      */
     Character.prototype.updateFocus = function(){
         var self = this;
@@ -798,7 +1095,8 @@
         }
     };
     /*
-        setGraphic: Altera o gráfico do character
+     setGraphic(Graphic graphic):void
+     Altera o gráfico do character
      */
     Character.prototype.setGraphic = function(graphic){
         var self = this;
@@ -808,7 +1106,8 @@
     };
 
     /*
-        getcurrentFrame: Retorna o gráfico atual do character
+     getCurrentFrame():Object
+     Retorna o gráfico atual do character
      */
     Character.prototype.getCurrentFrame = function(){
         var self = this;
@@ -818,7 +1117,8 @@
     };
 
     /*
-        look: Faz o character olhar para a direçã/evento direction
+     look(String|Character direction):void
+     Faz o character olhar para a direção/character direction
      */
     Character.prototype.look = function(direction){
         var self = this;
@@ -839,8 +1139,8 @@
     };
 
     /*
-        step(direction string, times int,end function, allow boolean):
-        Move o character um passo na direção "direction"
+     step(String direction,int times,function end,Boolean allow):void
+     Move o character um passo na direção "direction"
      */
     Character.prototype.step = function(direction,times,end,allow){
         var self = this;
@@ -886,7 +1186,8 @@
     };
 
     /*
-        stepForward: Move o character um passo para frente
+     stepForward():void
+     Move o character um passo para frente
      */
     Character.prototype.stepForward = function(){
         var self = this;
@@ -894,7 +1195,8 @@
     };
 
     /*
-        stepRandom: Move o character a um passo aleatório
+     stepRandom():void
+     Move o character a um passo aleatório
      */
     Character.prototype.stepRandom = function(){
         var self = this;
@@ -905,7 +1207,8 @@
     };
 
     /*
-        follow(Character character):Segue um character
+     follow(Character character):void
+     Segue um character
      */
     Character.prototype.follow = function(character){
         var self = this;
@@ -913,7 +1216,8 @@
     };
 
     /*
-     unfollow(): deixa de seguir
+     unfollow():void
+     Deixa de seguir um character
      */
     Character.prototype.unfollow = function(){
         var self = this;
@@ -977,7 +1281,7 @@
 
         var callback = function(){
             var active = (!global_active || (global_active && global_switches[name_global] === true)) &&
-                         (!local_active || (local_active && local_switches[name_local] === true));
+                (!local_active || (local_active && local_switches[name_local] === true));
             if(active){
                 self.event.current_page = self;
             }
@@ -994,7 +1298,10 @@
         }
     };
 
-
+    /*
+     setGraphic(Graphic graphic):void
+     Altera o gráfico da página
+     */
     Page.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
@@ -1021,7 +1328,10 @@
     Event.prototype = Object.create(Character.prototype);
     Event.constructor = Event;
 
-
+    /*
+     getCurrentFrame():Object
+     Retorna o quadtro atual de animação
+     */
     Event.prototype.getCurrentFrame = function(){
         var self = this;
         if(self.current_page !== null){
@@ -1033,7 +1343,8 @@
     };
 
     /*
-        enableSwitch(string name): Ativa o evento local "name"
+     enableSwitch(String name):void
+     Ativa o evento local "name"
      */
     Event.prototype.enableSwitch = function(name){
         var self = this;
@@ -1046,7 +1357,8 @@
     };
 
     /*
-     enableSwitch(string name): Desativa o evento local "name"
+     disableSwitch(String name):void
+     Desativa o evento local "name"
      */
     Event.prototype.disableSwitch = function(name){
         var self = this;
@@ -1057,7 +1369,10 @@
             });
         }
     };
-
+    /*
+     _switchCallback(String name, function callback):void
+     Registra a função de callback para ativar ou desativar o switch
+     */
     Event.prototype._switchCallback = function(name,callback){
         var self = this;
         if(self._switches_callbacks[name] === undefined){
@@ -1068,11 +1383,23 @@
     };
 
     /*
-        addPage(Page page): Adiciona uma nova página ao evento
+     addPage(Page page):void
+     Adiciona uma nova página ao evento
      */
     Event.prototype.addPage = function(page){
         var self = this;
         self.pages.push(page);
+    };
+
+    var Item = function(options){
+        var name = options.name;
+        var graphic = options.graphic;
+
+        var self = this;
+
+
+        self.name = name;
+        self.graphic = graphic;
     };
 
     var Player = function(options){
@@ -1109,40 +1436,51 @@
         self.tiles = [];
         self.events = [];
         self.parent = null;
-        self._colideTree = null;
-        self.colision = [];
-    };
-
-    Map.prototype.initializeCollision = function(){
-        var self = this;
-        self._colideTree = new QuadTree({
-            x:0,
-            y:0,
-            width:self.getFullWidth(),
-            height:self.getFullHeight()
-        });
-        var size1 = self.colision.length;
-        for(var i = 0; i < size1;i++){
-            var size2 = self.colision[i].length;
-            for(var j = 0; j < size2;j++){
-                var colision = self.colision[i][j];
-                if(colision === true){
-                    self._colideTree.insert({
-                        x:j*self.tile_w,
-                        y:i*self.tile_h,
-                        width:self.tile_w,
-                        height:self.tile_h,
-                        groups:['MAP','EV','STEP']
-                    });
-                }
-            }
-        }
+        self._collideTree = null;
     };
 
     /*
-     Object: getAreaInterval(Object options)
-     obtém o intervalo de linhas e colunas de uma
-     área dentro do mapa
+     _getCollideTree():QuadTree
+     Retorna a árvore de colisão do mapa
+     */
+    Map.prototype._getCollideTree = function(){
+        var self = this;
+        if(self._collideTree === null){
+            self._collideTree = new QuadTree({
+                x:0,
+                y:0,
+                width:self.getFullWidth(),
+                height:self.getFullHeight()
+            });
+        }
+        return self._collideTree;
+    };
+
+    /*
+     initializeCollision():void
+     Inicializa as colisões do mapa
+     */
+    Map.prototype.initializeCollision = function(){
+        var self = this;
+
+        var tree = self._getCollideTree();
+        self.eachTile(function(tile){
+            if(tile.bounds !== undefined){
+                var bounds = tile.bounds;
+                tree.insert({
+                    x:tile.dx+bounds.x,
+                    y:tile.dy+bounds.y,
+                    width:bounds.width,
+                    height:bounds.height,
+                    groups:['MAP','EV','STEP']
+                });
+            }
+        });
+    };
+
+    /*
+     getAreaInterval(Object options):Object
+     Obtém o intervalo si,sj,ei,ei de uma área dentro do mapa
      */
     Map.prototype.getAreaInterval = function (options) {
         var self = this;
@@ -1162,10 +1500,8 @@
     };
 
     /*
-     Map : setTile(int i, int j, ImageSet tile)
-     Altera um tile do mapa, onde i é a linha,
-     j é a coluna, e tile é o ImageSet do tileSet
-     ImageSet.layer é a coluna
+     setTile(int i, int j, Object tile):void
+     Altera o tile na posição [i][j][tile.layer]
      */
     Map.prototype.setTile = function (i, j, tile) {
         var self = this;
@@ -1183,8 +1519,8 @@
     };
 
     /*
-     getTile(int i, int j, int layer): object
-     Retorna o tile do mapa [i][j][layer]
+     getTile(int i, int j, int layer): Object
+     Retorna o tile do mapa na posição [i][j][layer]
      */
     Map.prototype.getTile = function(i,j,layer){
         var self = this;
@@ -1195,8 +1531,8 @@
     };
 
     /*
-        removeTile(int i, int j, int layer):
-        Remove o tile da posição i,j e na camada layer
+     removeTile(int i, int j, int layer):void
+     Remove o tile do mapa na posição [i][j][layer]
      */
     Map.prototype.removeTile = function(i, j,layer){
         var self = this;
@@ -1207,8 +1543,8 @@
 
 
     /*
-        getFullWidth():int
-        Obtém a largura do mapa em pixels
+     getFullWidth():Double
+     Obtém a largura total do mapa em pixels
      */
     Map.prototype.getFullWidth = function () {
         var self = this;
@@ -1216,8 +1552,8 @@
     };
 
     /*
-     getFullHeight():int
-     Obtém a altura do mapa em pixels
+     getFullHeight():Double
+     Obtém a altura total do mapa em pixels
      */
     Map.prototype.getFullHeight = function () {
         var self = this;
@@ -1226,14 +1562,19 @@
 
     /*
      addEvent(Event event):void
-     Adiciona o evento "event" no mapa
+     Adiciona um evento no mapa
      */
     Map.prototype.addEvent = function(event){
         var self = this;
         self.events.push(event);
-        self._colideTree.insert(event.bounds);
+        self._getCollideTree().insert(event.bounds);
     };
 
+    /*
+     eachTile(function calback):void
+     Pecorre todos os tiles válidos do mapa
+     e passa seus parâmetros para a função de callback
+     */
     Map.prototype.eachTile = function(callback){
         var self = this;
         for(var i = 0; i < self.height;i++){
@@ -1247,31 +1588,24 @@
         }
     };
 
-    var Window = function(options,parent){
-        var self = this;
-        self.width = 10;
-        self.height = 10;
-        self.x = 0;
-        self.y = 0;
-        self.parent = parent;
-    };
 
-    Window.TOP_LEFT = 0;
-    Window.TOP_CENTER = 1;
-    Window.TOP_RIGHT = 2;
-    Window.CENTER_LEFT = 3;
-    Window.CENTER_CENTER = 4;
-    Window.CENTER_RIGHT = 5;
-    Window.BOTTOM_LEFT = 6;
-    Window.BOTTOM_CENTER = 7;
-    Window.BOTTOM_RIGHT = 8;
-
+    /*Loaders*/
 
     var ImageLoader = {
-        loadedImages:[],
-        loadAll:function(images,callback){
-            loadAll(images,[],callback);
+        loadedImages:[],//Imagens que já foram carregadas
+        /*
+         loadAll(Array[String] urls, function callback):void
+         Carrega todas as images de urls e passa o
+         resultado para a função callback
+         */
+        loadAll:function(urls,callback){
+            loadAll(urls,[],callback);
         },
+        /*
+         load:(String url, function callback):void
+         Carrega a imagem da url e passa o resultado
+         para a função callback
+         */
         load:function(url,callback){
             var self = this;
             var a = document.createElement('a');
@@ -1290,6 +1624,11 @@
                 callback(self.loadedImages[url]);
             }
         },
+        /*
+         toDataURL(Image img, function callback):void
+         Gera uma url para a imagem img e passa para a
+         função callback
+         */
         toDataURL:function(img,callback){
             var canvas = document.createElement('canvas');
             var context = canvas.getContext('2d');
@@ -1302,13 +1641,13 @@
         }
     };
 
-    var loadAll = function(images,loaded,callback){
+    var loadAll = function(urls,loaded,callback){
         loaded = loaded === undefined?[]:loaded;
-        if(images.length > 0){
-            var url = images.shift();
+        if(urls.length > 0){
+            var url = urls.shift();
             ImageLoader.load(url,function(img){
                 loaded.push(img);
-                loadAll(images,loaded,callback);
+                loadAll(urls,loaded,callback);
             });
         }
         else if(typeof callback === 'function'){
@@ -1330,7 +1669,11 @@
             'dy',
             'layer'
         ],
-        /*load:(Object data, Map map,function callback) carrega um mapa*/
+        /*
+         load:(Object data, Map map,function callback):void
+         Carrega todos os dados do object data no objeto mapa,
+         se o objeto map não for informado, um novo será criado
+         */
         load : function(data,map,callback){
             var self = this;
             map = map === undefined || !(map instanceof  Map)?new Map():map;
@@ -1343,7 +1686,6 @@
             map.tile_h = tile_h;
             var tilesets = data.tilesets !== undefined?data.tilesets:[];
             var tiles = data.tiles !== undefined?data.tiles:[];
-            map.colision = data.colision !== undefined?data.colision:[];
 
 
             ImageLoader.loadAll(tilesets,function(tilesets){
@@ -1366,6 +1708,14 @@
                                                 newtile.image = tilesets[id];
                                             }
                                         }
+                                        if(tile[10] !== undefined){
+                                            newtile.bounds = {
+                                                x:tile[10],
+                                                y:tile[11],
+                                                width:tile[12],
+                                                height:tile[13]
+                                            };
+                                        }
 
                                         map.setTile(indexA,indexB,newtile);
                                     }
@@ -1382,6 +1732,17 @@
         }
     };
 
+    var Position = {
+        TOP:0,
+        RIGHT:1,
+        BOTTOM:2,
+        LEFT:3,
+        CENTER:4
+    };
+
+
+
+
     RPG.Direction = Direction;
     RPG.Graphic = Graphic;
     RPG.Character = Character;
@@ -1393,6 +1754,8 @@
     RPG.ImageLoader = ImageLoader;
     RPG.Player = Player;
     RPG.Trigger = Trigger;
+    RPG.Position = Position;
+    RPG.WindowBuilder = WindowBuilder;
 
     window.RPG = RPG;
 })(window);
