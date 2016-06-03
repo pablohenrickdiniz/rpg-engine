@@ -1,11 +1,10 @@
 {
-  "name": "phydokz/rpg-engine",
+  "name": "rpg-engine",
   "authors": [
-    "Pablo Henrick <phydokz@hotmail.com>"
+    "Pablo Henrick Diniz <phydokz@hotmail.com>"
   ],
   "description": "",
   "main": "",
-  "moduleType": [],
   "license": "MIT",
   "homepage": "",
   "private": true,
@@ -13,6 +12,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "plugins",
     "test",
     "tests"
   ]
