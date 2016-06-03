@@ -16,7 +16,7 @@
     "test",
     "tests"
   ],
-  "devDependencies": {
+  "dependencies": {
     "app-object": "https://github.com/pablohenrickdiniz/app-object.git",
     "canvas-engine": "https://github.com/pablohenrickdiniz/canvas-engine.git",
     "keyboard-reader": "https://github.com/pablohenrickdiniz/keyboard-reader.git",
