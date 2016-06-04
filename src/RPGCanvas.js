@@ -1,6 +1,6 @@
 (function(w){
     if(w.CE == undefined){
-        throw new Error('RPGCanvas requires Canvas Engine');
+        throw new Error('RPGCanvas requires CanvasEngine');
     }
 
     /*
@@ -40,8 +40,7 @@
      drawMap(Map map):void
      Desenha o mapa nas camadas de canvas
      */
-    RPGCanvas.prototype.drawMap = function(map){
-        var self = this;
+    RPGCanvas.drawMap = function(map,context){
         var interval = map.getAreaInterval({
             x:0,
             y:0,
@@ -52,15 +51,15 @@
             for(var j = interval.sj; j <= interval.ej;j++){
                 if(map.tiles[i] !== undefined && map.tiles[i][j] !== undefined){
                     map.tiles[i][j].forEach(function(tile,layer){
-                        if(self.layers[layer] !== undefined){
+                        if(context.layers[layer] !== undefined){
                             if(tile !== null){
-                                self.layers[layer].clearRect({
+                                context.layers[layer].clearRect({
                                     x:tile.dx,
                                     y:tile.dy,
                                     width:tile.dWidth,
                                     height:tile.dHeight
                                 });
-                                self.layers[layer].image(tile);
+                                context.layers[layer].image(tile);
                             }
                         }
                     });
