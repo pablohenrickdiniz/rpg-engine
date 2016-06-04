@@ -1,6 +1,7 @@
 (function(w){
     var Map = function (options) {
         var self = this;
+        options = options==undefined?{}:options;
         var width = parseInt(options.width);
         var height = parseInt(options.height);
         var tile_w = parseInt(options.tile_w);
