@@ -3,6 +3,31 @@
         throw new Error('RPGCanvas requires Canvas Engine');
     }
 
+    /*
+     drawQuadTreeCallback(QuadTree quadtree, CanvasLayer layer,Boolean first):void
+     Desenha a árvore de colisão(Modo Debug)
+     */
+    var drawQuadTreeCallback = function(quadtree,layer,first){
+        first = first === undefined?true:first;
+        if(first){
+            layer.clear();
+        }
+        layer.rect(quadtree.bounds);
+
+        if(first){
+            var objects = quadtree.objects;
+            objects.forEach(function(object){
+                layer.rect(object);
+            });
+        }
+
+        if(!quadtree.isLeaf()){
+            for(var i =0; i < quadtree.nodes.length;i++){
+                drawQuadTreeCallback(quadtree.nodes[i],layer,false);
+            }
+        }
+    };
+
     var RPGCanvas = function(options){
         var self = this;
         CE.call(self,options);
