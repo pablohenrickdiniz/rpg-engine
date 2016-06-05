@@ -8,8 +8,8 @@
         var tile_h = parseInt(options.tile_h);
         var events = options.events;
 
-        width = isNaN(width)?10:width;
-        height = isNaN(height)?10:height;
+        width = isNaN(width)?5:width;
+        height = isNaN(height)?5:height;
         tile_w=  isNaN(tile_w)?32:tile_w;
         tile_h = isNaN(tile_h)?32:tile_h;
 
