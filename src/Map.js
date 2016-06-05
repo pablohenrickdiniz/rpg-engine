@@ -1,4 +1,8 @@
 (function(w){
+    if(w.Quadtree == undefined){
+        throw "Map requires QuadTree"
+    }
+
     var Map = function (options) {
         var self = this;
         options = options==undefined?{}:options;

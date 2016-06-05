@@ -22,6 +22,6 @@
     "keyboard-reader": "https://github.com/pablohenrickdiniz/keyboard-reader.git",
     "math-lib": "https://github.com/pablohenrickdiniz/math-lib.git",
     "mouse-reader": "https://github.com/pablohenrickdiniz/mouse-reader.git",
-    "quadtree": "https://github.com/pablohenrickdiniz/quadtree.git"
+    "quadtree": "git@github.com:pablohenrickdiniz/quadtree.git"
   }
 }
