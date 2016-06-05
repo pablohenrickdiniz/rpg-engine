@@ -1,5 +1,5 @@
 (function(w){
-    if(w.Quadtree == undefined){
+    if(w.QuadTree == undefined){
         throw "Map requires QuadTree"
     }
 
