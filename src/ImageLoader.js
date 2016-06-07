@@ -1,4 +1,8 @@
 (function(w){
+    if(w.jsSHA == undefined){
+        throw "ImageLoader requires jsSHA"
+    }
+
     var ImageLoader = {
         loadedImages:[],//Imagens que já foram carregadas
         /*
@@ -16,8 +20,6 @@
          */
         load:function(url,callback){
             var self = this;
-            var a = document.createElement('a');
-            a.href = url;
             if(self.loadedImages[url] === undefined){
                 var img = new Image();
                 img.crossOrigin = "Anonymous";
@@ -45,6 +47,22 @@
             var dataUrl = canvas.toDataURL();
             callback(dataUrl);
             canvas = null;
+        },
+        fromDataUrl:function(data,callback){
+            if(data != null){
+                var img = new Image();
+                img.src = data;
+                img.addEventListener('load',function(){
+                    callback(img);
+                });
+
+                img.addEventListener('error',function(){
+                   callback(null);
+                });
+            }
+            else{
+                callback(null);
+            }
         }
     };
 
