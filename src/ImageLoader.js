@@ -57,7 +57,10 @@
             callback(dataUrl);
             canvas = null;
         },
-        fromDataUrl:function(data,callback){
+        toDataURLS:function(urls,callback){
+           toDataUrls(urls,[],callback);
+        },
+        fromDataURL:function(data,callback){
             if(data != null){
                 var img = new Image();
                 img.src = data;
@@ -72,6 +75,22 @@
             else{
                 callback(null);
             }
+        }
+    };
+
+    var toDataUrls = function(urls,parsed,callback){
+        parsed = parsed === undefined?[]:parsed;
+        if(urls.length > 0){
+            var url = urls.shift();
+            ImageLoader.load(url,function(img){
+                ImageLoader.toDataURL(img,function(data){
+                    parsed.push(data);
+                    toDataUrls(urls,parsed,callback);
+                })
+            });
+        }
+        else if(typeof callback === 'function'){
+            callback(parsed);
         }
     };
 
