@@ -20,18 +20,27 @@
          */
         load:function(url,callback){
             var self = this;
-            if(self.loadedImages[url] === undefined){
-                var img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.src = url;
-                img.onload = function(){
-                    self.loadedImages[url] = img;
+            var img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = url;
+            img.onload = function(){
+                ImageLoader.toDataURL(img,function(data){
+                    var shaObj = new jsSHA("SHA-1", "TEXT");
+                    shaObj.update(data);
+                    var hash = shaObj.getHash("HEX");
+                    if(self.loadedImages[hash] === undefined){
+                        self.loadedImages[hash] = img;
+                    }
+                    else{
+                        callback(self.loadedImages[hash]);
+                    }
                     callback(img);
-                };
-            }
-            else{
-                callback(self.loadedImages[url]);
-            }
+                });
+            };
+
+            img.onerror = function(){
+                callback(null);
+            };
         },
         /*
          toDataURL(Image img, function callback):void
