@@ -24,6 +24,7 @@
         self.tiles = [];
         self.events = [];
         self.parent = null;
+        self.tile_count = 0;
         self._collideTree = null;
     };
 
@@ -101,6 +102,9 @@
             self.tiles[i][j] = [];
         }
 
+        if(self.tiles[i][j][tile.layer] == undefined){
+            self.tile_count++;
+        }
 
         self.tiles[i][j][tile.layer] = tile;
         return self;
@@ -126,6 +130,7 @@
         var self = this;
         if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][layer] !== undefined){
             delete self.tiles[i][j][layer];
+            self.tile_count--;
         }
     };
 
@@ -174,6 +179,11 @@
                 }
             }
         }
+    };
+
+    Map.prototype.isEmpty = function(){
+        var self = this;
+        return self.events.length == 0 && self.tile_count == 0;
     };
 
     w.Map = Map;
