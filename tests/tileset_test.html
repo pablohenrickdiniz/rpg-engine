@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt_BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Tileset</title>
+    <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
+    <script type="text/javascript" src="../plugins/app-object/app-object.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasLayer.js"></script>
+    <script type="text/javascript" src="../plugins/keyboard-reader/src/keyboard-reader.js"></script>
+    <script type="text/javascript" src="../plugins/mouse-reader/src/mouse-reader.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasEngine.js"></script>
+    <script type="text/javascript" src="../plugins/jsSHA/src/sha1.js"></script>
+    <script type="text/javascript" src="../src/ImageLoader.js"></script>
+    <script type="text/javascript" src="../src/Tileset.js"></script>
+    <script type="text/javascript">
+        function init(){
+            var container = document.getElementById('container');
+            var engine = CE.create({
+                container:container,
+                width:400,
+                height:400,
+                draggable:true
+            });
+
+            var layer = engine.createLayer({
+                width:800,
+                height:800
+            });
+
+
+            ImageLoader.loadAll(['img/sea-&-beach.png','img/snow.png','img/Town & Village - 0034.png'],function(images){
+                var tileset_sea = new Tileset(images[0]);
+                var tileset_snow = new Tileset(images[1]);
+                var tileset_water = new Tileset(images[2]);
+
+                var sand = tileset_sea.get(0,1);
+                var grass = tileset_sea.get(0,0);
+                var snow = tileset_snow.get(0,0);
+                var water = tileset_water.get(4,4);
+                layer.image(water);
+                layer.image(sand,{
+                    dy:0,
+                    dx:32
+                });
+                layer.image(snow,{
+                    dx:0,
+                    dy:32
+                });
+                layer.image(grass,{
+                    dx:32,
+                    dy:32
+                });
+            });
+
+        }
+    </script>
+</head>
+<body onload="init()">
+    <div id="container"></div>
+</body>
+</html>
