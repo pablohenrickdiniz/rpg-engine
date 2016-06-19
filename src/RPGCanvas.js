@@ -64,8 +64,8 @@
                                 });
 
                                 context.layers[layer].image(tile,{
-                                    x:dx,
-                                    y:dx
+                                    dx:dx,
+                                    dy:dx
                                 });
                             }
                         }
