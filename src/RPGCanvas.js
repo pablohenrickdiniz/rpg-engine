@@ -52,18 +52,20 @@
                 if(map.tiles[i] !== undefined && map.tiles[i][j] !== undefined){
                     map.tiles[i][j].forEach(function(tile,layer){
                         if(context.layers[layer] !== undefined){
-                            if(tile !== null){
-                                var dx = j*map.tile_w;
-                                var dy = i*map.tile_h;
+                            if(tile instanceof Tile){
+                                var graphic = tile.getGraphic();
+
+                                var dx = j*graphic.dWidth;
+                                var dy = i*graphic.dHeight;
 
                                 context.layers[layer].clearRect({
                                     x:dx,
                                     y:dy,
-                                    width:tile.dWidth,
-                                    height:tile.dHeight
+                                    width:graphic.dWidth,
+                                    height:graphic.dHeight
                                 });
 
-                                context.layers[layer].image(tile,{
+                                context.layers[layer].image(graphic,{
                                     dx:dx,
                                     dy:dy
                                 });
