@@ -52,7 +52,6 @@
                 if(map.tiles[i] !== undefined && map.tiles[i][j] !== undefined){
                     map.tiles[i][j].forEach(function(tile,layer){
                         if(context.layers[layer] !== undefined){
-                            console.log(tile);
                             if(tile instanceof Tile){
                                 var graphic = tile.getGraphic();
 
@@ -65,7 +64,6 @@
                                     width:graphic.dWidth,
                                     height:graphic.dHeight
                                 });
-                                console.log(graphic);
                                 context.layers[layer].image(graphic,{
                                     dx:dx,
                                     dy:dy
