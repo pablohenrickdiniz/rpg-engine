@@ -53,13 +53,20 @@
                     map.tiles[i][j].forEach(function(tile,layer){
                         if(context.layers[layer] !== undefined){
                             if(tile !== null){
+                                var dx = j*map.tile_w;
+                                var dy = i*map.tile_h;
+
                                 context.layers[layer].clearRect({
-                                    x:tile.dx,
-                                    y:tile.dy,
+                                    x:dx,
+                                    y:dx,
                                     width:tile.dWidth,
                                     height:tile.dHeight
                                 });
-                                context.layers[layer].image(tile);
+
+                                context.layers[layer].image(tile,{
+                                    x:dx,
+                                    y:dx
+                                });
                             }
                         }
                     });
