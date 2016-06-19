@@ -64,7 +64,7 @@
                                     width:graphic.dWidth,
                                     height:graphic.dHeight
                                 });
-
+                                console.log(graphic);
                                 context.layers[layer].image(graphic,{
                                     dx:dx,
                                     dy:dy
