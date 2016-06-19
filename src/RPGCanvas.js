@@ -58,14 +58,14 @@
 
                                 context.layers[layer].clearRect({
                                     x:dx,
-                                    y:dx,
+                                    y:dy,
                                     width:tile.dWidth,
                                     height:tile.dHeight
                                 });
 
                                 context.layers[layer].image(tile,{
                                     dx:dx,
-                                    dy:dx
+                                    dy:dy
                                 });
                             }
                         }
