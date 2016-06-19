@@ -89,10 +89,10 @@
     };
 
     /*
-     setTile(int i, int j,int layer, Object tile):void
-     Altera o tile na posição [i][j][layer]
+     setTile(int i, int j,int k, Object tile):void
+     Altera o tile na posição [i][j][k]
      */
-    Map.prototype.setTile = function (i, j,layer, tile) {
+    Map.prototype.setTile = function (i, j,k, tile) {
         var self = this;
         if(tile instanceof Tile){
             if (self.tiles[i] === undefined) {
@@ -103,36 +103,36 @@
                 self.tiles[i][j] = [];
             }
 
-            if(self.tiles[i][j][layer] == undefined){
+            if(self.tiles[i][j][k] == undefined){
                 self.tile_count++;
             }
 
-            self.tiles[i][j][layer] = tile;
+            self.tiles[i][j][k] = tile;
         }
 
         return self;
     };
 
     /*
-     getTile(int i, int j, int layer): Object
-     Retorna o tile do mapa na posição [i][j][layer]
+     getTile(int i, int j, int k): Object
+     Retorna o tile do mapa na posição [i][j][k]
      */
-    Map.prototype.getTile = function(i,j,layer){
+    Map.prototype.getTile = function(i,j,k){
         var self = this;
-        if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][layer] !== undefined){
-            return self.tiles[i][j][layer];
+        if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][k] !== undefined){
+            return self.tiles[i][j][k];
         }
         return null;
     };
 
     /*
-     removeTile(int i, int j, int layer):void
-     Remove o tile do mapa na posição [i][j][layer]
+     removeTile(int i, int j, int k):void
+     Remove o tile do mapa na posição [i][j][k]
      */
-    Map.prototype.removeTile = function(i, j,layer){
+    Map.prototype.removeTile = function(i, j,k){
         var self = this;
-        if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][layer] !== undefined){
-            delete self.tiles[i][j][layer];
+        if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][k] !== undefined){
+            delete self.tiles[i][j][k];
             self.tile_count--;
         }
     };
