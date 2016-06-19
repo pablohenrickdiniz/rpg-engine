@@ -94,19 +94,22 @@
      */
     Map.prototype.setTile = function (i, j, tile) {
         var self = this;
-        if (self.tiles[i] === undefined) {
-            self.tiles[i] = [];
+        if(tile instanceof Tile){
+            if (self.tiles[i] === undefined) {
+                self.tiles[i] = [];
+            }
+
+            if (self.tiles[i][j] === undefined) {
+                self.tiles[i][j] = [];
+            }
+
+            if(self.tiles[i][j][tile.layer] == undefined){
+                self.tile_count++;
+            }
+
+            self.tiles[i][j][tile.layer] = tile;
         }
 
-        if (self.tiles[i][j] === undefined) {
-            self.tiles[i][j] = [];
-        }
-
-        if(self.tiles[i][j][tile.layer] == undefined){
-            self.tile_count++;
-        }
-
-        self.tiles[i][j][tile.layer] = tile;
         return self;
     };
 

@@ -39,6 +39,19 @@
     };
 
     /*
+      getCurrentFrame():Obj
+      Retorna o quadro atual de animação
+     */
+    Animation.prototype.getCurrentFrame = function(){
+        var self = this;
+        var index_frame = self.getIndexFrame();
+        if(self.frames[index_frame] != undefined){
+           return self.frames[index_frame];
+        }
+        return null;
+    };
+
+    /*
      stop():void
      Para a execução da animação
      */

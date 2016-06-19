@@ -25,26 +25,28 @@
         }
     };
 
+    Tileset.prototype.getTileWidth = function(){
+        var self = this;
+        return self.width/self.cols;
+    };
+
+    Tileset.prototype.getTileHeight = function(){
+        var self = this;
+        return self.height/self.rows;
+    };
+
     Tileset.prototype.get = function(i,j){
         var self = this;
         if(i >= 0 && i < self.rows && j >= 0 && j < self.cols){
-            var tile_width = self.width/self.cols;
-            var tile_height = self.height/self.rows;
+            var tile_width = self.getTileWidth();
+            var tile_height = self.getTileHeight();
 
             if(self.tiles[i] == undefined){
                 self.tiles[i] = [];
             }
 
             if(self.tiles[i][j] == undefined){
-                self.tiles[i][j]= {
-                    image:self.image,
-                    sx:j*tile_width,
-                    sy:i*tile_height,
-                    sWidth:tile_width,
-                    sHeight:tile_height,
-                    dWidth:tile_width,
-                    dHeight:tile_height
-                };
+                self.tiles[i][j]= new Tile(self,j*tile_width,i*tile_height);
             }
 
             return self.tiles[i][j];

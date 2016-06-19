@@ -1,5 +1,10 @@
 (function(w){
-    var Graphic = function(options){
+    if(w.Animation == undefined){
+        throw "CharacterGraphic requires Animation"
+    }
+
+
+    var CharacterGraphic = function(options){
         var self = this;
         var image = options.image;
         var rows = parseInt(options.rows);
@@ -21,7 +26,7 @@
      _initialize():void
      Inicializa as animações do gráfico
      */
-    Graphic.prototype._initialize = function(){
+    CharacterGraphic.prototype._initialize = function(){
         var self = this;
         var image = self.image;
         self.animations.step_down = Animation.create({rows:4, cols:4,si:0,ei:0,image:image});
@@ -30,5 +35,5 @@
         self.animations.step_up = Animation.create({rows:4, cols:4,si:3,ei:3,image:image});
     };
 
-    w.Graphic = Graphic;
+    w.CharacterGraphic = CharacterGraphic;
 })(window);
