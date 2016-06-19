@@ -89,10 +89,10 @@
     };
 
     /*
-     setTile(int i, int j, Object tile):void
-     Altera o tile na posição [i][j][tile.layer]
+     setTile(int i, int j,int layer, Object tile):void
+     Altera o tile na posição [i][j][layer]
      */
-    Map.prototype.setTile = function (i, j, tile) {
+    Map.prototype.setTile = function (i, j,layer, tile) {
         var self = this;
         if(tile instanceof Tile){
             if (self.tiles[i] === undefined) {
@@ -103,11 +103,11 @@
                 self.tiles[i][j] = [];
             }
 
-            if(self.tiles[i][j][tile.layer] == undefined){
+            if(self.tiles[i][j][layer] == undefined){
                 self.tile_count++;
             }
 
-            self.tiles[i][j][tile.layer] = tile;
+            self.tiles[i][j][layer] = tile;
         }
 
         return self;
