@@ -28,18 +28,21 @@
                     var shaObj = new jsSHA("SHA-1", "TEXT");
                     shaObj.update(data);
                     var hash = shaObj.getHash("HEX");
+                    var exists = false;
                     if(self.loadedImages[hash] === undefined){
+                        img.hash = hash;
                         self.loadedImages[hash] = img;
                     }
                     else{
-                        callback(self.loadedImages[hash]);
+                        img = self.loadedImages[hash];
+                        exists=true;
                     }
-                    callback(img);
+                    callback(img,exists);
                 });
             };
 
             img.onerror = function(){
-                callback(null);
+                callback(null,false);
             };
         },
         /*
