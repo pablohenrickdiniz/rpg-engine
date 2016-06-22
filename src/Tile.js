@@ -53,25 +53,17 @@
 
     Tile.prototype.getGraphic = function(){
         var self= this;
-        if(self.parent != null){
-            var tile_width = self.parent.getTileWidth();
-            var tile_height = self.parent.getTileHeight();
-            return {
-                image:self.parent.image,
-                sx:self.sx,
-                sy:self.sy,
-                sWidth:tile_width,
-                sHeight:tile_height,
-                dWidth:tile_width,
-                dHeight:tile_height
-            };
-        }
-        else{
-            return {
-                sx:self.sx,
-                sy:self.sy
-            };
-        }
+        var tile_width = self.getWidth();
+        var tile_height = self.getHeight();
+        return {
+            image:self.parent.image,
+            sx:self.sx,
+            sy:self.sy,
+            sWidth:tile_width,
+            sHeight:tile_height,
+            dWidth:tile_width,
+            dHeight:tile_height
+        };
     };
 
     w.Tile = Tile;
