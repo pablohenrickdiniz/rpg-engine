@@ -46,7 +46,8 @@
             }
 
             if(self.tiles[i][j] == undefined){
-                self.tiles[i][j]= new Tile(self,j*tile_width,i*tile_height);
+                self.tiles[i][j]= new Tile(self.image,j*tile_width,i*tile_height,tile_width,tile_height);
+                self.tiles[i][j].setParent(self);
             }
 
             return self.tiles[i][j];
