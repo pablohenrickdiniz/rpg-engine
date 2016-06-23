@@ -93,7 +93,7 @@
                 ctx.drawImage(g.image, g.sx, g.sy, g.sWidth, g.sHeight, 0, 0, g.dWidth, g.dHeight);
             }
             var image = new Image();
-            image.src = canvas.toDataUrl("image/png");
+            image.src = canvas.toDataURL("image/png");
             return new Tile(image,sx,sy,width,height);
         }
         return null;
