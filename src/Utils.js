@@ -7,7 +7,7 @@
         calculate_final_position: function (bounds, ex, ey, time) {
             var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height,groups:['STEP']};
             var vec = {x: ex - bounds.x, y: ey - bounds.y};
-            var quadtree = RPG.Globals.current_map._getCollideTree();
+            var quadtree = RPG.Game.current_map._getCollideTree();
 
             var collisions = quadtree.retrieve(final_bounds,'STEP');
 
@@ -31,8 +31,8 @@
             if(final_bounds.x < 0){
                 final_bounds.x = 0;
             }
-            else if(final_bounds.x > RPG.Globals.current_map.getFullWidth()-32){
-                final_bounds.x = RPG.Globals.current_map.getFullWidth()-32;
+            else if(final_bounds.x > RPG.Game.current_map.getFullWidth()-32){
+                final_bounds.x = RPG.Game.current_map.getFullWidth()-32;
             }
             else if(vec.x > 0){
                 final_bounds.x = Math.max(final_bounds.x, bounds.x);
@@ -47,8 +47,8 @@
             if(final_bounds.y < 0){
                 final_bounds.y = 0;
             }
-            else if(final_bounds.y > RPG.Globals.current_map.getFullHeight()-32){
-                final_bounds.y = RPG.Globals.current_map.getFullHeight()-32;
+            else if(final_bounds.y > RPG.Game.current_map.getFullHeight()-32){
+                final_bounds.y = RPG.Game.current_map.getFullHeight()-32;
             }
             else if(vec.y > 0){
                 final_bounds.y = Math.max(final_bounds.y, bounds.y);
@@ -61,8 +61,8 @@
             }
 
             var self = this;
-            var distance_a = self.distance({x:bounds.x,y:bounds.y},{x:ex,y:ey});
-            var distance_b = self.distance({x:bounds.x,y:bounds.y},{x:final_bounds.x,y:final_bounds.y});
+            var distance_a = Math.distance({x:bounds.x,y:bounds.y},{x:ex,y:ey});
+            var distance_b = Math.distance({x:bounds.x,y:bounds.y},{x:final_bounds.x,y:final_bounds.y});
             time = (time*distance_b)/distance_a;
 
             return {

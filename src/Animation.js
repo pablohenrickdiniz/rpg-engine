@@ -26,10 +26,22 @@
         if(diff == 0){
             return 0;
         }
+        /*
 
         var mod = ((diff/1000)*self.fps) % self.frame_count;
         mod =  mod === 0? self.frame_count-1:mod-1;
-        return Math.abs(Math.ceil(mod));
+        return Math.abs(Math.ceil(mod));*/
+
+        var sec = diff/1000;
+        var frames = Math.ceil(sec*self.fps);
+
+        if(frames < self.frame_count){
+            return frames;
+        }
+        else{
+            var mod = frames % self.frame_count;
+            return mod;
+        }
     };
 
     /*

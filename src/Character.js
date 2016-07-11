@@ -1,12 +1,15 @@
 (function(w){
     if(w.Utils == undefined){
-        throw new Error('Character requires Utils');
+        throw 'Character requires Utils';
     }
     else if(w.QuadTree == undefined){
-        throw new Error('Character requires QuadTree');
+        throw 'Character requires QuadTree';
     }
     else if(w.Direction == undefined){
-        throw new Error('Character requires Direction');
+        throw 'Character requires Direction';
+    }
+    else if(w.Animation == undefined){
+        throw "Character requires Animation"
     }
 
     var Utils = w.Utils,
@@ -36,26 +39,29 @@
         self.bounds = {
             x:x,
             y:y,
+            lx:x,
+            ly: y,
             width:32,
             height:32,
             _ref:self,
             groups:['EV']
         };
 
+
         self.layer = 2;
         self.direction = Direction.DOWN;
         self.h_speed = 32;
         self.v_speed = 32;
-
-        self._moving = false;
-        self._refreshed = false;
-        self._start_moving_time = (new Date()).getTime();
-        self._moving_time = 0;
-        self._moving_callback = null;
-        self._start_position = {x:x, y:y};
-        self._end_position = {x:x,y:y};
-        self._camera_focus = false;
-        self._follow = null;
+        self.moving = false;
+        self.refreshed = false;
+        self.start_moving_time = (new Date()).getTime();
+        self.moving_time = 0;
+        self.moving_callback = null;
+        self.start_position = {x:x, y:y};
+        self.end_position = {x:x,y:y};
+        self.camera_focus = false;
+        self.animations = {};
+        self.follow = null;
     };
 
     /*
@@ -76,39 +82,41 @@
     Character.prototype.moveTo = function (x,y,time,callback) {
         var self = this;
         var final_bounds = Utils.calculate_final_position(self.bounds,x,y,time);
-        self._start_moving_time = (new Date()).getTime();
-        self._moving_time = final_bounds.time;
-        self._start_position = {x:self.bounds.x, y:self.bounds.y};
-        self._end_position = {x:final_bounds.x, y:final_bounds.y};
-        self._moving_callback = callback;
+        self.startmoving_time = (new Date()).getTime();
+        self.moving_time = final_bounds.time;
+        self.start_position = {x:self.bounds.x, y:self.bounds.y};
+        self.end_position = {x:final_bounds.x, y:final_bounds.y};
+        self.moving_callback = callback;
     };
 
     /*
      _timeStepMove():void
      Executa um passo de tempo no movimento do character
      */
-    Character.prototype._timeStepMove = function(){
+    Character.prototype.timeStepMove = function(){
         var self = this;
         var now = (new Date()).getTime();
-        var diff = now - self._start_moving_time;
-        if(diff >= self._moving_time){
-            self.bounds.x = self._end_position.x;
-            self.bounds.y = self._end_position.y;
-            var callback = self._moving_callback;
-            self._moving_callback = null;
+        var diff = now - self.startmoving_time;
+        if(diff >= self.moving_time){
+            self.bounds.x = self.end_position.x;
+            self.bounds.y = self.end_position.y;
+            var callback = self.moving_callback;
+            self.moving_callback = null;
             if(typeof callback === 'function'){
                 callback();
             }
         }
         else{
-            var distance_x = (self._end_position.x-self._start_position.x);
-            var distance_y = (self._end_position.y-self._start_position.y);
-            var x =  self._start_position.x + ((distance_x*diff)/self._moving_time);
-            var y =  self._start_position.y + ((distance_y*diff)/self._moving_time);
+            var distance_x = (self.end_position.x-self.start_position.x);
+            var distance_y = (self.end_position.y-self.start_position.y);
+            var x =  self.start_position.x + ((distance_x*diff)/self.moving_time);
+            var y =  self.start_position.y + ((distance_y*diff)/self.moving_time);
             self.bounds.x = x;
             self.bounds.y = y;
             self.updateFocus();
-            QuadTree.reInsert(self.bounds);
+            if(self.bounds._full_inside){
+                QuadTree.reInsert(self.bounds);
+            }
         }
     };
 
@@ -118,16 +126,16 @@
      */
     Character.prototype.updateFocus = function(){
         var self = this;
-        if(self._camera_focus){
-            var screen_width = RPG._screen_width;
-            var screen_height = RPG._screen_height;
+        if(self.camera_focus){
+            var screen_width = RPG.screen_width;
+            var screen_height = RPG.screen_height;
             var half_width = screen_width/2;
             var half_height = screen_height/2;
             var x= self.bounds.x;
             var y = self.bounds.y;
             var viewX = -x+half_width-(self.graphic.width/2);
             var viewY = -y+half_height-(self.graphic.height/2);
-            RPG._canvas_engine.set({
+            RPG.canvas_engine.set({
                 viewX:viewX,
                 viewY:viewY
             });
@@ -140,8 +148,10 @@
     Character.prototype.setGraphic = function(graphic){
         var self = this;
         self.graphic = graphic;
-        graphic.lx = self.bounds.x;
-        graphic.ly = self.bounds.y;
+        self.animations.step_down = new Animation(self.speed,graphic.cols);
+        self.animations.step_up = new Animation(self.speed,graphic.cols);
+        self.animations.step_left = new Animation(self.speed,graphic.cols);
+        self.animations.step_right = new Animation(self.speed,graphic.cols);
     };
 
     /*
@@ -150,9 +160,25 @@
      */
     Character.prototype.getCurrentFrame = function(){
         var self = this;
-        var animation_name = 'step_'+self.direction;
-        var animation = self.graphic.animations[animation_name];
-        return animation.frames[animation.getIndexFrame()];
+        var animation = null;
+        var row = 0;
+        switch(self.direction){
+            case Direction.DOWN:
+                animation = self.animations.step_down;
+                break;
+            case Direction.UP:
+                animation = self.animations.step_up;
+                break;
+            case Direction.LEFT:
+                animation = self.animations.step_left;
+                break;
+            case Direction.RIGHT:
+                animation = self.animations.step_right;
+                break;
+        }
+
+        var index = animation.getIndexFrame();
+        return self.graphic.get(self.direction,index);
     };
 
     /*
@@ -184,8 +210,8 @@
     Character.prototype.step = function(direction,times,end,allow){
         var self = this;
         allow = allow === undefined?false:allow;
-        if(!self._moving || allow){
-            self._moving = true;
+        if(!self.moving || allow){
+            self.moving = true;
             var x = self.bounds.x;
             var y = self.bounds.y;
             var time = 1000/self.speed;
@@ -207,14 +233,15 @@
             }
 
             if(times < 1){
-                self._moving = false;
+                self.moving = false;
                 if(typeof end === 'function'){
                     end();
                 }
             }
             else{
-                var animation_name = 'step_'+direction;
-                self.graphic.animations[animation_name].execute();
+                var name = Direction.getName(direction);
+                var animation_name = 'step_'+name;
+                self.animations[animation_name].execute();
                 self.direction = direction;
                 self.moveTo(x,y,time,function(){
                     times--;
@@ -251,7 +278,7 @@
      */
     Character.prototype.follow = function(character){
         var self = this;
-        self._follow = character;
+        self.follow = character;
     };
 
     /*
@@ -260,7 +287,7 @@
      */
     Character.prototype.unfollow = function(){
         var self = this;
-        self._moving = false;
+        self.moving = false;
     };
 
     w.Character = Character;

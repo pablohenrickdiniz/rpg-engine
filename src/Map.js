@@ -22,6 +22,7 @@
         self.tile_w = tile_w;
         self.tile_h = tile_h;
         self.tiles = [];
+        self.animated_tiles = [];
         self.events = [];
         self.parent = null;
         self.tile_count = 0;
@@ -92,9 +93,25 @@
      setTile(int i, int j,int k, Object tile):void
      Altera o tile na posição [i][j][k]
      */
-    Map.prototype.setTile = function (i, j,k, tile) {
+    Map.prototype.setTile = function (i, j, k, tile) {
         var self = this;
-        if(tile instanceof Tile){
+
+        if(tile instanceof AnimatedTile){
+            if (self.animated_tiles[i] === undefined) {
+                self.animated_tiles[i] = [];
+            }
+
+            if (self.animated_tiles[i][j] === undefined) {
+                self.animated_tiles[i][j] = [];
+            }
+
+            if(self.animated_tiles[i][j][k] == undefined){
+                self.tile_count++;
+            }
+
+            self.animated_tiles[i][j][k] = tile;
+        }
+        else if(tile instanceof Tile){
             if (self.tiles[i] === undefined) {
                 self.tiles[i] = [];
             }
@@ -121,6 +138,9 @@
         var self = this;
         if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][k] !== undefined){
             return self.tiles[i][j][k];
+        }
+        else if(self.animated_tiles[i] !== undefined && self.animated_tiles[i][j] !== undefined && self.animated_tiles[i][j][k] != undefined){
+            return self.animated_tiles[i][j][k];
         }
         return null;
     };
@@ -173,12 +193,44 @@
      */
     Map.prototype.eachTile = function(callback){
         var self = this;
-        for(var i = 0; i < self.height;i++){
-            for(var j = 0; j < self.width;j++){
-                if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined){
-                    self.tiles[i][j].forEach(function(tile,layer){
-                        callback(tile,i,j,layer);
-                    });
+        var keys_a = Object.keys(self.tiles);
+
+        for(var i = 0; i < keys_a.length;i++){
+            var r = keys_a[i];
+            var keys_b = Object.keys(self.tiles[r]);
+            for(var j = 0; j < keys_b.length;j++){
+                var c = keys_b[j];
+                if(self.tiles[r] !== undefined && self.tiles[r][c] !== undefined){
+                    var keys_c = Object.keys(self.tiles[r][c]);
+                    for(var k = 0; k < keys_c;k++){
+                        var l = keys_c[k];
+                        callback(self.tiles[r][c][l],i,j,l);
+                    }
+                }
+            }
+        }
+    };
+
+    /*
+     eachAnimatedTile(function calback):void
+     Pecorre todos os tiles animados válidos do mapa
+     e passa seus parâmetros para a função de callback
+     */
+    Map.prototype.eachAnimatedTile = function(callback){
+        var self = this;
+        var keys_a = Object.keys(self.animated_tiles);
+
+        for(var i = 0; i < keys_a.length;i++){
+            var r = keys_a[i];
+            var keys_b = Object.keys(self.animated_tiles[r]);
+            for(var j = 0; j < keys_b.length;j++){
+                var c = keys_b[j];
+                if(self.animated_tiles[r] !== undefined && self.animated_tiles[r][c] !== undefined){
+                    var keys_c = Object.keys(self.animated_tiles[r][c]);
+                    for(var k = 0; k < keys_c;k++){
+                        var l = keys_c[k];
+                        callback(self.animated_tiles[r][c][l],i,j,l);
+                    }
                 }
             }
         }

@@ -1,10 +1,27 @@
 (function(w){
-    var Tileset = function(image){
+    var load_callback = function(image){
+        var self = this;
+        self.width = image.width;
+        self.height = image.height;
+        if(self.rows == null){
+            self.rows = image.height/32;
+        }
+
+        if(self.cols == null){
+            self.cols = image.width/32;
+        }
+    };
+
+    var Tileset = function(image,rows,cols){
         var self= this;
+        rows = parseInt(rows);
+        cols = parseInt(cols);
+        rows = isNaN(rows) || rows <= 0?null:rows;
+        cols = isNaN(cols) || cols <= 0?null:cols;
         self.width = 0;
         self.height = 0;
-        self.rows = 1;
-        self.cols = 1;
+        self.rows = rows;
+        self.cols = cols;
         self.image = null;
         self.tiles = [];
         self.setImage(image);
@@ -14,11 +31,11 @@
         if(image instanceof Image){
             var self =this;
             if(image.complete){
-                Tileset.loadCallback.apply(self,[image]);
+                load_callback.apply(self,[image]);
             }
             else{
                 image.addEventListener('load',function(){
-                    Tileset.loadCallback.apply(self,[image]);
+                    load_callback.apply(self,[image]);
                 });
             }
             self.image = image;
@@ -54,12 +71,6 @@
         }
     };
 
-    Tileset.loadCallback = function(image){
-        var self = this;
-        self.width = image.width;
-        self.height = image.height;
-        self.rows = image.height/32;
-        self.cols = image.width/32;
-    };
+
     w.Tileset = Tileset;
 })(window);

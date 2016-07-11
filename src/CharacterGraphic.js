@@ -1,39 +1,60 @@
 (function(w){
-    if(w.Animation == undefined){
-        throw "CharacterGraphic requires Animation"
+    if(w.Tile == undefined){
+        throw "CharacterGraphic requires Tile"
     }
 
-
-    var CharacterGraphic = function(options){
+    var CharacterGraphic = function(image,rows,cols,sx,sy,width,height){
         var self = this;
-        var image = options.image;
-        var rows = parseInt(options.rows);
-        var cols = parseInt(options.cols);
-        rows = isNaN(rows)?1:rows;
-        cols = isNaN(cols)?1:cols;
-        self.image = image;
+        rows = parseInt(rows);
+        cols = parseInt(cols);
+        sx = parseFloat(sx);
+        sy = parseFloat(sy);
+        width = parseInt(width);
+        height = parseInt(height);
+        rows = isNaN(rows) || rows < 0?1:rows;
+        cols = isNaN(cols) || cols <= 0?1:cols;
+        sx = isNaN(sx) || sx < 0?0:sx;
+        sy = isNaN(sy) || sy < 0?0:sy;
+        width = isNaN(width) || width <= 0?null:width;
+        height = isNaN(height) || height <= 0?null:height;
+
         self.rows = rows;
         self.cols = cols;
-        self.width = image.width/self.cols;
-        self.height = image.height/self.rows;
-        self.animations = {};
-        self.lx = 0;
-        self.ly = 0;
-        self._initialize();
+        self.sx = sx;
+
+        self.sy = sy;
+        self.width = width;
+        self.height = height;
+        self.tiles = [];
+        self.setImage(image);
     };
 
-    /*
-     _initialize():void
-     Inicializa as animações do gráfico
-     */
-    CharacterGraphic.prototype._initialize = function(){
-        var self = this;
-        var image = self.image;
-        self.animations.step_down = Animation.create({rows:4, cols:4,si:0,ei:0,image:image});
-        self.animations.step_left = Animation.create({rows:4, cols:4,si:1,ei:1,image:image});
-        self.animations.step_right = Animation.create({rows:4, cols:4,si:2,ei:2,image:image});
-        self.animations.step_up = Animation.create({rows:4, cols:4,si:3,ei:3,image:image});
+    CharacterGraphic.prototype.setImage = function(image){
+        if(image instanceof Image){
+            var self =this;
+            self.image = image;
+        }
     };
+
+    CharacterGraphic.prototype.get = function(i,j){
+        var self = this;
+        if(i >= 0 && i < self.rows && j >= 0 && j < self.cols){
+
+            if(self.tiles[i] == undefined){
+                self.tiles[i] = [];
+            }
+
+            if(self.tiles[i][j] == undefined){
+                var sx = self.sx+(j*self.width);
+                var sy = self.sy+(i*self.height);
+                self.tiles[i][j]= new Tile(self.image,sx,sy,self.width,self.height);
+                self.tiles[i][j].setParent(self);
+            }
+
+            return self.tiles[i][j];
+        }
+    };
+
 
     w.CharacterGraphic = CharacterGraphic;
 })(window);

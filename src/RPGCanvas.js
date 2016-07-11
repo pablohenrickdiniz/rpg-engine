@@ -37,6 +37,22 @@
     RPGCanvas.constructor = RPGCanvas;
 
     /*
+     drawTile(Tile tile, int layer,)
+     */
+    RPGCanvas.drawTile = function(tile,layer){
+        if(tile instanceof Tile){
+            var graphic = tile.getGraphic();
+            var dx = j*graphic.dWidth;
+            var dy = i*graphic.dHeight;
+
+            layer.image(graphic,{
+                dx:dx,
+                dy:dy
+            });
+        }
+    };
+
+    /*
      drawMap(Map map):void
      Desenha o mapa nas camadas de canvas
      */
@@ -52,23 +68,7 @@
                 if(map.tiles[i] !== undefined && map.tiles[i][j] !== undefined){
                     map.tiles[i][j].forEach(function(tile,layer){
                         if(context.layers[layer] !== undefined){
-                            if(tile instanceof Tile){
-                                var graphic = tile.getGraphic();
-
-                                var dx = j*graphic.dWidth;
-                                var dy = i*graphic.dHeight;
-
-                                context.layers[layer].clearRect({
-                                    x:dx,
-                                    y:dy,
-                                    width:graphic.dWidth,
-                                    height:graphic.dHeight
-                                });
-                                context.layers[layer].image(graphic,{
-                                    dx:dx,
-                                    dy:dy
-                                });
-                            }
+                            RPGCanvas.drawTile(tile,context.layers[layer]);
                         }
                     });
                 }
@@ -114,26 +114,21 @@
             if(self.layers[layer_index] !== undefined){
                 var layer = self.layers[layer_index];
                 var bounds = character.bounds;
-                var graphic = character.graphic;
                 var frame = character.getCurrentFrame();
-                var x = bounds.x-(Math.max(graphic.width-32,0));
-                var y = bounds.y-(Math.max(graphic.height-32,0));
+
+                var x = bounds.x;
+                var y = bounds.y;
 
                 if(frame !== undefined){
-                    var image = {
-                        image:frame.image,
-                        sx:frame.sx,
-                        sy:frame.sy,
+                    var graphic = frame.getGraphic();
+                    layer.getContext().clearRect(bounds.lx,bounds.ly,graphic.dWidth,graphic.dHeight);
+
+                    layer.image(graphic,{
                         dx:x,
-                        dy:y,
-                        dWidth:frame.dWidth,
-                        dHeight:frame.dHeight,
-                        sWidth:frame.sWidth,
-                        sHeight:frame.sHeight
-                    };
-                    layer.image(image);
-                    graphic.lx = x;
-                    graphic.ly = y;
+                        dy:y
+                    });
+                    bounds.lx = x;
+                    bounds.ly = y;
                     character._refreshed = true;
                 }
 
