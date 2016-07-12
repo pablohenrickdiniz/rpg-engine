@@ -7,6 +7,7 @@
     }
 
     var RPG = {
+        steps:0,
         Game:{
             current_map:null,//Mapa atual
             current_player:null,//Jogador Atual
@@ -16,10 +17,11 @@
             start_time:null//Data de início
         },
         Screen:{
-            viewX:0,
-            viewY:0,
+            x:0,
+            y:0,
             width:600,
             height:600,
+            BGRefreshed:false,
             layers:{
                 BG1:null,//Background 1
                 BG2:null,//Background 2
@@ -35,6 +37,26 @@
                 menu1:null,//Menu 1
                 menu2:null,//Menu 2
                 menu3:null//Menu 3
+            },
+            setPosition:function(x,y){
+                var self = this;
+                x = parseFloat(x);
+                y = parseFloat(y);
+                var changed = false;
+                if(!isNaN(x) && x > 0){
+                    if(parseInt(self.x) != parseInt(x)){
+                        self.x = x;
+                        changed = true;
+                    }
+                }
+
+                if(!isNaN(y) && y > 0){
+                    if(parseInt(self.y) != parseInt(y)){
+                        self.y = y;
+                        changed = true;
+                    }
+                }
+                self.BGRefreshed = !changed;
             }
         },
         _switches_callbacks:[],//callbacks de switches
@@ -335,6 +357,43 @@
             canvas_engine.drawCharacter(current_player);
         },
         /*
+            stepFocus():void
+            executa o passo que focaliza em um evento
+         */
+        stepFocus:function(){
+            var self = this;
+            if(self.focused_event != null){
+                var event = self.focused_event;
+                var s = self.Screen,
+                    g = self.Game,
+                    m = g.current_map;
+
+                var screen_width = s.width;
+                var screen_height = s.height;
+
+                var screen_x = event.bounds.x-(screen_width/2)+(event.graphic.width/2);
+                var screen_y = event.bounds.y-(screen_height/2)+(event.graphic.width/2);
+                var max_screen_x = m.getFullWidth()-screen_width;
+                var max_screen_y = m.getFullWidth()-screen_height;
+
+                if(screen_x < 0){
+                    screen_x = 0;
+                }
+                else if(screen_x > max_screen_x){
+                    screen_x = max_screen_x;
+                }
+
+                if(screen_y < 0){
+                    screen_y = 0;
+                }
+                else if(screen_y > max_screen_y){
+                    screen_y= max_screen_y;
+                }
+
+                s.setPosition(screen_x,screen_y);
+            }
+        },
+        /*
          step():void
          executa um passo de tempo no jogo
          */
@@ -343,21 +402,28 @@
                 RPG.interval = window.requestAnimationFrame(function () {
                     RPG.step();
                 });
+
                 RPG.stepPlayer();
                 RPG.stepEvents();
+                RPG.stepFocus();
                 RPG.clearEvents();
+                RPG.refreshBG();
                 RPG.drawEvents();
-
+                RPG.steps++;
+            }
+        },
+        /*
+            refreshBG():void
+         */
+        refreshBG:function(){
+            var self =this;
+            if(!self.Screen.BGRefreshed){
                 var map = RPG.Game.current_map;
                 var canvas_engine = RPG.canvas_engine;
                 var s = RPG.Screen;
-                var v = canvas_engine.getVisibleArea();
                 canvas_engine.clearBGLayers();
-                canvas_engine.drawMapArea(map,v.x,v.y,v.width,v.height);
-
-                if(RPG.debug){
-                    RPG.canvas_engine.drawQuadTree(RPG.Game.current_map._getCollideTree(),10);
-                }
+                canvas_engine.drawMapArea(map,s.x, s.y,s.width,s.height);
+                self.Screen.BGRefreshed = true;
             }
         },
         /* getSeconds(): int

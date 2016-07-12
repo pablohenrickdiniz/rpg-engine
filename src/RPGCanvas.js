@@ -66,8 +66,10 @@
                         if(self.layers[layer] != undefined){
                             var context = self.layers[layer].getContext();
                             var graphic = tile.getGraphic();
-                            var dx = j*graphic.dWidth;
-                            var dy = i*graphic.dHeight;
+                            var dx = j*graphic.dWidth-sx;
+                            var dy = i*graphic.dHeight-sy;
+                            dx = parseInt(dx);
+                            dy = parseInt(dy);
                             context.drawImage(graphic.image,graphic.sx,graphic.sy,graphic.sWidth,graphic.sHeight,dx,dy,graphic.dWidth,graphic.dHeight);
                         }
                     });
@@ -118,8 +120,9 @@
 
                 if(frame !== undefined){
                     var graphic = frame.getGraphic();
-                    var x = bounds.x-((graphic.dWidth-bounds.width)/2);
-                    var y = bounds.y;
+                    var x = bounds.x-RPG.Screen.x;
+                    var y = bounds.y-RPG.Screen.y;
+
                     var context = layer.getContext();
                     context.clearRect(bounds.lx,bounds.ly,graphic.dWidth,graphic.dHeight);
                     context.drawImage(graphic.image,graphic.sx,graphic.sy,graphic.sWidth,graphic.sHeight,x,y,graphic.dWidth,graphic.dHeight);

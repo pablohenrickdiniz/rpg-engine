@@ -72,7 +72,6 @@
         var self = this;
         self.bounds.x = x;
         self.bounds.y = y;
-        self.updateFocus();
     };
 
     /*
@@ -113,33 +112,12 @@
             var y =  self.start_position.y + ((distance_y*diff)/self.moving_time);
             self.bounds.x = x;
             self.bounds.y = y;
-            self.updateFocus();
             if(self.bounds._full_inside){
                 QuadTree.reInsert(self.bounds);
             }
         }
     };
 
-    /*
-     updateFocus():void
-     Atualiza a  posição da câmera (se focada nesse character)
-     */
-    Character.prototype.updateFocus = function(){
-        var self = this;
-        if(self.camera_focus){
-            var screen_width = RPG.Screen.width;
-            var screen_height = RPG.Screen.height;
-            var half_width = screen_width/2;
-            var half_height = screen_height/2;
-            var x= self.bounds.x;
-            var y = self.bounds.y;
-            var viewX = x+half_width-(self.graphic.width/2);
-            var viewY = y+half_height-(self.graphic.height/2);
-
-            RPG.Screen.viewX = viewX;
-            RPG.Screen.viewY = viewY;
-        }
-    };
     /*
      setGraphic(Graphic graphic):void
      Altera o gráfico do character
