@@ -16,6 +16,8 @@
             start_time:null//Data de início
         },
         Screen:{
+            viewX:0,
+            viewY:0,
             width:600,
             height:600,
             layers:{
@@ -40,8 +42,8 @@
         _key_reader:null,//leitor de teclado
         _interval:null,//interval de execução
         _running:false,//running execução iniciada
-        _debug:false,//modo debug
-        _focused_event:null,//Evento que está sendo focado
+        debug:false,//modo debug
+        focused_event:null,//Evento que está sendo focado
         /*_switchCallback(String name, function callback)
          * Registra função de callback para ativar ou desativar switch global
          * */
@@ -104,9 +106,10 @@
         loadMap:function(map){
             var self = this;
             self.Game.current_map = map;
-            var width = map.getFullWidth();
-            var height = map.getFullHeight();
             var screen = self.Screen;
+            var width = screen.width;
+            var height = screen.height;
+
             screen.layers.BG1.set({width:width,height:height});
             screen.layers.BG2.set({width:width,height:height});
             screen.layers.BG3.set({width:width,height:height});
@@ -118,7 +121,8 @@
             screen.layers.BG7.set({width:width,height:height});
             screen.layers.BG8.set({width:width,height:height});
             screen.layers.QUAD.set({width:width,height:height});
-            RPGCanvas.drawMap(map,RPG.canvas_engine);
+
+            var visible = self.canvas_engine.getVisibleArea();
 
             var current_player = RPG.Game.current_player;
             if(current_player != null && current_player.active){
@@ -343,8 +347,16 @@
                 RPG.stepEvents();
                 RPG.clearEvents();
                 RPG.drawEvents();
+
+                var map = RPG.Game.current_map;
+                var canvas_engine = RPG.canvas_engine;
+                var s = RPG.Screen;
+                var v = canvas_engine.getVisibleArea();
+                canvas_engine.clearBGLayers();
+                canvas_engine.drawMapArea(map,v.x,v.y,v.width,v.height);
+
                 if(RPG.debug){
-                    RPG.canvas_engine.drawQuadTree(RPG.Game.current_map.getCollideTree(),10);
+                    RPG.canvas_engine.drawQuadTree(RPG.Game.current_map._getCollideTree(),10);
                 }
             }
         },

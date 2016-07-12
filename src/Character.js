@@ -127,18 +127,17 @@
     Character.prototype.updateFocus = function(){
         var self = this;
         if(self.camera_focus){
-            var screen_width = RPG.screen_width;
-            var screen_height = RPG.screen_height;
+            var screen_width = RPG.Screen.width;
+            var screen_height = RPG.Screen.height;
             var half_width = screen_width/2;
             var half_height = screen_height/2;
             var x= self.bounds.x;
             var y = self.bounds.y;
-            var viewX = -x+half_width-(self.graphic.width/2);
-            var viewY = -y+half_height-(self.graphic.height/2);
-            RPG.canvas_engine.set({
-                viewX:viewX,
-                viewY:viewY
-            });
+            var viewX = x+half_width-(self.graphic.width/2);
+            var viewY = y+half_height-(self.graphic.height/2);
+
+            RPG.Screen.viewX = viewX;
+            RPG.Screen.viewY = viewY;
         }
     };
     /*

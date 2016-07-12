@@ -7,23 +7,43 @@
      drawQuadTreeCallback(QuadTree quadtree, CanvasLayer layer,Boolean first):void
      Desenha a árvore de colisão(Modo Debug)
      */
-    var drawQuadTreeCallback = function(quadtree,layer,first){
+    var drawQuadTreeCallback = function(quadtree,context,first){
+        //first = first === undefined?true:first;
+        //if(first){
+        //    layer.clear();
+        //}
+        //var context = layer.getContext();
+        //layer.rect(quadtree.bounds);
+        //
+        //if(first){
+        //    var objects = quadtree.objects;
+        //    objects.forEach(function(object){
+        //        layer.rect(object);
+        //    });
+        //}
+        //
+        //if(!quadtree.isLeaf()){
+        //    for(var i =0; i < quadtree.nodes.length;i++){
+        //        drawQuadTreeCallback(quadtree.nodes[i],layer,false);
+        //    }
+        //}
         first = first === undefined?true:first;
+        var bounds = quadtree.bounds;
         if(first){
-            layer.clear();
+            context.clearRect(0,0,bounds.width,bounds.height);
         }
-        layer.rect(quadtree.bounds);
-
+        context.strokeStyle = '#000000';
+        context.strokeRect(bounds.x,bounds.y,bounds.width,bounds.height);
         if(first){
-            var objects = quadtree.objects;
+           var objects = quadtree.objects;
             objects.forEach(function(object){
-                layer.rect(object);
+                context.strokeRect(bounds.x,bounds.y,bounds.width,bounds.height);
             });
         }
 
         if(!quadtree.isLeaf()){
             for(var i =0; i < quadtree.nodes.length;i++){
-                drawQuadTreeCallback(quadtree.nodes[i],layer,false);
+                drawQuadTreeCallback(quadtree.nodes[i],context,false);
             }
         }
     };
@@ -36,39 +56,19 @@
     RPGCanvas.prototype = Object.create(CE.prototype);
     RPGCanvas.constructor = RPGCanvas;
 
-    /*
-     drawTile(Tile tile, int layer,)
-     */
-    RPGCanvas.drawTile = function(tile,layer){
-        if(tile instanceof Tile){
-            var graphic = tile.getGraphic();
-            var dx = j*graphic.dWidth;
-            var dy = i*graphic.dHeight;
-
-            layer.image(graphic,{
-                dx:dx,
-                dy:dy
-            });
-        }
-    };
-
-    /*
-     drawMap(Map map):void
-     Desenha o mapa nas camadas de canvas
-     */
-    RPGCanvas.drawMap = function(map,context){
-        var interval = map.getAreaInterval({
-            x:0,
-            y:0,
-            width:map.getFullWidth(),
-            height:map.getFullHeight()
-        });
+    RPGCanvas.prototype.drawMapArea = function(map,sx,sy,width,height){
+        var interval = map.getAreaInterval({x:sx,y:sy,width:width,height:height});
+        var self = this;
         for(var i = interval.si; i <= interval.ei;i++){
             for(var j = interval.sj; j <= interval.ej;j++){
                 if(map.tiles[i] !== undefined && map.tiles[i][j] !== undefined){
                     map.tiles[i][j].forEach(function(tile,layer){
-                        if(context.layers[layer] !== undefined){
-                            RPGCanvas.drawTile(tile,context.layers[layer]);
+                        if(self.layers[layer] != undefined){
+                            var context = self.layers[layer].getContext();
+                            var graphic = tile.getGraphic();
+                            var dx = j*graphic.dWidth;
+                            var dy = i*graphic.dHeight;
+                            context.drawImage(graphic.image,graphic.sx,graphic.sy,graphic.sWidth,graphic.sHeight,dx,dy,graphic.dWidth,graphic.dHeight);
                         }
                     });
                 }
@@ -82,8 +82,8 @@
      */
     RPGCanvas.prototype.drawQuadTree = function(quadtree,layer){
         var self = this;
-        layer = self.getLayer(layer);
-        drawQuadTreeCallback(quadtree,layer);
+        var context = self.getLayer(layer).getContext();
+        drawQuadTreeCallback(quadtree,context);
     };
 
     /*
@@ -116,17 +116,13 @@
                 var bounds = character.bounds;
                 var frame = character.getCurrentFrame();
 
-                var x = bounds.x;
-                var y = bounds.y;
-
                 if(frame !== undefined){
                     var graphic = frame.getGraphic();
-                    layer.getContext().clearRect(bounds.lx,bounds.ly,graphic.dWidth,graphic.dHeight);
-
-                    layer.image(graphic,{
-                        dx:x,
-                        dy:y
-                    });
+                    var x = bounds.x-((graphic.dWidth-bounds.width)/2);
+                    var y = bounds.y;
+                    var context = layer.getContext();
+                    context.clearRect(bounds.lx,bounds.ly,graphic.dWidth,graphic.dHeight);
+                    context.drawImage(graphic.image,graphic.sx,graphic.sy,graphic.sWidth,graphic.sHeight,x,y,graphic.dWidth,graphic.dHeight);
                     bounds.lx = x;
                     bounds.ly = y;
                     character._refreshed = true;
@@ -136,159 +132,16 @@
         }
     };
 
-    RPGCanvas.prototype.drawWindow = function(window){
-        var parent = window.parent;
-        if(window.graphic !== null && window.parent !== null){
-            var bounds,size = WindowBuilder.size,dx,dy,count;
-            var graphic = window.graphic;
-            var x = window.bounds.x;
-            var y = window.bounds.y;
-            var width = window.bounds.width*size;
-            var height = window.bounds.height*size;
-
-            bounds = WindowBuilder.background_bounds;
-            parent.image({
-                image:graphic,
-                sWidth:bounds.sWidth,
-                sHeight:bounds.sHeight,
-                dx:x,
-                dy:y,
-                dWidth:width,
-                dHeight:height,
-                opacity:60
-            });
-
-            bounds = WindowBuilder.top_left_bounds;
-            parent.image({
-                image:graphic,
-                dx:x,
-                dy:y,
-                sx:bounds.sx,
-                sy:bounds.sy,
-                dWidth:bounds.dWidth,
-                dHeight:bounds.dHeight,
-                sWidth:bounds.sWidth,
-                sHeight:bounds.sHeight
-            });
-
-            bounds = WindowBuilder.top_right_bounds;
-            parent.image({
-                image:graphic,
-                dx:(x+width-size),
-                dy:y,
-                sx:bounds.sx,
-                sy:bounds.sy,
-                dWidth:bounds.dWidth,
-                dHeight:bounds.dHeight,
-                sWidth:bounds.sWidth,
-                sHeight:bounds.sHeight
-            });
-
-            bounds = WindowBuilder.bottom_right_bounds;
-            parent.image({
-                image:graphic,
-                dx:(x+width-size),
-                dy:(y+height-size),
-                sx:bounds.sx,
-                sy:bounds.sy,
-                dWidth:bounds.dWidth,
-                dHeight:bounds.dHeight,
-                sWidth:bounds.sWidth,
-                sHeight:bounds.sHeight
-            });
-
-            bounds = WindowBuilder.bottom_left_bounds;
-            parent.image({
-                image:graphic,
-                dx:x,
-                dy:(y+height-size),
-                sx:bounds.sx,
-                sy:bounds.sy,
-                dWidth:bounds.dWidth,
-                dHeight:bounds.dHeight,
-                sWidth:bounds.sWidth,
-                sHeight:bounds.sHeight
-            });
-
-            bounds = WindowBuilder.top_bounds;
-            dx = x+16;
-            count = 1;
-            while(dx < (x+width-16)){
-                parent.image({
-                    image:graphic,
-                    dx:dx,
-                    dy:y,
-                    sx:bounds.sx+(count%2===0?16:0),
-                    sy:bounds.sy,
-                    dWidth:16,
-                    dHeight:16,
-                    sWidth:bounds.sWidth,
-                    sHeight:bounds.sHeight
-                });
-                dx+=16;
-                count++;
-            }
-
-            bounds = WindowBuilder.right_bounds;
-            dy = y+16;
-            count = 1;
-
-            while(dy < (y+height-16)){
-                parent.image({
-                    image:graphic,
-                    dx:x+width-size,
-                    dy:dy,
-                    sx:bounds.sx,
-                    sy:bounds.sy+(count%2==0?16:0),
-                    dWidth:16,
-                    dHeight:16,
-                    sWidth:bounds.sWidth,
-                    sHeight:bounds.sHeight
-                });
-                dy+=size;
-                count++;
-            }
-
-            bounds = WindowBuilder.bottom_bounds;
-            dx = x+16;
-            count = 1;
-            while(dx < (x+width-16)){
-                parent.image({
-                    image:graphic,
-                    dx:dx,
-                    dy:y+height-size,
-                    sx:bounds.sx+(count%2==0?16:0),
-                    sy:bounds.sy,
-                    dWidth:16,
-                    dHeight:16,
-                    sWidth:bounds.sWidth,
-                    sHeight:bounds.sHeight
-                });
-                dx+=size;
-                count++;
-            }
-
-
-            bounds = WindowBuilder.left_bounds;
-            dy = y+16;
-            count = 1;
-            while(dy < (y+height-16)){
-                parent.image({
-                    image:graphic,
-                    dx:x,
-                    dy:dy,
-                    sx:bounds.sx,
-                    sy:bounds.sy+(count%2==0?16:0),
-                    dWidth:16,
-                    dHeight:16,
-                    sWidth:bounds.sWidth,
-                    sHeight:bounds.sHeight
-                });
-                dy+=size;
-                count++;
-            }
-
-        }
+    RPGCanvas.prototype.clearBGLayers = function(){
+        var self = this;
+        self.getLayer(0).clear();
+        self.getLayer(1).clear();
+        self.getLayer(5).clear();
+        self.getLayer(6).clear();
+        self.getLayer(7).clear();
+        self.getLayer(8).clear();
+        self.getLayer(9).clear();
     };
+
     w.RPGCanvas = RPGCanvas;
 })(window);

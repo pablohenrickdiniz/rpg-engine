@@ -3,6 +3,14 @@
         throw "Map requires QuadTree"
     }
 
+    if(w.Tile == undefined){
+        throw "Map requires Tile"
+    }
+
+    if(w.AnimatedTile == undefined){
+        throw "Map requires Animated Tile"
+    }
+
     var Map = function (options) {
         var self = this;
         options = options==undefined?{}:options;

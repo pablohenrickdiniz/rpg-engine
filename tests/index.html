@@ -12,40 +12,51 @@
     <script type="text/javascript" src="../src/RPGCanvas.js"></script>
     <script type="text/javascript" src="../src/RPG.js"></script>
     <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
+    <script type="text/javascript" src="../src/Tile.js"></script>
+    <script type="text/javascript" src="../src/AnimatedTile.js"></script>
     <script type="text/javascript" src="../src/Map.js"></script>
     <script type="text/javascript" src="../src/Utils.js"></script>
     <script type="text/javascript" src="../src/Direction.js"></script>
     <script type="text/javascript" src="../src/Animation.js"></script>
     <script type="text/javascript" src="../src/Character.js"></script>
     <script type="text/javascript" src="../src/Tileset.js"></script>
-    <script type="text/javascript" src="../src/Tile.js"></script>
     <script type="text/javascript" src="../src/CharacterGraphic.js"></script>
     <script type="text/javascript" src="../src/Player.js"></script>
+    <script type="text/javascript" src="../plugins/jsSHA/src/sha1.js"></script>
+    <script type="text/javascript" src="../src/ImageLoader.js"></script>
+    <script type="text/javascript" src="../src/TilesetLoader.js"></script>
     <script type="text/javascript">
         function init(){
             var container = document.getElementById('container');
-            var image = new Image();
-            image.src = 'img/SF_Actor1.png';
 
+            TilesetLoader.load('img/Town & Village - 0034.png',function(tileset){
+                ImageLoader.load('img/SF_Actor1.png',function(image){
+                    var player = new Player();
+                    player.active = true;
+                    var graphic = new CharacterGraphic(image,4,3,0,0,48,48);
+                    player.setGraphic(graphic);
+                    RPG.Game.current_player = player;
+                    RPG.initialize(container);
 
+                    var map = new Map({
+                        width:100,
+                        height:100
+                    });
+                    var tile = tileset.get(0,0);
 
-            var map = new Map({
-                width:50,
-                height:50
+                    for(var i = 0; i < 100;i++){
+                        for(var j = 0; j < 100;j++){
+                            map.setTile(i,j,0,tile);
+                        }
+                    }
+
+                    RPG.debug = false;
+                    RPG.loadMap(map);
+                    RPG.run();
+                    RPG._focusOnEvent(player);
+
+                });
             });
-            var player = new Player();
-            player.active = true;
-            var graphic = new CharacterGraphic(image,4,3,0,0,48,48);
-            player.setGraphic(graphic);
-
-
-            RPG.Game.current_player = player;
-
-
-
-            RPG.initialize(container);
-            RPG.loadMap(map);
-            RPG.run();
         }
     </script>
 </head>
