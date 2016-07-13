@@ -143,7 +143,7 @@
 
             var current_player = RPG.Game.current_player;
             if(current_player != null && current_player.active){
-                map._getCollideTree().insert(current_player.bounds);
+                map.getTree().insert(current_player.bounds);
             }
         },
         /*

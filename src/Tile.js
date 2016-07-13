@@ -1,40 +1,22 @@
 (function(w){
     var Tile = function(image,sx,sy,width,height){
         var self= this;
+        self.sx = sx;
+        self.sy = sy;
+        self.width = width;
+        self.height = height;
         self.image = image;
         self.parent = null;
-        self.bounds = {
-            sx:sx,
-            sy:sy,
-            width:width,
-            height:height,
-            groups:['MAP']
-        };
-    };
-
-    Tile.prototype.addCollisionGroup =function(group){
-        var self = this;
-        if(self.bounds.groups.indexOf(group) != -1){
-            self.bounds.groups.push(group);
-        }
-    };
-
-    Tile.prototype.removeCollisionGroup = function(group){
-        var self = this;
-        var index = self.bounds.groups.indexOf(group);
-        if(index != -1){
-            self.bounds.groups.splice(index,1);
-        }
     };
 
     Tile.prototype.setSx = function(sx){
         var self = this;
-        self.bounds.sx = sx;
+        self.sx = sx;
     };
 
     Tile.prototype.setSy = function(sy){
         var self = this;
-        self.bounds.sy = sy;
+        self.sy = sy;
     };
 
     Tile.prototype.setParent = function(parent){
@@ -44,12 +26,12 @@
 
     Tile.prototype.getWidth = function(){
         var self= this;
-        return self.bounds.width;
+        return self.width;
     };
 
     Tile.prototype.getHeight = function(){
         var self= this;
-        return self.bounds.height;
+        return self.height;
     };
 
     Tile.prototype.hasTransparency = function(){
@@ -77,8 +59,8 @@
         var tile_height = self.getHeight();
         return {
             image:self.image,
-            sx:self.bounds.sx,
-            sy:self.bounds.sy,
+            sx:self.sx,
+            sy:self.sy,
             sWidth:tile_width,
             sHeight:tile_height,
             dWidth:tile_width,

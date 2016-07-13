@@ -34,24 +34,24 @@
         self.events = [];
         self.parent = null;
         self.tile_count = 0;
-        self._collideTree = null;
+        self.tree = null;
     };
 
     /*
      _getCollideTree():QuadTree
      Retorna a árvore de colisão do mapa
      */
-    Map.prototype._getCollideTree = function(){
+    Map.prototype.getTree = function(){
         var self = this;
-        if(self._collideTree === null){
-            self._collideTree = new QuadTree({
+        if(self.tree === null){
+            self.tree = new QuadTree({
                 x:0,
                 y:0,
                 width:self.getFullWidth(),
                 height:self.getFullHeight()
             });
         }
-        return self._collideTree;
+        return self.tree;
     };
 
     /*
@@ -60,20 +60,8 @@
      */
     Map.prototype.initializeCollision = function(){
         var self = this;
+        var tree = self.getTree();
 
-        var tree = self._getCollideTree();
-        self.eachTile(function(tile){
-            if(tile.bounds !== undefined){
-                var bounds = tile.bounds;
-                tree.insert({
-                    x:tile.dx+bounds.x,
-                    y:tile.dy+bounds.y,
-                    width:bounds.width,
-                    height:bounds.height,
-                    groups:['MAP','EV','STEP']
-                });
-            }
-        });
     };
 
     /*
@@ -191,7 +179,20 @@
     Map.prototype.addEvent = function(event){
         var self = this;
         self.events.push(event);
-        self._getCollideTree().insert(event.bounds);
+        self.getTree().insert(event.bounds);
+    };
+
+    /*
+     removeEvent(Event event):void
+     Remove um evento no mapa
+     */
+    Map.prototype.removeEvent = function(event){
+        var self = this;
+        var index = self.events.indexOf(event);
+        if(index != -1){
+            self.events.splice(index,1);
+            QuadTree.remove(event.bounds);
+        }
     };
 
     /*
