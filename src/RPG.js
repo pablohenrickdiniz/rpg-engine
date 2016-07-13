@@ -7,7 +7,6 @@
     }
 
     var RPG = {
-        steps:0,
         Game:{
             current_map:null,//Mapa atual
             current_player:null,//Jogador Atual
@@ -31,12 +30,9 @@
                 BG4:null,//Background 4
                 BG5:null,//Background 5
                 BG6:null,//Background 6
-                BG7:null,//Background 7
-                BG8:null,//Background 8
-                QUAD:null,//QuadTree modo debug
-                menu1:null,//Menu 1
-                menu2:null,//Menu 2
-                menu3:null//Menu 3
+                EF1:null,//Effects 1
+                EF2:null,//Effects 2
+                EF3:null //Effects 3
             },
             setPosition:function(x,y){
                 var self = this;
@@ -64,8 +60,10 @@
         _key_reader:null,//leitor de teclado
         _interval:null,//interval de execução
         _running:false,//running execução iniciada
-        debug:false,//modo debug
         focused_event:null,//Evento que está sendo focado
+        fade_animation:null,
+        fade_finished:true,
+        fps:60,
         /*_switchCallback(String name, function callback)
          * Registra função de callback para ativar ou desativar switch global
          * */
@@ -100,12 +98,9 @@
             screen.layers.BG4 = engine.createLayer();
             screen.layers.BG5 = engine.createLayer();
             screen.layers.BG6 = engine.createLayer();
-            screen.layers.BG7 = engine.createLayer();
-            screen.layers.BG8 = engine.createLayer();
-            screen.layers.QUAD = engine.createLayer();
-            screen.layers.menu1 = engine.createLayer({fixed:true});
-            screen.layers.menu2 = engine.createLayer({fixed:true});
-            screen.layers.menu3 = engine.createLayer({fixed:true});
+            screen.layers.EF1 = engine.createLayer();
+            screen.layers.EF2 = engine.createLayer();
+            screen.layers.EF3 = engine.createLayer();
             key_reader.keydown('KEY_ESC',function(){
                 if(!RPG.running){
                     RPG.run();
@@ -140,11 +135,10 @@
             screen.layers.BG4.set({width:width,height:height});
             screen.layers.BG5.set({width:width,height:height});
             screen.layers.BG6.set({width:width,height:height});
-            screen.layers.BG7.set({width:width,height:height});
-            screen.layers.BG8.set({width:width,height:height});
-            screen.layers.QUAD.set({width:width,height:height});
+            screen.layers.EF1.set({width:width,height:height});
+            screen.layers.EF2.set({width:width,height:height});
+            screen.layers.EF3.set({width:width,height:height});
 
-            var visible = self.canvas_engine.getVisibleArea();
 
             var current_player = RPG.Game.current_player;
             if(current_player != null && current_player.active){
@@ -393,6 +387,36 @@
                 s.setPosition(screen_x,screen_y);
             }
         },
+        stepEffects:function(){
+
+        },
+        stepFade:function(){
+            var self = this;
+            if(!self.fade_finished){
+                var running = self.fade_animation.isRunning();
+                var index = self.fade_animation.getIndexFrame();
+                var opacity = running? (index/(self.fade_animation.frame_count-1)):1;
+                var ctx =  self.Screen.layers.EF3.getContext();
+                ctx.fillStyle = 'rgba(0,0,0,'+opacity+')';
+                ctx.clearRect(0,0,self.Screen.width,self.Screen.height);
+                ctx.fillRect(0,0,self.Screen.width,self.Screen.height);
+
+                if(!running){
+                    self.fade_finished = true;
+                }
+            }
+        },
+        fadeOut:function(miliseconds){
+            var self = this;
+            miliseconds = parseInt(miliseconds);
+            miliseconds = isNaN(miliseconds) || miliseconds < 0 ?2000:miliseconds;
+            console.log(miliseconds);
+            if(self.fade_finished){
+                self.fade_finished = false;
+                self.fade_animation = new Animation(self.fps,self.fps*(miliseconds/1000));
+                self.fade_animation.execute(true);
+            }
+        },
         /*
          step():void
          executa um passo de tempo no jogo
@@ -409,6 +433,7 @@
                 RPG.clearEvents();
                 RPG.refreshBG();
                 RPG.drawEvents();
+                RPG.stepFade();
                 RPG.steps++;
             }
         },
@@ -421,10 +446,20 @@
                 var map = RPG.Game.current_map;
                 var canvas_engine = RPG.canvas_engine;
                 var s = RPG.Screen;
-                canvas_engine.clearBGLayers();
+                self.clearBGLayers();
                 canvas_engine.drawMapArea(map,s.x, s.y,s.width,s.height);
                 self.Screen.BGRefreshed = true;
             }
+        },
+        clearBGLayers :function() {
+            var self = this;
+            var layers = self.Screen.layers;
+            layers.BG1.clear();
+            layers.BG2.clear();
+            layers.BG3.clear();
+            layers.BG4.clear();
+            layers.BG5.clear();
+            layers.BG6.clear();
         },
         /* getSeconds(): int
          Retorna o tempo que o jogo está executando

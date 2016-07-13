@@ -7,6 +7,8 @@
         self.start_time = now;
         self.end_time = now;
         self.running = false;
+        self.stop_on_end = false;
+        self.direction = 'positive';
     };
 
     /*
@@ -15,7 +17,33 @@
      */
     Animation.prototype.getIndexFrame = function(){
         var self = this;
+        var frames = self.getFrames();
+
+        if(frames < self.frame_count){
+            return frames;
+        }
+        else{
+            if(self.stop_on_end){
+                if(self.direction == 'negative'){
+                    return 0;
+                }
+                return self.frame_count-1;
+            }
+
+            var mod =  frames % self.frame_count;
+
+            if(self.direction == 'negative'){
+                return self.frame_count-1-mod;
+            }
+
+            return mod;
+        }
+    };
+
+
+    Animation.prototype.getFrames = function(){
         var diff = null;
+        var self = this;
         if(self.running){
             diff = (new Date()).getTime() - self.start_time;
         }
@@ -26,22 +54,18 @@
         if(diff == 0){
             return 0;
         }
-        /*
-
-        var mod = ((diff/1000)*self.fps) % self.frame_count;
-        mod =  mod === 0? self.frame_count-1:mod-1;
-        return Math.abs(Math.ceil(mod));*/
 
         var sec = diff/1000;
-        var frames = Math.ceil(sec*self.fps);
+        return Math.ceil(sec*self.fps);
+    };
 
-        if(frames < self.frame_count){
-            return frames;
+    Animation.prototype.isRunning = function(){
+        var self = this;
+        if(self.stop_on_end && self.running && self.getFrames() >= self.frame_count){
+            self.running = false;
         }
-        else{
-            var mod = frames % self.frame_count;
-            return mod;
-        }
+
+        return self.running;
     };
 
     /*
@@ -57,11 +81,13 @@
      execute():void
      Executa a animação
      */
-    Animation.prototype.execute = function(){
+    Animation.prototype.execute = function(stop_on_end,direction){
         var self = this;
         if(!self.running){
             self.start_time = (new Date()).getTime();
             self.running = true;
+            self.stop_on_end = stop_on_end == undefined?false:stop_on_end;
+            self.direction = direction == undefined?'positive':direction;
         }
     };
 

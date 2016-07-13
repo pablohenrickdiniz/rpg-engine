@@ -110,6 +110,7 @@
      Desenha um character
      */
     RPGCanvas.prototype.drawCharacter = function(character){
+        console.log('draw character');
         if(character.graphic !== null){
             var layer_index = character.layer;
             var self = this;
@@ -133,17 +134,6 @@
 
             }
         }
-    };
-
-    RPGCanvas.prototype.clearBGLayers = function(){
-        var self = this;
-        self.getLayer(0).clear();
-        self.getLayer(1).clear();
-        self.getLayer(5).clear();
-        self.getLayer(6).clear();
-        self.getLayer(7).clear();
-        self.getLayer(8).clear();
-        self.getLayer(9).clear();
     };
 
     w.RPGCanvas = RPGCanvas;
