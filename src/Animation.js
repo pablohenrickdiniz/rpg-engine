@@ -20,6 +20,9 @@
         var frames = self.getFrames();
 
         if(frames < self.frame_count){
+            if(self.direction == 'negative'){
+                return self.frame_count-1-frames;
+            }
             return frames;
         }
         else{
@@ -31,7 +34,6 @@
             }
 
             var mod =  frames % self.frame_count;
-
             if(self.direction == 'negative'){
                 return self.frame_count-1-mod;
             }

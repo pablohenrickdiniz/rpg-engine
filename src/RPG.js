@@ -63,6 +63,7 @@
         focused_event:null,//Evento que está sendo focado
         fade_animation:null,
         fade_finished:true,
+        fade_callback:null,
         fps:60,
         /*_switchCallback(String name, function callback)
          * Registra função de callback para ativar ou desativar switch global
@@ -395,23 +396,70 @@
             if(!self.fade_finished){
                 var running = self.fade_animation.isRunning();
                 var index = self.fade_animation.getIndexFrame();
-                var opacity = running? (index/(self.fade_animation.frame_count-1)):1;
+                var opacity = null;
+                if(!running){
+                    if(self.fade_animation.direction == 'negative'){
+                        opacity = 0;
+                    }
+                    else{
+                        opacity = 1;
+                    }
+                }
+                else{
+                    opacity = (index/(self.fade_animation.frame_count-1));
+                }
+
                 var ctx =  self.Screen.layers.EF3.getContext();
-                ctx.fillStyle = 'rgba(0,0,0,'+opacity+')';
                 ctx.clearRect(0,0,self.Screen.width,self.Screen.height);
-                ctx.fillRect(0,0,self.Screen.width,self.Screen.height);
+
+                if(opacity > 0){
+                    ctx.fillStyle = 'rgba(0,0,0,'+opacity+')';
+                    ctx.fillRect(0,0,self.Screen.width,self.Screen.height);
+                }
 
                 if(!running){
                     self.fade_finished = true;
+                    if(self.fade_callback != null){
+                        self.fade_callback();
+                    }
                 }
             }
         },
-        fadeOut:function(miliseconds){
+        /*
+            fadeIn()>void
+         */
+        fadeIn:function(miliseconds,callback){
             var self = this;
             miliseconds = parseInt(miliseconds);
             miliseconds = isNaN(miliseconds) || miliseconds < 0 ?2000:miliseconds;
-            console.log(miliseconds);
             if(self.fade_finished){
+                if(callback != undefined){
+                    self.fade_callback = callback;
+                }
+                else{
+                    self.fade_callback = null;
+                }
+
+                self.fade_finished = false;
+                self.fade_animation = new Animation(self.fps,self.fps*(miliseconds/1000));
+                self.fade_animation.execute(true,'negative');
+            }
+        },
+        /*
+            fadeOut():void
+         */
+        fadeOut:function(miliseconds,callback){
+            var self = this;
+            miliseconds = parseInt(miliseconds);
+            miliseconds = isNaN(miliseconds) || miliseconds < 0 ?2000:miliseconds;
+            if(self.fade_finished){
+                if(callback != undefined){
+                    self.fade_callback = callback;
+                }
+                else{
+                    self.fade_callback = null;
+                }
+
                 self.fade_finished = false;
                 self.fade_animation = new Animation(self.fps,self.fps*(miliseconds/1000));
                 self.fade_animation.execute(true);

@@ -110,7 +110,6 @@
      Desenha um character
      */
     RPGCanvas.prototype.drawCharacter = function(character){
-        console.log('draw character');
         if(character.graphic !== null){
             var layer_index = character.layer;
             var self = this;
