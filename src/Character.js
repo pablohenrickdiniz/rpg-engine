@@ -92,10 +92,11 @@
      _timeStepMove():void
      Executa um passo de tempo no movimento do character
      */
-    Character.prototype.timeStepMove = function(){
+    Character.prototype.timeStepMove = function(game_time){
         var self = this;
-        var now = (new Date()).getTime();
-        var diff = now - self.startmoving_time;
+        game_time = game_time == undefined?(new Date()).getTime():game_time;
+
+        var diff = game_time - self.startmoving_time;
         if(diff >= self.moving_time){
             self.bounds.x = self.end_position.x;
             self.bounds.y = self.end_position.y;

@@ -5,13 +5,12 @@
     <title>Test</title>
     <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
     <script type="text/javascript" src="../plugins/app-object/app-object.js"></script>
-    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasLayer.js"></script>
-    <script type="text/javascript" src="../plugins/canvas-engine/src/Validator.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/Validator.js"></script>
     <script type="text/javascript" src="../plugins/mouse-reader/src/mouse-reader.js"></script>
     <script type="text/javascript" src="../plugins/keyboard-reader/src/keyboard-reader.js"></script>
-    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasEngineCore.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
     <script type="text/javascript" src="../src/Animation.js"></script>
-    <script type="text/javascript" src="../src/RPGCanvas.js"></script>
     <script type="text/javascript" src="../src/RPG.js"></script>
     <script type="text/javascript" src="../src/Utils.js"></script>
     <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
@@ -21,91 +20,14 @@
     <script type="text/javascript" src="../src/Event.js"></script>
     <script type="text/javascript" src="../src/Page.js"></script>
     <script type="text/javascript" src="../src/Trigger.js"></script>
-    <script type="text/javascript" src="../src/Graphic.js"></script>
-    <script type="text/javascript" src="../src/UI_Window.js"></script>
-    <script type="text/javascript" src="../src/WindowBuilder.js"></script>
     <script type="text/javascript" src="../plugins/jsSHA/src/sha1.js"></script>
     <script type="text/javascript" src="../src/ImageLoader.js"></script>
     <script type="text/javascript">
-        function start(){
-            var container = document.getElementById('container');
-            var engine = RPG.initialize(container);
-
-            var player = new Player({
-                speed:5
-            });
-
-            var event = new Event({x:256, y:256,speed:4});
-            var page = new Page({
-                event:event,
-                trigger:Trigger.ACTI0N_BUTTON,
-                script:function(){
-                    console.log('Eu sou um evento de enter');
-                }
-            });
-            event.addPage(page);
-            event.current_page = page;
-
-            var window_a = WindowBuilder.create({
-                x:0,
-                y:0,
-                width:10,
-                height:12
-            },RPG._layers.menu1);
-
-            var window_b =  WindowBuilder.create({
-                x:160,
-                y:0,
-                width:24,
-                height:25
-            },RPG._layers.menu1);
-
-            var window_c = WindowBuilder.create({
-                x:0,
-                y:352,
-                width:10,
-                height:3
-            },RPG._layers.menu1);
 
 
-
-            var url = 'http://localhost:9090/graphics/characters/93891e9c308424f5e3f5350e9bbeadd4a988d248.png';
-            var url2 = 'http://localhost:9090/graphics/characters/93891e9c308424f5e3f5350e9bbeadd4a988d248.png';
-            var window_background = 'http://localhost:9090/graphics/tilesets/602394b120ae174a6210d05ee598f1dcec511051.png';
-
-           ImageLoader.loadAll([url,url2,window_background],function(images){
-                var graphic1 = new Graphic({image:images[0], rows:4, cols:4});
-                var graphic2 = new Graphic({image:images[1], rows:4, cols:4});
-                player.setGraphic(graphic1);
-                page.setGraphic(graphic2);
-                RPG.Globals.current_player = player;
-                var map = new RPG.Map({
-                    width:50,
-                    height:50
-                });
-
-//                RPG._debug = true;
-                RPG.MapLoader.load(mapData,map,function(map){
-                    map.initializeCollision();
-                    RPG.loadMap(map);
-                    RPG.run();
-                    map.addEvent(event);
-                    RPG._focusOnEvent(player);
-                    window_a.setGraphic(images[2]);
-                    window_b.setGraphic(images[2]);
-                    window_c.setGraphic(images[2]);
-                    RPG._canvas_engine.drawWindow(window_a);
-                    RPG._canvas_engine.drawWindow(window_b);
-                    RPG._canvas_engine.drawWindow(window_c);
-                });
-
-            });
-        }
-    </script>
+    </script
 </head>
 <body onload="start()">
     <div id="container"></div>
-    <!--<script type="text/javascript" src="animation-test.js"></script>-->
-    <!--<script type="text/javascript" src="rpg-test.js"></script>-->
 </body>
 </html>

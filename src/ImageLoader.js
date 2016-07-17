@@ -3,6 +3,7 @@
         throw "ImageLoader requires jsSHA"
     }
 
+
     var ImageLoader = {
         loadedImages:[],//Imagens que já foram carregadas
         /*
@@ -23,15 +24,18 @@
             var img = new Image();
             img.crossOrigin = "Anonymous";
             img.src = url;
-            img.onload = function(){
+
+            var onload_callback = function(){
+                var img = this;
+                img.removeEventListener('load',onload_callback);
                 ImageLoader.toDataURL(img,function(data){
                     var shaObj = new jsSHA("SHA-1", "TEXT");
                     shaObj.update(data);
                     var hash = shaObj.getHash("HEX");
                     var exists = false;
-                    if(self.loadedImages[hash] === undefined){
+                    if(ImageLoader.loadedImages[hash] === undefined){
                         img.hash = hash;
-                        self.loadedImages[hash] = img;
+                        ImageLoader.loadedImages[hash] = img;
                     }
                     else{
                         img = self.loadedImages[hash];
@@ -41,9 +45,13 @@
                 });
             };
 
-            img.onerror = function(){
+            var onerror_callback = function(){
+                img.removeEventListener('error',onerror_callback);
                 callback(null,false);
             };
+
+            img.addEventListener('load',onload_callback);
+            img.addEventListener('error',onerror_callback);
         },
         /*
          toDataURL(Image img, function callback):void
@@ -67,13 +75,19 @@
             if(data != null){
                 var img = new Image();
                 img.src = data;
-                img.addEventListener('load',function(){
-                    callback(img);
-                });
 
-                img.addEventListener('error',function(){
-                   callback(null);
-                });
+                var load_callback = function(){
+                    this.removeEventListener('load',load_callback);
+                    callback(img);
+                };
+
+                var error_callback = function(){
+                    this.removeEventListener('error',error_callback);
+                    callback(null);
+                };
+
+                img.addEventListener('load',load_callback);
+                img.addEventListener('error',error_callback);
             }
             else{
                 callback(null);

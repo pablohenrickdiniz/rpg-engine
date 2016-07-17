@@ -7,7 +7,7 @@
         calculate_final_position: function (bounds, ex, ey, time) {
             var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height,groups:['STEP']};
             var vec = {x: ex - bounds.x, y: ey - bounds.y};
-            var c_map = RPG.Game.current_map;
+            var c_map = RPG.Game.current_scene;
 
 
             var quadtree = c_map.getTree();

@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Map Test</title>
+    <link rel="stylesheet" href="../plugins/canvas-engine/src/dist/css/canvas-engine.css">
+</head>
+<body onload="init()">
+    <div id="container"></div>
     <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
     <script type="text/javascript" src="../plugins/app-object/app-object.js"></script>
-    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasLayer.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
     <script type="text/javascript" src="../plugins/mouse-reader/src/mouse-reader.js"></script>
     <script type="text/javascript" src="../plugins/keyboard-reader/src/keyboard-reader.js"></script>
-    <script type="text/javascript" src="../plugins/canvas-engine/src/CanvasEngine.js"></script>
-    <script type="text/javascript" src="../src/RPGCanvas.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
     <script type="text/javascript" src="../src/RPG.js"></script>
     <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
     <script type="text/javascript" src="../src/Tile.js"></script>
@@ -51,15 +54,13 @@
                     }
 
                     RPG.debug = false;
-                    RPG.loadMap(map);
-                    RPG.run();
+                    RPG.Game.loadScene(map);
                     RPG._focusOnEvent(player);
+                    RPG.run();
+
                 });
             });
         }
     </script>
-</head>
-<body onload="init()">
-    <div id="container"></div>
 </body>
 </html>

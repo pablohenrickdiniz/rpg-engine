@@ -1,11 +1,10 @@
 (function(w){
-    var Animation = function(fps,frame_count){
+    var Animation = function(fps,frame_count,now){
         var self = this;
         self.fps = fps;
         self.frame_count = frame_count;
-        var now = (new Date()).getTime();
-        self.start_time = now;
-        self.end_time = now;
+        self.start_time = now == undefined?(new Date()).getTime():now;
+        self.end_time = self.start_time;
         self.running = false;
         self.stop_on_end = false;
         self.direction = 'positive';
@@ -15,9 +14,9 @@
      getIndexFrame():int
      Retorna o índice do quadro atual da animação
      */
-    Animation.prototype.getIndexFrame = function(){
+    Animation.prototype.getIndexFrame = function(game_time){
         var self = this;
-        var frames = self.getFrames();
+        var frames = self.getFrames(game_time);
 
         if(frames < self.frame_count){
             if(self.direction == 'negative'){
@@ -43,11 +42,12 @@
     };
 
 
-    Animation.prototype.getFrames = function(){
+    Animation.prototype.getFrames = function(game_time){
         var diff = null;
         var self = this;
         if(self.running){
-            diff = (new Date()).getTime() - self.start_time;
+            game_time = game_time == undefined?(new Date()).getTime():game_time;
+            diff = game_time - self.start_time;
         }
         else{
             diff = self.end_time - self.start_time;
@@ -70,23 +70,16 @@
         return self.running;
     };
 
-    /*
-     stop():void
-     Para a execução da animação
-     */
-    Animation.prototype.stop = function(){
-        var self = this;
-        self.pause();
-    };
 
     /*
      execute():void
      Executa a animação
      */
-    Animation.prototype.execute = function(stop_on_end,direction){
+    Animation.prototype.execute = function(stop_on_end,direction,game_time){
         var self = this;
         if(!self.running){
-            self.start_time = (new Date()).getTime();
+            game_time = game_time == undefined?(new Date()).getTime():game_time;
+            self.start_time = game_time;
             self.running = true;
             self.stop_on_end = stop_on_end == undefined?false:stop_on_end;
             self.direction = direction == undefined?'positive':direction;
@@ -96,10 +89,11 @@
     /*
      pause:Pausa a execução da animação
      */
-    Animation.prototype.pause = function(){
+    Animation.prototype.pause = function(game_time){
         var self = this;
         if(self.running){
-            self.end_time = (new Date()).getTime();
+            game_time = game_time == undefined?(new Date()).getTime():game_time;
+            self.end_time = game_time;
             self.running = false;
         }
     };
