@@ -353,6 +353,7 @@
             var self = this;
             RPG.running = false;
             window.cancelAnimationFrame(RPG.interval);
+            RPG.last_loop = null;
         },
         /*actionEvents():void
          * Tratamento de eventos relacionados às ações do jogador
@@ -528,7 +529,6 @@
                 }
 
                 RPG.Game.current_time += passed;
-
                 var scene = RPG.Game.current_scene;
 
                 if (scene != null) {
@@ -544,6 +544,7 @@
                     RPG.Screen.clearAreas(clear_areas);
                     RPG.Screen.drawGraphics(graphics);
                 }
+
                 RPG.last_loop = current_time;
             }
         },

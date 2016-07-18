@@ -2,7 +2,7 @@
     var Event = function(options){
         var self = this;
         Character.call(self,options);
-        self._switches_callbacks = [];
+        self.switches_callbacks = [];
         self.switches = [];
         self.current_page = null;
         self.pages = [];
@@ -41,8 +41,8 @@
     Event.prototype.enableSwitch = function(name){
         var self = this;
         self.switches[name] = true;
-        if(self._switches_callbacks[name] !== undefined){
-            self._switches_callbacks[name].forEach(function(callback){
+        if(self.switches_callbacks[name] !== undefined){
+            self.switches_callbacks[name].forEach(function(callback){
                 callback();
             });
         }
@@ -55,8 +55,8 @@
     Event.prototype.disableSwitch = function(name){
         var self = this;
         self.switches[name] = false;
-        if(self._switches_callbacks[name] !== undefined){
-            self._switches_callbacks[name].forEach(function(callback){
+        if(self.switches_callbacks[name] !== undefined){
+            self.switches_callbacks[name].forEach(function(callback){
                 callback();
             });
         }
@@ -65,13 +65,13 @@
      _switchCallback(String name, function callback):void
      Registra a função de callback para ativar ou desativar o switch
      */
-    Event.prototype._switchCallback = function(name,callback){
+    Event.prototype.switchCallback = function(name,callback){
         var self = this;
-        if(self._switches_callbacks[name] === undefined){
-            self._switches_callbacks[name] = [];
+        if(self.switches_callbacks[name] === undefined){
+            self.switches_callbacks[name] = [];
         }
 
-        self._switches_callbacks[name].push(callback);
+        self.switches_callbacks[name].push(callback);
     };
 
     /*

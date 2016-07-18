@@ -74,8 +74,9 @@
             var ctx = canvas.getContext('2d');
             var width = null;
             var height = null;
+            var i;
 
-            for(var i = 0; i < tiles.length;i++){
+            for(i = 0; i < tiles.length;i++){
                 if(width == null || width < tiles[i].getWidth()){
                     width = tiles[i].getWidth();
                 }
@@ -88,7 +89,7 @@
             canvas.width = width;
             canvas.height = height;
 
-            for(var i = 0; i < tiles.length;i++){
+            for(i = 0; i < tiles.length;i++){
                 var g = tiles[i].getGraphic();
                 ctx.drawImage(g.image, g.sx, g.sy, g.sWidth, g.sHeight, 0, 0, g.dWidth, g.dHeight);
             }

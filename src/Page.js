@@ -12,10 +12,10 @@
         self.event = options.event;
         self.conditionsCound = 0;
         self.trigger = options.trigger === undefined? Trigger.AUTO_RUN:options.trigger;
-        self._initializeConditions();
+        self.initializeConditions();
     };
 
-    Page.prototype._initializeConditions = function(){
+    Page.prototype.initializeConditions = function(){
         var self = this;
         var global_switch = self.conditions.global_switch;
         var local_switch = self.conditions.local_switch;
@@ -53,10 +53,10 @@
         };
 
         if(global_active){
-            RPG._switchCallback(name_global,callback);
+            RPG.Game.switchCallback(name_global,callback);
         }
         if(local_active){
-            self.event._switchCallback(name_local,callback);
+            self.event.switchCallback(name_local,callback);
         }
     };
 

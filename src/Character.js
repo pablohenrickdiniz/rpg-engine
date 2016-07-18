@@ -54,7 +54,7 @@
         self.v_speed = 32;
         self.moving = false;
         self.refreshed = false;
-        self.start_moving_time = (new Date()).getTime();
+        self.start_moving_time =  RPG.Game.current_time;
         self.moving_time = 0;
         self.moving_callback = null;
         self.start_position = {x:x, y:y};
@@ -81,7 +81,7 @@
     Character.prototype.moveTo = function (x,y,time,callback) {
         var self = this;
         var final_bounds = Utils.calculate_final_position(self.bounds,x,y,time);
-        self.startmoving_time = (new Date()).getTime();
+        self.startmoving_time = RPG.Game.current_time;
         self.moving_time = final_bounds.time;
         self.start_position = {x:self.bounds.x, y:self.bounds.y};
         self.end_position = {x:final_bounds.x, y:final_bounds.y};
@@ -92,9 +92,9 @@
      _timeStepMove():void
      Executa um passo de tempo no movimento do character
      */
-    Character.prototype.timeStepMove = function(game_time){
+    Character.prototype.timeStepMove = function(){
         var self = this;
-        game_time = game_time == undefined?(new Date()).getTime():game_time;
+        game_time = RPG.Game.current_time;
 
         var diff = game_time - self.startmoving_time;
         if(diff >= self.moving_time){

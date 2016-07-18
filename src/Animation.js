@@ -14,9 +14,9 @@
      getIndexFrame():int
      Retorna o índice do quadro atual da animação
      */
-    Animation.prototype.getIndexFrame = function(game_time){
+    Animation.prototype.getIndexFrame = function(){
         var self = this;
-        var frames = self.getFrames(game_time);
+        var frames = self.getFrames();
 
         if(frames < self.frame_count){
             if(self.direction == 'negative'){
@@ -46,8 +46,7 @@
         var diff = null;
         var self = this;
         if(self.running){
-            game_time = game_time == undefined?(new Date()).getTime():game_time;
-            diff = game_time - self.start_time;
+            diff = RPG.Game.current_time - self.start_time;
         }
         else{
             diff = self.end_time - self.start_time;
@@ -78,8 +77,7 @@
     Animation.prototype.execute = function(stop_on_end,direction,game_time){
         var self = this;
         if(!self.running){
-            game_time = game_time == undefined?(new Date()).getTime():game_time;
-            self.start_time = game_time;
+            self.start_time = RPG.Game.current_time;
             self.running = true;
             self.stop_on_end = stop_on_end == undefined?false:stop_on_end;
             self.direction = direction == undefined?'positive':direction;
@@ -92,8 +90,7 @@
     Animation.prototype.pause = function(game_time){
         var self = this;
         if(self.running){
-            game_time = game_time == undefined?(new Date()).getTime():game_time;
-            self.end_time = game_time;
+            self.end_time = RPG.Game.current_time;
             self.running = false;
         }
     };
