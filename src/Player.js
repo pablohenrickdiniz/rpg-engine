@@ -1,7 +1,10 @@
-(function(w){
-    if(w.Character == undefined){
+(function(root){
+    if(root.Character == undefined){
         throw new Error('Player Requires Character');
     }
+
+    var Character = root.Character;
+
     var Player = function(options){
         var self = this;
         self.level = 1;
@@ -15,5 +18,5 @@
 
     Player.prototype = Object.create(Character.prototype);
     Player.constructor = Player;
-    w.Player = Player;
-})(window);
+    root.Player = Player;
+})(RPG);

@@ -23,6 +23,7 @@
     "math-lib": "https://github.com/pablohenrickdiniz/math-lib.git",
     "mouse-reader": "https://github.com/pablohenrickdiniz/mouse-reader.git",
     "quadtree": "git@github.com:pablohenrickdiniz/quadtree.git",
-    "jsSHA": "https://github.com/Caligatio/jsSHA.git#^2.1.0"
+    "jsSHA": "https://github.com/Caligatio/jsSHA.git#^2.1.0",
+    "MIDI.js": "https://github.com/DesenvolvimentoJogosHTML5/MIDI.js.git"
   }
 }

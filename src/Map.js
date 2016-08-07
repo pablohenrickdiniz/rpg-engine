@@ -1,15 +1,18 @@
-(function(w){
-    if(w.QuadTree == undefined){
+(function(root){
+    if(window.QuadTree == undefined){
         throw "Map requires QuadTree"
     }
 
-    if(w.Tile == undefined){
+    if(root.Tile == undefined){
         throw "Map requires Tile"
     }
 
-    if(w.AnimatedTile == undefined){
+    if(root.AnimatedTile == undefined){
         throw "Map requires Animated Tile"
     }
+
+    var Tile = root.Tile,
+        AnimatedTile = root.AnimatedTile;
 
     var Map = function (options) {
         var self = this;
@@ -250,6 +253,6 @@
         return self.events.length == 0 && self.tile_count == 0;
     };
 
-    w.Map = Map;
-})(window);
+    root.Map = Map;
+})(RPG);
 

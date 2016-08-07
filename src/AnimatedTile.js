@@ -1,7 +1,9 @@
-(function(w){
-    if(w.Tile == undefined){
+(function(root){
+    if(root.Tile == undefined){
         throw "AnimatedTile requires Tile"
     }
+
+    var Tile = root.Tile;
 
     var AnimatedTile = function(parent,sx,sy,ex,ey,speed){
         var self = this;
@@ -84,5 +86,5 @@
     };
 
 
-    w.AnimatedTile = AnimatedTile;
-})(window);
+    root.AnimatedTile = AnimatedTile;
+})(RPG);

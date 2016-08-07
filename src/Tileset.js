@@ -1,4 +1,10 @@
-(function(w){
+(function(root){
+    if(root.Tile == undefined){
+        throw "Tileset requires Tile"
+    }
+
+    var Tile = root.Tile;
+
     var load_callback = function(image){
         var self = this;
         self.width = image.width;
@@ -72,5 +78,5 @@
     };
 
 
-    w.Tileset = Tileset;
-})(window);
+    root.Tileset = Tileset;
+})(RPG);

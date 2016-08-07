@@ -1,9 +1,9 @@
-(function(w){
-    w.Position = {
+(function(root){
+    root.Position = {
         TOP:0,
         RIGHT:1,
         BOTTOM:2,
         LEFT:3,
         CENTER:4
     };
-})(window);
+})(RPG);

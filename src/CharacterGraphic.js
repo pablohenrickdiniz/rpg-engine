@@ -1,7 +1,9 @@
-(function(w){
-    if(w.Tile == undefined){
+(function(root){
+    if(root.Tile == undefined){
         throw "CharacterGraphic requires Tile"
     }
+
+    var Tile = root.Tile;
 
     var CharacterGraphic = function(image,rows,cols,sx,sy,width,height){
         var self = this;
@@ -56,5 +58,5 @@
     };
 
 
-    w.CharacterGraphic = CharacterGraphic;
-})(window);
+    root.CharacterGraphic = CharacterGraphic;
+})(RPG);

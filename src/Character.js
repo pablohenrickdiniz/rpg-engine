@@ -1,19 +1,21 @@
-(function(w){
-    if(w.Utils == undefined){
+(function(root){
+    if(window.Utils == undefined){
         throw 'Character requires Utils';
     }
-    else if(w.QuadTree == undefined){
+    else if(window.QuadTree == undefined){
         throw 'Character requires QuadTree';
     }
-    else if(w.Direction == undefined){
+    else if(root.Direction == undefined){
         throw 'Character requires Direction';
     }
-    else if(w.Animation == undefined){
+    else if(root.Animation == undefined){
         throw "Character requires Animation"
     }
 
-    var Utils = w.Utils,
-        QuadTree = w.QuadTree;
+    var Utils = window.Utils,
+        QuadTree = window.QuadTree,
+        Direction = root.Direction,
+        Animation = root.Animation;
 
     var Character = function(options){
         var self = this;
@@ -268,5 +270,5 @@
         self.moving = false;
     };
 
-    w.Character = Character;
-})(window);
+    root.Character = Character;
+})(RPG);

@@ -1,4 +1,4 @@
-(function(w){
+(function(root){
     var Page = function(options){
         var self = this;
         if(options === undefined || !(options.event instanceof Event)){
@@ -26,7 +26,7 @@
         var name_local = null;
         var status_global = null;
         var status_local = null;
-        var global_switches = RPG.Globals.switches;
+        var global_switches = root.Globals.switches;
         var local_switches = self.event.switches;
 
         if(global_switch !== undefined && global_switch[0] !== undefined && global_switch[1] !== undefined){
@@ -53,7 +53,7 @@
         };
 
         if(global_active){
-            RPG.Game.switchCallback(name_global,callback);
+            root.Game.switchCallback(name_global,callback);
         }
         if(local_active){
             self.event.switchCallback(name_local,callback);
@@ -69,5 +69,5 @@
         self.graphic = graphic;
     };
 
-    w.Page = Page;
-})(window);
+    root.Page = Page;
+})(RPG);

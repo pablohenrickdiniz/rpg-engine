@@ -1,16 +1,13 @@
-(function(w){
-    if(w.Scene == undefined){
-        "SceneIntro requires Scene"
+(function(root){
+    if(root.Scene == undefined){
+       throw "SceneIntro requires Scene"
     }
 
-    w.SceneIntro = {
-        images:{
-            "manamon-title":"../src/images/manamo-title.png"
-        },
-        ready:function(RPG){
-            RPG.Screen.fadeOut(0,function(){
+    window.SceneIntro = {
+        ready:function(rpg){
+            rpg.Screen.fadeOut(0,function(){
 
             });
         }
     };
-})(window);
+})(RPG);

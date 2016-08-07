@@ -1,4 +1,11 @@
-(function(w){
+(function(root){
+    if(root.Character == undefined){
+        throw "Event requires Character"
+    }
+
+    var Character = root.Character;
+
+
     var Event = function(options){
         var self = this;
         Character.call(self,options);
@@ -82,5 +89,6 @@
         var self = this;
         self.pages.push(page);
     };
-    w.Event = Event;
-})(window);
+
+    root.Event = Event;
+})(RPG);

@@ -1,11 +1,13 @@
-(function(w){
-    if(w.ImageLoader == undefined){
+(function(root){
+    if(window.ImageLoader == undefined){
         throw "TilesetLoader requires ImageLoader"
     }
 
-    if(w.Tileset == undefined){
+    if(root.Tileset == undefined){
         throw "TilesetLoader requires Tileset"
     }
+
+    var Tileset = root.Tileset;
 
     var TilesetLoader = {
         loadedTilesets:[],
@@ -38,5 +40,5 @@
         }
     };
 
-    w.TilesetLoader = TilesetLoader;
-})(window);
+    root.TilesetLoader = TilesetLoader;
+})(RPG);

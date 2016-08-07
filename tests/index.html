@@ -6,61 +6,74 @@
     <link rel="stylesheet" href="../plugins/canvas-engine/src/dist/css/canvas-engine.css">
 </head>
 <body onload="init()">
-    <div id="container"></div>
-    <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
-    <script type="text/javascript" src="../plugins/app-object/app-object.js"></script>
-    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
-    <script type="text/javascript" src="../plugins/mouse-reader/src/mouse-reader.js"></script>
-    <script type="text/javascript" src="../plugins/keyboard-reader/src/keyboard-reader.js"></script>
-    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
-    <script type="text/javascript" src="../src/RPG.js"></script>
-    <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
-    <script type="text/javascript" src="../src/Tile.js"></script>
-    <script type="text/javascript" src="../src/AnimatedTile.js"></script>
-    <script type="text/javascript" src="../src/Map.js"></script>
-    <script type="text/javascript" src="../src/Utils.js"></script>
-    <script type="text/javascript" src="../src/Direction.js"></script>
-    <script type="text/javascript" src="../src/Animation.js"></script>
-    <script type="text/javascript" src="../src/Character.js"></script>
-    <script type="text/javascript" src="../src/Tileset.js"></script>
-    <script type="text/javascript" src="../src/CharacterGraphic.js"></script>
-    <script type="text/javascript" src="../src/Player.js"></script>
-    <script type="text/javascript" src="../plugins/jsSHA/src/sha1.js"></script>
-    <script type="text/javascript" src="../src/ImageLoader.js"></script>
-    <script type="text/javascript" src="../src/TilesetLoader.js"></script>
-    <script type="text/javascript">
-        function init(){
-            var container = document.getElementById('container');
+<div id="container"></div>
 
-            TilesetLoader.load('img/Town & Village - 0034.png',function(tileset){
-                ImageLoader.load('img/SF_Actor1.png',function(image){
-                    var player = new Player();
-                    player.active = true;
-                    var graphic = new CharacterGraphic(image,4,3,0,0,48,48);
-                    player.setGraphic(graphic);
-                    RPG.Game.current_player = player;
-                    RPG.initialize(container);
+<!-- rpg engine-->
+<script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
+<script type="text/javascript" src="../plugins/app-object/app-object.js"></script>
+<script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
+<script type="text/javascript" src="../plugins/mouse-reader/src/mouse-reader.js"></script>
+<script type="text/javascript" src="../plugins/keyboard-reader/src/keyboard-reader.js"></script>
+<script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
+<script type="text/javascript" src="../src/Scene/SceneMap.js"></script>
+<script type="text/javascript" src="../src/RPG.js"></script>
+<script type="text/javascript" src="../src/Animation.js"></script>
+<script type="text/javascript" src="../src/Screen.js"></script>
+<script type="text/javascript" src="../src/System.js"></script>
+<script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
+<script type="text/javascript" src="../src/Tile.js"></script>
+<script type="text/javascript" src="../src/AnimatedTile.js"></script>
+<script type="text/javascript" src="../src/Map.js"></script>
+<script type="text/javascript" src="../src/Utils.js"></script>
+<script type="text/javascript" src="../src/Direction.js"></script>
+<script type="text/javascript" src="../src/Character.js"></script>
+<script type="text/javascript" src="../src/Tileset.js"></script>
+<script type="text/javascript" src="../src/CharacterGraphic.js"></script>
+<script type="text/javascript" src="../src/Player.js"></script>
+<script type="text/javascript" src="../plugins/jsSHA/src/sha1.js"></script>
+<script type="text/javascript" src="../src/ImageLoader.js"></script>
+<script type="text/javascript" src="../src/TilesetLoader.js"></script>
+<script type="text/javascript" src="../src/AudioLoader.js"></script>
+<script type="text/javascript" src="../src/Scene/Scene.js"></script>
+<script type="text/javascript" src="../src/Scene/SceneIntro.js"></script>
+<script type="text/javascript">
+    function init(){
+        var container = document.getElementById('container');
+        var Player = RPG.Player,
+                CharacterGraphic = RPG.CharacterGraphic,
+                Map = RPG.Map,
+                TilesetLoader = RPG.TilesetLoader;
 
-                    var map = new Map({
-                        width:30,
-                        height:30
-                    });
-                    var tile = tileset.get(0,0);
+        TilesetLoader.load('img/Town & Village - 0034.png',function(tileset){
+            ImageLoader.load('img/SF_Actor1.png',function(image){
 
-                    for(var i = 0; i < 30;i++){
-                        for(var j = 0; j < 30;j++){
-                            map.setTile(i,j,0,tile);
-                        }
-                    }
 
-                    RPG.debug = false;
-                    RPG.Game.loadScene(map);
-                    RPG._focusOnEvent(player);
-                    RPG.run();
+                var player = new Player();
+                player.active = true;
+                var graphic = new CharacterGraphic(image,4,3,0,0,48,48);
+                player.setGraphic(graphic);
+                RPG.Game.current_player = player;
+                RPG.initialize(container);
 
+                var map = new Map({
+                    width:30,
+                    height:30
                 });
+                var tile = tileset.get(0,0);
+
+                for(var i = 0; i < 30;i++){
+                    for(var j = 0; j < 30;j++){
+                        map.setTile(i,j,0,tile);
+                    }
+                }
+
+                RPG.debug = false;
+                RPG.Game.loadScene(SceneIntro);
+                RPG.run();
+
             });
-        }
-    </script>
+        });
+    }
+</script>
 </body>
 </html>

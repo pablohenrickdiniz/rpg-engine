@@ -1,4 +1,4 @@
-(function(w){
+(function(root){
     var Tile = function(image,sx,sy,width,height){
         var self= this;
         self.sx = sx;
@@ -100,5 +100,5 @@
         return null;
     };
 
-    w.Tile = Tile;
-})(window);
+    root.Tile = Tile;
+})(RPG);

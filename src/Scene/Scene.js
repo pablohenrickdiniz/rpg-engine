@@ -1,7 +1,7 @@
-(function(w){
+(function(root){
     var Scene = function(materials){
 
     };
 
-    w.Scene = Scene;
-})(window);
+    root.Scene = Scene;
+})(RPG);

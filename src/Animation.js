@@ -1,4 +1,4 @@
-(function(w){
+(function(root){
     var Animation = function(fps,frame_count,now){
         var self = this;
         self.fps = fps;
@@ -108,5 +108,5 @@
         }
     };
 
-    w.Animation = Animation;
-})(window);
+    root.Animation = Animation;
+})(RPG);

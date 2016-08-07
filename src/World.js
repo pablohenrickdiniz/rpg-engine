@@ -1,7 +1,10 @@
-(function(w){
-    if(w.Map == undefined){
+(function(root){
+    if(root.Map == undefined){
         throw "World requires Map"
     }
+
+    var Map = root.Map;
+
 
     var World = function(){
         var self = this;
@@ -49,5 +52,5 @@
         return maps;
     };
 
-    w.World = World;
-})(window);
+    root.World = World;
+})(RPG);

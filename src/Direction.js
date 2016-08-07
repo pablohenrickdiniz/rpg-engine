@@ -1,5 +1,5 @@
-(function(w){
-    w.Direction =  {
+(function(root){
+    root.Direction =  {
         DOWN:0,
         LEFT:1,
         RIGHT:2,
@@ -18,6 +18,6 @@
             }
         }
     };
-})(window);
+})(RPG);
 
 

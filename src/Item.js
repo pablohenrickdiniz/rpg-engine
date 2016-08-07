@@ -1,5 +1,5 @@
-(function(w){
-    w.Item = function(options){
+(function(root){
+    root.Item = function(options){
         var name = options.name;
         var graphic = options.graphic;
 
@@ -9,4 +9,4 @@
         self.name = name;
         self.graphic = graphic;
     };
-})(window);
+})(RPG);
