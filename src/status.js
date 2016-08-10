@@ -1,6 +1,6 @@
-(function(w){
-    w.Status =  {
+(function(root){
+    root.Status =  {
         ON:'ON',
         OFF:'OFF'
     };
-})(window);
+})(RPG);

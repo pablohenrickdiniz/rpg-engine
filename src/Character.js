@@ -25,7 +25,7 @@
 
     /*
      initialize(Object options):void
-     Inicializa as variáveis do Character
+     Inicializa as variÃ¡veis do Character
      */
     Character.prototype.initialize = function(options){
         var self = this;
@@ -68,7 +68,7 @@
 
     /*
      setPosition(double x, double y):void
-     Altera a posição x,y do character
+     Altera a posiÃ§Ã£o x,y do character
      */
     Character.prototype.setPosition = function(x,y){
         var self = this;
@@ -78,7 +78,7 @@
 
     /*
      moveTo(double x, double y, int time, function callback):void
-     Registra o tempo e a posição final do movimento do character
+     Registra o tempo e a posiÃ§Ã£o final do movimento do character
      */
     Character.prototype.moveTo = function (x,y,time,callback) {
         var self = this;
@@ -123,7 +123,7 @@
 
     /*
      setGraphic(Graphic graphic):void
-     Altera o gráfico do character
+     Altera o grÃ¡fico do character
      */
     Character.prototype.setGraphic = function(graphic){
         var self = this;
@@ -136,7 +136,7 @@
 
     /*
      getCurrentFrame():Object
-     Retorna o gráfico atual do character
+     Retorna o grÃ¡fico atual do character
      */
     Character.prototype.getCurrentFrame = function(){
         var self = this;
@@ -163,7 +163,7 @@
 
     /*
      look(String|Character direction):void
-     Faz o character olhar para a direção/character direction
+     Faz o character olhar para a direÃ§Ã£o/character direction
      */
     Character.prototype.look = function(direction){
         var self = this;
@@ -185,7 +185,7 @@
 
     /*
      step(String direction,int times,function end,Boolean allow):void
-     Move o character um passo na direção "direction"
+     Move o character um passo na direÃ§Ã£o "direction"
      */
     Character.prototype.step = function(direction,times,end,allow){
         var self = this;
@@ -242,7 +242,7 @@
 
     /*
      stepRandom():void
-     Move o character a um passo aleatório
+     Move o character a um passo aleatÃ³rio
      */
     Character.prototype.stepRandom = function(){
         var self = this;

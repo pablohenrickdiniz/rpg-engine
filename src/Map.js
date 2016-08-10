@@ -42,7 +42,7 @@
 
     /*
      _getCollideTree():QuadTree
-     Retorna a ·rvore de colis„o do mapa
+     Retorna a √°rvore de colis√£o do mapa
      */
     Map.prototype.getTree = function(){
         var self = this;
@@ -59,7 +59,7 @@
 
     /*
      initializeCollision():void
-     Inicializa as colisıes do mapa
+     Inicializa as colis√µes do mapa
      */
     Map.prototype.initializeCollision = function(){
         var self = this;
@@ -69,7 +69,7 @@
 
     /*
      getAreaInterval(Object options):Object
-     ObtÈm o intervalo si,sj,ei,ei de uma ·rea dentro do mapa
+     Obt√©m o intervalo si,sj,ei,ei de uma √°rea dentro do mapa
      */
     Map.prototype.getAreaInterval = function (options) {
         var self = this;
@@ -90,7 +90,7 @@
 
     /*
      setTile(int i, int j,int k, Object tile):void
-     Altera o tile na posiÁ„o [i][j][k]
+     Altera o tile na posi√ß√£o [i][j][k]
      */
     Map.prototype.setTile = function (i, j, k, tile) {
         var self = this;
@@ -131,7 +131,7 @@
 
     /*
      getTile(int i, int j, int k): Object
-     Retorna o tile do mapa na posiÁ„o [i][j][k]
+     Retorna o tile do mapa na posi√ß√£o [i][j][k]
      */
     Map.prototype.getTile = function(i,j,k){
         var self = this;
@@ -146,7 +146,7 @@
 
     /*
      removeTile(int i, int j, int k):void
-     Remove o tile do mapa na posiÁ„o [i][j][k]
+     Remove o tile do mapa na posi√ß√£o [i][j][k]
      */
     Map.prototype.removeTile = function(i, j,k){
         var self = this;
@@ -159,7 +159,7 @@
 
     /*
      getFullWidth():Double
-     ObtÈm a largura total do mapa em pixels
+     Obt√©m a largura total do mapa em pixels
      */
     Map.prototype.getFullWidth = function () {
         var self = this;
@@ -168,7 +168,7 @@
 
     /*
      getFullHeight():Double
-     ObtÈm a altura total do mapa em pixels
+     Obt√©m a altura total do mapa em pixels
      */
     Map.prototype.getFullHeight = function () {
         var self = this;
@@ -200,8 +200,8 @@
 
     /*
      eachTile(function calback):void
-     Pecorre todos os tiles v·lidos do mapa
-     e passa seus par‚metros para a funÁ„o de callback
+     Pecorre todos os tiles v√°lidos do mapa
+     e passa seus par√¢metros para a fun√ß√£o de callback
      */
     Map.prototype.eachTile = function(callback){
         var self = this;
@@ -225,8 +225,8 @@
 
     /*
      eachAnimatedTile(function calback):void
-     Pecorre todos os tiles animados v·lidos do mapa
-     e passa seus par‚metros para a funÁ„o de callback
+     Pecorre todos os tiles animados v√°lidos do mapa
+     e passa seus par√¢metros para a fun√ß√£o de callback
      */
     Map.prototype.eachAnimatedTile = function(callback){
         var self = this;

@@ -16,7 +16,7 @@
         height: 600,
         BGRefreshed: false,
         fps: 60,
-        focused_event: null,//Evento que est· sendo focado
+        focused_event: null,//Evento que est√° sendo focado
         canvas_engine: null,
         fade_animation: null,
         fade_finished: true,
@@ -90,7 +90,7 @@
         },
         /*
          clearGraphic(int layer index, Graphic graphic):void
-         Limpa uma regi„o do canvas onde È desenhado um gr·fico
+         Limpa uma regi√£o do canvas onde √© desenhado um gr√°fico
          */
         clearArea: function (x,y,width,height,layer_index) {
             var self = this;
@@ -180,7 +180,7 @@
         },
         /*
          refreshBG():void
-         //rever localizaÁ„o
+         //rever localiza√ß√£o
          */
         refreshBG: function (scene) {
             var self = this;
@@ -203,7 +203,7 @@
         /*
          clearEvents():void
          Limpa todos os eventos do mapa
-         rever localizaÁ„o
+         rever localiza√ß√£o
          */
         clearAreas: function (areas) {
             var self = this;
@@ -243,7 +243,7 @@
         },
         /*
          _focusOnEvent(Character character):void
-         Focaliza a c‚mera em um character especÌfico
+         Focaliza a c√¢mera em um character espec√≠fico
          */
         focusOnEvent: function (event) {
             var self = this;

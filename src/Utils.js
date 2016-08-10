@@ -2,7 +2,7 @@
     w.Utils =  {
         /*
          * calculate_final_position(Object bounds,double ex, double ey, int time):Object {x:double, y:double, int: time}
-         * Calcula a posiÁ„o final do character, analisando as possÌveis colisıes que podem ocorrer pelo caminho
+         * Calcula a posi√ß√£o final do character, analisando as poss√≠veis colis√µes que podem ocorrer pelo caminho
          * */
         calculate_final_position: function (bounds, ex, ey, time) {
             var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height,groups:['STEP']};

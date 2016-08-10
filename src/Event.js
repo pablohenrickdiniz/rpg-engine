@@ -29,7 +29,7 @@
 
     /*
      getCurrentFrame():Object
-     Retorna o quadtro atual de animaÁ„o
+     Retorna o quadtro atual de anima√ß√£o
      */
     Event.prototype.getCurrentFrame = function(){
         var self = this;
@@ -70,7 +70,7 @@
     };
     /*
      _switchCallback(String name, function callback):void
-     Registra a funÁ„o de callback para ativar ou desativar o switch
+     Registra a fun√ß√£o de callback para ativar ou desativar o switch
      */
     Event.prototype.switchCallback = function(name,callback){
         var self = this;
@@ -83,7 +83,7 @@
 
     /*
      addPage(Page page):void
-     Adiciona uma nova p·gina ao evento
+     Adiciona uma nova p√°gina ao evento
      */
     Event.prototype.addPage = function(page){
         var self = this;

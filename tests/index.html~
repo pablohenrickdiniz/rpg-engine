@@ -7,6 +7,30 @@
 </head>
 <body onload="init()">
 <div id="container"></div>
+<!--shim-->
+<script src="../plugins/MIDI.js/inc/shim/Base64.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/inc/shim/Base64binary.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
+
+<!--jasmid-->
+<script src="../plugins/MIDI.js/inc/jasmid/stream.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/inc/jasmid/midifile.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/inc/jasmid/replayer.js" type="text/javascript"></script>
+
+
+<!-- midi.js package -->
+<script src="../plugins/MIDI.js/js/midi/audioDetect.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/midi/gm.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/midi/loader.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/midi/player.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/midi/synesthesia.js" type="text/javascript"></script>
+<!-- utils -->
+<script src="../plugins/MIDI.js/js/util/dom_request_xhr.js" type="text/javascript"></script>
+<script src="../plugins/MIDI.js/js/util/dom_request_script.js" type="text/javascript"></script>
 
 <!-- rpg engine-->
 <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
@@ -17,15 +41,13 @@
 <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
 <script type="text/javascript" src="../src/Scene/SceneMap.js"></script>
 <script type="text/javascript" src="../src/RPG.js"></script>
-<script type="text/javascript" src="../src/Animation.js"></script>
-<script type="text/javascript" src="../src/Screen.js"></script>
-<script type="text/javascript" src="../src/System.js"></script>
 <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
 <script type="text/javascript" src="../src/Tile.js"></script>
 <script type="text/javascript" src="../src/AnimatedTile.js"></script>
 <script type="text/javascript" src="../src/Map.js"></script>
 <script type="text/javascript" src="../src/Utils.js"></script>
 <script type="text/javascript" src="../src/Direction.js"></script>
+<script type="text/javascript" src="../src/Animation.js"></script>
 <script type="text/javascript" src="../src/Character.js"></script>
 <script type="text/javascript" src="../src/Tileset.js"></script>
 <script type="text/javascript" src="../src/CharacterGraphic.js"></script>
@@ -33,21 +55,14 @@
 <script type="text/javascript" src="../plugins/jsSHA/src/sha1.js"></script>
 <script type="text/javascript" src="../src/ImageLoader.js"></script>
 <script type="text/javascript" src="../src/TilesetLoader.js"></script>
-<script type="text/javascript" src="../src/Audio.js"></script>
 <script type="text/javascript" src="../src/AudioLoader.js"></script>
-<script type="text/javascript" src="../src/Scene/Scene.js"></script>
 <script type="text/javascript" src="../src/Scene/SceneIntro.js"></script>
-<script type="text/javascript" src="../src/AudioPlayer.js"></script>
 <script type="text/javascript">
     function init(){
         var container = document.getElementById('container');
-        var Player = RPG.Player,
-                CharacterGraphic = RPG.CharacterGraphic,
-                Map = RPG.Map,
-                TilesetLoader = RPG.TilesetLoader;
 
-        TilesetLoader.load('img/Town & Village - 0034.png',0,function(tileset){
-            ImageLoader.load('img/SF_Actor1.png',0,function(image){
+        TilesetLoader.load('img/Town & Village - 0034.png',function(tileset){
+            ImageLoader.load('img/SF_Actor1.png',function(image){
                 var player = new Player();
                 player.active = true;
                 var graphic = new CharacterGraphic(image,4,3,0,0,48,48);

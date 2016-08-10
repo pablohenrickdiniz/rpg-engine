@@ -62,7 +62,7 @@
 
     /*
      setGraphic(Graphic graphic):void
-     Altera o gr·fico da p·gina
+     Altera o gr√°fico da p√°gina
      */
     Page.prototype.setGraphic = function(graphic){
         var self = this;

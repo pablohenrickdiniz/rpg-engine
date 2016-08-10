@@ -12,7 +12,7 @@
 
     /*
      getIndexFrame():int
-     Retorna o índice do quadro atual da animação
+     Retorna o Ã­ndice do quadro atual da animaÃ§Ã£o
      */
     Animation.prototype.getIndexFrame = function(){
         var self = this;
@@ -72,7 +72,7 @@
 
     /*
      execute():void
-     Executa a animação
+     Executa a animaÃ§Ã£o
      */
     Animation.prototype.execute = function(stop_on_end,direction,game_time){
         var self = this;
@@ -85,7 +85,7 @@
     };
 
     /*
-     pause:Pausa a execução da animação
+     pause:Pausa a execuÃ§Ã£o da animaÃ§Ã£o
      */
     Animation.prototype.pause = function(game_time){
         var self = this;
@@ -97,7 +97,7 @@
 
     /*
      pauseToFrame(int index):void
-     Pausa a animação no quadro index
+     Pausa a animaÃ§Ã£o no quadro index
      */
     Animation.prototype.pauseToFrame = function(index){
         var self = this;

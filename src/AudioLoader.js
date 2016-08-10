@@ -1,63 +1,85 @@
 (function(w){
+    if(w.Audio == undefined){
+        throw "AudioLoader requires Audio support"
+    }
+
     var AudioLoader = {
-        loadedAudio:[],//Audios que já foram carregadas
+        audios:[],//Audios que jÃ¡ foram carregadas
         /*
          loadAll(Array[String] urls, function callback):void
          Carrega todos as audios de urls e passa o
-         resultado para a função callback
+         resultado para a funÃ§Ã£o callback
          */
         loadAll:function(urls,callback){
-            loadAll(urls,[],callback);
+            var keys = Object.keys(urls);
+            var loaded = [];
+            var length = keys.length;
+
+            if(length > 0){
+                var q = function(audio,id){
+                    loaded[id] = audio;
+                    length--;
+                    if(length <= 0){
+                        callback(loaded);
+                    }
+                };
+
+                for(var k =0; k < keys.length;k++){
+                    var key = keys[k];
+                    AudioLoader.load(urls[key],key,q);
+                }
+            }
+            else{
+               callback(loaded);
+            }
         },
         /*
          load:(String url, function callback):void
          Carrega o audio da url e passa o resultado
-         para a função callback
+         para a funÃ§Ã£o callback
          */
-        load:function(url,callback){
+        load:function(url,id,callback){
             var self = this;
-            var audio = document.createElement('audio');
-            //img.crossOrigin = "Anonymous";
-            audio.src = url;
+            if(self.audios[url] == undefined){
+                var audio = new Audio();
+                //img.crossOrigin = "Anonymous";
+                audio.src = url;
 
-            var onload_callback = function(){
-                var audio = this;
-                audio.removeEventListener('load',onload_callback);
-                var exists = false;
+                var can_play_callback = function(){
+                    var audio = this;
+                    audio.removeEventListener('canplaythrough',can_play_callback);
+                    audio.removeEventListener('error',onerror_callback);
+                    callback(audio,id);
+                };
 
-                if(AudioLoader.loadedAudio[audio.src] === undefined){
-                    AudioLoader.loadedAudio[audio.src] = audio;
-                }
-                else{
-                    audio = AudioLoader.loadedAudio[audio.src];
-                    exists=true;
-                }
-                callback(audio,exists);
-            };
+                var onerror_callback = function(){
+                    audio.removeEventListener('canplaythrough',can_play_callback);
+                    audio.removeEventListener('error',onerror_callback);
+                    callback(null,id);
+                };
 
-            var onerror_callback = function(){
-                audio.removeEventListener('error',onerror_callback);
-                callback(null,false);
-            };
-
-            audio.addEventListener('load',onload_callback);
-            audio.addEventListener('error',onerror_callback);
+                audio.addEventListener('canplaythrough',can_play_callback);
+                audio.addEventListener('error',onerror_callback);
+            }
+            else{
+                callback(self.audios[url],id);
+            }
         }
     };
-
-    var loadAll = function(urls,loaded,callback){
-        loaded = loaded === undefined?[]:loaded;
-        if(urls.length > 0){
-            var url = urls.shift();
-            AudioLoader.load(url,function(audio){
-                loaded.push(audio);
-                loadAll(urls,loaded,callback);
-            });
-        }
-        else if(typeof callback === 'function'){
-            callback(loaded);
-        }
-    };
+    //
+    //var loadAll = function(keys,urls,loaded,callback){
+    //    loaded = loaded === undefined?[]:loaded;
+    //    if(keys.length > 0){
+    //        var key = keys.shift();
+    //        AudioLoader.load(urls[key],function(audio){
+    //            loaded[key] = audio;
+    //            loadAll(keys,urls,loaded,callback);
+    //        });
+    //    }
+    //    else if(typeof callback === 'function'){
+    //        callback(loaded);
+    //    }
+    //};
 
     w.AudioLoader = AudioLoader;
 })(window);
