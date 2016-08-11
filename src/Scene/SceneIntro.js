@@ -21,10 +21,8 @@
         ready:function(rpg){
             console.log('Scene Intro loaded...');
             rpg.Screen.fadeOut(0,function(){
-                rpg.AudioPlayer.setVolume('BGM','BombingMission',80);
-                rpg.AudioPlayer.setVolume('BGM','Prelude',20);
                 rpg.AudioPlayer.playAudio('BGM','BombingMission');
-                rpg.AudioPlayer.playAudio('BGM','Prelude');
+               // rpg.AudioPlayer.playAudio('BGM','Prelude');
             });
         }
     };

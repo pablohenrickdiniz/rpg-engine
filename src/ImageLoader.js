@@ -1,12 +1,12 @@
 (function(w){
     var ImageLoader = {
-        images:[],//Imagens que já foram carregadas
+        images:{},//Imagens que já foram carregadas
         /*
-         loadAll(Array[String] urls, function callback):void
+         loadAll(Array[String] urls, function onsuccess, function onprogress):void
          Carrega todas as images de urls e passa o
          resultado para a função callback
          */
-        loadAll:function(urls,callback){
+        loadAll:function(urls,onsuccess,onprogress,onerror){
             var keys = Object.keys(urls);
             var loaded = [];
             var length = keys.length;
@@ -16,48 +16,67 @@
                     loaded[id] = image;
                     length--;
                     if(length <= 0){
-                        callback(loaded);
+                        onsuccess(loaded);
                     }
                 };
 
                 for(var k =0; k < keys.length;k++){
                     var key = keys[k];
-                    ImageLoader.load(urls[key],key,q);
+                    ImageLoader.load(urls[key],key,q,onprogress,onerror);
                 }
             }
-            else{
-                callback(loaded);
+            else if(onsuccess){
+                onsuccess(loaded);
             }
         },
         /*
-         load:(String url, function callback):void
+         load:(String url,String id,function onsucess,function onprogress):void
          Carrega a imagem da url e passa o resultado
          para a função callback
          */
-        load:function(url,id,callback){
+        load:function(url,id,onsuccess,onprogress,onerror){
             if(ImageLoader.images[url] === undefined){
                 var img = new Image();
                 img.crossOrigin = "Anonymous";
                 img.src = url;
-                var onload_callback = function(){
-                    var img = this;
-                    img.removeEventListener('load',onload_callback);
+
+                var unbind = function(){
+                    img.removeEventListener('load',onsuccess_callback);
                     img.removeEventListener('error',onerror_callback);
+                    img.removeEventListener('progress',onprogress_callback)
+                };
+
+                var onsuccess_callback = function(){
+                    unbind();
+                    var img = this;
                     ImageLoader.images[url] = img;
-                    callback(img,id);
+                    if(onsuccess){
+                        onsuccess(img,id);
+                    }
                 };
 
                 var onerror_callback = function(){
-                    img.removeEventListener('load',onload_callback);
-                    img.removeEventListener('error',onerror_callback);
-                    callback(null,id);
+                    unbind();
+                    if(onerror){
+                        onerror(id);
+                    }
                 };
 
-                img.addEventListener('load',onload_callback);
+                var onprogress_callback = function(e){
+                    if(e.lenghtComputable){
+                        var progress = e.loaded / e.total * 100;
+                        if(onprogress){
+                            onprogress(id,progress);
+                        }
+                    }
+                };
+
+                img.addEventListener('progress',onprogress_callback);
+                img.addEventListener('load',onsuccess_callback);
                 img.addEventListener('error',onerror_callback);
             }
-            else{
-                callback(ImageLoader.images[url],id);
+            else if(onsuccess){
+                onsuccess(ImageLoader.images[url],id);
             }
         },
         /*
@@ -118,36 +137,6 @@
             }
         }
     };
-
-    //var toDataUrls = function(keys,urls,parsed,callback){
-    //    parsed = parsed === undefined?[]:parsed;
-    //    if(keys.length > 0){
-    //        var key = keys.shift();
-    //        ImageLoader.load(urls[key],function(img){
-    //            ImageLoader.toDataURL(img,function(data){
-    //                parsed[key] = data;
-    //                toDataUrls(keys,urls,parsed,callback);
-    //            })
-    //        });
-    //    }
-    //    else if(typeof callback === 'function'){
-    //        callback(parsed);
-    //    }
-    //};
-    //
-    //var loadAll = function(keys,urls,loaded,callback){
-    //    loaded = loaded === undefined?[]:loaded;
-    //    if(keys.length > 0){
-    //        var key = keys.shift();
-    //        ImageLoader.load(urls[key],function(img){
-    //            loaded[key] = img;
-    //            loadAll(keys,urls,loaded,callback);
-    //        });
-    //    }
-    //    else if(typeof callback === 'function'){
-    //        callback(loaded);
-    //    }
-    //};
 
     w.ImageLoader = ImageLoader;
 })(window);

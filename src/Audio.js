@@ -11,7 +11,7 @@
                 request.onload = function () {
                     context.decodeAudioData(request.response, function (buffer) {
                         self.buffer = buffer;
-                        self.trigger('canplaythrough');
+                        self.trigger('load');
                     });
                 };
 

@@ -68,6 +68,8 @@
                 var SE = audio.SE || {};
                 var ME = audio.ME || {};
                 var count = 0;
+                var tempo = 0;
+
                 var q = function(){
                     count++;
                     if(count >= 4){
