@@ -57,8 +57,63 @@
             loadScene: function (scene) {
                 var self = this;
                 self.current_scene = scene;
+                var count = 0;
+                var q = function(){
+                    count++;
+                    if(count >= 2){
+                        scene.ready(RPG);
+                    }
+                };
+
                 RPG.Game.loadSceneAudio(scene,function(){
-                    scene.ready(RPG);
+                    q();
+                });
+
+                RPG.Game.loadSceneImages(scene,function(){
+                   q();
+                })
+            },
+            loadSceneImages:function(scene, callback){
+                var images = scene.images || {};
+                var Tilesets = images.Tilesets || {};
+                var Characters = images.Characters || {};
+                var Animations = images.Animations || {};
+                var Icons = images.Icons || {};
+                var Misc = images.Misc || {};
+
+                var count = 0;
+                var q = function(){
+                    count++;
+                    if(count >= 5){
+                        callback();
+                    }
+                };
+
+                ImageLoader.loadAll(Tilesets,function(images){
+                    RPG.ImageRegistry.setImages('Tileset',images);
+                    q();
+                });
+
+                ImageLoader.loadAll(Characters,function(characters){
+                    RPG.ImageRegistry.setImages('Character',characters);
+                    q();
+                });
+
+                ImageLoader.loadAll(Animations,function(animations){
+                    RPG.ImageRegistry.setImages('Animation',animations);
+                    q();
+                });
+
+                ImageLoader.loadAll(Icons,function(icons){
+                    RPG.ImageRegistry.setImages('Icons',icons);
+                    q();
+                });
+
+                ImageLoader.loadAll(Misc,function(misc){
+                    RPG.ImageRegistry.setImages('Misc',misc);
+                    q();
+                },function(id,p){
+                    console.log('loading Misc image '+id+' '+p+'%');
                 });
             },
             loadSceneAudio: function (scene, callback) {
@@ -67,9 +122,8 @@
                 var BGS = audio.BGS || {};
                 var SE = audio.SE || {};
                 var ME = audio.ME || {};
-                var count = 0;
-                var tempo = 0;
 
+                var count = 0;
                 var q = function(){
                     count++;
                     if(count >= 4){
@@ -77,23 +131,24 @@
                     }
                 };
 
+
                 AudioLoader.loadAll(BGM, function (bgms) {
-                    RPG.AudioPlayer.setAudios('BGM', bgms);
+                    RPG.AudioRegistry.setAudios('BGM', bgms);
                     q();
                 });
 
                 AudioLoader.loadAll(BGS, function (bgms) {
-                    RPG.AudioPlayer.setAudios('BGS', bgms);
+                    RPG.AudioRegistry.setAudios('BGS', bgms);
                     q();
                 });
 
                 AudioLoader.loadAll(SE, function (bgms) {
-                    RPG.AudioPlayer.setAudios('SE', bgms);
+                    RPG.AudioRegistry.setAudios('SE', bgms);
                     q();
                 });
 
                 AudioLoader.loadAll(ME, function (bgms) {
-                    RPG.AudioPlayer.setAudios('ME', bgms);
+                    RPG.AudioRegistry.setAudios('ME', bgms);
                     q();
                 });
             }
@@ -102,7 +157,8 @@
             Keyboard: {},
             Mouse: {}
         },
-        AudioPlayer: null,
+        AudioRegistry: null,
+        ImageRegistry:null,
         Screen: null,
         System: null,
         _key_reader: null,//leitor de teclado

@@ -37,7 +37,8 @@
 <script type="text/javascript" src="../src/AudioLoader.js"></script>
 <script type="text/javascript" src="../src/Scene/Scene.js"></script>
 <script type="text/javascript" src="../src/Scene/SceneIntro.js"></script>
-<script type="text/javascript" src="../src/AudioPlayer.js"></script>
+<script type="text/javascript" src="../src/AudioRegistry.js"></script>
+<script type="text/javascript" src="../src/ImageRegistry.js"></script>
 <script type="text/javascript">
     function init(){
         var container = document.getElementById('container');
@@ -71,13 +72,10 @@
                 RPG.Game.loadScene(SceneIntro);
                 RPG.run();
 
-            },function(){
-                console.log('error loading actor1');
             });
-        },function(){
-            console.log('error loading image town');
         });
     }
 </script>
+<img src="img/manamo-title.png" alt="">
 </body>
 </html>

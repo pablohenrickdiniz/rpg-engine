@@ -48,19 +48,5 @@
         }
     };
 
-    //var loadAll = function(urls,tilesets,callback){
-    //    tilesets = tilesets === undefined?[]:tilesets;
-    //    if(urls.length > 0){
-    //        var url = urls.shift();
-    //        TilesetLoader.load(url,function(tileset){
-    //            tilesets.push(tileset);
-    //            loadAll(urls,tilesets,callback);
-    //        });
-    //    }
-    //    else if(typeof callback === 'function'){
-    //        callback(tilesets);
-    //    }
-    //};
-
     root.TilesetLoader = TilesetLoader;
 })(RPG);

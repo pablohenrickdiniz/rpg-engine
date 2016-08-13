@@ -36,44 +36,45 @@
          */
         load:function(url,id,onsuccess,onprogress,onerror){
             if(ImageLoader.images[url] === undefined){
-                var img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.src = url;
-
-                var unbind = function(){
-                    img.removeEventListener('load',onsuccess_callback);
-                    img.removeEventListener('error',onerror_callback);
-                    img.removeEventListener('progress',onprogress_callback)
-                };
-
-                var onsuccess_callback = function(){
-                    unbind();
-                    var img = this;
-                    ImageLoader.images[url] = img;
-                    if(onsuccess){
-                        onsuccess(img,id);
-                    }
-                };
-
-                var onerror_callback = function(){
-                    unbind();
-                    if(onerror){
-                        onerror(id);
-                    }
-                };
-
-                var onprogress_callback = function(e){
-                    if(e.lenghtComputable){
-                        var progress = e.loaded / e.total * 100;
+                var request = new XMLHttpRequest();
+                request.onprogress =  function(e){
+                    var computable = e.lengthComputable;
+                    if(computable){
+                        var progress = parseInt(e.loaded / e.total * 100);
                         if(onprogress){
                             onprogress(id,progress);
                         }
                     }
                 };
 
-                img.addEventListener('progress',onprogress_callback);
-                img.addEventListener('load',onsuccess_callback);
-                img.addEventListener('error',onerror_callback);
+                request.onload = function(){
+                    var reader = new window.FileReader();
+                    reader.readAsDataURL(this.response);
+                    reader.onloadend = function() {
+                        var base64data = reader.result;
+                        var image = document.createElement('img');
+                        image.src = base64data;
+
+                        var onload = function(){
+                            image.removeEventListener('load',onload);
+                            ImageLoader.images[url] = image;
+                            if(onsuccess){
+                                onsuccess(image,id);
+                            }
+                        };
+
+                        image.addEventListener('load',onload);
+                    };
+                };
+
+                request.onerror = function(){
+                    if(onerror){
+                        onerror(id);
+                    }
+                };
+                request.open("GET", url, true);
+                request.responseType = "blob";
+                request.send();
             }
             else if(onsuccess){
                 onsuccess(ImageLoader.images[url],id);

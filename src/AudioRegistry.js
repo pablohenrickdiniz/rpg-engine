@@ -1,5 +1,5 @@
 (function (root) {
-    root.AudioPlayer = {
+    root.AudioRegistry = {
         audio: {},
         playAudio: function (type, name) {
             var self = this;

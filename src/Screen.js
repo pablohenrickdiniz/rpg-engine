@@ -162,7 +162,7 @@
                     opacity = (index / (self.fade_animation.frame_count - 1));
                 }
 
-                var ctx = self.layers.EF3.getContext();
+                var ctx = self.layers.EF1.getContext();
                 ctx.clearRect(0, 0, self.width, self.height);
 
                 if (opacity > 0) {
