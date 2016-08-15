@@ -15,20 +15,15 @@
     <script type="text/javascript">
         function init(){
             var container = document.getElementById('container');
-            var engine = CE.create({
-                container:container,
+            var engine = CE.create(container,{
                 width:400,
-                height:400,
-                draggable:true
+                height:400
             });
-
-
 
             var layer = engine.createLayer({
                 width:800,
                 height:800
             });
-
 
 
             ImageLoader.loadAll(['img/sea-&-beach.png','img/snow.png','img/Town & Village - 0034.png'],function(images){

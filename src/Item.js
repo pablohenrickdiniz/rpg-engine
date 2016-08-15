@@ -1,5 +1,5 @@
-(function(root){
-    root.Item = function(options){
+(function (root) {
+    root.Item = function (options) {
         var name = options.name;
         var graphic = options.graphic;
 

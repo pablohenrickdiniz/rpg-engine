@@ -1,46 +1,52 @@
 (function (root) {
-    root.ImageRegistry = {
-        images: {},
-        getImage:function(type, name){
+    if(root.System == undefined){
+        throw "Image requires System"
+    }
+
+    var System = root.System;
+
+    System.Graphic = {
+        graphics: {},
+        get: function (type, name) {
             var self = this;
-            if(self.images[type] && self.images[type][name]){
-                return self.images[type][name];
+            if (self.graphics[type] && self.graphics[type][name]) {
+                return self.graphics[type][name];
             }
             return null;
         },
-        setImage: function (type, name, images) {
+        set: function (type, name, graphics) {
             var self = this;
-            if (self.images[type] == undefined) {
-                self.images[type] = {};
+            if (self.graphics[type] == undefined) {
+                self.graphics[type] = {};
             }
 
-            if (self.images[type][name] != images) {
-                if (self.images[type][name] != undefined) {
-                    self.images[type][name].stop();
+            if (self.graphics[type][name] != graphics) {
+                if (self.graphics[type][name] != undefined) {
+                    self.graphics[type][name].stop();
                 }
-                self.images[type][name] = images;
+                self.graphics[type][name] = graphics;
             }
         },
-        setImages: function (type, data) {
+        setAll: function (type, data) {
             var self = this;
             var names = Object.keys(data);
             for (var i = 0; i < names.length; i++) {
                 var name = names[i];
-                var images = data[name];
-                self.setImage(type, name, images);
+                var graphics = data[name];
+                self.set(type, name, graphics);
             }
         },
-        unsetImage: function (type, name) {
+        unset: function (type, name) {
             var self = this;
-            if (self.images[type] != undefined) {
-                if (self.images[type][name] != undefined) {
-                    delete self.images[type][name];
+            if (self.graphics[type] != undefined) {
+                if (self.graphics[type][name] != undefined) {
+                    delete self.graphics[type][name];
                 }
             }
         },
         exists: function (type, name) {
             var self = this;
-            return self.images[type] && self.images[type][name];
+            return self.graphics[type] && self.graphics[type][name];
         }
     };
 })(RPG);

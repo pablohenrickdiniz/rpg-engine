@@ -1,5 +1,5 @@
-(function(w){
-    w.SceneMap = function(){
+(function (w) {
+    w.SceneMap = function () {
 
     };
 })(window);

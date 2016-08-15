@@ -1,13 +1,13 @@
-(function(root){
-    if(window.QuadTree == undefined){
+(function (root) {
+    if (window.QuadTree == undefined) {
         throw "Map requires QuadTree"
     }
 
-    if(root.Tile == undefined){
+    if (root.Tile == undefined) {
         throw "Map requires Tile"
     }
 
-    if(root.AnimatedTile == undefined){
+    if (root.AnimatedTile == undefined) {
         throw "Map requires Animated Tile"
     }
 
@@ -16,17 +16,17 @@
 
     var Map = function (options) {
         var self = this;
-        options = options==undefined?{}:options;
+        options = options == undefined ? {} : options;
         var width = parseInt(options.width);
         var height = parseInt(options.height);
         var tile_w = parseInt(options.tile_w);
         var tile_h = parseInt(options.tile_h);
         var events = options.events;
 
-        width = isNaN(width)?5:width;
-        height = isNaN(height)?5:height;
-        tile_w=  isNaN(tile_w)?32:tile_w;
-        tile_h = isNaN(tile_h)?32:tile_h;
+        width = isNaN(width) ? 5 : width;
+        height = isNaN(height) ? 5 : height;
+        tile_w = isNaN(tile_w) ? 32 : tile_w;
+        tile_h = isNaN(tile_h) ? 32 : tile_h;
 
         self.width = width;
         self.height = height;
@@ -44,14 +44,14 @@
      _getCollideTree():QuadTree
      Retorna a árvore de colisão do mapa
      */
-    Map.prototype.getTree = function(){
+    Map.prototype.getTree = function () {
         var self = this;
-        if(self.tree === null){
+        if (self.tree === null) {
             self.tree = new QuadTree({
-                x:0,
-                y:0,
-                width:self.getFullWidth(),
-                height:self.getFullHeight()
+                x: 0,
+                y: 0,
+                width: self.getFullWidth(),
+                height: self.getFullHeight()
             });
         }
         return self.tree;
@@ -61,7 +61,7 @@
      initializeCollision():void
      Inicializa as colisões do mapa
      */
-    Map.prototype.initializeCollision = function(){
+    Map.prototype.initializeCollision = function () {
         var self = this;
         var tree = self.getTree();
 
@@ -77,10 +77,10 @@
         var y = parseInt(options.y);
         var width = parseInt(options.width);
         var height = parseInt(options.height);
-        x = isNaN(x)?0:x;
-        y = isNaN(y)?0:y;
-        width = isNaN(width)?0:width;
-        height = isNaN(height)?0:height;
+        x = isNaN(x) ? 0 : x;
+        y = isNaN(y) ? 0 : y;
+        width = isNaN(width) ? 0 : width;
+        height = isNaN(height) ? 0 : height;
         var si = parseInt(Math.floor(y / self.tile_h));
         var sj = parseInt(Math.floor(x / self.tile_w));
         var ei = parseInt(Math.floor((y + height) / self.tile_h));
@@ -95,7 +95,7 @@
     Map.prototype.setTile = function (i, j, k, tile) {
         var self = this;
 
-        if(tile instanceof AnimatedTile){
+        if (tile instanceof AnimatedTile) {
             if (self.animated_tiles[i] === undefined) {
                 self.animated_tiles[i] = [];
             }
@@ -104,13 +104,13 @@
                 self.animated_tiles[i][j] = [];
             }
 
-            if(self.animated_tiles[i][j][k] == undefined){
+            if (self.animated_tiles[i][j][k] == undefined) {
                 self.tile_count++;
             }
 
             self.animated_tiles[i][j][k] = tile;
         }
-        else if(tile instanceof Tile){
+        else if (tile instanceof Tile) {
             if (self.tiles[i] === undefined) {
                 self.tiles[i] = [];
             }
@@ -119,7 +119,7 @@
                 self.tiles[i][j] = [];
             }
 
-            if(self.tiles[i][j][k] == undefined){
+            if (self.tiles[i][j][k] == undefined) {
                 self.tile_count++;
             }
 
@@ -133,12 +133,12 @@
      getTile(int i, int j, int k): Object
      Retorna o tile do mapa na posição [i][j][k]
      */
-    Map.prototype.getTile = function(i,j,k){
+    Map.prototype.getTile = function (i, j, k) {
         var self = this;
-        if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][k] !== undefined){
+        if (self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][k] !== undefined) {
             return self.tiles[i][j][k];
         }
-        else if(self.animated_tiles[i] !== undefined && self.animated_tiles[i][j] !== undefined && self.animated_tiles[i][j][k] != undefined){
+        else if (self.animated_tiles[i] !== undefined && self.animated_tiles[i][j] !== undefined && self.animated_tiles[i][j][k] != undefined) {
             return self.animated_tiles[i][j][k];
         }
         return null;
@@ -148,9 +148,9 @@
      removeTile(int i, int j, int k):void
      Remove o tile do mapa na posição [i][j][k]
      */
-    Map.prototype.removeTile = function(i, j,k){
+    Map.prototype.removeTile = function (i, j, k) {
         var self = this;
-        if(self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][k] !== undefined){
+        if (self.tiles[i] !== undefined && self.tiles[i][j] !== undefined && self.tiles[i][j][k] !== undefined) {
             delete self.tiles[i][j][k];
             self.tile_count--;
         }
@@ -179,7 +179,7 @@
      addEvent(Event event):void
      Adiciona um evento no mapa
      */
-    Map.prototype.addEvent = function(event){
+    Map.prototype.addEvent = function (event) {
         var self = this;
         self.events.push(event);
         self.getTree().insert(event.bounds);
@@ -189,11 +189,11 @@
      removeEvent(Event event):void
      Remove um evento no mapa
      */
-    Map.prototype.removeEvent = function(event){
+    Map.prototype.removeEvent = function (event) {
         var self = this;
         var index = self.events.indexOf(event);
-        if(index != -1){
-            self.events.splice(index,1);
+        if (index != -1) {
+            self.events.splice(index, 1);
             QuadTree.remove(event.bounds);
         }
     };
@@ -203,20 +203,20 @@
      Pecorre todos os tiles válidos do mapa
      e passa seus parâmetros para a função de callback
      */
-    Map.prototype.eachTile = function(callback){
+    Map.prototype.eachTile = function (callback) {
         var self = this;
         var keys_a = Object.keys(self.tiles);
 
-        for(var i = 0; i < keys_a.length;i++){
+        for (var i = 0; i < keys_a.length; i++) {
             var r = keys_a[i];
             var keys_b = Object.keys(self.tiles[r]);
-            for(var j = 0; j < keys_b.length;j++){
+            for (var j = 0; j < keys_b.length; j++) {
                 var c = keys_b[j];
-                if(self.tiles[r] !== undefined && self.tiles[r][c] !== undefined){
+                if (self.tiles[r] !== undefined && self.tiles[r][c] !== undefined) {
                     var keys_c = Object.keys(self.tiles[r][c]);
-                    for(var k = 0; k < keys_c;k++){
+                    for (var k = 0; k < keys_c; k++) {
                         var l = keys_c[k];
-                        callback(self.tiles[r][c][l],i,j,l);
+                        callback(self.tiles[r][c][l], i, j, l);
                     }
                 }
             }
@@ -228,27 +228,27 @@
      Pecorre todos os tiles animados válidos do mapa
      e passa seus parâmetros para a função de callback
      */
-    Map.prototype.eachAnimatedTile = function(callback){
+    Map.prototype.eachAnimatedTile = function (callback) {
         var self = this;
         var keys_a = Object.keys(self.animated_tiles);
 
-        for(var i = 0; i < keys_a.length;i++){
+        for (var i = 0; i < keys_a.length; i++) {
             var r = keys_a[i];
             var keys_b = Object.keys(self.animated_tiles[r]);
-            for(var j = 0; j < keys_b.length;j++){
+            for (var j = 0; j < keys_b.length; j++) {
                 var c = keys_b[j];
-                if(self.animated_tiles[r] !== undefined && self.animated_tiles[r][c] !== undefined){
+                if (self.animated_tiles[r] !== undefined && self.animated_tiles[r][c] !== undefined) {
                     var keys_c = Object.keys(self.animated_tiles[r][c]);
-                    for(var k = 0; k < keys_c;k++){
+                    for (var k = 0; k < keys_c; k++) {
                         var l = keys_c[k];
-                        callback(self.animated_tiles[r][c][l],i,j,l);
+                        callback(self.animated_tiles[r][c][l], i, j, l);
                     }
                 }
             }
         }
     };
 
-    Map.prototype.isEmpty = function(){
+    Map.prototype.isEmpty = function () {
         var self = this;
         return self.events.length == 0 && self.tile_count == 0;
     };

@@ -1,5 +1,5 @@
-(function(root){
-    var Scene = function(materials){
+(function (root) {
+    var Scene = function (materials) {
 
     };
 

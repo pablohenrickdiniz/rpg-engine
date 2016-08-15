@@ -1,9 +1,9 @@
 /*
-    Status for Switch
+ Status for Switch
  */
-(function(root){
-    root.Status =  {
-        ON:'ON',
-        OFF:'OFF'
+(function (root) {
+    root.Status = {
+        ON: 'ON',
+        OFF: 'OFF'
     };
 })(RPG);

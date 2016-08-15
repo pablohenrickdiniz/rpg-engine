@@ -15,7 +15,6 @@
             switches: [],//Switches
             variables: [],//Variáveis
             paused: true,//Jogo Pausado
-            current_time: 0,//
             switches_callbacks: [],//callbacks de switches
             /*_switchCallback(String name, function callback)
              * Registra função de callback para ativar ou desativar switch global
@@ -58,22 +57,22 @@
                 var self = this;
                 self.current_scene = scene;
                 var count = 0;
-                var q = function(){
+                var q = function () {
                     count++;
-                    if(count >= 2){
+                    if (count >= 2) {
                         scene.ready(RPG);
                     }
                 };
 
-                RPG.Game.loadSceneAudio(scene,function(){
+                RPG.Game.loadSceneAudio(scene, function () {
                     q();
                 });
 
-                RPG.Game.loadSceneImages(scene,function(){
-                   q();
+                RPG.Game.loadSceneImages(scene, function () {
+                    q();
                 })
             },
-            loadSceneImages:function(scene, callback){
+            loadSceneImages: function (scene, callback) {
                 var images = scene.images || {};
                 var Tilesets = images.Tilesets || {};
                 var Characters = images.Characters || {};
@@ -82,38 +81,42 @@
                 var Misc = images.Misc || {};
 
                 var count = 0;
-                var q = function(){
+                var q = function () {
                     count++;
-                    if(count >= 5){
+                    if (count >= 5) {
                         callback();
                     }
                 };
 
-                ImageLoader.loadAll(Tilesets,function(images){
-                    RPG.ImageRegistry.setImages('Tileset',images);
+                var System = RPG.System,
+                    Graphic = System.Graphic;
+
+
+                ImageLoader.loadAll(Tilesets, function (images) {
+                    Graphic.setAll('Tileset', images);
                     q();
                 });
 
-                ImageLoader.loadAll(Characters,function(characters){
-                    RPG.ImageRegistry.setImages('Character',characters);
+                ImageLoader.loadAll(Characters, function (characters) {
+                    Graphic.setAll('Character', characters);
                     q();
                 });
 
-                ImageLoader.loadAll(Animations,function(animations){
-                    RPG.ImageRegistry.setImages('Animation',animations);
+                ImageLoader.loadAll(Animations, function (animations) {
+                    Graphic.setAll('Animation', animations);
                     q();
                 });
 
-                ImageLoader.loadAll(Icons,function(icons){
-                    RPG.ImageRegistry.setImages('Icons',icons);
+                ImageLoader.loadAll(Icons, function (icons) {
+                    Graphic.setAll('Icons', icons);
                     q();
                 });
 
-                ImageLoader.loadAll(Misc,function(misc){
-                    RPG.ImageRegistry.setImages('Misc',misc);
+                ImageLoader.loadAll(Misc, function (misc) {
+                    Graphic.setAll('Misc', misc);
                     q();
-                },function(id,p){
-                    console.log('loading Misc image '+id+' '+p+'%');
+                }, function (id, p) {
+                    console.log('loading Misc image ' + id + ' ' + p + '%');
                 });
             },
             loadSceneAudio: function (scene, callback) {
@@ -124,31 +127,31 @@
                 var ME = audio.ME || {};
 
                 var count = 0;
-                var q = function(){
+                var q = function () {
                     count++;
-                    if(count >= 4){
+                    if (count >= 4) {
                         callback();
                     }
                 };
 
-
+                var Audio = RPG.System.Audio;
                 AudioLoader.loadAll(BGM, function (bgms) {
-                    RPG.AudioRegistry.setAudios('BGM', bgms);
+                    Audio.setAll('BGM', bgms);
                     q();
                 });
 
                 AudioLoader.loadAll(BGS, function (bgms) {
-                    RPG.AudioRegistry.setAudios('BGS', bgms);
+                    Audio.setAll('BGS', bgms);
                     q();
                 });
 
                 AudioLoader.loadAll(SE, function (bgms) {
-                    RPG.AudioRegistry.setAudios('SE', bgms);
+                    Audio.setAll('SE', bgms);
                     q();
                 });
 
                 AudioLoader.loadAll(ME, function (bgms) {
-                    RPG.AudioRegistry.setAudios('ME', bgms);
+                    Audio.setAll('ME', bgms);
                     q();
                 });
             }
@@ -157,23 +160,15 @@
             Keyboard: {},
             Mouse: {}
         },
-        AudioRegistry: null,
-        ImageRegistry:null,
-        Screen: null,
-        System: null,
+        ImageRegistry: null,
         _key_reader: null,//leitor de teclado
-        _interval: null,//interval de execução
-        _running: false,//running execução iniciada
-        last_loop: null,
         /*
          initialize(String container):void
          inicializa a engine de rpg dentro do elemento container
          */
         initialize: function (container) {
             var self = this;
-            if (self.Screen != null) {
-                self.Screen.initialize(container);
-            }
+            self.System.initialize(container);
 
             var keyboard = new KeyboardReader(container);
 
@@ -182,7 +177,7 @@
                     RPG.run();
                 }
                 else {
-                    RPG.end();
+                    RPG.pause();
                 }
             });
             keyboard.keydown('KEY_ENTER', function () {
@@ -190,28 +185,9 @@
             });
 
             RPG.Controls.Keyboard = keyboard;
-        },
-        /*
-         run():void
-         Inicializa a execução do Jogo
-         */
-        run: function () {
-            RPG.Game.start_time = (new Date()).getTime();
-            console.log('game started');
-            if (!RPG.running) {
-                RPG.running = true;
-                RPG.step();
-            }
-        },
-        /*
-         end():void
-         Finaliza a execução do Jogo
-         */
-        end: function () {
-            var self = this;
-            RPG.running = false;
-            window.cancelAnimationFrame(RPG.interval);
-            RPG.last_loop = null;
+
+            w.addEventListener('blur',self.System.freeze);
+            w.addEventListener('focus',self.System.resume)
         },
         /*actionEvents():void
          * Tratamento de eventos relacionados às ações do jogador
@@ -348,36 +324,7 @@
          */
         step: function () {
             if (RPG.running) {
-                RPG.interval = window.requestAnimationFrame(function () {
-                    RPG.step();
-                });
-
-                var passed = 0;
-                var current_time = new Date().getTime();
-
-                if (RPG.last_loop != null) {
-                    passed = current_time - RPG.last_loop;
-                }
-
-                RPG.System.step(passed);
-                RPG.Game.current_time += passed;
-                var scene = RPG.Game.current_scene;
-
-                if (scene instanceof SceneMap) {
-                    RPG.stepPlayer();
-                    RPG.stepEvents();
-                    RPG.Screen.stepFocus();
-                    RPG.Screen.refreshBG(scene);
-
-                    var clear_areas = RPG.prepareClearAreas();
-                    var graphics = RPG.prepareDrawGraphics();
-
-                    RPG.Screen.clearAreas(clear_areas);
-                    RPG.Screen.drawGraphics(graphics);
-                }
-
-                RPG.Screen.stepFade();
-                RPG.last_loop = current_time;
+                RPG.System.step();
             }
         },
         prepareClearAreas: function () {
@@ -444,8 +391,8 @@
             if (frame !== undefined) {
                 graphic = frame.getGraphic();
                 bounds = current_player.bounds;
-                var x = bounds.x - RPG.Screen.x;
-                var y = bounds.y - RPG.Screen.y;
+                var x = bounds.x - RPG.Video.x;
+                var y = bounds.y - RPG.Video.y;
                 graphic_sets.push({
                     x: x,
                     y: y,
