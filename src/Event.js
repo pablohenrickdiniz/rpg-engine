@@ -3,7 +3,8 @@
         throw "Event requires Character"
     }
 
-    var Character = root.Character;
+    var Character = root.Character,
+        Step = Character.prototype.Step;
 
 
     var Event = function (options) {
@@ -88,6 +89,27 @@
     Event.prototype.addPage = function (page) {
         var self = this;
         self.pages.push(page);
+    };
+
+    Event.prototype.step = function(){
+        var self = this;
+        if (self.current_page !== null) {
+            if (!self.moving) {
+                if (self.follow !== null) {
+                    self.look(self.follow);
+                    self.stepForward();
+                }
+                else if (self.graphic !== null) {
+                    var name = Direction.getName(event.direction);
+                    var animation_name = 'step_' + name;
+                    self.animations[animation_name].pauseToFrame(1);
+                }
+            }
+            else {
+                self.timeStepMove();
+                self.refreshed = false;
+            }
+        }
     };
 
     root.Event = Event;

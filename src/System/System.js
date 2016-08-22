@@ -1,21 +1,40 @@
 (function (root,w) {
+    if(w.Keyboard == undefined){
+        throw "System requires Keyboard"
+    }
+
+    if(root.Main == undefined){
+        throw "System requires Main"
+    }
+
+    var Keyboard = w.Keyboard,
+        Main = root.Main;
+
     var last_loop = null;
     var interval = null;
 
     var System = {
         Video:null,
         Audio:null,
-        Graphic:null,
+        Controls:{
+            Mouse:undefined,
+            Keyboard:undefined
+        },
         time:0,
-        wait_calls: [],
+        system_calls: [],
         running:false,
         initialize:function(container){
             var self = this;
             self.Video.initialize(container);
+            self.Controls.Keyboard = new Keyboard(container);
         },
-        wait: function (mss, callback) {
+        wait: function (mss,callback) {
             var self = this;
-            self.wait_calls.push([mss, callback]);
+            self.system_calls.push({
+                start:System.time,
+                time:mss,
+                callback:callback
+            });
         },
         freeze:function(){
             w.cancelAnimationFrame(interval);
@@ -49,37 +68,28 @@
             System.time += passed;
 
             var self = this;
-            var calls = self.wait_calls;
-            if (calls.length > 0) {
-                for (var i = 0; i < calls.length; i++) {
-                    calls[i][0] -= passed;
-                    if (calls[i][0] <= 0) {
-                        calls[i][1]();
+            var calls = self.system_calls;
+            var length = calls.length;
+            if (length > 0) {
+                for (var i = 0; i < length; i++) {
+                    if((System.time - calls[i].start) >= calls[i].time){
+                        calls[i].callback();
                         calls.splice(i, 1);
                         i--;
+                        length--;
                     }
                 }
             }
 
-            var scene = root.Game.current_scene;
-
-            if (scene instanceof SceneMap) {
-                root.stepPlayer();
-                root.stepEvents();
-                System.Video.stepFocus();
-                System.Video.refreshBG(scene);
-
-                var clear_areas = root.prepareClearAreas();
-                var graphics = root.prepareDrawGraphics();
-
-                System.Video.clearAreas(clear_areas);
-                System.Video.drawGraphics(graphics);
+            if(Main.scene != undefined){
+                Main.scene.step();
             }
 
-            System.Video.stepAnimations();
+
             last_loop = current_time;
         }
     };
 
     root.System = System;
 })(RPG,window);
+

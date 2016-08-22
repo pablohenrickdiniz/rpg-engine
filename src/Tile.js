@@ -53,12 +53,20 @@
         return false;
     };
 
-    Tile.prototype.getGraphic = function () {
+    Tile.prototype.getImage = function(){
+        var self = this;
+        return self.image;
+    };
+
+    Tile.prototype.getBounds = function (x,y) {
         var self = this;
         var tile_width = self.getWidth();
         var tile_height = self.getHeight();
+        x = x || 0;
+        y =y || 0;
         return {
-            image: self.image,
+            dx:x,
+            dy:y,
             sx: self.sx,
             sy: self.sy,
             sWidth: tile_width,
@@ -68,37 +76,37 @@
         };
     };
 
-    Tile.merge = function (tiles, sx, sy) {
-        if (arguments.length > 1) {
-            var canvas = document.createElement('canvas');
-            var ctx = canvas.getContext('2d');
-            var width = null;
-            var height = null;
-            var i;
-
-            for (i = 0; i < tiles.length; i++) {
-                if (width == null || width < tiles[i].getWidth()) {
-                    width = tiles[i].getWidth();
-                }
-
-                if (height == null || height < tiles[i].getHeight()) {
-                    height = tiles[i].getHeight();
-                }
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-
-            for (i = 0; i < tiles.length; i++) {
-                var g = tiles[i].getGraphic();
-                ctx.drawImage(g.image, g.sx, g.sy, g.sWidth, g.sHeight, 0, 0, g.dWidth, g.dHeight);
-            }
-            var image = new Image();
-            image.src = canvas.toDataURL("image/png");
-            return new Tile(image, sx, sy, width, height);
-        }
-        return null;
-    };
+    //Tile.merge = function (tiles, sx, sy) {
+    //    if (arguments.length > 1) {
+    //        var canvas = document.createElement('canvas');
+    //        var ctx = canvas.getContext('2d');
+    //        var width = null;
+    //        var height = null;
+    //        var i;
+    //
+    //        for (i = 0; i < tiles.length; i++) {
+    //            if (width == null || width < tiles[i].getWidth()) {
+    //                width = tiles[i].getWidth();
+    //            }
+    //
+    //            if (height == null || height < tiles[i].getHeight()) {
+    //                height = tiles[i].getHeight();
+    //            }
+    //        }
+    //
+    //        canvas.width = width;
+    //        canvas.height = height;
+    //
+    //        for (i = 0; i < tiles.length; i++) {
+    //            var g = tiles[i].getGraphic();
+    //            ctx.drawImage(g.image, g.sx, g.sy, g.sWidth, g.sHeight, 0, 0, g.dWidth, g.dHeight);
+    //        }
+    //        var image = new Image();
+    //        image.src = canvas.toDataURL("image/png");
+    //        return new Tile(image, sx, sy, width, height);
+    //    }
+    //    return null;
+    //};
 
     root.Tile = Tile;
 })(RPG);

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt_BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Scene Intro</title>
+    <!--<link rel="stylesheet" href="../plugins/canvas-engine/src/dist/css/canvas-engine.css">-->
+
+    <!-- canvas engine-->
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
+    <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
+
+    <!-- rpg engine-->
+    <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
+    <script type="text/javascript" src="../plugins/app-object/app-object.js"></script>
+    <script type="text/javascript" src="../plugins/mouse-reader/src/mouse-reader.js"></script>
+    <script type="text/javascript" src="../plugins/Keyboard/src/keyboard.js"></script>
+    <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
+    <script type="text/javascript" src="../src/Utils.js"></script>
+    <script type="text/javascript" src="../src/AudioCompat.js"></script>
+
+
+    <!--Main-->
+    <script type="text/javascript" src="../src/RPG.js"></script>
+    <script type="text/javascript" src="../src/Game/Main.js"></script>
+
+    <!--Imports-->
+    <script type="text/javascript" src="../src/Animation.js"></script>
+
+
+    <!-- Resources-->
+    <script type="text/javascript" src="../src/Resources/Audio.js"></script>
+    <script type="text/javascript" src="../src/Resources/Graphic.js"></script>
+
+
+    <!-- System-->
+    <script type="text/javascript" src="../src/System/System.js"></script>
+    <script type="text/javascript" src="../src/System/Video.js"></script>
+    <script type="text/javascript" src="../src/System/Audio.js"></script>
+
+
+    <!--Scene-->
+    <script type="text/javascript" src="../src/Scene/Scene.js"></script>
+    <script type="text/javascript" src="../src/Scene/SceneMap.js"></script>
+
+    <!--Imports-->
+    <script type="text/javascript" src="../src/Tile.js"></script>
+    <script type="text/javascript" src="../src/AnimatedTile.js"></script>
+    <script type="text/javascript" src="../src/Map.js"></script>
+    <script type="text/javascript" src="../src/Direction.js"></script>
+    <script type="text/javascript" src="../src/Tileset.js"></script>
+    <script type="text/javascript" src="../src/Character.js"></script>
+    <script type="text/javascript" src="../src/CharacterGraphic.js"></script>
+    <script type="text/javascript" src="../src/Player.js"></script>
+
+
+
+
+    <!-- Loader-->
+    <script type="text/javascript" src="../src/Loader/GlobalProgress.js"></script>
+    <script type="text/javascript" src="../src/Loader/ImageLoader.js"></script>
+    <script type="text/javascript" src="../src/Loader/AudioLoader.js"></script>
+    <script type="text/javascript" src="../src/Loader/SceneLoader.js"></script>
+    <script type="text/javascript" src="../src/Loader/TilesetLoader.js"></script>
+
+    <!-- Scene-->
+    <script type="text/javascript" src="../src/Scene/SceneManager.js"></script>
+    <script type="text/javascript" src="../src/Scene/Scene.js"></script>
+    <script type="text/javascript" src="../src/Scene/SceneIntro.js"></script>
+
+    <script type="text/javascript">
+        function init() {
+            var container = document.getElementById('container');
+            RPG.initialize(container);
+            var SceneManager = RPG.SceneManager;
+            SceneManager.set('intro',SceneIntro);
+            SceneManager.call('intro');
+            RPG.System.run();
+        }
+    </script>
+</head>
+<body onload="init()">
+<div id="container"></div>
+</body>
+</html>

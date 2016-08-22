@@ -19,7 +19,7 @@
   "dependencies": {
     "app-object": "https://github.com/pablohenrickdiniz/app-object.git",
     "canvas-engine": "https://github.com/pablohenrickdiniz/canvas-engine.git",
-    "keyboard-reader": "https://github.com/pablohenrickdiniz/keyboard-reader.git",
+    "Keyboard": "https://github.com/pablohenrickdiniz/Keyboard.git",
     "math-lib": "https://github.com/pablohenrickdiniz/math-lib.git",
     "mouse-reader": "https://github.com/pablohenrickdiniz/mouse-reader.git",
     "quadtree": "git@github.com:pablohenrickdiniz/quadtree.git"

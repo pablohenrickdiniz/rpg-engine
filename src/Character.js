@@ -1,8 +1,9 @@
-(function (root) {
-    if (window.Utils == undefined) {
+(function (root,w) {
+    if (w.Utils == undefined) {
         throw 'Character requires Utils';
     }
-    else if (window.QuadTree == undefined) {
+
+    else if (w.QuadTree == undefined) {
         throw 'Character requires QuadTree';
     }
     else if (root.Direction == undefined) {
@@ -12,8 +13,8 @@
         throw "Character requires Animation"
     }
 
-    var Utils = window.Utils,
-        QuadTree = window.QuadTree,
+    var Utils = w.Utils,
+        QuadTree = w.QuadTree,
         Direction = root.Direction,
         Animation = root.Animation;
 
@@ -29,13 +30,9 @@
      */
     Character.prototype.initialize = function (options) {
         var self = this;
-        var speed = parseInt(options.speed);
-        var x = parseInt(options.x);
-        var y = parseInt(options.y);
-        x = isNaN(x) ? 0 : x;
-        y = isNaN(y) ? 0 : y;
-        speed = isNaN(speed) ? 5 : Math.abs(speed);
-        self.speed = speed;
+        self.speed = options.speed || 5;
+        self.x = options.x || 0;
+        self.y = options.y || 0;
         self.graphic = null;
 
         self.bounds = {
@@ -49,14 +46,13 @@
             groups: ['EV']
         };
 
-
         self.layer = 2;
         self.direction = Direction.DOWN;
         self.h_speed = 32;
         self.v_speed = 32;
         self.moving = false;
         self.refreshed = false;
-        self.start_moving_time = RPG.Game.current_time;
+        self.start_moving_time = RPG.System.time;
         self.moving_time = 0;
         self.moving_callback = null;
         self.start_position = {x: x, y: y};
@@ -83,7 +79,7 @@
     Character.prototype.moveTo = function (x, y, time, callback) {
         var self = this;
         var final_bounds = Utils.calculate_final_position(self.bounds, x, y, time);
-        self.startmoving_time = RPG.Game.current_time;
+        self.startmoving_time = RPG.System.time;
         self.moving_time = final_bounds.time;
         self.start_position = {x: self.bounds.x, y: self.bounds.y};
         self.end_position = {x: final_bounds.x, y: final_bounds.y};
@@ -96,9 +92,8 @@
      */
     Character.prototype.timeStepMove = function () {
         var self = this;
-        game_time = RPG.Game.current_time;
 
-        var diff = game_time - self.startmoving_time;
+        var diff = RPG.System.time - self.startmoving_time;
         if (diff >= self.moving_time) {
             self.bounds.x = self.end_position.x;
             self.bounds.y = self.end_position.y;
@@ -187,7 +182,7 @@
      step(String direction,int times,function end,Boolean allow):void
      Move o character um passo na direção "direction"
      */
-    Character.prototype.step = function (direction, times, end, allow) {
+    Character.prototype.stepTo = function (direction, times, end, allow) {
         var self = this;
         allow = allow === undefined ? false : allow;
         if (!self.moving || allow) {
@@ -271,4 +266,4 @@
     };
 
     root.Character = Character;
-})(RPG);
+})(RPG,window);

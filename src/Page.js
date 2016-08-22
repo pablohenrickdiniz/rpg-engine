@@ -6,13 +6,11 @@
         }
 
         var graphic = options.graphic;
-        self.conditions = options.conditions === undefined ? {} : options.conditions;
-        self.graphic = graphic instanceof Graphic ? graphic : null;
-        self.script = options.script === undefined ? function () {
-        } : options.script;
-        self.event = options.event;
-        self.conditionsCound = 0;
-        self.trigger = options.trigger === undefined ? Trigger.AUTO_RUN : options.trigger;
+        self.conditions = options.conditions || {};
+        self.graphic = options.graphic || null;
+        self.script = options.script || function(){};
+        self.event = options.event || null;
+        self.trigger = options.trigger || Trigger.AUTO_RUN;
         self.initializeConditions();
     };
 
@@ -54,7 +52,7 @@
         };
 
         if (global_active) {
-            root.Game.switchCallback(name_global, callback);
+            root.Main.switchCallback(name_global, callback);
         }
         if (local_active) {
             self.event.switchCallback(name_local, callback);

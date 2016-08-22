@@ -24,23 +24,34 @@
          Carrega todos as audios de urls e passa o
          resultado para a função callback
          */
-        loadAll: function (urls, onsuccess, onprogress, onerror) {
+        loadAll: function (urls,options) {
             var keys = Object.keys(urls);
             var loaded = [];
             var length = keys.length;
+            var onsuccess = options.onsuccess || null;
+            var onprogress = options.onprogress || null;
+            var onerror = options.onerror || null;
+            var onglobalprogress = options.onglobalprogress || null;
+            var globalprogress = options.globalprogress || null;
 
             if (length > 0) {
                 var q = function (audio, id) {
                     loaded[id] = audio;
                     length--;
-                    if (length <= 0) {
+                    if (length == 0) {
                         onsuccess(loaded);
                     }
                 };
 
                 for (var k = 0; k < keys.length; k++) {
                     var key = keys[k];
-                    AudioLoader.load(urls[key], key, q, onprogress, onerror);
+                    AudioLoader.load(urls[key], key, {
+                        onsuccess:q,
+                        onprogress:onprogress,
+                        onerror:onerror,
+                        onglobalprogress:onglobalprogress,
+                        globalprogress:globalprogress
+                    });
                 }
             }
             else if (onsuccess) {
@@ -55,8 +66,14 @@
          onsuccess: Essa função é chamada quando o audio foi carregado completamente;
          onprogress: Essa função é chamada quando o audio está sendo carregado, e mosta o progresso;
          */
-        load: function (url, id, onsuccess, onprogress, onerror) {
+        load: function (url, id, options) {
             var self = this;
+            var onsuccess = options.onsuccess || null;
+            var onprogress = options.onprogress || null;
+            var onerror = options.onerror || null;
+            var onglobalprogress = options.onglobalprogress || null;
+            var globalprogress = options.globalprogress || null;
+
             if (self.audios[url] == undefined) {
                 var audio = new Audio();
                 //img.crossOrigin = "Anonymous";
@@ -78,6 +95,7 @@
                 };
 
                 var onerror_callback = function () {
+                    console.error('audio '+id+' error!');
                     unbind();
                     if (onerror) {
                         onerror(id);
@@ -85,6 +103,7 @@
                 };
 
                 var old_progress = 0;
+                var media = null;
 
                 var timeupdate_callback = function () {
                     var progress = current_progress(audio);
@@ -98,6 +117,24 @@
                     }
                     else if (progress > old_progress) {
                         old_progress = progress;
+
+                        if(globalprogress){
+                            if(media == null){
+                                media = {
+                                    loaded:progress,
+                                    total:100
+                                };
+                                globalprogress.add(media);
+                            }
+                            else{
+                                media.loaded = progress;
+                            }
+                        }
+
+                        if(onglobalprogress){
+                            onglobalprogress(globalprogress.progress());
+                        }
+
                         if (onprogress) {
                             onprogress(id, progress);
                         }

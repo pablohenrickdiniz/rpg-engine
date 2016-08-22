@@ -61,7 +61,6 @@
                 final_bounds.y = bounds.y;
             }
 
-            var self = this;
             var distance_a = Math.distance({x: bounds.x, y: bounds.y}, {x: ex, y: ey});
             var distance_b = Math.distance({x: bounds.x, y: bounds.y}, {x: final_bounds.x, y: final_bounds.y});
             time = (time * distance_b) / distance_a;

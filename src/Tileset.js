@@ -18,16 +18,12 @@
         }
     };
 
-    var Tileset = function (image, rows, cols) {
+    var Tileset = function (image, options) {
         var self = this;
-        rows = parseInt(rows);
-        cols = parseInt(cols);
-        rows = isNaN(rows) || rows <= 0 ? null : rows;
-        cols = isNaN(cols) || cols <= 0 ? null : cols;
         self.width = 0;
         self.height = 0;
-        self.rows = rows;
-        self.cols = cols;
+        self.rows = options.rows || null;
+        self.cols = options.cols || null;
         self.image = null;
         self.tiles = [];
         self.setImage(image);

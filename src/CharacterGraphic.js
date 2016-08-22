@@ -5,37 +5,16 @@
 
     var Tile = root.Tile;
 
-    var CharacterGraphic = function (image, rows, cols, sx, sy, width, height) {
+    var CharacterGraphic = function (image, options) {
         var self = this;
-        rows = parseInt(rows);
-        cols = parseInt(cols);
-        sx = parseFloat(sx);
-        sy = parseFloat(sy);
-        width = parseInt(width);
-        height = parseInt(height);
-        rows = isNaN(rows) || rows < 0 ? 1 : rows;
-        cols = isNaN(cols) || cols <= 0 ? 1 : cols;
-        sx = isNaN(sx) || sx < 0 ? 0 : sx;
-        sy = isNaN(sy) || sy < 0 ? 0 : sy;
-        width = isNaN(width) || width <= 0 ? null : width;
-        height = isNaN(height) || height <= 0 ? null : height;
-
-        self.rows = rows;
-        self.cols = cols;
-        self.sx = sx;
-
-        self.sy = sy;
-        self.width = width;
-        self.height = height;
+        self.image = image;
+        self.rows = options.rows || 1;
+        self.cols = options.cols || 1;
+        self.sx = options.sx || 0;
+        self.sy = options.sy || 0;
+        self.width = options.width || null;
+        self.height = options.height || null;
         self.tiles = [];
-        self.setImage(image);
-    };
-
-    CharacterGraphic.prototype.setImage = function (image) {
-        if (image instanceof Image) {
-            var self = this;
-            self.image = image;
-        }
     };
 
     CharacterGraphic.prototype.get = function (i, j) {

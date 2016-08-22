@@ -3,25 +3,42 @@
         throw "SceneIntro requires Scene"
     }
 
-    w.SceneIntro = {
-        audio: {
+    var Scene = root.Scene;
+
+    w.SceneIntro = new Scene({
+        audio:{
             BGM: {
-                'opening': 'audio/01 - Opening (Destroyed Science Academy Research Station).mp3'
+                'opening': 'audio/01 - Opening (Destroyed Science Academy Research Station).mp3',
+                'musica2': 'audio/7batldun.mp3'
             }
         },
-        images: {
+        images:{
             Misc: {
                 'metroid-1994': 'img/1994-metroid.png',
                 'nintendo-logo': 'img/nintendo-logo.png',
                 Logo3: 'img/nintendo-logo.png'
             }
         },
-        ready: function (rpg) {
-            console.log('Scene Intro loaded...');
+        ready:function (rpg) {
             var System = rpg.System,
+                Resources = rpg.Resources,
                 Video = System.Video,
                 Audio = System.Audio,
-                Graphic = System.Graphic;
+                Graphic = Resources.Graphic,
+                keyboard = System.Controls.Keyboard;
+
+            keyboard.addShortcutListener('ESC',function(){
+                if (!System.running) {
+                    System.run();
+                }
+                else {
+                    System.pause();
+                }
+            });
+
+            keyboard.addShortcutListener('ENTER', function () {
+                rpg.actionEvents();
+            });
 
             var nintendo_logo = Graphic.get('Misc','nintendo-logo');
             var metroid_logo = Graphic.get('Misc','metroid-1994');
@@ -33,41 +50,33 @@
                 time: 500
             };
 
-            var metroid_logo_options = {
-                dx:250,
-                dy:250,
-                sx:0,
-                sy:0,
-                sWidth:23,
-                sHeight:35,
-                layer: 'EF2'
-            };
+            var self = this;
 
 
-            Video.fadeInImage(nintendo_logo,nintendo_logo_options,function(){
+            self.fadeInImage(nintendo_logo,nintendo_logo_options,function(){
                 System.wait(1500, function () {
-                    Video.fadeOutImage(nintendo_logo,nintendo_logo_options,function(){
-                       System.wait(2000,function(){
-                           Audio.play('BGM','opening');
-                           System.wait(700,function(){
-                               Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center',sWidth:23, sHeight:35, layer: 'EF2'});
-                               System.wait(200,function(){
-                                   Video.clear('EF2');
-                                   Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center', sWidth:46, sHeight:35, layer: 'EF2'});
-                                   System.wait(200,function(){
-                                       Video.clear('EF2');
-                                       Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center', sWidth:69, sHeight:35, layer: 'EF2'});
-                                       System.wait(200,function(){
-                                           Video.clear('EF2');
-                                           Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center', sWidth:102, sHeight:35, layer: 'EF2'});
-                                       });
-                                   });
-                               });
-                           });
+                    self.fadeOutImage(nintendo_logo,nintendo_logo_options,function(){
+                        System.wait(2000,function(){
+                            Audio.play('BGM','opening');
+                            System.wait(700,function(){
+                                Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center',sWidth:'20.6%', layer: 'EF2'});
+                                System.wait(200,function(){
+                                    Video.clear('EF2');
+                                    Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center', sWidth:'48.2%', layer: 'EF2'});
+                                    System.wait(200,function(){
+                                        Video.clear('EF2');
+                                        Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center', sWidth:'78.8%', layer: 'EF2'});
+                                        System.wait(200,function(){
+                                            Video.clear('EF2');
+                                            Video.drawGraphic(metroid_logo,{vAlign:'center',hAlign:'center', sWidth:'100%', layer: 'EF2'});
+                                        });
+                                    });
+                                });
+                            });
                         });
                     });
                 });
             });
         }
-    };
+    });
 })(RPG,window);

@@ -1,5 +1,5 @@
-(function (w) {
-    w.MapLoader = {
+(function (root) {
+    root.MapLoader = {
         fields: [
             'image',
             'dWidth',
@@ -15,7 +15,7 @@
         /*
          load:(Object data, Map map,function callback):void
          Carrega todos os dados do object data no objeto mapa,
-         se o objeto map n�o for informado, um novo ser� criado
+         se o objeto map nï¿½o for informado, um novo serï¿½ criado
          */
         load: function (data, map, callback) {
             var self = this;
@@ -74,4 +74,4 @@
             });
         }
     };
-})(window);
+})(RPG);

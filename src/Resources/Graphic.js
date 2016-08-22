@@ -1,11 +1,11 @@
 (function (root) {
-    if(root.System == undefined){
-        throw "Image requires System"
+    if(root.Resources == undefined){
+        throw "Graphic requires Resources"
     }
 
-    var System = root.System;
+    var Resources = root.Resources;
 
-    System.Graphic = {
+    Resources.Graphic = {
         graphics: {},
         get: function (type, name) {
             var self = this;

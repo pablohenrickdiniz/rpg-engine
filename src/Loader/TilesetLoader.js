@@ -20,7 +20,7 @@
                 var q = function (tileset, id) {
                     tilesets[id] = tileset;
                     length--;
-                    if (length <= 0) {
+                    if (length == 0) {
                         onsuccess(tilesets);
                     }
                 };

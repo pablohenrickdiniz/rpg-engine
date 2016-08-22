@@ -1,4 +1,10 @@
 (function (w) {
+    if(w.GlobalProgress == undefined){
+        throw "ImageLoader requires GlobalProgress"
+    }
+
+    var GlobalProgress = w.GlobalProgress;
+
     var ImageLoader = {
         images: {},//Imagens que já foram carregadas
         /*
@@ -6,23 +12,35 @@
          Carrega todas as images de urls e passa o
          resultado para a função callback
          */
-        loadAll: function (urls, onsuccess, onprogress, onerror) {
+        loadAll: function (urls, options) {
             var keys = Object.keys(urls);
             var loaded = [];
             var length = keys.length;
+            var onsuccess = options.onsuccess;
+            var onprogress = options.onprogress;
+            var onglobalprogress = options.onglobalprogress;
+            var globalprogress = options.globalprogress || new GlobalProgress();
+
+            var onerror = options.onerror;
 
             if (length > 0) {
                 var q = function (image, id) {
                     loaded[id] = image;
                     length--;
-                    if (length <= 0) {
+                    if (length == 0) {
                         onsuccess(loaded);
                     }
                 };
 
                 for (var k = 0; k < keys.length; k++) {
                     var key = keys[k];
-                    ImageLoader.load(urls[key], key, q, onprogress, onerror);
+                    ImageLoader.load(urls[key], key, {
+                        onsuccess: q,
+                        onprogress: onprogress,
+                        onerror: onerror,
+                        onglobalprogress: onglobalprogress,
+                        globalprogress: globalprogress
+                    });
                 }
             }
             else if (onsuccess) {
@@ -34,12 +52,39 @@
          Carrega a imagem da url e passa o resultado
          para a função callback
          */
-        load: function (url, id, onsuccess, onprogress, onerror) {
+        load: function (url, id, options) {
+            var onsuccess = options.onsuccess || null;
+            var onprogress = options.onprogress || null;
+            var onerror = options.onerror || null;
+            var globalprogress = options.globalprogress || null;
+            var onglobalprogress = options.onglobalprogress || null;
+
+            var media = null;
+
             if (ImageLoader.images[url] === undefined) {
                 var request = new XMLHttpRequest();
                 request.onprogress = function (e) {
                     var computable = e.lengthComputable;
                     if (computable) {
+                        if(globalprogress){
+                            if(media == null){
+                                media = {
+                                    loaded: e.loaded,
+                                    total: e.total
+                                };
+                                globalprogress.add(media);
+                            }
+                            else{
+                                media.loaded = e.loaded;
+                                media.total = e.total;
+                            }
+                        }
+
+
+                        if(onglobalprogress){
+                            onglobalprogress(globalprogress.progress());
+                        }
+
                         var progress = parseInt(e.loaded / e.total * 100);
                         if (onprogress) {
                             onprogress(id, progress);
@@ -72,6 +117,7 @@
                         onerror(id);
                     }
                 };
+
                 request.open("GET", url, true);
                 request.responseType = "blob";
                 request.send();
