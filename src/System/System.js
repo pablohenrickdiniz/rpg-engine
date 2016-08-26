@@ -1,52 +1,40 @@
-(function (root,w) {
-    if(w.Keyboard == undefined){
-        throw "System requires Keyboard"
-    }
+(function (root, w) {
 
-    if(root.Main == undefined){
+
+    if (root.Main == undefined) {
         throw "System requires Main"
     }
 
-    var Keyboard = w.Keyboard,
-        Main = root.Main;
+    var Main = root.Main;
 
     var last_loop = null;
     var interval = null;
 
     var System = {
-        Video:null,
-        Audio:null,
-        Controls:{
-            Mouse:undefined,
-            Keyboard:undefined
-        },
-        time:0,
+        Audio: null,
+        time: 0,
         system_calls: [],
-        running:false,
-        initialize:function(container){
-            var self = this;
-            self.Video.initialize(container);
-            self.Controls.Keyboard = new Keyboard(container);
-        },
-        wait: function (mss,callback) {
+        step_listeners: [],
+        running: false,
+        wait: function (mss, callback) {
             var self = this;
             self.system_calls.push({
-                start:System.time,
-                time:mss,
-                callback:callback
+                start: System.time,
+                time: mss,
+                callback: callback
             });
         },
-        freeze:function(){
+        freeze: function () {
             w.cancelAnimationFrame(interval);
             last_loop = null;
             System.running = false;
             System.Audio.systemFreeze();
         },
-        resume:function(){
+        resume: function () {
             System.run();
             System.Audio.systemResume();
         },
-        run:function(){
+        run: function () {
             var self = this;
             if (!self.running) {
                 self.running = true;
@@ -66,13 +54,17 @@
             }
 
             System.time += passed;
-
+            System.execute_system_calls();
+            System.execute_system_steps();
+            last_loop = current_time;
+        },
+        execute_system_calls: function () {
             var self = this;
             var calls = self.system_calls;
             var length = calls.length;
             if (length > 0) {
                 for (var i = 0; i < length; i++) {
-                    if((System.time - calls[i].start) >= calls[i].time){
+                    if ((System.time - calls[i].start) >= calls[i].time) {
                         calls[i].callback();
                         calls.splice(i, 1);
                         i--;
@@ -80,16 +72,34 @@
                     }
                 }
             }
-
-            if(Main.scene != undefined){
+        },
+        execute_system_steps: function () {
+            var self = this;
+            var listeners = self.step_listeners;
+            var length = listeners.length;
+            var i;
+            for (i = 0; i < length; i++) {
+                listeners[i]();
+            }
+            if (Main.scene != null) {
                 Main.scene.step();
             }
-
-
-            last_loop = current_time;
+        },
+        addSteplistener: function (listener) {
+            var self = this;
+            if (self.step_listeners.indexOf(listener) == -1) {
+                self.step_listeners.push(listener);
+            }
+        },
+        removeStepListener: function (listener) {
+            var self = this;
+            var index = self.step_listeners.indexOf(listener);
+            if (index != -1) {
+                self.step_listeners.splice(index, 1);
+            }
         }
     };
 
     root.System = System;
-})(RPG,window);
+})(RPG, window);
 

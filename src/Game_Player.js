@@ -1,9 +1,12 @@
 (function (root) {
-    if (root.Character == undefined) {
+    if (root.Game_Character == undefined) {
         throw new Error('Player Requires Character');
     }
 
-    var Character = root.Character;
+
+
+    var Character = root.Game_Character,
+        Consts = root.Consts;
 
     var Player = function (options) {
         var self = this;
@@ -19,32 +22,31 @@
     Player.prototype = Object.create(Character.prototype);
     Player.constructor = Player;
 
-    Player.prototype.step = function(){
-        var Direction = RPG.Direction;
+
+
+    Player.prototype.update = function(){
         var self = this;
+
         if (!self.moving) {
             if (Keyboard.state.KEY_LEFT) {
-                self.stepTo(Direction.LEFT);
+                self.moveTo(Consts.LEFT);
             }
             else if (Keyboard.state.KEY_RIGHT) {
-                self.stepTo(Direction.RIGHT);
+                self.moveTo(Consts.RIGHT);
             }
             else if (Keyboard.state.KEY_DOWN) {
-                self.stepTo(Direction.DOWN);
+                self.moveTo(Consts.DOWN);
             }
             else if (Keyboard.state.KEY_UP) {
-                self.stepTo(Direction.UP);
+                self.moveTo(Consts.UP);
             }
             else if (self.graphic !== null) {
-                var name = Direction.getName(self.direction);
-                var animation_name = 'step_' + name;
-                self.animations[animation_name].pauseToFrame(1);
-                self.refreshed = false;
+                self.animations[self.direction].pauseToFrame(1);
+                self.player_refreshed = false;
             }
         }
         else {
-            self.timeStepMove();
-            self.refreshed = false;
+            self.player_refreshed = false;
         }
     };
 

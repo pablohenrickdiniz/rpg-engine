@@ -17,7 +17,6 @@
     Animation.prototype.getIndexFrame = function () {
         var self = this;
         var frames = self.getFrames();
-
         if (frames < self.frame_count) {
             if (self.direction == 'negative') {
                 return self.frame_count - 1 - frames;
@@ -45,6 +44,7 @@
     Animation.prototype.getFrames = function () {
         var diff = null;
         var self = this;
+
         if (self.running) {
             diff = root.System.time - self.start_time;
         }

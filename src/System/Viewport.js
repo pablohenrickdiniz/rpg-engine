@@ -1,10 +1,6 @@
 (function (root) {
     if (CE == undefined) {
-        throw "Video requires Canvas Engine"
-    }
-
-    if (root.System == undefined) {
-        throw "Video requires System"
+        throw "Viewport requires Canvas Engine"
     }
 
     var layers_name = [
@@ -25,13 +21,16 @@
         'UI3'//UI3
     ];
 
-    var System = root.System;
-    System.Video = {
-        x: 0,
-        y: 0,
+    root.Viewport = {
+        left: 0,
+        top: 0,
         width: 600,
         height: 600,
-        fps: 60,
+        realLeft:0,
+        realTop:0,
+        realWidth:600,
+        realHeight:600,
+        borderWidth:0,
         layers: {
             BG1: null,//Background 1
             BG2: null,//Background 2
@@ -45,9 +44,9 @@
             EF1: null,//Effects 1
             EF2: null,//Effects 2
             EF3: null,//Effects 3
-            UI1:null,//UI 1
-            UI2:null,//UI 2
-            UI3:null//UI3
+            UI1: null,//UI 1
+            UI2: null,//UI 2
+            UI3: null//UI3
         },
         initialize: function (container) {
             var self = this;
@@ -64,36 +63,36 @@
             var length = layers_name.length;
             var i;
 
-            for(i =0; i < length;i++){
+            for (i = 0; i < length; i++) {
                 self.layers[layers_name[i]] = engine.createLayer({width: width, height: height});
             }
         },
-        getLayer:function(layer){
+        getLayer: function (layer) {
             var self = this;
 
-            if(/^[0-9]+$/.test(layer)){
-                if(layers_name[layer] != undefined){
+            if (/^[0-9]+$/.test(layer)) {
+                if (layers_name[layer] != undefined) {
                     return self.layers[layers_name[layer]];
                 }
             }
-            else if(self.layers[layer] != undefined){
+            else if (self.layers[layer] != undefined) {
                 return self.layers[layer];
             }
             return null;
         },
-        setX:function(x){
+        setX: function (x) {
             var self = this;
-            if(x > 0 && x != self.x){
+            if (x > 0 && x != self.x) {
                 self.x = x;
             }
         },
-        setY:function(y){
+        setY: function (y) {
             var self = this;
-            if(y > 0 && y != self.y){
+            if (y > 0 && y != self.y) {
                 self.y = y;
             }
         },
-        drawGraphic: function (image, options) {
+        drawImage: function (image, options) {
             var self = this;
             var layer_name = options.layer || 'EF1';
             var layer = self.layers[layer_name];
@@ -109,12 +108,12 @@
             var sHeight = options.sHeight || image.height;
 
             var per = /^[0-9]+(\.[0-9]+)?%$/;
-            if(per.test(sWidth)){
-                sWidth = (image.width*parseFloat(sWidth))/100;
+            if (per.test(sWidth)) {
+                sWidth = (image.width * parseFloat(sWidth)) / 100;
             }
 
-            if(per.test(sHeight)){
-                sHeight = (image.height*parseFloat(sHeight))/100;
+            if (per.test(sHeight)) {
+                sHeight = (image.height * parseFloat(sHeight)) / 100;
             }
 
             var dWidth = options.dWidth || sWidth;
@@ -156,26 +155,19 @@
          clearGraphic(int layer index, Graphic graphic):void
          Limpa uma região do canvas onde é desenhado um gráfico
          */
-        clearArea: function (x, y, width, height, layer_name) {
+        clearArea: function (x, y, width, height, layerName) {
             var self = this;
-            var layer = self.layers[layer_name];
+            var layer = self.layers[layerName];
             if (layer !== null) {
                 layer.clear(x, y, width, height);
             }
         },
-        clear:function(layer_name){
+        clear: function (layerName) {
             var self = this;
-            var layer = self.layers[layer_name];
+            var layer = self.layers[layerName];
             if (layer !== null) {
                 layer.clear();
             }
-        },
-        clearBGLayers: function () {
-            var self = this;
-            var layers = self.layers;
-            layers.BG1.clear();
-            layers.BG2.clear();
-            layers.BG3.clear();
         }
     };
 })(RPG);

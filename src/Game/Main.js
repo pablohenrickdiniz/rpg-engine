@@ -1,4 +1,7 @@
 (function (root) {
+
+
+
     root.Main = {
         scenes: [],
         scene:null,//cena atual
@@ -7,7 +10,6 @@
         actors: [],// Atores
         switches: [],//Switches
         variables: [],//Variáveis
-        paused: true,//Jogo Pausado
         switches_callbacks: [],//callbacks de switches
         /*_switchCallback(String name, function callback)
          * Registra função de callback para ativar ou desativar switch global
@@ -28,9 +30,7 @@
             var self = this;
             self.switches[name] = true;
             if (self.switches_callbacks[name] !== undefined) {
-                self.switches_callbacks[name].forEach(function (callback) {
-                    callback();
-                });
+                call_functions(self.switches_callbacks[name]);
             }
         },
         /*
@@ -41,10 +41,16 @@
             var self = this;
             self.switches[name] = false;
             if (self.switches_callbacks[name] !== undefined) {
-                self.switches_callbacks[name].forEach(function (callback) {
-                    callback();
-                });
+                call_functions(self.switches_callbacks[name]);
             }
+        }
+    };
+
+    var call_functions = function(array){
+        var length = array.length;
+        var i;
+        for(i =0; i < length;i++){
+            array[i]();
         }
     };
 })(RPG);

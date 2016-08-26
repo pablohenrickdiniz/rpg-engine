@@ -28,7 +28,7 @@
             map.tile_w = tile_w;
             map.tile_h = tile_h;
             var tilesets = data.tilesets !== undefined ? data.tilesets : [];
-            var tiles = data.tiles !== undefined ? data.tiles : [];
+            var tiles = data.tile_map !== undefined ? data.tile_map : [];
 
 
             ImageLoader.loadAll(tilesets, function (tilesets) {

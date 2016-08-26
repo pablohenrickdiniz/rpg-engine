@@ -1,9 +1,9 @@
-(function(root){
-    if(root.SceneLoader == undefined){
+(function (root) {
+    if (root.SceneLoader == undefined) {
         throw "SceneManager requires SceneLoader"
     }
 
-    if(root.Main == undefined){
+    if (root.Main == undefined) {
         throw "SceneManager requires Main"
     }
 
@@ -11,30 +11,45 @@
         Main = root.Main;
 
     root.SceneManager = {
-        scenes:{},
-        scene:null,
-        call:function(name){
+        scenes: {
+            default: root.SceneTitle
+        },
+        queue: [],
+        defaultScene: root.SceneTitle,
+        run: function () {
+            if (Main.scene == null) {
+                var self = this;
+                self.call('default');
+            }
+            else{
+                SceneLoader.load(Main.scene, function () {
+                    Main.scene.start();
+                });
+            }
+            root.System.run();
+        },
+        call: function (name) {
             var self = this;
             var scene = self.get(name);
-            if(scene != self.scene){
+
+            if (Main.scene != scene) {
                 Main.scene = scene;
-                SceneLoader.load(scene,function(){
-                    scene.ready(RPG);
+                SceneLoader.load(scene, function () {
+                    scene.start();
                 });
             }
         },
-        set:function(name,scene){
+        set: function (name, scene) {
             var self = this;
             self.scenes[name] = scene;
         },
-        get:function(name){
+        get: function (name) {
             var self = this;
-            if(self.scenes[name] != undefined){
+            if (self.scenes[name] != undefined) {
                 return self.scenes[name];
             }
             return null;
         }
     };
-
 
 })(RPG);

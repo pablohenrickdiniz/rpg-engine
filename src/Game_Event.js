@@ -1,42 +1,41 @@
 (function (root) {
-    if (root.Character == undefined) {
+    if (root.Game_Character == undefined) {
         throw "Event requires Character"
     }
 
-    var Character = root.Character,
-        Step = Character.prototype.Step;
+    var Game_Character = root.Game_Character;
 
 
-    var Event = function (options) {
+    var Game_Event = function (options) {
         var self = this;
-        Character.call(self, options);
+        Game_Character.call(self, options);
         self.switches_callbacks = [];
         self.switches = [];
-        self.current_page = null;
+        self.page = null;
         self.pages = [];
         self.bounds.groups = ['EV', 'ACTION_BUTTON'];
         Object.defineProperty(self, 'graphic', {
             get: function () {
-                if (self.current_page !== null && self.current_page.graphic !== null) {
-                    return self.current_page.graphic;
+                if (self.page !== null && self.page.graphic !== null) {
+                    return self.page.graphic;
                 }
                 return null;
             }
         });
     };
 
-    Event.prototype = Object.create(Character.prototype);
-    Event.constructor = Event;
+    Game_Event.prototype = Object.create(Game_Character.prototype);
+    Game_Event.constructor = Game_Event;
 
     /*
      getCurrentFrame():Object
      Retorna o quadtro atual de animação
      */
-    Event.prototype.getCurrentFrame = function () {
+    Game_Event.prototype.getCurrentFrame = function () {
         var self = this;
-        if (self.current_page !== null) {
+        if (self.page !== null) {
             var animation_name = 'step_' + self.direction;
-            var animation = self.current_page.graphic.animations[animation_name];
+            var animation = self.page.graphic.animations[animation_name];
             return animation.frames[animation.getIndexFrame()];
         }
         return null;
@@ -46,7 +45,7 @@
      enableSwitch(String name):void
      Ativa o evento local "name"
      */
-    Event.prototype.enableSwitch = function (name) {
+    Game_Event.prototype.enableSwitch = function (name) {
         var self = this;
         self.switches[name] = true;
         if (self.switches_callbacks[name] !== undefined) {
@@ -60,7 +59,7 @@
      disableSwitch(String name):void
      Desativa o evento local "name"
      */
-    Event.prototype.disableSwitch = function (name) {
+    Game_Event.prototype.disableSwitch = function (name) {
         var self = this;
         self.switches[name] = false;
         if (self.switches_callbacks[name] !== undefined) {
@@ -73,7 +72,7 @@
      _switchCallback(String name, function callback):void
      Registra a função de callback para ativar ou desativar o switch
      */
-    Event.prototype.switchCallback = function (name, callback) {
+    Game_Event.prototype.switchCallback = function (name, callback) {
         var self = this;
         if (self.switches_callbacks[name] === undefined) {
             self.switches_callbacks[name] = [];
@@ -86,31 +85,24 @@
      addPage(Page page):void
      Adiciona uma nova página ao evento
      */
-    Event.prototype.addPage = function (page) {
+    Game_Event.prototype.addPage = function (page) {
         var self = this;
         self.pages.push(page);
     };
 
-    Event.prototype.step = function(){
-        var self = this;
-        if (self.current_page !== null) {
+    Game_Event.prototype.update = function(){
+        var self =this;
+        if (self.page !== null) {
             if (!self.moving) {
-                if (self.follow !== null) {
-                    self.look(self.follow);
-                    self.stepForward();
-                }
-                else if (self.graphic !== null) {
-                    var name = Direction.getName(event.direction);
-                    var animation_name = 'step_' + name;
-                    self.animations[animation_name].pauseToFrame(1);
+                if (self.graphic !== null) {
+                    self.animations[self.direction].pauseToFrame(1);
                 }
             }
             else {
-                self.timeStepMove();
                 self.refreshed = false;
             }
         }
     };
 
-    root.Event = Event;
+    root.Event = Game_Event;
 })(RPG);

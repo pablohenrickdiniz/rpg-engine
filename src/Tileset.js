@@ -25,7 +25,7 @@
         self.rows = options.rows || null;
         self.cols = options.cols || null;
         self.image = null;
-        self.tiles = [];
+        self.tile_map = [];
         self.setImage(image);
     };
 
@@ -60,16 +60,16 @@
             var tile_width = self.getTileWidth();
             var tile_height = self.getTileHeight();
 
-            if (self.tiles[i] == undefined) {
-                self.tiles[i] = [];
+            if (self.tile_map[i] == undefined) {
+                self.tile_map[i] = [];
             }
 
-            if (self.tiles[i][j] == undefined) {
-                self.tiles[i][j] = new Tile(self.image, j * tile_width, i * tile_height, tile_width, tile_height);
-                self.tiles[i][j].setParent(self);
+            if (self.tile_map[i][j] == undefined) {
+                self.tile_map[i][j] = new Tile(self.image, j * tile_width, i * tile_height, tile_width, tile_height);
+                self.tile_map[i][j].setParent(self);
             }
 
-            return self.tiles[i][j];
+            return self.tile_map[i][j];
         }
     };
 

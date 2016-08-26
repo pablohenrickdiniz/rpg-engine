@@ -19,15 +19,15 @@
         throw "SceneLoader requires Resources Graphic"
     }
 
-    if(root.System == undefined || root.System.Video == undefined){
-        throw "SceneLoader requires System Video";
+    if(root.Viewport == undefined){
+        throw "SceneLoader requires Viewport";
     }
 
     var Resources = root.Resources,
         System = root.System,
         Audio = Resources.Audio,
         Graphic = Resources.Graphic,
-        Video = System.Video;
+        Viewport = root.Viewport;
 
 
     root.SceneLoader = {

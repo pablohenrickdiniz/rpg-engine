@@ -44,10 +44,10 @@
             var active = (!global_active || (global_active && global_switches[name_global] === true)) &&
                 (!local_active || (local_active && local_switches[name_local] === true));
             if (active) {
-                self.event.current_page = self;
+                self.event.page = self;
             }
-            else if (self.event.current_page === self) {
-                self.event.current_page = null;
+            else if (self.event.page === self) {
+                self.event.page = null;
             }
         };
 

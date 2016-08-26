@@ -21,7 +21,7 @@
     "canvas-engine": "https://github.com/pablohenrickdiniz/canvas-engine.git",
     "Keyboard": "https://github.com/pablohenrickdiniz/Keyboard.git",
     "math-lib": "https://github.com/pablohenrickdiniz/math-lib.git",
-    "mouse-reader": "https://github.com/pablohenrickdiniz/mouse-reader.git",
+    "Mouse": "https://github.com/pablohenrickdiniz/Mouse.git",
     "quadtree": "git@github.com:pablohenrickdiniz/quadtree.git"
   }
 }
