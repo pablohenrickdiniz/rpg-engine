@@ -23,7 +23,7 @@
     };
 
     SceneMap.prototype = Object.create(Scene.prototype);
-    SceneMap.constructor = SceneMap;
+    SceneMap.prototype.constructor = SceneMap;
 
     /*
      _focusOnEvent(Character character):void

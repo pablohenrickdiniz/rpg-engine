@@ -13,7 +13,7 @@
     };
 
     UI_Button.prototype = Object.create(UI_Element.prototype);
-    UI_Button.constructor = UI_Button;
+    UI_Button.prototype.constructor = UI_Button;
 
     UI_Manager.UI_Button = UI_Button;
 })(RPG);

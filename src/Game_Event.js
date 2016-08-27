@@ -25,7 +25,7 @@
     };
 
     Game_Event.prototype = Object.create(Game_Character.prototype);
-    Game_Event.constructor = Game_Event;
+    Game_Event.prototype.constructor = Game_Event;
 
     /*
      getCurrentFrame():Object

@@ -2,7 +2,7 @@
  * Created by Pablo Henrick on 24/08/2016.
  */
 (function (root) {
-    if(root.System == undefined){
+    if (root.System == undefined) {
         throw "UI_Document requires System"
     }
 
@@ -13,20 +13,25 @@
     var viewport = root.Viewport,
         system = root.System;
 
+    var hover = false;
     var Document = {
         contents: [],
         levels: [],
         left: 0,
         top: 0,
-        initialize:function(){
+        hover_target: null,
+        changed: false,
+        initialize: function () {
             var Mouse = root.Controls.Mouse;
-            Mouse.addEventListener('mousedown',mousedown);
-            Mouse.addEventListener('mousemove',mousemove);
+            //   Mouse.addEventListener('mousedown', mousedown);
+            Mouse.addEventListener('mousemove', mousemove);
+            Mouse.addEventListener('mouseout', mouseout);
         },
-        finalize:function(){
+        finalize: function () {
             var Mouse = root.Controls.Mouse;
-            Mouse.removeEventListener('mousedown',mousedown);
-            Mouse.removeEventListener('mousemove',mousemove);
+            // Mouse.removeEventListener('mousedown', mousedown);
+            Mouse.removeEventListener('mousemove', mousemove);
+            Mouse.removeEventListener('mouseout', mouseout);
         },
         addToLevel: function (level, element) {
             var self = this;
@@ -64,22 +69,12 @@
             var length = self.contents.length;
             var i;
 
-            var changed = false;
 
-            for (i = 0; i < length; i++) {
-                if (self.contents[i].changed) {
-                    changed = true;
-                    break;
-                }
-            }
-
-            if (changed) {
+            if (self.changed) {
+                self.changed = false;
                 self.clearUILayers();
                 for (i = 0; i < length; i++) {
-                    if (self.contents[i].changed) {
-                        self.contents[i].update();
-                        self.contents[i].changed = false;
-                    }
+                    self.contents[i].update();
                 }
             }
         },
@@ -93,47 +88,67 @@
         }
     };
 
-    var retrieve_element = function(x,y){
-        var keys =  Object.keys(Document.levels).reverse();
+    Object.defineProperty(Document, 'hover', {
+        get: function () {
+            return hover;
+        },
+        set: function (h) {
+            if(hover != h){
+                hover = h;
+                Document.changed = true;
+            }
+        }
+    });
+
+
+    var retrieve_element = function (x, y) {
+        var keys = Object.keys(Document.levels).reverse();
         var k;
         var l;
         var key;
         var lengthA = keys.length;
         var lengthB;
         var el;
-        for(k =0; k < lengthA;k++){
+
+        for (k = 0; k < lengthA; k++) {
             key = keys[k];
             lengthB = Document.levels[key].length;
-            for(l =0; l < lengthB;l++){
+            for (l = 0; l < lengthB; l++) {
                 el = Document.levels[key][l];
-                if(inside_bounds(x,y,el.absoluteLeft,el.absoluteTop,el.realWidth,el.realHeight)){
+                if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth, el.realHeight)) {
                     return el;
                 }
             }
         }
-        return null;
+        return Document;
     };
 
-    var inside_bounds = function(mx,my,bx,by,bWidth,bHeight){
-        return mx >= bx && mx <= bx+bWidth && my >= by && my <= by+bHeight;
+    var inside_bounds = function (mx, my, bx, by, bWidth, bHeight) {
+        return mx >= bx && mx <= bx + bWidth && my >= by && my <= by + bHeight;
     };
 
-    var mousemove = function(x,y){
-        var element = retrieve_element(x,y);
-        if(element != null){
-            console.log(element.id);
+
+    var mousemove = function (x, y) {
+        var element = retrieve_element(x, y);
+        if (Document.hover_target != element) {
+            if (Document.hover_target != null) {
+                Document.hover_target.hover = false;
+            }
+            Document.hover_target = element;
+
+            if (element != null) {
+                element.hover = true;
+            }
         }
     };
 
-    var mousedown = function(x,y){
-        var element = retrieve_element(x,y);
-        if(element != null){
-            console.log(element.id);
+    var mouseout = function () {
+        if (Document.hover_target != null) {
+            Document.hover_target.hover = false;
         }
     };
 
-
-    system.addSteplistener(function(){
+    system.addSteplistener(function () {
         Document.update();
     });
 

@@ -28,9 +28,12 @@
         height: 600,
         realLeft:0,
         realTop:0,
+        absoluteLeft:0,
+        absoluteTop:0,
         realWidth:600,
         realHeight:600,
         borderWidth:0,
+        visible:true,
         layers: {
             BG1: null,//Background 1
             BG2: null,//Background 2

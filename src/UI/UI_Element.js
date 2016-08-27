@@ -1,27 +1,21 @@
-(function (root) {
-    if (root.Viewport == undefined) {
-        throw "UI_Element requires Viewport"
-    }
-
+(function(root){
     if(root.Document == undefined){
         throw "UI_Element requires Document"
     }
 
-
-    var viewport = root.Viewport,
-        document = root.Document;
+    var document = root.Document,
+        viewport = root.Viewport;
 
     var ID = 0;
 
-
-    var UI_Element = function (parent, options) {
+    var UI_Element = function(parent,options){
         var self = this;
         options = options || {};
         self.events = {};
         self.contents = [];
         self.id = ID;
         ID++;
-        initialize.apply(self);
+        initialize(self);
         if (parent == null) {
             document.add(self);
             parent = viewport;
@@ -32,10 +26,6 @@
         self.parent = parent;
         self.width = options.width || 100;
         self.height = options.height || 100;
-        self.left = options.left || 0;
-        self.top = options.top || 0;
-        self.bottom = options.bottom || 0;
-        self.right = options.right || 0;
         self.backgroundOpacity = options.backgroundOpacity || 100;
         self.borderOpacity = options.borderOpacity || 100;
         self.backgroundColor = options.backgroundColor || 'transparent';
@@ -43,10 +33,9 @@
         self.borderWidth = options.borderWidth || 0;
         self.borderStyle = options.borderStyle || 'rounded';
         self.visible = options.visible || false;
-        self.verticalAlign = options.verticalAlign || null;
-        self.horizontalAlign = options.horizontalAlign || null;
         self.draggable = false;
     };
+
 
     UI_Element.prototype.add = function (element) {
         var self = this;
@@ -54,6 +43,7 @@
             element.parent = self;
             self.contents.push(element);
         }
+        return self;
     };
 
     UI_Element.prototype.remove = function (element) {
@@ -68,6 +58,7 @@
         else{
             self.parent.remove(self);
         }
+        return self;
     };
 
     UI_Element.prototype.addEventListener = function (name, callback) {
@@ -77,6 +68,7 @@
         }
 
         self.events[name].push(callback);
+        return self;
     };
 
     UI_Element.prototype.removeEventListener = function (name, callback) {
@@ -87,126 +79,74 @@
                 self.events[name].splice(index, 1);
             }
         }
-    };
-
-    UI_Element.prototype.update = function () {
-        var self = this;
-        var layer = viewport.getLayer('UI1');
-        if (self.visible) {
-            layer.rect({
-                x: self.absoluteLeft,
-                y: self.absoluteTop,
-                width: self.realWidth,
-                height: self.realHeight,
-                fillStyle: self.backgroundColor,
-                strokeStyle: self.borderColor,
-                lineWidth: self.borderWidth,
-                backgroundOpacity: self.backgroundOpacity,
-                borderOpacity: self.borderOpacity,
-                borderColor:'yellow'
-            });
-        }
-
-        var length = self.contents.length;
-        var i;
-        for (i = 0; i < length; i++) {
-            self.contents[i].update();
-        }
+        return self;
     };
 
     UI_Element.prototype.show = function () {
         var self = this;
         self.visible = true;
+        return self;
     };
 
     UI_Element.prototype.hide = function () {
         var self = this;
         self.visible = false;
+        return self;
     };
 
-    var initialize = function () {
-        var self = this;
-        var width = 100;
-        var height = 100;
-        var opacity = 50;
-        var left = 0;
-        var top = 0;
-        var right = 0;
-        var bottom = 0;
-        var backgroundColor = 'transparent';
-        var borderColor = 'yellow';
-        var borderWidth = 2;
-        var borderStyle = 'rounded';
-        var visible = false;
-        var draggable = false;
-        var old_width = width;
+    var initialize = function (self) {
+        var width = [100];
+        var height = [100];
+        var opacity = [50];
+        var left = [0];
+        var top = [0];
+        var backgroundColor = ['transparent'];
+        var borderColor = ['yellow'];
+        var borderWidth = [2];
+        var borderStyle = ['rounded'];
+        var visible = ['visible'];
+        var draggable = ['draggable'];
+        var old_width = ['old_width'];
         var old_height = height;
         var old_left = left;
         var old_top = top;
-        var old_right = right;
-        var old_bottom = bottom;
         var old_borderWidth = borderWidth;
-        var changed = false;
         var parent = null;
+        var state = 0;
+        var cursor = ['default'];
+        var backgroundOpacity = [100];
 
-        Object.defineProperty(self, 'realLeft', {
-            get: function () {
-                var sum = 0;
-                if(self.horizontalAlign != null){
-                    sum = calculate_align(self.horizontalAlign,self.realWidth,self.parent.realWidth);
-                }
-
-                if(/[0-9]+(.\[0-9]+)?%/.test(left)){
-                    var pc = parseFloat(left);
-                    return (self.parent.realWidth*pc)/100
-                }
-                return left+sum;
-            }
-        });
-
-        Object.defineProperty(self, 'realTop', {
-            get: function () {
-                var sum = 0;
-                if(self.verticalAlign != null){
-                    sum = calculate_align(self.verticalAlign,self.realHeight,self.parent.realHeight);
-                }
-
-                if(/[0-9]+(.\[0-9]+)?%/.test(top)){
-                    var pc = parseFloat(top);
-                    return (self.parent.realHeight*pc)/100
-                }
-                return top+sum;
-            }
-        });
 
         Object.defineProperty(self, 'realWidth', {
             get: function () {
-                if(/[0-9]+(.\[0-9]+)?%/.test(width)){
-                    var pc = parseFloat(width);
+                var w = width[state] || width[0];
+                if(/[0-9]+(.\[0-9]+)?%/.test(w)){
+                    var pc = parseFloat(w);
                     return (self.parent.realWidth*pc)/100
                 }
-                return width;
+                return w;
             }
         });
 
         Object.defineProperty(self, 'realHeight', {
             get: function () {
-                if(/[0-9]+(.\[0-9]+)?%/.test(height)){
-                    var pc = parseInt(height);
+                var h = height[state] || height[0];
+                if(/[0-9]+(.\[0-9]+)?%/.test(h)){
+                    var pc = parseInt(h);
                     return (self.parent.realHeight*pc)/100
                 }
-                return height;
+                return h;
             }
         });
 
         Object.defineProperty(self, 'width', {
             get: function () {
-                return width;
+                return width[state]|| width[0];
             },
             set: function (w) {
-                if (w != width) {
-                    old_width = width;
-                    width = w;
+                if (w != width[state]) {
+                    old_width = width[state];
+                    width[state] = w;
                     self.changed = true;
                 }
             }
@@ -214,12 +154,12 @@
 
         Object.defineProperty(self, 'height', {
             get: function () {
-                return height;
+                return height[state] || height[0];
             },
             set: function (h) {
-                if (h != height) {
-                    old_height = height;
-                    height = h;
+                if (h != height[state]) {
+                    old_height = height[state];
+                    height[state] = h;
                     self.changed = true;
                 }
             }
@@ -227,12 +167,12 @@
 
         Object.defineProperty(self, 'left', {
             get: function () {
-                return left;
+                return left[state] || left[0];
             },
             set: function (l) {
-                if (l != left) {
-                    old_left = left;
-                    left = l;
+                if (l != left[state]) {
+                    old_left = left[state];
+                    left[state] = l;
                     self.changed = true;
                 }
             }
@@ -240,38 +180,12 @@
 
         Object.defineProperty(self, 'top', {
             get: function () {
-                return top;
+                return top[state] || top[0];
             },
             set: function (t) {
-                if (t != top) {
-                    old_top = top;
-                    top = t;
-                    self.changed = true;
-                }
-            }
-        });
-
-        Object.defineProperty(self, 'right', {
-            get: function () {
-                return right;
-            },
-            set: function (r) {
-                if (r != right) {
-                    old_right = right;
-                    right = r;
-                    self.changed = true;
-                }
-            }
-        });
-
-        Object.defineProperty(self, 'bottom', {
-            get: function () {
-                return bottom;
-            },
-            set: function (b) {
-                if (b != bottom) {
-                    old_bottom = bottom;
-                    bottom = b;
+                if (t != top[state]) {
+                    old_top = top[state];
+                    top[state] = t;
                     self.changed = true;
                 }
             }
@@ -279,12 +193,12 @@
 
         Object.defineProperty(self, 'borderWidth', {
             get: function () {
-                return borderWidth;
+                return borderWidth[state] || borderWidth[0];
             },
             set: function (bw) {
-                if (bw != borderWidth) {
-                    old_borderWidth = borderWidth;
-                    borderWidth = bw;
+                if (bw != borderWidth[state]) {
+                    old_borderWidth = borderWidth[state];
+                    borderWidth[state] = bw;
                     self.changed = true;
                 }
             }
@@ -292,11 +206,11 @@
 
         Object.defineProperty(self, 'opacity', {
             get: function () {
-                return opacity;
+                return opacity[state] || opacity[0];
             },
             set: function (o) {
-                if (o != opacity) {
-                    opacity = o;
+                if (o != opacity[state]) {
+                    opacity[state] = o;
                     self.changed = true;
                 }
             }
@@ -304,33 +218,33 @@
 
         Object.defineProperty(self, 'backgroundColor', {
             get: function () {
-                return backgroundColor;
+                return backgroundColor[state] || backgroundColor[0];
             },
             set: function (bc) {
-                if (bc != backgroundColor) {
-                    backgroundColor = bc;
-                    if (self.backgroundColor.constructor == {}.constructor) {
-                        switch (backgroundColor.type) {
+                if (bc != backgroundColor[state]) {
+                    backgroundColor[state] = bc;
+                    if (self.backgroundColor[state].constructor == {}.constructor) {
+                        switch (backgroundColor[state].type) {
                             case 'linearGradient':
-                                Object.defineProperty(backgroundColor, 'x0', {
+                                Object.defineProperty(backgroundColor[state], 'x0', {
                                     get: function () {
                                         return self.absoluteLeft;
                                     }
                                 });
 
-                                Object.defineProperty(backgroundColor, 'y0', {
+                                Object.defineProperty(backgroundColor[state], 'y0', {
                                     get: function () {
                                         return self.absoluteTop;
                                     }
                                 });
 
-                                Object.defineProperty(backgroundColor, 'x1', {
+                                Object.defineProperty(backgroundColo[state], 'x1', {
                                     get: function () {
                                         return self.absoluteLeft + self.width;
                                     }
                                 });
 
-                                Object.defineProperty(backgroundColor, 'y1', {
+                                Object.defineProperty(backgroundColor[state], 'y1', {
                                     get: function () {
                                         return self.absoluteTop + self.height;
                                     }
@@ -342,13 +256,25 @@
             }
         });
 
+        Object.defineProperty(self, 'backgroundOpacity', {
+            get: function () {
+                return backgroundOpacity[state] ||  backgroundOpacity[0];
+            },
+            set: function (bo) {
+                if (bo != backgroundOpacity[state]) {
+                    backgroundOpacity[state] = bo;
+                    self.changed = true;
+                }
+            }
+        });
+
         Object.defineProperty(self, 'borderColor', {
             get: function () {
-                return borderColor;
+                return borderColor[state] || borderColor[0];
             },
             set: function (bc) {
-                if (bc != borderColor) {
-                    borderColor = bc;
+                if (bc != borderColor[state]) {
+                    borderColor[state] = bc;
                     self.changed = true;
                 }
             }
@@ -356,11 +282,11 @@
 
         Object.defineProperty(self, 'borderStyle', {
             get: function () {
-                return borderStyle;
+                return borderStyle[state] || borderStyle[0];
             },
             set: function (bs) {
-                if (bs != borderStyle) {
-                    borderStyle = bs;
+                if (bs != borderStyle[state]) {
+                    borderStyle[state] = bs;
                     self.changed = true;
                 }
             }
@@ -368,11 +294,11 @@
 
         Object.defineProperty(self, 'visible', {
             get: function () {
-                return visible;
+                return visible[state] || visible[0];
             },
             set: function (v) {
-                if (v != visible) {
-                    visible = v;
+                if (v != visible[state]) {
+                    visible[state] = v;
                     self.changed = true;
                 }
             }
@@ -380,41 +306,25 @@
 
         Object.defineProperty(self, 'draggable', {
             get: function () {
-                return draggable;
+                return draggable[state] || draggable[0];
             },
             set: function (d) {
-                if (d != draggable) {
-                    draggable = d;
+                if (d != draggable[state]) {
+                    draggable[state] = d;
                 }
-            }
-        });
-
-        Object.defineProperty(self, 'absoluteLeft', {
-            get: function () {
-                return self.realLeft +  self.parent.realLeft;
-            }
-        });
-
-        Object.defineProperty(self, 'absoluteTop', {
-            get: function () {
-                return self.realTop+ self.parent.realTop
             }
         });
 
         Object.defineProperty(self, 'changed', {
             get: function () {
-                return changed;
+                return document.changed;
             },
             set: function (c) {
-                if (changed != c) {
-                    changed = c;
-                    if (self.parent != null) {
-                        self.parent.changed = c;
-                    }
+                if(c){
+                    document.changed = true;
                 }
             }
         });
-
 
         Object.defineProperty(self,'level',{
             get:function(){
@@ -427,7 +337,7 @@
 
         Object.defineProperty(self,'parent',{
             get:function(){
-               return parent;
+                return parent;
             },
             set:function(p){
                 if(p != parent){
@@ -439,25 +349,68 @@
                         document.addToLevel(self.level,self);
                     }
 
-                    changed = true;
+                    self.changed = true;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'hover',{
+            get:function(){
+                return state == 1;
+            },
+            set:function(h){
+                if(h != state){
+                    if(h){
+                        self.state = 1;
+                    }
+                    else{
+                        self.state = 0;
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'state',{
+            get:function(){
+                return state;
+            },
+            set:function(s){
+                if(s != state){
+                    state = s;
+                    self.changed = true;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'cursor',{
+            get:function(){
+                return cursor[state] || cursor[0];
+            },
+            set:function(c){
+                if(c != cursor[state]){
+                    cursor[state] = c;
+                    self.changed = true;
                 }
             }
         });
     };
 
-    var calculate_align = function (align, objSize, contSize) {
-        switch (align) {
-            case 'top':
-            case 'left':
-                return 0;
-                break;
-            case 'center':
-                return  (contSize / 2) - (objSize / 2);
-                break;
-            case 'bottom':
-            case 'right':
-                return contSize - objSize;
-                break;
+
+    UI_Element.prototype.setStateStyle = function(state,style,value){
+        var self = this;
+        var tmp = self.state;
+        self.state = state;
+        self[style] = value;
+        self.state = tmp;
+        return self;
+    };
+
+    UI_Element.prototype.update = function(){
+        var self = this;
+        var length = self.contents.length;
+        var i;
+        for (i = 0; i < length; i++) {
+            self.contents[i].update();
         }
     };
 

@@ -9,7 +9,9 @@
 
     var Scene = root.Scene,
         UI_Window = root.UI_Window,
-        UI_List = root.UI_List;
+        UI_List = root.UI_List,
+        UI_ListItem = root.UI_ListItem;
+
     root.SceneMenu= new Scene({
         command_window:null,
         start:function () {
@@ -27,12 +29,22 @@
             var list = new UI_List(command_window,{
                 width:'30%',
                 height:'95%',
-                backgroundColor:'Green',
                 verticalAlign:'center',
+                borderColor:'White',
+                borderWidth:1,
                 left:'3%'
-            });
+            }).show();
 
-            list.show();
+            for(var i =1; i <= 10;i++){
+                list.createItem({
+                    borderColor:'White',
+                    borderWidth:1,
+                    backgroundColor:'blue',
+                    backgroundOpacity:50,
+                    height:'10%',
+                    text:'item'+i
+                }).setStateStyle(1,'backgroundOpacity',100).show();
+            }
         }
     });
 })(RPG,window);

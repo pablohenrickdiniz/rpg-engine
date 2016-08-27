@@ -20,7 +20,7 @@
     };
 
     Player.prototype = Object.create(Character.prototype);
-    Player.constructor = Player;
+    Player.prototype.constructor = Player;
 
 
 

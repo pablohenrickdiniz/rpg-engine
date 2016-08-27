@@ -16,7 +16,7 @@
     };
 
     AnimatedTile.prototype = Object.create(Tile.prototype);
-    AnimatedTile.constructor = AnimatedTile;
+    AnimatedTile.prototype.constructor = AnimatedTile;
 
 
     AnimatedTile.prototype.initialize = function () {
