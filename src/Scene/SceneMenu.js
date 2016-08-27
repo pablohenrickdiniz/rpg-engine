@@ -42,7 +42,10 @@
                     backgroundColor:'blue',
                     backgroundOpacity:50,
                     height:'10%',
-                    text:'item'+i
+                    text:'Item '+i,
+                    color:'White',
+                    textAlign:'center',
+                    fontSize:20
                 }).setStateStyle(1,'backgroundOpacity',100).show();
             }
         }

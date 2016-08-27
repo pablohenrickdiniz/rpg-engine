@@ -11,10 +11,7 @@
         throw "UI_Block requires UI_Element"
     }
 
-
     var UI_Element = root.UI_Element;
-
-    var viewport = root.Viewport;
 
     var UI_Block = function (parent, options) {
         var self = this;
@@ -32,9 +29,8 @@
     UI_Block.prototype = Object.create(UI_Element.prototype);
     UI_Block.prototype.constructor = UI_Block;
 
-    UI_Block.prototype.update = function () {
+    UI_Block.prototype.update = function (layer) {
         var self = this;
-        var layer = viewport.getLayer('UI1');
         if (self.visible && self.parent.visible) {
             layer.rect({
                 x: self.absoluteLeft,
@@ -48,7 +44,7 @@
                 borderOpacity: self.borderOpacity,
                 borderColor: 'yellow'
             });
-            UI_Element.prototype.update.apply(self);
+            UI_Element.prototype.update.call(self,layer);
         }
     };
 

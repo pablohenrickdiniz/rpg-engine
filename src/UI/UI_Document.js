@@ -14,13 +14,14 @@
         system = root.System;
 
     var hover = false;
+
     var Document = {
         contents: [],
         levels: [],
         left: 0,
         top: 0,
         hover_target: null,
-        changed: false,
+        changed:[false,false,false],
         initialize: function () {
             var Mouse = root.Controls.Mouse;
             //   Mouse.addEventListener('mousedown', mousedown);
@@ -66,25 +67,45 @@
         },
         update: function () {
             var self = this;
-            var length = self.contents.length;
             var i;
+            var length;
+            var layer = null;
 
-
-            if (self.changed) {
-                self.changed = false;
-                self.clearUILayers();
-                for (i = 0; i < length; i++) {
-                    self.contents[i].update();
+            if(self.changed[0]){
+                layer = viewport.getLayer('UI1');
+                layer.clear();
+                self.changed[0] = false;
+                if(self.levels[0] != undefined){
+                    length = self.levels[0].length;
+                    for (i = 0; i < length; i++) {
+                        self.levels[0][i].update(layer);
+                    }
                 }
             }
-        },
-        clearUILayers: function () {
-            var layer1 = viewport.getLayer('UI1');
-            var layer2 = viewport.getLayer('UI2');
-            var layer3 = viewport.getLayer('UI3');
-            layer1.clear();
-            layer2.clear();
-            layer3.clear();
+
+            if(self.changed[1]){
+                layer = viewport.getLayer('UI1');
+                layer.clear();
+                self.changed[1] = false;
+                if(self.levels[1] != undefined){
+                    length = self.levels[1].length;
+                    for (i = 0; i < length; i++) {
+                        self.levels[1][i].update(layer);
+                    }
+                }
+            }
+
+            if(self.changed[2]){
+                layer = viewport.getLayer('UI3');
+                layer.clear();
+                self.changed[2] = false;
+                if(self.levels[2] != undefined){
+                    length = self.levels[2].length;
+                    for (i = 0; i < length; i++) {
+                        self.levels[2][i].update(layer);
+                    }
+                }
+            }
         }
     };
 
@@ -95,7 +116,6 @@
         set: function (h) {
             if(hover != h){
                 hover = h;
-                Document.changed = true;
             }
         }
     });

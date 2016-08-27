@@ -32,7 +32,10 @@
         self.borderColor = options.borderColor || 'yellow';
         self.borderWidth = options.borderWidth || 0;
         self.borderStyle = options.borderStyle || 'rounded';
+        self.color = options.color || 'black';
+        self.fontSize = options.fontSize || 10;
         self.visible = options.visible || false;
+        self.textAlign = options.textAlign || 'left';
         self.draggable = false;
     };
 
@@ -115,7 +118,9 @@
         var state = 0;
         var cursor = ['default'];
         var backgroundOpacity = [100];
-
+        var color = [null];
+        var fontSize = [null];
+        var textAlign = ['left'];
 
         Object.defineProperty(self, 'realWidth', {
             get: function () {
@@ -316,12 +321,9 @@
         });
 
         Object.defineProperty(self, 'changed', {
-            get: function () {
-                return document.changed;
-            },
             set: function (c) {
                 if(c){
-                    document.changed = true;
+                    document.changed[self.level] = c;
                 }
             }
         });
@@ -393,6 +395,42 @@
                 }
             }
         });
+
+        Object.defineProperty(self,'color',{
+            get:function(){
+                return color[state] || color[0];
+            },
+            set:function(c){
+                if(c != color[state]){
+                    color[state] = c;
+                    self.changed = true;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'fontSize',{
+            get:function(){
+                return fontSize[state] || fontSize[0];
+            },
+            set:function(fs){
+                if(fs != fontSize[state]){
+                    fontSize[state] = fs;
+                    self.changed = true;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'textAlign',{
+            get:function(){
+                return textAlign[state] || textAlign[0];
+            },
+            set:function(t){
+                if(t != textAlign[state]){
+                    textAlign[state] = t;
+                    self.changed = true;
+                }
+            }
+        });
     };
 
 
@@ -405,12 +443,12 @@
         return self;
     };
 
-    UI_Element.prototype.update = function(){
+    UI_Element.prototype.update = function(layer){
         var self = this;
         var length = self.contents.length;
         var i;
         for (i = 0; i < length; i++) {
-            self.contents[i].update();
+            self.contents[i].update(layer);
         }
     };
 

@@ -9,7 +9,6 @@
 
     var UI_Block = root.UI_Block,
         UI_ListItem = root.UI_ListItem,
-        viewport = root.Viewport,
         document = root.Document;
 
     var UI_List = function (parent, options) {
@@ -32,7 +31,7 @@
         options.top = top;
         var item = new UI_ListItem(self, options);
         item.parent = self;
-        document.changed = true;
+        document.changed[this.level+1] = true;
         return item;
     };
 
@@ -52,15 +51,14 @@
             if (index != -1) {
                 self.contents.splice(index, 1)[0].parent = null;
                 update_elements_position(self,index);
-                document.changed = true;
-
+                self.changed = true;
             }
         }
         else if (/^[0-9]+$/.test(item)) {
             if (self.contents[item] != undefined) {
                 self.contents.splice(item, 1)[0].parent = null;
                 update_elements_position(self,item);
-                document.changed = true;
+                self.changed = true;
             }
         }
         return self;
@@ -71,9 +69,8 @@
         return self.contents.indexOf(item);
     };
 
-    UI_List.prototype.update = function () {
+    UI_List.prototype.update = function (layer) {
         var self = this;
-        var layer = viewport.getLayer('UI1');
         if (self.visible && self.parent.visible) {
             layer.rect({
                 x: self.absoluteLeft,
@@ -87,13 +84,6 @@
                 borderOpacity: self.borderOpacity,
                 borderColor: 'yellow'
             });
-            var length = self.contents.length;
-            var i;
-
-            for (i = 0; i < length; i++) {
-                var item = self.contents[i];
-                item.update(i);
-            }
         }
     };
 
