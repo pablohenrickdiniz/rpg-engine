@@ -1,38 +1,32 @@
 (function (root) {
-    if (root.UI_Block == undefined) {
-        throw "UI_List requires UI_Block"
+    if (root.UI_Element == undefined) {
+        throw "UI_List requires UI_Element"
     }
 
     if (root.UI_ListItem == undefined) {
-        throw "UI_ListItem requires UI_Block"
+        throw "UI_ListItem requires UI_Element"
     }
 
-    var UI_Block = root.UI_Block,
-        UI_ListItem = root.UI_ListItem,
-        document = root.Document;
+    var UI_Element = root.UI_Element,
+        UI_ListItem = root.UI_ListItem;
 
     var UI_List = function (parent, options) {
         var self = this;
-        UI_Block.call(self, parent, options);
+        UI_Element.call(self, parent, options);
     };
 
-    UI_List.prototype = Object.create(UI_Block.prototype);
+    UI_List.prototype = Object.create(UI_Element.prototype);
     UI_List.prototype.constructor = UI_List;
 
 
     UI_List.prototype.createItem = function (options) {
         var self = this;
         var last = self.lastItem();
-        var top = 0;
         if (last != null) {
-            top = last.top + last.realHeight;
+            options.top = last.top + last.realHeight;
         }
 
-        options.top = top;
-        var item = new UI_ListItem(self, options);
-        item.parent = self;
-        document.changed[this.level+1] = true;
-        return item;
+        return new UI_ListItem(self, options);
     };
 
     UI_List.prototype.lastItem = function () {
@@ -71,6 +65,7 @@
 
     UI_List.prototype.update = function (layer) {
         var self = this;
+
         if (self.visible && self.parent.visible) {
             layer.rect({
                 x: self.absoluteLeft,

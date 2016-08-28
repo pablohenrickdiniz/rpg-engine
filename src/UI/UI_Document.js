@@ -21,7 +21,14 @@
         left: 0,
         top: 0,
         hover_target: null,
-        changed:[false,false,false],
+        changed: {},
+        change: function (level, id) {
+            var self = this;
+            if (self.changed[level] == undefined) {
+                self.changed[level] = {};
+            }
+            self.changed[level][id] = true;
+        },
         initialize: function () {
             var Mouse = root.Controls.Mouse;
             //   Mouse.addEventListener('mousedown', mousedown);
@@ -37,19 +44,14 @@
         addToLevel: function (level, element) {
             var self = this;
             if (self.levels[level] == undefined) {
-                self.levels[level] = [];
+                self.levels[level] = {};
             }
-            if (self.levels[level].indexOf(element) == -1) {
-                self.levels[level].push(element);
-            }
+            self.levels[level][element.id] = element;
         },
-        removeFromLevel: function (level, element) {
+        removeFromLevel: function (level, id) {
             var self = this;
             if (self.levels[level] != undefined) {
-                var index = self.levels[level].indexOf(element);
-                if (index != -1) {
-                    self.levels[level].splice(index, 1);
-                }
+                delete self.levels[level][id];
             }
         },
         add: function (element) {
@@ -68,42 +70,44 @@
         update: function () {
             var self = this;
             var i;
-            var length;
             var layer = null;
+            var ids;
+            var length;
+            var id;
 
-            if(self.changed[0]){
+            if (self.changed[0] && self.levels[0]) {
                 layer = viewport.getLayer('UI1');
-                layer.clear();
-                self.changed[0] = false;
-                if(self.levels[0] != undefined){
-                    length = self.levels[0].length;
-                    for (i = 0; i < length; i++) {
-                        self.levels[0][i].update(layer);
-                    }
+                ids = Object.keys(self.changed[0]);
+                length = ids.length;
+                for (i = 0; i < length; i++) {
+                    id = ids[i];
+                    self.levels[0][id].clear(layer);
+                    self.levels[0][id].update(layer);
+                    delete self.changed[0][id];
                 }
             }
 
-            if(self.changed[1]){
-                layer = viewport.getLayer('UI1');
-                layer.clear();
-                self.changed[1] = false;
-                if(self.levels[1] != undefined){
-                    length = self.levels[1].length;
-                    for (i = 0; i < length; i++) {
-                        self.levels[1][i].update(layer);
-                    }
+            if (self.changed[1] && self.levels[1]) {
+                layer = viewport.getLayer('UI2');
+                ids = Object.keys(self.changed[1]);
+                length = ids.length;
+                for (i = 0; i < length; i++) {
+                    id = ids[i];
+                    self.levels[1][id].clear(layer);
+                    self.levels[1][id].update(layer);
+                    delete self.changed[1][id];
                 }
             }
 
-            if(self.changed[2]){
+            if (self.changed[2] && self.levels[2]) {
                 layer = viewport.getLayer('UI3');
-                layer.clear();
-                self.changed[2] = false;
-                if(self.levels[2] != undefined){
-                    length = self.levels[2].length;
-                    for (i = 0; i < length; i++) {
-                        self.levels[2][i].update(layer);
-                    }
+                ids = Object.keys(self.changed[2]);
+                length = ids.length;
+                for (i = 0; i < length; i++) {
+                    id = ids[i];
+                    self.levels[2][id].clear(layer);
+                    self.levels[2][id].update(layer);
+                    delete self.changed[2][id];
                 }
             }
         }
@@ -114,7 +118,7 @@
             return hover;
         },
         set: function (h) {
-            if(hover != h){
+            if (hover != h) {
                 hover = h;
             }
         }
@@ -122,22 +126,28 @@
 
 
     var retrieve_element = function (x, y) {
-        var keys = Object.keys(Document.levels).reverse();
-        var k;
-        var l;
-        var key;
-        var lengthA = keys.length;
+        var keysA = Object.keys(Document.levels).reverse();
+        var keysB;
+        var kA;
+        var kB;
+        var level;
+        var id;
+        var lengthA = keysA.length;
         var lengthB;
         var el;
 
-        for (k = 0; k < lengthA; k++) {
-            key = keys[k];
-            lengthB = Document.levels[key].length;
-            for (l = 0; l < lengthB; l++) {
-                el = Document.levels[key][l];
-                if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth, el.realHeight)) {
-                    return el;
-                }
+        for (kA = 0; kA < lengthA; kA++) {
+            level = keysA[kA];
+            keysB = Object.keys(Document.levels[level]);
+            lengthB = keysB.length;
+            for (kB = 0; kB < lengthB; kB++) {
+                id = keysB[kB];
+                el = Document.levels[level][id];
+
+                    if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth, el.realHeight)) {
+                        return el;
+                    }
+
             }
         }
         return Document;
@@ -165,6 +175,7 @@
     var mouseout = function () {
         if (Document.hover_target != null) {
             Document.hover_target.hover = false;
+            Document.hover_target = null;
         }
     };
 

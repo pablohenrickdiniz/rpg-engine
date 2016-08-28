@@ -1,9 +1,9 @@
 (function(root){
-    if(root.UI_Block == undefined){
-        throw "UI_ListItem requires UI_Block"
+    if(root.UI_Element == undefined){
+        throw "UI_ListItem requires UI_Element"
     }
 
-    var UI_Block = root.UI_Block;
+    var UI_Element = root.UI_Element;
 
     var initialize = function(self){
         var text = '';
@@ -23,13 +23,13 @@
     var UI_ListItem = function(parent,options){
         var self = this;
         options.height = options.height || 20;
-        UI_Block.call(self,parent,options);
+        UI_Element.call(self,parent,options);
         initialize(self);
         self.width = '100%';
-        self.text = options.text;
+        self.text = options.text || '';
     } ;
 
-    UI_ListItem.prototype = Object.create(UI_Block.prototype);
+    UI_ListItem.prototype = Object.create(UI_Element.prototype);
     UI_ListItem.prototype.constructor = UI_ListItem;
 
     UI_ListItem.prototype.update = function(layer){
