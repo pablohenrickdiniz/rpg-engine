@@ -3,83 +3,65 @@
         throw "Viewport requires Canvas Engine"
     }
 
-    var layers_name = [
-        'BG1',//Background 1
-        'BG2',//Background 2
-        'BG3',//Background 3
-        'EV1',//Eventos 1
-        'EV2',//Eventos 2
-        'EV3',//Eventos 2
-        'FR1',//Foreground 4
-        'FR2',//Foreground 5
-        'FR3',//Foreground 6
-        'EF1',//Effects 1
-        'EF2',//Effects 2
-        'EF3',//Effects 3
-        'UI1',//UI 1
-        'UI2',//UI 2
-        'UI3'//UI3
-    ];
 
     root.Viewport = {
         left: 0,
         top: 0,
         width: 600,
         height: 600,
-        realLeft:0,
-        realTop:0,
-        absoluteLeft:0,
-        absoluteTop:0,
-        realWidth:600,
-        realHeight:600,
-        borderWidth:0,
-        visible:true,
+        realLeft: 0,
+        realTop: 0,
+        absoluteLeft: 0,
+        absoluteTop: 0,
+        realWidth: 600,
+        realHeight: 600,
+        borderWidth: 0,
+        scrollTop:0,
+        scrollLeft:0,
+        padding:0,
+        visible: true,
         layers: {
-            BG1: null,//Background 1
-            BG2: null,//Background 2
-            BG3: null,//Background 3
-            EV1: null,//Eventos 1
-            EV2: null,//Eventos 2
-            EV3: null,//Eventos 2
-            FR1: null,//Foreground 4
-            FR2: null,//Foreground 5
-            FR3: null,//Foreground 6
-            EF1: null,//Effects 1
-            EF2: null,//Effects 2
-            EF3: null,//Effects 3
-            UI1: null,//UI 1
-            UI2: null,//UI 2
-            UI3: null//UI3
+            BG: [],
+            EV: [],
+            FR: [],
+            EF: [],
+            UI: []
         },
+        engine: null,
         initialize: function (container) {
             var self = this;
             var width = self.width;
             var height = self.height;
 
-            var engine = CE.create(container, {
-                width: self.width,
-                height: self.height,
+            self.engine = CE.create(container, {
+                width: width,
+                height: height,
                 style: {
                     backgroundColor: 'black'
                 }
             });
-            var length = layers_name.length;
-            var i;
-
-            for (i = 0; i < length; i++) {
-                self.layers[layers_name[i]] = engine.createLayer({width: width, height: height});
-            }
         },
-        getLayer: function (layer) {
+        getLayer: function (type, index) {
             var self = this;
-
-            if (/^[0-9]+$/.test(layer)) {
-                if (layers_name[layer] != undefined) {
-                    return self.layers[layers_name[layer]];
+            var keys = Object.keys(self.layers);
+            var i;
+            var length = keys.length;
+            var s_index = 0;
+            var key;
+            for(i =0; i < length;i++){
+                key = keys[i];
+                if(type != key){
+                    s_index+=self.layers[key].length;
                 }
-            }
-            else if (self.layers[layer] != undefined) {
-                return self.layers[layer];
+                else{
+                    while(index > self.layers[key].length-1){
+                        var layer = self.engine.createLayer({
+                            zIndex:s_index+self.layers[key].length
+                        });
+                        self.layers[key].push(layer);
+                    }
+                    return self.layers[key][index];
+                }
             }
             return null;
         },
@@ -171,6 +153,9 @@
             if (layer !== null) {
                 layer.clear();
             }
+        },
+        click:function(){
+
         }
     };
 })(RPG);

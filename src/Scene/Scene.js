@@ -79,7 +79,7 @@
     };
 
     Scene.prototype.clearProgressBar = function(){
-        var layer = Viewport.getLayer('UI3');
+        var layer = Viewport.getLayer('UI',2);
         layer.clear();
     };
 

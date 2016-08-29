@@ -30,17 +30,20 @@
         self.horizontalAlign = options.horizontalAlign || null;
         self.width = options.width || 0;
         self.height = options.height || 0;
+        self.padding = options.padding || 0;
         self.backgroundOpacity = options.backgroundOpacity || 100;
         self.borderOpacity = options.borderOpacity || 100;
         self.backgroundColor = options.backgroundColor || 'transparent';
         self.borderColor = options.borderColor || 'yellow';
         self.borderWidth = options.borderWidth || 0;
         self.borderStyle = options.borderStyle || 'rounded';
-        self.color = options.color || 'black';
-        self.fontSize = options.fontSize || 10;
         self.visible = options.visible || false;
-        self.textAlign = options.textAlign || 'left';
+        self.scrollLeft = options.scrollLeft || 0;
+        self.scrollTop = options.scrollTop || 0;
+        self.scrollHeight = 0;
         self.draggable = false;
+        self.overflow = 'hidden';
+        self.scrollable = options.scrollable || 0;
     };
 
 
@@ -107,6 +110,7 @@
         var opacity = [50];
         var left = [0];
         var top = [0];
+        var padding = [0];
         var backgroundColor = ['transparent'];
         var borderColor = ['yellow'];
         var borderWidth = [2];
@@ -118,16 +122,19 @@
         var old_left = null;
         var old_top = null;
         var old_borderWidth = null;
+        var old_background_opacity = null;
+        var old_padding = null;
         var parent = null;
         var state = 0;
         var cursor = ['default'];
         var backgroundOpacity = [100];
-        var color = [null];
-        var fontSize = [null];
-        var textAlign = ['left'];
         var horizontalAlign = [null];
         var verticalAlign = [null];
-
+        var overflow = ['hidden'];
+        var scrollable = false;
+        var scrollLeft = 0;
+        var scrollTop = 0;
+        var scrollWidth = 15;
 
         Object.defineProperty(self, 'realLeft', {
             get: function () {
@@ -161,13 +168,13 @@
 
         Object.defineProperty(self, 'absoluteLeft', {
             get: function () {
-                return self.realLeft + parent.absoluteLeft;
+                return self.realLeft + parent.absoluteLeft + self.parent.padding;
             }
         });
 
         Object.defineProperty(self, 'absoluteTop', {
             get: function () {
-                return self.realTop + parent.absoluteTop;
+                return self.realTop + parent.absoluteTop + self.parent.padding;
             }
         });
 
@@ -211,6 +218,17 @@
             }
         });
 
+        Object.defineProperty(self, 'containerWidth', {
+            get: function () {
+                return self.realWidth - self.padding * 2;
+            }
+        });
+
+        Object.defineProperty(self, 'containerHeight', {
+            get: function () {
+                return self.realHeight - self.padding * 2;
+            }
+        });
 
         Object.defineProperty(self, 'width', {
             get: function () {
@@ -233,6 +251,20 @@
                 if (h != height[state]) {
                     save_state(self);
                     height[state] = h;
+                    self.changed = true;
+                }
+            }
+        });
+
+
+        Object.defineProperty(self, 'padding', {
+            get: function () {
+                return padding[state] || padding[0];
+            },
+            set: function (pad) {
+                if (pad != padding[state]) {
+                    save_state(self);
+                    padding[state] = pad;
                     self.changed = true;
                 }
             }
@@ -279,13 +311,13 @@
 
         Object.defineProperty(self, 'clearWidth', {
             get: function () {
-                return old_width + (old_borderWidth * 2);
+                return old_width + old_borderWidth * 2;
             }
         });
 
         Object.defineProperty(self, 'clearHeight', {
             get: function () {
-                return old_height + (old_borderWidth * 2);
+                return old_height + old_borderWidth * 2;
             }
         });
 
@@ -372,6 +404,7 @@
             },
             set: function (bc) {
                 if (bc != borderColor[state]) {
+                    save_state(self);
                     borderColor[state] = bc;
                     self.changed = true;
                 }
@@ -488,42 +521,6 @@
             }
         });
 
-        Object.defineProperty(self, 'color', {
-            get: function () {
-                return color[state] || color[0];
-            },
-            set: function (c) {
-                if (c != color[state]) {
-                    color[state] = c;
-                    self.changed = true;
-                }
-            }
-        });
-
-        Object.defineProperty(self, 'fontSize', {
-            get: function () {
-                return fontSize[state] || fontSize[0];
-            },
-            set: function (fs) {
-                if (fs != fontSize[state]) {
-                    fontSize[state] = fs;
-                    self.changed = true;
-                }
-            }
-        });
-
-        Object.defineProperty(self, 'textAlign', {
-            get: function () {
-                return textAlign[state] || textAlign[0];
-            },
-            set: function (t) {
-                if (t != textAlign[state]) {
-                    textAlign[state] = t;
-                    self.changed = true;
-                }
-            }
-        });
-
         Object.defineProperty(self, 'oldWidth', {
             set: function (ow) {
                 old_width = ow;
@@ -568,6 +565,260 @@
                 return old_borderWidth;
             }
         });
+
+        Object.defineProperty(self, 'oldBackgroundOpacity', {
+            set: function (obp) {
+                old_background_opacity = obp;
+            },
+            get: function () {
+                return old_background_opacity;
+            }
+        });
+
+        Object.defineProperty(self, 'oldPadding', {
+            set: function (op) {
+                old_padding = op;
+            },
+            get: function () {
+                return old_padding;
+            }
+        });
+
+
+        Object.defineProperty(self, 'overflow', {
+            set: function (o) {
+                if (o != overflow) {
+                    overflow = o;
+                }
+            },
+            get: function () {
+                return overflow;
+            }
+        });
+
+        Object.defineProperty(self, 'scrollable', {
+            get: function () {
+                return scrollable;
+            },
+            set: function (s) {
+                if (s != scrollable) {
+                    scrollable = s;
+                    self.changed = true;
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollHeight', {
+            get: function () {
+                var i;
+                var length = self.contents.length;
+                var max = 0;
+                for (i = 0; i < length; i++) {
+                    var el = self.contents[i];
+                    if ((el.realTop + el.realHeight) > max) {
+                        max = el.realTop + el.realHeight;
+                    }
+                }
+                return max;
+            }
+        });
+
+        Object.defineProperty(self, 'scrollLeft', {
+            get: function () {
+                if (scrollable) {
+                    return scrollLeft;
+                }
+                return 0;
+            },
+            set: function (s) {
+                if (s != scrollLeft) {
+                    scrollLeft = s;
+                    self.changed = true;
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollTop', {
+            get: function () {
+                if (scrollable) {
+                    return scrollTop;
+                }
+                return 0;
+            },
+            set: function (st) {
+                if (st != scrollTop) {
+                    var max = self.maxScrollTop;
+                    console.log(max);
+                    if (st < 0) {
+                        st = 0;
+                    }
+                    else if(st > max){
+                       // st = max;
+                    }
+                    scrollTop = st;
+                    save_state(self);
+                    self.changed = true;
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollButton1Left', {
+            get: function () {
+                return self.absoluteLeft + self.realWidth - self.scrollWidth;
+            }
+        });
+
+        Object.defineProperty(self, 'scrollButton1Top', {
+            get: function () {
+                return self.absoluteTop;
+            }
+        });
+
+        Object.defineProperty(self, 'scrollButton2Left', {
+            get: function () {
+                return self.absoluteLeft + self.realWidth - self.scrollWidth;
+            }
+        });
+
+        Object.defineProperty(self, 'scrollButton2Top', {
+            get: function () {
+                return self.absoluteTop + self.realHeight - self.scrollWidth;
+            }
+        });
+
+        Object.defineProperty(self, 'scrollWidth', {
+            get: function () {
+                return scrollWidth;
+            },
+            set: function (sw) {
+                if (sw != scrollWidth) {
+                    scrollWidth = sw;
+                }
+            }
+        });
+
+
+        Object.defineProperty(self, 'railHeight', {
+            get: function () {
+                return self.realHeight - self.scrollWidth * 2;
+            }
+        });
+
+        Object.defineProperty(self,'maxScrollTop',{
+            get:function(){
+                return self.absoluteTop + self.scrollWidth + self.railHeight - self.scrollHeight;
+            }
+        });
+    };
+
+    UI_Element.prototype.update = function (layer) {
+        var self = this;
+        if (self.visible && self.parent.visible) {
+            layer.rect({
+                x: self.absoluteLeft,
+                y: self.absoluteTop,
+                width: self.realWidth,
+                height: self.realHeight,
+                fillStyle: self.backgroundColor,
+                strokeStyle: self.borderColor,
+                lineWidth: self.borderWidth,
+                backgroundOpacity: self.backgroundOpacity,
+                borderOpacity: self.borderOpacity,
+                borderColor: self.borderColor
+            });
+
+            if (self.scrollable && self.scrollHeight > self.realHeight) {
+                var scrollbar_width = self.scrollWidth;
+                var button1_left = self.scrollButton1Left;
+                var button1_top = self.absoluteTop;
+                var button2_top = self.scrollButton2Top;
+                var rail_y = button1_top + scrollbar_width;
+                var rail_height = self.railHeight;
+
+
+                //Scrollbar background
+                layer.rect({
+                    x: button1_left,
+                    y: rail_y,
+                    width: scrollbar_width,
+                    height: rail_height,
+                    fillStyle: 'Blue',
+                    backgroundOpacity: 80
+                });
+
+
+                var scroll_y = rail_y + rail_height * (self.scrollTop / self.scrollHeight);
+                var scroll_height = (self.realHeight / self.scrollHeight) * rail_height;
+                var max_scroll_y = rail_y + rail_height - scroll_height;
+                scroll_y = scroll_y > max_scroll_y ? max_scroll_y : scroll_y;
+
+                //Scrollbar Slider
+                layer.rect({
+                    x: button1_left,
+                    y: scroll_y,
+                    width: scrollbar_width,
+                    height: scroll_height,
+                    fillStyle: 'White',
+                    lineWidth: 1,
+                    strokeStyle: 'Black'
+                });
+
+
+                //Scrollbar button up
+                layer.rect({
+                    x: button1_left,
+                    y: button1_top,
+                    width: scrollbar_width,
+                    height: scrollbar_width,
+                    fillStyle: 'White',
+                    lineWidth: 1,
+                    strokeStyle: 'Black'
+                });
+
+                //Scrollbar character up
+                layer.text('▲', {
+                    x: button1_left,
+                    y: button1_top,
+                    color: 'Blue',
+                    width: scrollbar_width,
+                    height: scrollbar_width,
+                    textAlign: 'center',
+                    fontSize: scrollbar_width / 1.5
+                });
+
+                //Scrollbar button down
+                layer.rect({
+                    x: button1_left,
+                    y: button2_top,
+                    width: scrollbar_width,
+                    height: scrollbar_width,
+                    fillStyle: 'White',
+                    lineWidth: 1,
+                    strokeStyle: 'Black'
+                });
+
+                //Scrollbar character down
+                layer.text('▼', {
+                    x: button1_left,
+                    y: button2_top + (scrollbar_width / 7.5),
+                    color: 'Blue',
+                    width: scrollbar_width,
+                    height: scrollbar_width,
+                    textAlign: 'center',
+                    fontSize: scrollbar_width / 1.5
+                });
+            }
+        }
+    };
+
+    UI_Element.prototype.click = function (x, y) {
+        var self = this;
+        if (colide_button1(self, x, y)) {
+            self.scrollTop = self.scrollTop - 20;
+        }
+        else if (colide_button2(self, x, y)) {
+            self.scrollTop = self.scrollTop + 20;
+        }
     };
 
     UI_Element.prototype.clear = function (layer) {
@@ -590,6 +841,14 @@
         self.oldLeft = self.absoluteLeft;
         self.oldTop = self.absoluteTop;
         self.oldBorderWidth = self.borderWidth;
+        self.oldBackgroundOpacity = self.backgroundOpacity;
+        self.oldPadding = self.padding;
+        var length = self.contents.length;
+        var i;
+        for (i = 0; i < length; i++) {
+            save_state(self.contents[i]);
+            self.contents[i].changed = true;
+        }
     };
 
     var calc_size = function (size, total) {
@@ -614,6 +873,20 @@
                 return contSize - objSize;
                 break;
         }
+    };
+
+    var colide_button1 = function (self, x, y) {
+        var sw = self.scrollWidth;
+        var sx = self.scrollButton1Left;
+        var sy = self.scrollButton1Top;
+        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
+    };
+
+    var colide_button2 = function (self, x, y) {
+        var sw = self.scrollWidth;
+        var sx = self.scrollButton2Left;
+        var sy = self.scrollButton2Top;
+        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
     };
 
 

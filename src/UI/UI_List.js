@@ -40,7 +40,7 @@
     UI_List.prototype.remove = function (item) {
         var self = this;
 
-        if (item instanceof UI_ListItem) {
+        if (item instanceof UI_Element) {
             var index = self.contents.indexOf(item);
             if (index != -1) {
                 self.contents.splice(index, 1)[0].parent = null;

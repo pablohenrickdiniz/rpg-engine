@@ -22,6 +22,7 @@
         top: 0,
         hover_target: null,
         changed: {},
+        ui_states: {},
         change: function (level, id) {
             var self = this;
             if (self.changed[level] == undefined) {
@@ -31,15 +32,15 @@
         },
         initialize: function () {
             var Mouse = root.Controls.Mouse;
-            //   Mouse.addEventListener('mousedown', mousedown);
             Mouse.addEventListener('mousemove', mousemove);
             Mouse.addEventListener('mouseout', mouseout);
+            Mouse.addEventListener('mousedown', click)
         },
         finalize: function () {
             var Mouse = root.Controls.Mouse;
-            // Mouse.removeEventListener('mousedown', mousedown);
             Mouse.removeEventListener('mousemove', mousemove);
             Mouse.removeEventListener('mouseout', mouseout);
+            Mouse.removeEventListener('mousedown', click);
         },
         addToLevel: function (level, element) {
             var self = this;
@@ -70,46 +71,63 @@
         update: function () {
             var self = this;
             var i;
+            var j;
             var layer = null;
             var ids;
-            var length;
             var id;
+            var keys = Object.keys(self.changed);
+            var lengthA = keys.length;
+            var lengthB;
+            var key;
 
-            if (self.changed[0] && self.levels[0]) {
-                layer = viewport.getLayer('UI1');
-                ids = Object.keys(self.changed[0]);
-                length = ids.length;
-                for (i = 0; i < length; i++) {
-                    id = ids[i];
-                    self.levels[0][id].clear(layer);
-                    self.levels[0][id].update(layer);
-                    delete self.changed[0][id];
+            for (i = 0; i < lengthA; i++) {
+                key = keys[i];
+                if (self.changed[key] && self.levels[key]) {
+                    layer = viewport.getLayer('UI', key);
+                    ids = Object.keys(self.changed[key]);
+                    lengthB = ids.length;
+                    for (j = 0; j < lengthB; j++) {
+                        id = ids[j];
+                        self.levels[key][id].clear(layer);
+                        self.levels[key][id].update(layer);
+                        delete self.changed[key][id];
+                    }
                 }
             }
-
-            if (self.changed[1] && self.levels[1]) {
-                layer = viewport.getLayer('UI2');
-                ids = Object.keys(self.changed[1]);
-                length = ids.length;
-                for (i = 0; i < length; i++) {
-                    id = ids[i];
-                    self.levels[1][id].clear(layer);
-                    self.levels[1][id].update(layer);
-                    delete self.changed[1][id];
+        },
+        addState: function (state, ui_element) {
+            var self = this;
+            if (self.ui_states[state] == undefined) {
+                self.ui_states[state] = [];
+            }
+            if (self.ui_states[state].indexOf(ui_element) == -1) {
+                self.ui_states[state].push(ui_element);
+            }
+        },
+        removeState: function (state, ui_element) {
+            var self = this;
+            if (self.ui_states[state] != undefined) {
+                if (/^[0-9]+$/.test(ui_element)) {
+                    if (self.ui_states[state][ui_element] != undefined) {
+                        return self.ui_states[state].splice(ui_element, 1)[0];
+                    }
+                }
+                else {
+                    var index = self.ui_states[state].indexOf(ui_element);
+                    if (index != -1) {
+                        return self.ui_states[state].splice(index, 1)[0];
+                    }
                 }
             }
-
-            if (self.changed[2] && self.levels[2]) {
-                layer = viewport.getLayer('UI3');
-                ids = Object.keys(self.changed[2]);
-                length = ids.length;
-                for (i = 0; i < length; i++) {
-                    id = ids[i];
-                    self.levels[2][id].clear(layer);
-                    self.levels[2][id].update(layer);
-                    delete self.changed[2][id];
-                }
+            return null;
+        },
+        getStates: function (state) {
+            var self = this;
+            if (self.ui_states[state] != undefined) {
+                return self.ui_states[state];
             }
+
+            return [];
         }
     };
 
@@ -144,9 +162,9 @@
                 id = keysB[kB];
                 el = Document.levels[level][id];
 
-                    if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth, el.realHeight)) {
-                        return el;
-                    }
+                if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth, el.realHeight)) {
+                    return el;
+                }
 
             }
         }
@@ -160,28 +178,67 @@
 
     var mousemove = function (x, y) {
         var element = retrieve_element(x, y);
-        if (Document.hover_target != element) {
-            if (Document.hover_target != null) {
-                Document.hover_target.hover = false;
+        if (element != null) {
+            var ui_states = Document.getStates('hover');
+            var propagated = propagate('hover', element,[x,y]);
+            var length = ui_states.length;
+            var i;
+            for (i = 0; i < length; i++) {
+                if (propagated.indexOf(ui_states[i]) == -1) {
+                    var el = Document.removeState('hover', i);
+                    el.hover = false;
+                    i--;
+                    length--;
+                }
             }
-            Document.hover_target = element;
-
-            if (element != null) {
-                element.hover = true;
+            length = propagated.length;
+            for(i =0; i < length;i++){
+                Document.addState('hover',propagated[i]);
             }
         }
     };
 
-    var mouseout = function () {
-        if (Document.hover_target != null) {
-            Document.hover_target.hover = false;
-            Document.hover_target = null;
+    var click = function(x,y){
+        var element = retrieve_element(x, y);
+        if (element != null) {
+            propagate('click',element,[x,y]);
         }
+    };
+
+    var mouseout = function () {
+        var ui_states = Document.getStates('hover');
+        var length = ui_states.length;
+        var i;
+        for (i = 0; i < length; i++) {
+            var el = Document.removeState('hover', i);
+            el.hover = false;
+            i--;
+            length--;
+        }
+    };
+
+    var propagate = function (event, element,args, propagated) {
+        propagated = propagated || [];
+        args = args || [];
+        propagated.push(element);
+        switch (event) {
+            case 'hover':
+                element.hover = true;
+                break;
+            case 'click':
+                element.click(args[0],args[1]);
+                break;
+        }
+        if (element.parent) {
+            propagate(event, element.parent,args, propagated);
+        }
+        return propagated;
     };
 
     system.addSteplistener(function () {
         Document.update();
     });
+
 
     root.Document = Document;
 })(RPG);
