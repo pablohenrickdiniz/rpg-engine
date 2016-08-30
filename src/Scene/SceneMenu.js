@@ -40,7 +40,8 @@
                 fontSize:20,
                 textAlign:'center',
                 padding:10,
-                scrollable:true
+                scrollable:true,
+                scrollWidth:15
             });
 
             text_view.show();
@@ -50,6 +51,7 @@
                 color:'white',
                 text:texto
             });
+
             text_element.show();
             text_view.add(text_element);
 

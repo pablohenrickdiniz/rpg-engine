@@ -34,13 +34,15 @@
             var Mouse = root.Controls.Mouse;
             Mouse.addEventListener('mousemove', mousemove);
             Mouse.addEventListener('mouseout', mouseout);
-            Mouse.addEventListener('mousedown', click)
+            Mouse.addEventListener('mousedown', mousedown);
+            Mouse.addEventListener('mouseup', mouseup)
         },
         finalize: function () {
             var Mouse = root.Controls.Mouse;
             Mouse.removeEventListener('mousemove', mousemove);
             Mouse.removeEventListener('mouseout', mouseout);
-            Mouse.removeEventListener('mousedown', click);
+            Mouse.removeEventListener('mousedown', mousedown);
+            Mouse.removeEventListener('mouseup', mouseup)
         },
         addToLevel: function (level, element) {
             var self = this;
@@ -88,8 +90,8 @@
                     lengthB = ids.length;
                     for (j = 0; j < lengthB; j++) {
                         id = ids[j];
-                        self.levels[key][id].clear(layer);
-                        self.levels[key][id].update(layer);
+                        self.levels[key][id].clear(layer,viewport);
+                        self.levels[key][id].update(layer,viewport);
                         delete self.changed[key][id];
                     }
                 }
@@ -198,10 +200,17 @@
         }
     };
 
-    var click = function(x,y){
+    var mouseup = function(x,y){
         var element = retrieve_element(x, y);
         if (element != null) {
-            propagate('click',element,[x,y]);
+            propagate('mouseup',element,[x,y]);
+        }
+    };
+
+    var mousedown = function(x,y){
+        var element = retrieve_element(x, y);
+        if (element != null) {
+            propagate('mousedown',element,[x,y]);
         }
     };
 
@@ -225,8 +234,8 @@
             case 'hover':
                 element.hover = true;
                 break;
-            case 'click':
-                element.click(args[0],args[1]);
+            case 'mousedown':
+                element.mousedown(args[0],args[1]);
                 break;
         }
         if (element.parent) {

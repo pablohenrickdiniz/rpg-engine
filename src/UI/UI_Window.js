@@ -13,6 +13,7 @@
         options.borderWidth = options.borderWidth || 0;
         options.backgroundColor = options.backgroundColor || 'Blue';
         UI_Element.call(self,parent,options);
+        self.type = 'Window';
     };
 
     UI_Window.prototype = Object.create(UI_Element.prototype);

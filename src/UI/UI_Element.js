@@ -40,10 +40,12 @@
         self.visible = options.visible || false;
         self.scrollLeft = options.scrollLeft || 0;
         self.scrollTop = options.scrollTop || 0;
+        self.scrollWidth = options.scrollWidth || 15;
         self.scrollHeight = 0;
         self.draggable = false;
         self.overflow = 'hidden';
         self.scrollable = options.scrollable || 0;
+        self.type = 'Element';
     };
 
 
@@ -135,6 +137,7 @@
         var scrollLeft = 0;
         var scrollTop = 0;
         var scrollWidth = 15;
+        var scrollHeight = 0;
 
         Object.defineProperty(self, 'realLeft', {
             get: function () {
@@ -220,7 +223,7 @@
 
         Object.defineProperty(self, 'containerWidth', {
             get: function () {
-                return self.realWidth - self.padding * 2;
+                return self.realWidth - self.scrollWidth - self.padding * 2;
             }
         });
 
@@ -610,16 +613,15 @@
 
         Object.defineProperty(self, 'scrollHeight', {
             get: function () {
-                var i;
-                var length = self.contents.length;
-                var max = 0;
-                for (i = 0; i < length; i++) {
-                    var el = self.contents[i];
-                    if ((el.realTop + el.realHeight) > max) {
-                        max = el.realTop + el.realHeight;
-                    }
+                return scrollHeight;
+            },
+            set:function(sh){
+                if(sh != scrollHeight){
+                    console.log(sh);
+                    scrollHeight = sh;
+                    self.changed = true;
+                    fire_change(self);
                 }
-                return max;
             }
         });
 
@@ -648,16 +650,16 @@
             set: function (st) {
                 if (st != scrollTop) {
                     var max = self.maxScrollTop;
-                    console.log(max);
                     if (st < 0) {
                         st = 0;
                     }
                     else if(st > max){
-                       // st = max;
+                        st = max;
                     }
+
                     scrollTop = st;
-                    save_state(self);
                     self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -688,7 +690,7 @@
 
         Object.defineProperty(self, 'scrollWidth', {
             get: function () {
-                return scrollWidth;
+                return self.scrollable?scrollWidth:0;
             },
             set: function (sw) {
                 if (sw != scrollWidth) {
@@ -697,6 +699,13 @@
             }
         });
 
+        Object.defineProperty(self,'contentHeight',{
+           get:function(){
+               return self.contents.reduce(function(prev,current){
+                    return prev+(current.realHeight);
+               },0);
+           }
+        });
 
         Object.defineProperty(self, 'railHeight', {
             get: function () {
@@ -704,9 +713,9 @@
             }
         });
 
-        Object.defineProperty(self,'maxScrollTop',{
-            get:function(){
-                return self.absoluteTop + self.scrollWidth + self.railHeight - self.scrollHeight;
+        Object.defineProperty(self, 'maxScrollTop', {
+            get: function () {
+                return self.contentHeight - self.containerHeight;
             }
         });
     };
@@ -727,7 +736,11 @@
                 borderColor: self.borderColor
             });
 
-            if (self.scrollable && self.scrollHeight > self.realHeight) {
+            var content_height = self.contentHeight;
+            var container_height = self.containerHeight;
+
+            if (self.scrollable && content_height > container_height) {
+
                 var scrollbar_width = self.scrollWidth;
                 var button1_left = self.scrollButton1Left;
                 var button1_top = self.absoluteTop;
@@ -746,13 +759,10 @@
                     backgroundOpacity: 80
                 });
 
+                var scroll_y = rail_y + rail_height * (self.scrollTop / content_height);
+                var scroll_height = (container_height / content_height) * rail_height;
 
-                var scroll_y = rail_y + rail_height * (self.scrollTop / self.scrollHeight);
-                var scroll_height = (self.realHeight / self.scrollHeight) * rail_height;
-                var max_scroll_y = rail_y + rail_height - scroll_height;
-                scroll_y = scroll_y > max_scroll_y ? max_scroll_y : scroll_y;
-
-                //Scrollbar Slider
+              //  Scrollbar Slider
                 layer.rect({
                     x: button1_left,
                     y: scroll_y,
@@ -811,13 +821,13 @@
         }
     };
 
-    UI_Element.prototype.click = function (x, y) {
+    UI_Element.prototype.mousedown = function (x, y) {
         var self = this;
         if (colide_button1(self, x, y)) {
-            self.scrollTop = self.scrollTop - 20;
+            self.scrollTop = self.scrollTop - 10;
         }
         else if (colide_button2(self, x, y)) {
-            self.scrollTop = self.scrollTop + 20;
+            self.scrollTop = self.scrollTop + 10;
         }
     };
 
@@ -835,6 +845,15 @@
         return self;
     };
 
+    var fire_change = function(self){
+        var length = self.contents.length;
+        var i;
+        for (i = 0; i < length; i++) {
+            save_state(self.contents[i]);
+            self.contents[i].changed = true;
+        }
+    };
+
     var save_state = function (self) {
         self.oldWidth = self.realWidth;
         self.oldHeight = self.realHeight;
@@ -843,12 +862,7 @@
         self.oldBorderWidth = self.borderWidth;
         self.oldBackgroundOpacity = self.backgroundOpacity;
         self.oldPadding = self.padding;
-        var length = self.contents.length;
-        var i;
-        for (i = 0; i < length; i++) {
-            save_state(self.contents[i]);
-            self.contents[i].changed = true;
-        }
+        fire_change(self);
     };
 
     var calc_size = function (size, total) {

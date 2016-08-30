@@ -16,6 +16,7 @@
         system_calls: [],
         step_listeners: [],
         running: false,
+        fps:0,
         wait: function (mss, callback) {
             var self = this;
             self.system_calls.push({
@@ -54,6 +55,7 @@
             }
 
             System.time += passed;
+            System.fps = 1/(passed/1000);
             System.execute_system_calls();
             System.execute_system_steps();
             last_loop = current_time;

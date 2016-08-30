@@ -13,6 +13,7 @@
     var UI_List = function (parent, options) {
         var self = this;
         UI_Element.call(self, parent, options);
+        self.type = 'List';
     };
 
     UI_List.prototype = Object.create(UI_Element.prototype);

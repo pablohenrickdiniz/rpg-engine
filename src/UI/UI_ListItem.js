@@ -10,6 +10,7 @@
         options.height = options.height || 20;
         UI_Element.call(self,parent,options);
         self.width = '100%';
+        self.type = 'ListItem'
     } ;
 
     UI_ListItem.prototype = Object.create(UI_Element.prototype);

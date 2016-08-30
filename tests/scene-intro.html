@@ -81,14 +81,19 @@
     <script type="text/javascript">
         function init() {
             var container = document.getElementById('container');
+            var fps_cont = document.getElementById('fps');
             RPG.initialize(container);
             var SceneManager = RPG.SceneManager;
             RPG.Main.scene = RPG.SceneMenu;
             SceneManager.run();
+            setInterval(function(){
+                fps_cont.innerHTML = RPG.System.fps.toFixed(1);
+            },1000);
         }
     </script>
 </head>
 <body onload="init()">
 <div id="container"></div>
+<div id="fps"></div>
 </body>
 </html>
