@@ -3,6 +3,9 @@
         throw "UI_Text requires UI_Element"
     }
 
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+
     var UI_Element = root.UI_Element;
 
 
@@ -25,11 +28,16 @@
     UI_Text.prototype.update = function (layer) {
         var self = this;
         if (self.visible && self.parent.visible) {
+            var al = self.absoluteLeft;
+            var at =  self.absoluteTop;
+            var pcw = self.parent.containerWidth;
+            var pch = self.parent.containerHeight;
+
             layer.rect({
-                x: self.absoluteLeft,
-                y: self.absoluteTop,
-                width: self.parent.containerWidth,
-                height: self.parent.containerHeight,
+                x: al,
+                y: at,
+                width: pcw,
+                height: pch,
                 fillStyle: self.backgroundColor,
                 strokeStyle: self.borderColor,
                 lineWidth: self.borderWidth,
@@ -39,17 +47,26 @@
             });
 
             if (self.text.length > 0) {
-                layer.text(self.text, {
-                    x: self.absoluteLeft,
-                    y: self.absoluteTop,
+                layer.text(self.processedText, {
+                    x: al,
+                    y: at,
                     sx: self.parent.scrollLeft,
                     sy: self.parent.scrollTop,
-                    width: self.parent.containerWidth,
-                    height: self.parent.containerHeight,
+                    width: pcw,
+                    height: pch,
                     fontSize: self.fontSize,
                     fillStyle: self.color,
                     textAlign: self.textAlign
                 });
+
+                var pp = self.parent.padding;
+                if(pp > 0){
+                    var pal = self.parent.absoluteLeft;
+                    var pat = self.parent.absoluteTop;
+                    var prw = self.parent.realWidth;
+                    layer.clear(pal,pat,prw,pp);
+                    layer.clear(pal,pat+self.parent.realHeight-pp,prw,pp);
+                }
             }
         }
     };
@@ -60,7 +77,7 @@
         var fontFamilly = ['Arial'];
         var color = ['black'];
         var textAlign = ['left'];
-
+        var processedText = [];
 
         Object.defineProperty(self, 'text', {
             get: function () {
@@ -125,51 +142,70 @@
                 }
             }
         });
+
+        Object.defineProperty(self, 'processedText', {
+            get: function () {
+                return processedText;
+            },
+            set: function (pt) {
+                if (pt != processedText) {
+                   processedText = pt;
+                }
+            }
+        });
     };
 
     var update_size = function (self) {
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
-        var area = calc_text_area(self.text, ctx, {
+        var fontSize = self.fontSize;
+        var processed = processText(self.text,{
             width: self.parent.containerWidth,
-            fontSize: self.fontSize,
+            fontSize: fontSize,
             fontFamilly: self.fontFamilly
         });
-        self.height = area.height;
+        self.processedText = processed;
+        self.height = processed.length*fontSize;
     };
 
-    var calc_text_area = function (text, ctx, options) {
+    var processText = function(text, options){
         var width = options.width || null;
         var fontSize = options.fontSize || 10;
         var fontFamilly = options.fontFamily || 'Arial';
-        ctx.save();
+        var canvas = document.createElement('canvas');
         ctx.font = fontSize + 'px ' + fontFamilly;
-        text = text.trim();
         text = text.split(' ');
         var length = text.length;
-        var i;
+        var lines = [];
+        var oldTextWidth = 0;
+        var textWidth = 0;
         var line = [];
-        var lines = 0;
-        for (i = 0; i < length;i++) {
-            line.push(text[i]);
+        var i;
+        var line_length;
 
-            if (line.length > 1 && ctx.measureText(line.join(' ')).width > width) {
-                line.splice(line.length - 1, 1);
-                lines++;
+        for (i = 0; i < length; i++) {
+            line.push(text[i]);
+            var join = line.join(' ');
+            oldTextWidth = textWidth;
+            textWidth = ctx.measureText(join).width;
+            line_length = line.length;
+            if (line_length > 1 &&  textWidth > width) {
+                line.splice(line_length-1,1);
                 i--;
+                lines.push({
+                    text:line.join(' '),
+                    width:oldTextWidth
+                });
                 line = [];
             }
         }
-        if(line.length > 0){
-            lines++;
+
+        if (line.length > 0) {
+            lines.push({
+                text:line.join(' '),
+                width:textWidth
+            });
         }
 
-        ctx.restore();
-
-        return {
-            width:width,
-            height:lines*fontSize
-        };
+        return lines;
     };
 
 

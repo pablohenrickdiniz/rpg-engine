@@ -41,7 +41,7 @@
                 textAlign:'center',
                 padding:10,
                 scrollable:true,
-                scrollWidth:15
+                scrollWidth:20
             });
 
             text_view.show();

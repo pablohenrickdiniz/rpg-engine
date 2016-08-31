@@ -46,6 +46,11 @@
         self.overflow = 'hidden';
         self.scrollable = options.scrollable || 0;
         self.type = 'Element';
+        self.scrolling = 0;
+        self.scrollingStart = null;
+        self.scrollTime = options.scrollTime || 1000;
+        self.scrollStep = options.scrollStep || 100;
+        self.startScrollTop = self.scrollTop;
     };
 
 
@@ -723,9 +728,11 @@
     UI_Element.prototype.update = function (layer) {
         var self = this;
         if (self.visible && self.parent.visible) {
+            var at = self.absoluteTop;
+
             layer.rect({
                 x: self.absoluteLeft,
-                y: self.absoluteTop,
+                y: at,
                 width: self.realWidth,
                 height: self.realHeight,
                 fillStyle: self.backgroundColor,
@@ -741,11 +748,11 @@
 
             if (self.scrollable && content_height > container_height) {
 
-                var scrollbar_width = self.scrollWidth;
+                var scrollbar_size = self.scrollWidth;
+                var fontSize = scrollbar_size / 1.5;
                 var button1_left = self.scrollButton1Left;
-                var button1_top = self.absoluteTop;
                 var button2_top = self.scrollButton2Top;
-                var rail_y = button1_top + scrollbar_width;
+                var rail_y = at + scrollbar_size;
                 var rail_height = self.railHeight;
 
 
@@ -753,7 +760,7 @@
                 layer.rect({
                     x: button1_left,
                     y: rail_y,
-                    width: scrollbar_width,
+                    width: scrollbar_size,
                     height: rail_height,
                     fillStyle: 'Blue',
                     backgroundOpacity: 80
@@ -762,11 +769,12 @@
                 var scroll_y = rail_y + rail_height * (self.scrollTop / content_height);
                 var scroll_height = (container_height / content_height) * rail_height;
 
+
               //  Scrollbar Slider
                 layer.rect({
                     x: button1_left,
                     y: scroll_y,
-                    width: scrollbar_width,
+                    width: scrollbar_size,
                     height: scroll_height,
                     fillStyle: 'White',
                     lineWidth: 1,
@@ -777,9 +785,9 @@
                 //Scrollbar button up
                 layer.rect({
                     x: button1_left,
-                    y: button1_top,
-                    width: scrollbar_width,
-                    height: scrollbar_width,
+                    y: at,
+                    width: scrollbar_size,
+                    height: scrollbar_size,
                     fillStyle: 'White',
                     lineWidth: 1,
                     strokeStyle: 'Black'
@@ -788,20 +796,20 @@
                 //Scrollbar character up
                 layer.text('▲', {
                     x: button1_left,
-                    y: button1_top,
+                    y: at,
                     color: 'Blue',
-                    width: scrollbar_width,
-                    height: scrollbar_width,
+                    width: scrollbar_size,
+                    height: scrollbar_size,
                     textAlign: 'center',
-                    fontSize: scrollbar_width / 1.5
+                    fontSize: fontSize
                 });
 
                 //Scrollbar button down
                 layer.rect({
                     x: button1_left,
                     y: button2_top,
-                    width: scrollbar_width,
-                    height: scrollbar_width,
+                    width: scrollbar_size,
+                    height: scrollbar_size,
                     fillStyle: 'White',
                     lineWidth: 1,
                     strokeStyle: 'Black'
@@ -810,12 +818,12 @@
                 //Scrollbar character down
                 layer.text('▼', {
                     x: button1_left,
-                    y: button2_top + (scrollbar_width / 7.5),
+                    y: button2_top + (scrollbar_size / 7.5),
                     color: 'Blue',
-                    width: scrollbar_width,
-                    height: scrollbar_width,
+                    width: scrollbar_size,
+                    height: scrollbar_size,
                     textAlign: 'center',
-                    fontSize: scrollbar_width / 1.5
+                    fontSize: fontSize
                 });
             }
         }
@@ -823,17 +831,25 @@
 
     UI_Element.prototype.mousedown = function (x, y) {
         var self = this;
-        if (colide_button1(self, x, y)) {
-            self.scrollTop = self.scrollTop - 10;
-        }
-        else if (colide_button2(self, x, y)) {
-            self.scrollTop = self.scrollTop + 10;
+        if(document.scrolling == null){
+            var scrolling = 0;
+            if (colide_button1(self, x, y)) {
+                scrolling = -1;
+            }
+            else if (colide_button2(self, x, y)) {
+                scrolling = 1;
+            }
+
+            if(scrolling != 0){
+                document.scrolling_data.element = self;
+                self.scrolling = scrolling;
+            }
         }
     };
 
     UI_Element.prototype.clear = function (layer) {
         var self = this;
-        layer.clear(self.clearX, self.clearY, self.clearWidth, self.clearHeight);
+        layer.clear(self.clearX-self.parent.padding, self.clearY-self.parent.padding, self.clearWidth, self.clearHeight);
     };
 
     UI_Element.prototype.setStateStyle = function (state, style, value) {

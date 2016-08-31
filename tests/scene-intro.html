@@ -86,8 +86,15 @@
             var SceneManager = RPG.SceneManager;
             RPG.Main.scene = RPG.SceneMenu;
             SceneManager.run();
+            var count = 0;
+            var total = 0;
             setInterval(function(){
-                fps_cont.innerHTML = RPG.System.fps.toFixed(1);
+                var fps = RPG.System.fps;
+                if(!isNaN(fps)){
+                    count++;
+                    total+=fps;
+                    fps_cont.innerHTML = parseInt(total/count);
+                }
             },1000);
         }
     </script>

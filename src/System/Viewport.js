@@ -154,7 +154,7 @@
                 layer.clear();
             }
         },
-        mousedown:function(){
+        mousedown:function(x,y){
 
         }
     };

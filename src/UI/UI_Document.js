@@ -15,12 +15,19 @@
 
     var hover = false;
 
+
     var Document = {
         contents: [],
         levels: [],
         left: 0,
         top: 0,
         hover_target: null,
+        scrolling_data: {
+            element: null,
+            start: null,
+            step: 100,
+            time: 1000
+        },
         changed: {},
         ui_states: {},
         change: function (level, id) {
@@ -70,8 +77,31 @@
                 self.contents.splice(index, 1);
             }
         },
+        updateScroll:function(){
+            var self = this;
+            var Mouse = root.Controls.Mouse;
+            if (Mouse.left) {
+                if (self.scrolling_data.element != null) {
+                    if (self.scrolling_data.start == null) {
+                        var element = self.scrolling_data.element;
+                        self.scrolling_data.sign = element.scrolling;
+                        self.scrolling_data.start = system.time;
+                        self.scrolling_data.scrollTop = element.scrollTop;
+                    }
+                }
+            }
+            else {
+                self.scrolling_data.start = null;
+                self.scrolling_data.element = null;
+            }
+
+            if(self.scrolling_data.start != null){
+                scroll(self.scrolling_data);
+            }
+        },
         update: function () {
             var self = this;
+            self.updateScroll();
             var i;
             var j;
             var layer = null;
@@ -90,8 +120,8 @@
                     lengthB = ids.length;
                     for (j = 0; j < lengthB; j++) {
                         id = ids[j];
-                        self.levels[key][id].clear(layer,viewport);
-                        self.levels[key][id].update(layer,viewport);
+                        self.levels[key][id].clear(layer, viewport);
+                        self.levels[key][id].update(layer, viewport);
                         delete self.changed[key][id];
                     }
                 }
@@ -182,7 +212,7 @@
         var element = retrieve_element(x, y);
         if (element != null) {
             var ui_states = Document.getStates('hover');
-            var propagated = propagate('hover', element,[x,y]);
+            var propagated = propagate('hover', element, [x, y]);
             var length = ui_states.length;
             var i;
             for (i = 0; i < length; i++) {
@@ -194,23 +224,23 @@
                 }
             }
             length = propagated.length;
-            for(i =0; i < length;i++){
-                Document.addState('hover',propagated[i]);
+            for (i = 0; i < length; i++) {
+                Document.addState('hover', propagated[i]);
             }
         }
     };
 
-    var mouseup = function(x,y){
+    var mouseup = function (x, y) {
         var element = retrieve_element(x, y);
         if (element != null) {
-            propagate('mouseup',element,[x,y]);
+            propagate('mouseup', element, [x, y]);
         }
     };
 
-    var mousedown = function(x,y){
+    var mousedown = function (x, y) {
         var element = retrieve_element(x, y);
         if (element != null) {
-            propagate('mousedown',element,[x,y]);
+            propagate('mousedown', element, [x, y]);
         }
     };
 
@@ -226,7 +256,7 @@
         }
     };
 
-    var propagate = function (event, element,args, propagated) {
+    var propagate = function (event, element, args, propagated) {
         propagated = propagated || [];
         args = args || [];
         propagated.push(element);
@@ -235,14 +265,22 @@
                 element.hover = true;
                 break;
             case 'mousedown':
-                element.mousedown(args[0],args[1]);
+                element.mousedown(args[0], args[1]);
                 break;
         }
         if (element.parent) {
-            propagate(event, element.parent,args, propagated);
+            propagate(event, element.parent, args, propagated);
         }
         return propagated;
     };
+
+    var scroll = function (data) {
+        var self = data.element;
+        var passed_time = system.time - data.start;
+        var step = (passed_time * data.step * data.sign) / data.time;
+        self.scrollTop = data.scrollTop + step;
+    };
+
 
     system.addSteplistener(function () {
         Document.update();
