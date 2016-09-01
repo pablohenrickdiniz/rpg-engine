@@ -24,19 +24,12 @@
         var self = this;
         var last = self.lastItem();
         if (last != null) {
-            options.top = last.top + last.realHeight;
+            options.top = last.realTop + last.realHeight;
         }
 
         return new UI_ListItem(self, options);
     };
 
-    UI_List.prototype.lastItem = function () {
-        var self = this;
-        if (self.contents.length > 0) {
-            return self.contents[self.contents.length - 1];
-        }
-        return null;
-    };
 
     UI_List.prototype.remove = function (item) {
         var self = this;
@@ -45,14 +38,14 @@
             var index = self.contents.indexOf(item);
             if (index != -1) {
                 self.contents.splice(index, 1)[0].parent = null;
-                update_elements_position(self,index);
+                update_elements_position(self, index);
                 self.changed = true;
             }
         }
         else if (/^[0-9]+$/.test(item)) {
             if (self.contents[item] != undefined) {
                 self.contents.splice(item, 1)[0].parent = null;
-                update_elements_position(self,item);
+                update_elements_position(self, item);
                 self.changed = true;
             }
         }
@@ -96,7 +89,7 @@
         for (var i = index; i < self.contents.length; i++) {
             var el = self.contents[i];
             var top = 0;
-            if(i > 0){
+            if (i > 0) {
                 var prev = self.contents[i - 1];
                 top = prev.top + prev.realHeight;
             }

@@ -3,8 +3,7 @@
         throw "UI_Element requires Document"
     }
 
-    var document = root.Document,
-        viewport = root.Viewport;
+    var document = root.Document;
 
     var ID = 0;
 
@@ -16,14 +15,7 @@
         self.id = ID;
         ID++;
         initialize(self);
-        if (parent == null) {
-            document.add(self);
-            parent = viewport;
-        }
-        else {
-            parent.add(self);
-        }
-        self.parent = parent;
+        self.name = options.name || '';
         self.left = options.left || 0;
         self.top = options.top || 0;
         self.verticalAlign = options.verticalAlign || null;
@@ -51,6 +43,9 @@
         self.scrollTime = options.scrollTime || 1000;
         self.scrollStep = options.scrollStep || 100;
         self.startScrollTop = self.scrollTop;
+        self.parent = parent || document;
+        self.initialized = true;
+        fire_change(self);
     };
 
 
@@ -58,9 +53,21 @@
         var self = this;
         if (element instanceof UI_Element && self.contents.indexOf(element) == -1) {
             element.parent = self;
+            element.index = self.contents.length;
             self.contents.push(element);
         }
         return self;
+    };
+
+
+
+
+    UI_Element.prototype.lastItem = function () {
+        var self = this;
+        if (self.contents.length > 0) {
+            return self.contents[self.contents.length - 1];
+        }
+        return null;
     };
 
     UI_Element.prototype.remove = function (element) {
@@ -69,7 +76,13 @@
             var index = self.contents.indexOf(element);
             if (index != -1) {
                 element.parent = null;
+                element.index = null;
                 self.contents.splice(index, 1);
+                var length = self.contents.length;
+                var i;
+                for(i =index; i < length;i++){
+                    self.contents[i].index = i;
+                }
             }
         }
         else {
@@ -143,15 +156,29 @@
         var scrollTop = 0;
         var scrollWidth = 15;
         var scrollHeight = 0;
+        var index = 0;
+
+
+        Object.defineProperty(self,'index',{
+            get:function(){
+                return index;
+            },
+            set:function(i){
+                if(i != index){
+                    index = i;
+                    fire_change(self);
+                }
+            }
+        });
 
         Object.defineProperty(self, 'realLeft', {
             get: function () {
                 var sum = 0;
                 var ha = horizontalAlign[state] || horizontalAlign[0];
-                var l = calc_size(self.left, parent.realWidth);
+                var l = calc_size(self.left, parent?parent.realWidth:0);
 
                 if (ha != null) {
-                    sum = calculate_align(ha, self.realWidth, parent.realWidth);
+                    sum = calculate_align(ha, self.realWidth, parent?parent.realWidth:0);
                 }
 
                 return l + sum;
@@ -162,12 +189,13 @@
             get: function () {
                 var sum = 0;
                 var va = verticalAlign[state] || verticalAlign[0];
-                var t = calc_size(self.top, parent.realHeight);
+                var t = calc_size(self.top, parent?parent.realHeight:0);
 
 
                 if (va != null) {
-                    sum = calculate_align(va, self.realHeight, parent.realHeight);
+                    sum = calculate_align(va, self.realHeight, parent?parent.realHeight:0);
                 }
+
 
                 return t + sum;
             }
@@ -176,13 +204,23 @@
 
         Object.defineProperty(self, 'absoluteLeft', {
             get: function () {
-                return self.realLeft + parent.absoluteLeft + self.parent.padding;
+                var parent = self.parent;
+                var sum = 0;
+                if(parent != null){
+                    sum += parent.absoluteLeft + parent.padding;
+                }
+                return self.realLeft + sum;
             }
         });
 
         Object.defineProperty(self, 'absoluteTop', {
             get: function () {
-                return self.realTop + parent.absoluteTop + self.parent.padding;
+                var parent = self.parent;
+                var sum = 0;
+                if(parent != null){
+                    sum += parent.absoluteTop + parent.padding;
+                }
+                return self.realTop + sum;
             }
         });
 
@@ -195,7 +233,7 @@
                 if (ha != horizontalAlign[state]) {
                     save_state(self);
                     horizontalAlign[state] = ha;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -208,7 +246,7 @@
                 if (va != verticalAlign[state]) {
                     save_state(self);
                     verticalAlign[state] = va;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -216,13 +254,13 @@
 
         Object.defineProperty(self, 'realWidth', {
             get: function () {
-                return calc_size(self.width, parent.realWidth);
+                return calc_size(self.width, parent?parent.realWidth:0);
             }
         });
 
         Object.defineProperty(self, 'realHeight', {
             get: function () {
-                return calc_size(self.height, parent.realHeight);
+                return calc_size(self.height, parent?parent.realHeight:0);
             }
         });
 
@@ -246,7 +284,7 @@
                 if (w != width[state]) {
                     save_state(self);
                     width[state] = w;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -259,7 +297,7 @@
                 if (h != height[state]) {
                     save_state(self);
                     height[state] = h;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -273,7 +311,7 @@
                 if (pad != padding[state]) {
                     save_state(self);
                     padding[state] = pad;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -286,7 +324,7 @@
                 if (l != left[state]) {
                     save_state(self);
                     left[state] = l;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -299,7 +337,7 @@
                 if (t != top[state]) {
                     save_state(self);
                     top[state] = t;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -337,7 +375,7 @@
                 if (bw != borderWidth[state]) {
                     save_state(self);
                     borderWidth[state] = bw;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -349,7 +387,7 @@
             set: function (o) {
                 if (o != opacity[state]) {
                     opacity[state] = o;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -389,7 +427,7 @@
                                 });
                         }
                     }
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -401,7 +439,7 @@
             set: function (bo) {
                 if (bo != backgroundOpacity[state]) {
                     backgroundOpacity[state] = bo;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -414,7 +452,7 @@
                 if (bc != borderColor[state]) {
                     save_state(self);
                     borderColor[state] = bc;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -426,7 +464,7 @@
             set: function (bs) {
                 if (bs != borderStyle[state]) {
                     borderStyle[state] = bs;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -438,7 +476,7 @@
             set: function (v) {
                 if (v != visible[state]) {
                     visible[state] = v;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -479,13 +517,13 @@
                 if (p != parent) {
                     if (parent != null) {
                         document.removeFromLevel(self.level, self);
+                        parent.remove(self);
                     }
                     parent = p;
                     if (parent != null) {
                         document.addToLevel(self.level, self);
+                        parent.add(self);
                     }
-
-                    self.changed = true;
                 }
             }
         });
@@ -512,7 +550,7 @@
                 if (s != state) {
                     save_state(self);
                     state = s;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -524,7 +562,7 @@
             set: function (c) {
                 if (c != cursor[state]) {
                     cursor[state] = c;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -611,7 +649,7 @@
             set: function (s) {
                 if (s != scrollable) {
                     scrollable = s;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -620,11 +658,9 @@
             get: function () {
                 return scrollHeight;
             },
-            set:function(sh){
-                if(sh != scrollHeight){
-                    console.log(sh);
+            set: function (sh) {
+                if (sh != scrollHeight) {
                     scrollHeight = sh;
-                    self.changed = true;
                     fire_change(self);
                 }
             }
@@ -640,7 +676,7 @@
             set: function (s) {
                 if (s != scrollLeft) {
                     scrollLeft = s;
-                    self.changed = true;
+                    fire_change(self);
                 }
             }
         });
@@ -658,12 +694,11 @@
                     if (st < 0) {
                         st = 0;
                     }
-                    else if(st > max){
+                    else if (st > max) {
                         st = max;
                     }
 
                     scrollTop = st;
-                    self.changed = true;
                     fire_change(self);
                 }
             }
@@ -695,7 +730,7 @@
 
         Object.defineProperty(self, 'scrollWidth', {
             get: function () {
-                return self.scrollable?scrollWidth:0;
+                return self.scrollable ? scrollWidth : 0;
             },
             set: function (sw) {
                 if (sw != scrollWidth) {
@@ -704,12 +739,12 @@
             }
         });
 
-        Object.defineProperty(self,'contentHeight',{
-           get:function(){
-               return self.contents.reduce(function(prev,current){
-                    return prev+(current.realHeight);
-               },0);
-           }
+        Object.defineProperty(self, 'contentHeight', {
+            get: function () {
+                return self.contents.reduce(function (prev, current) {
+                    return prev + (current.visible?current.realHeight:0);
+                }, 0);
+            }
         });
 
         Object.defineProperty(self, 'railHeight', {
@@ -770,7 +805,7 @@
                 var scroll_height = (container_height / content_height) * rail_height;
 
 
-              //  Scrollbar Slider
+                //  Scrollbar Slider
                 layer.rect({
                     x: button1_left,
                     y: scroll_y,
@@ -831,25 +866,25 @@
 
     UI_Element.prototype.mousedown = function (x, y) {
         var self = this;
-        if(document.scrolling == null){
-            var scrolling = 0;
-            if (colide_button1(self, x, y)) {
-                scrolling = -1;
-            }
-            else if (colide_button2(self, x, y)) {
-                scrolling = 1;
-            }
 
-            if(scrolling != 0){
-                document.scrolling_data.element = self;
-                self.scrolling = scrolling;
-            }
+        var sign = 0;
+        if (colide_button1(self, x, y)) {
+            sign = -1;
         }
+        else if (colide_button2(self, x, y)) {
+            sign = 1;
+        }
+
+        if (sign != 0) {
+            document.scrolling_data.sign = sign;
+            document.scrolling_data.element = self;
+        }
+
     };
 
     UI_Element.prototype.clear = function (layer) {
         var self = this;
-        layer.clear(self.clearX-self.parent.padding, self.clearY-self.parent.padding, self.clearWidth, self.clearHeight);
+        layer.clear(self.clearX - self.parent.padding, self.clearY - self.parent.padding, self.clearWidth, self.clearHeight);
     };
 
     UI_Element.prototype.setStateStyle = function (state, style, value) {
@@ -861,24 +896,29 @@
         return self;
     };
 
-    var fire_change = function(self){
-        var length = self.contents.length;
-        var i;
-        for (i = 0; i < length; i++) {
-            save_state(self.contents[i]);
-            self.contents[i].changed = true;
+    var fire_change = function (self) {
+        if(self.initialized){
+            self.changed = true;
+            var length = self.contents.length;
+            var i;
+            for (i = 0; i < length; i++) {
+                save_state(self.contents[i]);
+                self.contents[i].changed = true;
+            }
         }
     };
 
     var save_state = function (self) {
-        self.oldWidth = self.realWidth;
-        self.oldHeight = self.realHeight;
-        self.oldLeft = self.absoluteLeft;
-        self.oldTop = self.absoluteTop;
-        self.oldBorderWidth = self.borderWidth;
-        self.oldBackgroundOpacity = self.backgroundOpacity;
-        self.oldPadding = self.padding;
-        fire_change(self);
+        if(self.initialized){
+            self.oldWidth = self.realWidth;
+            self.oldHeight = self.realHeight;
+            self.oldLeft = self.absoluteLeft;
+            self.oldTop = self.absoluteTop;
+            self.oldBorderWidth = self.borderWidth;
+            self.oldBackgroundOpacity = self.backgroundOpacity;
+            self.oldPadding = self.padding;
+            fire_change(self);
+        }
     };
 
     var calc_size = function (size, total) {

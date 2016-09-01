@@ -21,15 +21,30 @@
         levels: [],
         left: 0,
         top: 0,
-        hover_target: null,
+        width: 600,
+        height: 600,
+        realLeft: 0,
+        realTop: 0,
+        absoluteLeft: 0,
+        absoluteTop: 0,
+        realWidth: 600,
+        realHeight: 600,
+        borderWidth: 0,
+        scrollTop:0,
+        scrollLeft:0,
+        padding:0,
+        visible: true,
         scrolling_data: {
             element: null,
             start: null,
-            step: 100,
-            time: 1000
+            scrolling: false
         },
         changed: {},
         ui_states: {},
+        propagating: [],
+        mousedown: function (x, y) {
+
+        },
         change: function (level, id) {
             var self = this;
             if (self.changed[level] == undefined) {
@@ -77,30 +92,18 @@
                 self.contents.splice(index, 1);
             }
         },
-        updateScroll:function(){
+        updateScroll: function () {
             var self = this;
             var Mouse = root.Controls.Mouse;
-            if (Mouse.left) {
+            if(Mouse.left){
                 if (self.scrolling_data.element != null) {
-                    if (self.scrolling_data.start == null) {
-                        var element = self.scrolling_data.element;
-                        self.scrolling_data.sign = element.scrolling;
-                        self.scrolling_data.start = system.time;
-                        self.scrolling_data.scrollTop = element.scrollTop;
-                    }
+                    scroll(self.scrolling_data);
                 }
-            }
-            else {
-                self.scrolling_data.start = null;
-                self.scrolling_data.element = null;
-            }
-
-            if(self.scrolling_data.start != null){
-                scroll(self.scrolling_data);
             }
         },
         update: function () {
             var self = this;
+
             self.updateScroll();
             var i;
             var j;
@@ -209,38 +212,50 @@
 
 
     var mousemove = function (x, y) {
-        var element = retrieve_element(x, y);
-        if (element != null) {
-            var ui_states = Document.getStates('hover');
-            var propagated = propagate('hover', element, [x, y]);
-            var length = ui_states.length;
-            var i;
-            for (i = 0; i < length; i++) {
-                if (propagated.indexOf(ui_states[i]) == -1) {
-                    var el = Document.removeState('hover', i);
-                    el.hover = false;
-                    i--;
-                    length--;
+        if (!Document.propagating['hover']) {
+            Document.propagating['hover'] = true;
+            var element = retrieve_element(x, y);
+            if (element != null) {
+                var ui_states = Document.getStates('hover');
+                var propagated = propagate('hover', element, [x, y]);
+                var length = ui_states.length;
+                var i;
+                for (i = 0; i < length; i++) {
+                    if (propagated.indexOf(ui_states[i]) == -1) {
+                        var el = Document.removeState('hover', i);
+                        el.hover = false;
+                        i--;
+                        length--;
+                    }
                 }
-            }
-            length = propagated.length;
-            for (i = 0; i < length; i++) {
-                Document.addState('hover', propagated[i]);
+                length = propagated.length;
+                for (i = 0; i < length; i++) {
+                    Document.addState('hover', propagated[i]);
+                }
             }
         }
     };
 
     var mouseup = function (x, y) {
-        var element = retrieve_element(x, y);
-        if (element != null) {
-            propagate('mouseup', element, [x, y]);
+        if (!Document.propagating['mouseup']) {
+            Document.propagating['mouseup'] = true;
+            var element = retrieve_element(x, y);
+            if (element != null) {
+                propagate('mouseup', element, [x, y]);
+            }
         }
     };
 
     var mousedown = function (x, y) {
-        var element = retrieve_element(x, y);
-        if (element != null) {
-            propagate('mousedown', element, [x, y]);
+        if (!Document.propagating['mousedown']) {
+            Document.propagating['mousedown'] = true;
+            var element = retrieve_element(x, y);
+            if (element != null) {
+                propagate('mousedown', element, [x, y]);
+            }
+        }
+        else {
+            console.log('mousedown conflict');
         }
     };
 
@@ -271,14 +286,16 @@
         if (element.parent) {
             propagate(event, element.parent, args, propagated);
         }
+        else {
+            Document.propagating[event] = false;
+        }
         return propagated;
     };
 
     var scroll = function (data) {
         var self = data.element;
-        var passed_time = system.time - data.start;
-        var step = (passed_time * data.step * data.sign) / data.time;
-        self.scrollTop = data.scrollTop + step;
+        var step = (10 * data.sign);
+        self.scrollTop = self.scrollTop + step;
     };
 
 

@@ -12,26 +12,32 @@
     var UI_Text = function (parent, options) {
         var self = this;
         options = options || {};
-        UI_Element.call(self, parent, options);
         initialize(self);
+        UI_Element.call(self, parent, options);
         self.text = options.text || '';
         self.color = options.color || 'black';
         self.fontSize = options.fontSize || 10;
         self.textAlign = options.textAlign || 'left';
-        self.width = '100%';
         self.type = 'Text';
+        self.width = '100%';
     };
 
     UI_Text.prototype = Object.create(UI_Element.prototype);
     UI_Text.prototype.constructor = UI_Text;
 
+
     UI_Text.prototype.update = function (layer) {
         var self = this;
         if (self.visible && self.parent.visible) {
+            var parent = self.parent;
+
+
             var al = self.absoluteLeft;
-            var at =  self.absoluteTop;
-            var pcw = self.parent.containerWidth;
-            var pch = self.parent.containerHeight;
+            var at = self.absoluteTop;
+            var pcw = parent?parent.containerWidth:0;
+            var pch = parent?parent.containerHeight:0;
+            var sl = parent?parent.scrollLeft:0;
+            var st = parent?parent.scrollTop:0;
 
             layer.rect({
                 x: al,
@@ -50,22 +56,23 @@
                 layer.text(self.processedText, {
                     x: al,
                     y: at,
-                    sx: self.parent.scrollLeft,
-                    sy: self.parent.scrollTop,
+                    sx: sl,
+                    sy: st,
                     width: pcw,
                     height: pch,
                     fontSize: self.fontSize,
                     fillStyle: self.color,
-                    textAlign: self.textAlign
+                    textAlign: self.textAlign,
+                    round:true
                 });
 
-                var pp = self.parent.padding;
-                if(pp > 0){
-                    var pal = self.parent.absoluteLeft;
-                    var pat = self.parent.absoluteTop;
-                    var prw = self.parent.realWidth;
-                    layer.clear(pal,pat,prw,pp);
-                    layer.clear(pal,pat+self.parent.realHeight-pp,prw,pp);
+                if (parent && parent.padding > 0) {
+                    var pp = parent.padding;
+                    var pal = parent.absoluteLeft;
+                    var pat = parent.absoluteTop;
+                    var prw = parent.realWidth;
+                    layer.clear(pal, pat, prw, pp);
+                    layer.clear(pal, pat + parent.realHeight - pp, prw, pp);
                 }
             }
         }
@@ -101,7 +108,6 @@
                     fontFamilly = ff;
                     update_size(self);
                     self.changed = true;
-
                 }
             }
         });
@@ -149,24 +155,26 @@
             },
             set: function (pt) {
                 if (pt != processedText) {
-                   processedText = pt;
+                    processedText = pt;
                 }
             }
         });
     };
 
     var update_size = function (self) {
-        var fontSize = self.fontSize;
-        var processed = processText(self.text,{
-            width: self.parent.containerWidth,
-            fontSize: fontSize,
-            fontFamilly: self.fontFamilly
-        });
-        self.processedText = processed;
-        self.height = processed.length*fontSize;
+        if(self.initialized){
+            var fontSize = self.fontSize;
+            var processed = processText(self.text, {
+                width: self.parent.containerWidth,
+                fontSize: fontSize,
+                fontFamilly: self.fontFamilly
+            });
+            self.processedText = processed;
+            self.height = processed.length * fontSize;
+        }
     };
 
-    var processText = function(text, options){
+    var processText = function (text, options) {
         var width = options.width || null;
         var fontSize = options.fontSize || 10;
         var fontFamilly = options.fontFamily || 'Arial';
@@ -187,12 +195,12 @@
             oldTextWidth = textWidth;
             textWidth = ctx.measureText(join).width;
             line_length = line.length;
-            if (line_length > 1 &&  textWidth > width) {
-                line.splice(line_length-1,1);
+            if (line_length > 1 && textWidth > width) {
+                line.splice(line_length - 1, 1);
                 i--;
                 lines.push({
-                    text:line.join(' '),
-                    width:oldTextWidth
+                    text: line.join(' '),
+                    width: oldTextWidth
                 });
                 line = [];
             }
@@ -200,8 +208,8 @@
 
         if (line.length > 0) {
             lines.push({
-                text:line.join(' '),
-                width:textWidth
+                text: line.join(' '),
+                width: textWidth
             });
         }
 

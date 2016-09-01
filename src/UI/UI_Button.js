@@ -1,13 +1,13 @@
-(function(root){
-    if(root.UI_Element == undefined){
+(function (root) {
+    if (root.UI_Element == undefined) {
         throw "UI_Button requires UI_Element"
     }
 
     var UI_Element = root.UI_Element;
 
-    var UI_Button = function(){
+    var UI_Button = function () {
         var self = this;
-        UI_Element.call(self,arguments);
+        UI_Element.call(self, arguments);
         self.text = '';
     };
 
