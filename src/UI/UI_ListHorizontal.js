@@ -3,35 +3,35 @@
         throw "UI_List requires UI_Element"
     }
 
-    if (root.UI_ListItem == undefined) {
-        throw "UI_ListItem requires UI_Element"
-    }
+    var UI_Element = root.UI_Element;
 
-    var UI_Element = root.UI_Element,
-        UI_ListItem = root.UI_ListItem;
-
-    var UI_List = function (parent, options) {
+    var UI_ListHorizontal = function (parent, options) {
         var self = this;
         UI_Element.call(self, parent, options);
         self.type = 'List';
     };
 
-    UI_List.prototype = Object.create(UI_Element.prototype);
-    UI_List.prototype.constructor = UI_List;
+    UI_ListHorizontal.prototype = Object.create(UI_Element.prototype);
+    UI_ListHorizontal.prototype.constructor = UI_ListHorizontal;
 
-
-    UI_List.prototype.createItem = function (options) {
+    UI_ListHorizontal.prototype.add = function (element) {
         var self = this;
-        var last = self.lastItem();
-        if (last != null) {
-            options.top = last.realTop + last.realHeight;
+        if (element instanceof UI_Element && self.contents.indexOf(element) == -1) {
+            element.parent = self;
+            element.index = self.contents.length;
+            var last = self.lastItem();
+            var left = 0;
+            if(last != null){
+                left = last.realLeft+last.realWidth;
+            }
+            element.left = left;
+            self.contents.push(element);
         }
-
-        return new UI_ListItem(self, options);
+        return self;
     };
 
 
-    UI_List.prototype.remove = function (item) {
+    UI_ListHorizontal.prototype.remove = function (item) {
         var self = this;
 
         if (item instanceof UI_Element) {
@@ -52,31 +52,12 @@
         return self;
     };
 
-    UI_List.prototype.indexOf = function (item) {
+    UI_ListHorizontal.prototype.indexOf = function (item) {
         var self = this;
         return self.contents.indexOf(item);
     };
 
-    UI_List.prototype.update = function (layer) {
-        var self = this;
-
-        if (self.visible && self.parent.visible) {
-            layer.rect({
-                x: self.absoluteLeft,
-                y: self.absoluteTop,
-                width: self.realWidth,
-                height: self.realHeight,
-                fillStyle: self.backgroundColor,
-                strokeStyle: self.borderColor,
-                lineWidth: self.borderWidth,
-                backgroundOpacity: self.backgroundOpacity,
-                borderOpacity: self.borderOpacity,
-                borderColor: 'yellow'
-            });
-        }
-    };
-
-    UI_List.prototype.swapIndex = function (indexA, indexB) {
+    UI_ListHorizontal.prototype.swapIndex = function (indexA, indexB) {
         var self = this;
         if (self.contents[indexA] != undefined && self.contents[indexB] != undefined) {
             var tmp = self.contents[indexA];
@@ -97,5 +78,5 @@
         }
     };
 
-    root.UI_List = UI_List;
+    root.UI_ListHorizontal = UI_ListHorizontal;
 })(RPG);

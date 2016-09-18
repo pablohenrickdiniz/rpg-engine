@@ -28,53 +28,77 @@
 
     UI_Text.prototype.update = function (layer) {
         var self = this;
-        if (self.visible && self.parent.visible) {
+        if (self.visible && self.visibleOnScreen) {
             var parent = self.parent;
 
+            //var al = self.absoluteLeft;
+            //var at = self.absoluteTop;
+            //var pcw = parent?parent.containerWidth:0;
+            //var pch = parent?parent.containerHeight:0;
+            //var sl = parent?parent.scrollLeft:0;
+            //var st = parent?parent.scrollTop:0;
+            //
+            //var sub_height = 0;
+            //var sub_width = 0;
+            //var diff = 0;
+            ////
+            ////if(st > (self.realTop+self.realHeight-pch)){
+            ////    sub_height = st - (self.realTop+self.realHeight-pch);
+            ////}
+            ////
+            ////if(st < self.realTop){
+            ////    diff = self.realTop-st;
+            ////    sub_height += diff;
+            ////}
+            ////else{
+            ////    at -= self.realTop;
+            ////}
+            //
+            //
+            //var height = pch-sub_height;
+            //var width =  pcw-sub_width;
+            //
+            //if(self.name = 'text_element_2'){
+            //    console.log(self.absoluteTop);
+            //}
+            //
+            //
+            //layer.rect({
+            //    x: al,
+            //    y: at,
+            //    width: width,
+            //    height: height,
+            //    fillStyle: self.backgroundColor,
+            //    strokeStyle: self.borderColor,
+            //    lineWidth: self.borderWidth,
+            //    backgroundOpacity: self.backgroundOpacity,
+            //    borderOpacity: self.borderOpacity,
+            //    borderColor: self.borderColor
+            //});
 
-            var al = self.absoluteLeft;
-            var at = self.absoluteTop;
-            var pcw = parent?parent.containerWidth:0;
-            var pch = parent?parent.containerHeight:0;
-            var sl = parent?parent.scrollLeft:0;
-            var st = parent?parent.scrollTop:0;
-
-            layer.rect({
-                x: al,
-                y: at,
-                width: pcw,
-                height: pch,
-                fillStyle: self.backgroundColor,
-                strokeStyle: self.borderColor,
-                lineWidth: self.borderWidth,
-                backgroundOpacity: self.backgroundOpacity,
-                borderOpacity: self.borderOpacity,
-                borderColor: self.borderColor
-            });
-
-            if (self.text.length > 0) {
-                layer.text(self.processedText, {
-                    x: al,
-                    y: at,
-                    sx: sl,
-                    sy: st,
-                    width: pcw,
-                    height: pch,
-                    fontSize: self.fontSize,
-                    fillStyle: self.color,
-                    textAlign: self.textAlign,
-                    round:true
-                });
-
-                if (parent && parent.padding > 0) {
-                    var pp = parent.padding;
-                    var pal = parent.absoluteLeft;
-                    var pat = parent.absoluteTop;
-                    var prw = parent.realWidth;
-                    layer.clear(pal, pat, prw, pp);
-                    layer.clear(pal, pat + parent.realHeight - pp, prw, pp);
-                }
-            }
+            //if (self.text.length > 0) {
+            //    layer.text(self.processedText, {
+            //        x: al,
+            //        y: at,
+            //        sx: sl,
+            //        sy: st,
+            //        width: width,
+            //        height: height,
+            //        fontSize: self.fontSize,
+            //        fillStyle: self.color,
+            //        textAlign: self.textAlign,
+            //        round:true
+            //    });
+            //
+            //    if (parent && parent.padding > 0) {
+            //        var pp = parent.padding;
+            //        var pal = parent.absoluteLeft;
+            //        var pat = parent.absoluteTop;
+            //        var prw = parent.realWidth;
+            //        layer.clear(pal, pat, prw, pp);
+            //        layer.clear(pal, pat + parent.realHeight - pp, prw, pp);
+            //    }
+            //}
         }
     };
 

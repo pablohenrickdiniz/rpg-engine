@@ -6,6 +6,7 @@
     var document = root.Document;
 
     var ID = 0;
+    const TRANSPARENT_REG = /^\s*transparent\s*|rgba\((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*0\s*\)\s*$/;
 
     var UI_Element = function (parent, options) {
         var self = this;
@@ -32,11 +33,11 @@
         self.visible = options.visible || false;
         self.scrollLeft = options.scrollLeft || 0;
         self.scrollTop = options.scrollTop || 0;
-        self.scrollWidth = options.scrollWidth || 15;
+        self.scrollWidth = options.scrollWidth || 20;
         self.scrollHeight = 0;
         self.draggable = false;
         self.overflow = 'hidden';
-        self.scrollable = options.scrollable || 0;
+        self.scrollable = options.scrollable || false;
         self.type = 'Element';
         self.scrolling = 0;
         self.scrollingStart = null;
@@ -60,8 +61,6 @@
     };
 
 
-
-
     UI_Element.prototype.lastItem = function () {
         var self = this;
         if (self.contents.length > 0) {
@@ -80,7 +79,7 @@
                 self.contents.splice(index, 1);
                 var length = self.contents.length;
                 var i;
-                for(i =index; i < length;i++){
+                for (i = index; i < length; i++) {
                     self.contents[i].index = i;
                 }
             }
@@ -128,14 +127,14 @@
         var width = [100];
         var height = [100];
         var opacity = [50];
-        var left = [0];
-        var top = [0];
+        var left = 0;
+        var top = 0;
         var padding = [0];
         var backgroundColor = ['transparent'];
         var borderColor = ['yellow'];
         var borderWidth = [2];
         var borderStyle = ['rounded'];
-        var visible = ['visible'];
+        var visible = [true];
         var draggable = ['draggable'];
         var old_width = null;
         var old_height = null;
@@ -159,12 +158,12 @@
         var index = 0;
 
 
-        Object.defineProperty(self,'index',{
-            get:function(){
+        Object.defineProperty(self, 'index', {
+            get: function () {
                 return index;
             },
-            set:function(i){
-                if(i != index){
+            set: function (i) {
+                if (i != index) {
                     index = i;
                     fire_change(self);
                 }
@@ -175,10 +174,10 @@
             get: function () {
                 var sum = 0;
                 var ha = horizontalAlign[state] || horizontalAlign[0];
-                var l = calc_size(self.left, parent?parent.realWidth:0);
+                var l = calc_size(self.left, parent ? parent.realWidth : 0);
 
                 if (ha != null) {
-                    sum = calculate_align(ha, self.realWidth, parent?parent.realWidth:0);
+                    sum = calculate_align(ha, self.realWidth, parent ? parent.realWidth : 0);
                 }
 
                 return l + sum;
@@ -189,11 +188,11 @@
             get: function () {
                 var sum = 0;
                 var va = verticalAlign[state] || verticalAlign[0];
-                var t = calc_size(self.top, parent?parent.realHeight:0);
+                var t = calc_size(self.top, parent ? parent.realHeight : 0);
 
 
                 if (va != null) {
-                    sum = calculate_align(va, self.realHeight, parent?parent.realHeight:0);
+                    sum = calculate_align(va, self.realHeight, parent ? parent.realHeight : 0);
                 }
 
 
@@ -206,7 +205,7 @@
             get: function () {
                 var parent = self.parent;
                 var sum = 0;
-                if(parent != null){
+                if (parent != null) {
                     sum += parent.absoluteLeft + parent.padding;
                 }
                 return self.realLeft + sum;
@@ -217,7 +216,7 @@
             get: function () {
                 var parent = self.parent;
                 var sum = 0;
-                if(parent != null){
+                if (parent != null) {
                     sum += parent.absoluteTop + parent.padding;
                 }
                 return self.realTop + sum;
@@ -254,13 +253,26 @@
 
         Object.defineProperty(self, 'realWidth', {
             get: function () {
-                return calc_size(self.width, parent?parent.realWidth:0);
+                return calc_size(self.width, parent ? parent.realWidth : 0);
             }
         });
 
         Object.defineProperty(self, 'realHeight', {
             get: function () {
-                return calc_size(self.height, parent?parent.realHeight:0);
+                return calc_size(self.height, parent ? parent.realHeight : 0);
+            }
+        });
+
+        Object.defineProperty(self, 'containerX', {
+            get: function () {
+                return self.absoluteLeft + self.padding;
+            }
+        });
+
+
+        Object.defineProperty(self, 'containerY', {
+            get: function () {
+                return self.absoluteTop + self.padding;
             }
         });
 
@@ -318,12 +330,12 @@
 
         Object.defineProperty(self, 'left', {
             get: function () {
-                return left[state] || left[0];
+                return left;
             },
             set: function (l) {
                 if (l != left[state]) {
                     save_state(self);
-                    left[state] = l;
+                    left = l;
                     fire_change(self);
                 }
             }
@@ -331,12 +343,12 @@
 
         Object.defineProperty(self, 'top', {
             get: function () {
-                return top[state] || top[0];
+                return top;
             },
             set: function (t) {
                 if (t != top[state]) {
                     save_state(self);
-                    top[state] = t;
+                    top = t;
                     fire_change(self);
                 }
             }
@@ -345,25 +357,25 @@
 
         Object.defineProperty(self, 'clearX', {
             get: function () {
-                return old_left - old_borderWidth;
+                return self.absoluteLeft;
             }
         });
 
         Object.defineProperty(self, 'clearY', {
             get: function () {
-                return old_top - old_borderWidth;
+                return self.absoluteTop;
             }
         });
 
         Object.defineProperty(self, 'clearWidth', {
             get: function () {
-                return old_width + old_borderWidth * 2;
+                return self.realWidth;
             }
         });
 
         Object.defineProperty(self, 'clearHeight', {
             get: function () {
-                return old_height + old_borderWidth * 2;
+                return self.realHeight;
             }
         });
 
@@ -471,7 +483,7 @@
 
         Object.defineProperty(self, 'visible', {
             get: function () {
-                return visible[state] || visible[0];
+                return (visible[state] || visible[0]) && (parent ? parent.visible : true);
             },
             set: function (v) {
                 if (v != visible[state]) {
@@ -480,6 +492,21 @@
                 }
             }
         });
+
+        Object.defineProperty(self, 'visibleOnScreen', {
+            get: function () {
+                var xa = self.absoluteLeft - (parent ? parent.scrollLeft : 0);
+                var ya = self.absoluteTop - (parent ? parent.scrollTop : 0);
+                var wa = self.realWidth;
+                var ha = self.realHeight;
+                var xb = parent ? parent.containerX:0;
+                var yb = parent ? parent.containerY:0;
+                var wb = parent ? parent.containerWidth : 0;
+                var hb = parent ? parent.containerHeight : 0;
+                return collide_bounds(xa, ya, wa, ha, xb, yb, wb, hb);
+            }
+        });
+
 
         Object.defineProperty(self, 'draggable', {
             get: function () {
@@ -706,7 +733,7 @@
 
         Object.defineProperty(self, 'scrollButton1Left', {
             get: function () {
-                return self.absoluteLeft + self.realWidth - self.scrollWidth;
+                return self.absoluteLeft + self.realWidth;
             }
         });
 
@@ -718,7 +745,7 @@
 
         Object.defineProperty(self, 'scrollButton2Left', {
             get: function () {
-                return self.absoluteLeft + self.realWidth - self.scrollWidth;
+                return self.absoluteLeft + self.realWidth;
             }
         });
 
@@ -739,10 +766,16 @@
             }
         });
 
+        Object.defineProperty(self, 'scrollActive', {
+            get: function () {
+                return self.scrollable && self.contentHeight > self.containerHeight;
+            }
+        });
+
         Object.defineProperty(self, 'contentHeight', {
             get: function () {
                 return self.contents.reduce(function (prev, current) {
-                    return prev + (current.visible?current.realHeight:0);
+                    return prev + (current.visible ? current.realHeight : 0);
                 }, 0);
             }
         });
@@ -762,34 +795,59 @@
 
     UI_Element.prototype.update = function (layer) {
         var self = this;
-        if (self.visible && self.parent.visible) {
-            var at = self.absoluteTop;
+        if (self.visible && self.visibleOnScreen) {
+            var parent = self.parent;
+            var width = self.realWidth;
+            var height = self.realHeight;
+            var lineWidth = self.borderWidth;
+            var containerX = parent.containerX;
+            var containerY = parent.containerY;
+            var content_height = self.contentHeight;
+            var container_height = parent.containerHeight;
+            var container_width = parent.containerWidth;
+            var fillStyle = self.backgroundColor;
+            var strokeStyle = self.borderColor;
+            var borderOpacity = self.borderOpacity;
+            var backgroundOpacity = self.backgroundOpacity;
+
+            var x = self.absoluteLeft - (parent ? parent.scrollLeft : 0);
+            var y = self.absoluteTop - (parent ? parent.scrollTop : 0);
+
+            if (x < containerX) {
+                width -= containerX - x;
+                x = containerX;
+            }
+            else if((x+width) > (containerX+container_width)){
+                width = (containerX+container_width)-x;
+            }
+
+            if (y < containerY) {
+                height -= containerY - y;
+                y = containerY;
+            }
+            else if((y+height) > (containerY+container_height)){
+                height = (containerY+container_height)-y;
+            }
 
             layer.rect({
-                x: self.absoluteLeft,
-                y: at,
-                width: self.realWidth,
-                height: self.realHeight,
-                fillStyle: self.backgroundColor,
-                strokeStyle: self.borderColor,
-                lineWidth: self.borderWidth,
-                backgroundOpacity: self.backgroundOpacity,
-                borderOpacity: self.borderOpacity,
-                borderColor: self.borderColor
+                x: x,
+                y: y,
+                width: width,
+                height: height,
+                lineWidth: lineWidth,
+                fillStyle: fillStyle,
+                strokeStyle: strokeStyle,
+                backgroundOpacity: backgroundOpacity,
+                borderOpacity: borderOpacity
             });
 
-            var content_height = self.contentHeight;
-            var container_height = self.containerHeight;
-
             if (self.scrollable && content_height > container_height) {
-
                 var scrollbar_size = self.scrollWidth;
                 var fontSize = scrollbar_size / 1.5;
                 var button1_left = self.scrollButton1Left;
                 var button2_top = self.scrollButton2Top;
-                var rail_y = at + scrollbar_size;
+                var rail_y = y + scrollbar_size;
                 var rail_height = self.railHeight;
-
 
                 //Scrollbar background
                 layer.rect({
@@ -820,7 +878,7 @@
                 //Scrollbar button up
                 layer.rect({
                     x: button1_left,
-                    y: at,
+                    y: y,
                     width: scrollbar_size,
                     height: scrollbar_size,
                     fillStyle: 'White',
@@ -831,7 +889,7 @@
                 //Scrollbar character up
                 layer.text('▲', {
                     x: button1_left,
-                    y: at,
+                    y: y,
                     color: 'Blue',
                     width: scrollbar_size,
                     height: scrollbar_size,
@@ -865,26 +923,22 @@
     };
 
     UI_Element.prototype.mousedown = function (x, y) {
-        var self = this;
 
-        var sign = 0;
-        if (colide_button1(self, x, y)) {
-            sign = -1;
-        }
-        else if (colide_button2(self, x, y)) {
-            sign = 1;
-        }
+    };
 
-        if (sign != 0) {
-            document.scrolling_data.sign = sign;
-            document.scrolling_data.element = self;
-        }
+    UI_Element.prototype.mouseup = function () {
 
     };
 
     UI_Element.prototype.clear = function (layer) {
         var self = this;
-        layer.clear(self.clearX - self.parent.padding, self.clearY - self.parent.padding, self.clearWidth, self.clearHeight);
+        var x = self.clearX;
+        var y = self.clearY;
+        var width = self.clearWidth;
+        var height = self.clearHeight;
+        if (width != 0 && height != 0) {
+            layer.clear(x, y, width, height);
+        }
     };
 
     UI_Element.prototype.setStateStyle = function (state, style, value) {
@@ -897,7 +951,7 @@
     };
 
     var fire_change = function (self) {
-        if(self.initialized){
+        if (self.initialized) {
             self.changed = true;
             var length = self.contents.length;
             var i;
@@ -909,7 +963,7 @@
     };
 
     var save_state = function (self) {
-        if(self.initialized){
+        if (self.initialized) {
             self.oldWidth = self.realWidth;
             self.oldHeight = self.realHeight;
             self.oldLeft = self.absoluteLeft;
@@ -945,18 +999,8 @@
         }
     };
 
-    var colide_button1 = function (self, x, y) {
-        var sw = self.scrollWidth;
-        var sx = self.scrollButton1Left;
-        var sy = self.scrollButton1Top;
-        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
-    };
-
-    var colide_button2 = function (self, x, y) {
-        var sw = self.scrollWidth;
-        var sx = self.scrollButton2Left;
-        var sy = self.scrollButton2Top;
-        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
+    var collide_bounds = function (xa, ya, wa, ha, xb, yb, wb, hb) {
+        return !(xa > xb + wb || xb > xa + wa || ya > yb + hb || yb > ya + ha);
     };
 
 

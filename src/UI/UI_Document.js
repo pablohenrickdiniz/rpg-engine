@@ -36,8 +36,11 @@
         visible: true,
         scrolling_data: {
             element: null,
-            start: null,
-            scrolling: false
+            startX: 0,
+            startY: 0,
+            sign:0,
+            type:'',
+            scrollTop:0
         },
         changed: {},
         ui_states: {},
@@ -163,6 +166,15 @@
             }
 
             return [];
+        },
+        resetScrollingData:function(){
+            var self = this;
+            self.scrolling_data.element = null;
+            self.scrolling_data.sign = 0;
+            self.scrolling_data.type = '';
+            self.scrolling_data.scrollTop = 0;
+            self.scrolling_data.startX = 0;
+            self.scrolling_data.startY = 0;
         }
     };
 
@@ -196,8 +208,9 @@
             for (kB = 0; kB < lengthB; kB++) {
                 id = keysB[kB];
                 el = Document.levels[level][id];
-
-                if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth, el.realHeight)) {
+                var l = el.scrollActive?el.scrollWidth:0;
+                var t = 0;
+                if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth+l, el.realHeight+t)) {
                     return el;
                 }
 
@@ -236,9 +249,42 @@
         }
     };
 
+    var check_element_scroll = function(el,x,y){
+        var sign = 0;
+
+        if (collide_scroll_up(el, x, y)) {
+            sign = -1;
+        }
+        else if (collide_scroll_down(el, x, y)) {
+            sign = 1;
+        }
+        else if(collide_scrollbar(el,x,y)){
+            sign = 2;
+        }
+
+        if(sign != 0){
+            Document.scrolling_data.element = el;
+            switch(sign) {
+                case -1:
+                case 1:
+                    Document.scrolling_data.sign = sign;
+                    Document.scrolling_data.type = 'button';
+                    break;
+                case 2:
+                    Document.scrolling_data.startX = x;
+                    Document.scrolling_data.startY = y;
+                    Document.scrolling_data.type = 'drag';
+                    Document.scrolling_data.scrollTop = el.scrollTop;
+                    break;
+            }
+        }
+    };
+
+
     var mouseup = function (x, y) {
         if (!Document.propagating['mouseup']) {
             Document.propagating['mouseup'] = true;
+            Document.resetScrollingData();
             var element = retrieve_element(x, y);
             if (element != null) {
                 propagate('mouseup', element, [x, y]);
@@ -253,9 +299,6 @@
             if (element != null) {
                 propagate('mousedown', element, [x, y]);
             }
-        }
-        else {
-            console.log('mousedown conflict');
         }
     };
 
@@ -280,6 +323,7 @@
                 element.hover = true;
                 break;
             case 'mousedown':
+                check_element_scroll(element,args[0],args[1]);
                 element.mousedown(args[0], args[1]);
                 break;
         }
@@ -294,8 +338,19 @@
 
     var scroll = function (data) {
         var self = data.element;
-        var step = (10 * data.sign);
-        self.scrollTop = self.scrollTop + step;
+
+        switch(data.type){
+            case 'button':
+                var step = (10 * data.sign);
+                self.scrollTop = self.scrollTop + step;
+                break;
+            case 'drag':
+                var Mouse = root.Controls.Mouse;
+                var step = Mouse.lastY-data.startY;
+                var scroll_y =  data.scrollTop + step*(self.contentHeight/self.containerHeight);
+                self.scrollTop = scroll_y;
+                break;
+        }
     };
 
 
@@ -303,6 +358,32 @@
         Document.update();
     });
 
+    var collide_scroll_up = function (el, x, y) {
+        var sw = el.scrollWidth;
+        var sx = el.scrollButton1Left;
+        var sy = el.scrollButton1Top;
+        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
+    };
+
+    var collide_scroll_down = function (el, x, y) {
+        var sw = el.scrollWidth;
+        var sx = el.scrollButton2Left;
+        var sy = el.scrollButton2Top;
+        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
+    };
+
+    var collide_scrollbar = function(el,x,y){
+        var sw = el.scrollWidth;
+        var sh = el.railHeight;
+        var rail_y = el.absoluteTop + sw;
+        var content_height = el.contentHeight;
+        var container_height = el.containerHeight;
+        var scroll_height = (container_height / content_height) * sh;
+        var sx = el.scrollButton1Left;
+        var sy = rail_y + sh * (el.scrollTop / content_height);
+
+        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sh;
+    };
 
     root.Document = Document;
 })(RPG);
