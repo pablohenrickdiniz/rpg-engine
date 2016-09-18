@@ -206,7 +206,7 @@
                 var parent = self.parent;
                 var sum = 0;
                 if (parent != null) {
-                    sum += parent.absoluteLeft + parent.padding;
+                    sum += parent.absoluteLeft + parent.padding - parent.scrollLeft;
                 }
                 return self.realLeft + sum;
             }
@@ -217,7 +217,7 @@
                 var parent = self.parent;
                 var sum = 0;
                 if (parent != null) {
-                    sum += parent.absoluteTop + parent.padding;
+                    sum += parent.absoluteTop + parent.padding - parent.scrollTop;
                 }
                 return self.realTop + sum;
             }
@@ -278,7 +278,7 @@
 
         Object.defineProperty(self, 'containerWidth', {
             get: function () {
-                return self.realWidth - self.scrollWidth - self.padding * 2;
+                return self.realWidth - self.padding * 2;
             }
         });
 
@@ -495,8 +495,8 @@
 
         Object.defineProperty(self, 'visibleOnScreen', {
             get: function () {
-                var xa = self.absoluteLeft - (parent ? parent.scrollLeft : 0);
-                var ya = self.absoluteTop - (parent ? parent.scrollTop : 0);
+                var xa = self.absoluteLeft;
+                var ya = self.absoluteTop
                 var wa = self.realWidth;
                 var ha = self.realHeight;
                 var xb = parent ? parent.containerX:0;
@@ -810,8 +810,8 @@
             var borderOpacity = self.borderOpacity;
             var backgroundOpacity = self.backgroundOpacity;
 
-            var x = self.absoluteLeft - (parent ? parent.scrollLeft : 0);
-            var y = self.absoluteTop - (parent ? parent.scrollTop : 0);
+            var x = self.absoluteLeft;
+            var y = self.absoluteTop;
 
             if (x < containerX) {
                 width -= containerX - x;
