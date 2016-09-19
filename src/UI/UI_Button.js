@@ -4,7 +4,10 @@
     }
 
     var UI_Element = root.UI_Element;
-
+    /**
+     *
+     * @constructor
+     */
     var UI_Button = function () {
         var self = this;
         UI_Element.call(self, arguments);

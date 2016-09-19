@@ -15,10 +15,12 @@
 
     var hover = false;
 
-
+    /**
+     *
+     * @type {{contents: Array, left: number, top: number, width: number, height: number, realLeft: number, realTop: number, absoluteLeft: number, absoluteTop: number, realWidth: number, realHeight: number, borderWidth: number, scrollTop: number, scrollLeft: number, padding: number, visible: boolean, scrolling_data: {element: null, startX: number, startY: number, sign: number, type: string, scrollTop: number}, changed: {}, ui_states: {}, propagating: Array, mousedown: Function, change: Function, initialize: Function, finalize: Function, add: Function, remove: Function, updateScroll: Function, update: Function, addState: Function, removeState: Function, getStates: Function, resetScrollingData: Function}}
+     */
     var Document = {
         contents: [],
-        levels: [],
         left: 0,
         top: 0,
         width: 600,
@@ -30,17 +32,19 @@
         realWidth: 600,
         realHeight: 600,
         borderWidth: 0,
-        scrollTop:0,
-        scrollLeft:0,
-        padding:0,
+        scrollTop: 0,
+        scrollLeft: 0,
+        padding: 0,
         visible: true,
         scrolling_data: {
             element: null,
             startX: 0,
             startY: 0,
-            sign:0,
-            type:'',
-            scrollTop:0
+            sign: 0,
+            type: '',
+            scrollTop: 0,
+            scrollLeft:0,
+            scrollbar:''
         },
         changed: {},
         ui_states: {},
@@ -48,12 +52,22 @@
         mousedown: function (x, y) {
 
         },
-        change: function (level, id) {
+        /**
+         *
+         * @param type
+         * @param level
+         * @param element
+         */
+        change: function (type, level, element) {
             var self = this;
-            if (self.changed[level] == undefined) {
-                self.changed[level] = {};
+            if (self.changed[type] == undefined) {
+                self.changed[type] = {};
             }
-            self.changed[level][id] = true;
+
+            if (self.changed[type][level] == undefined) {
+                self.changed[type][level] = [];
+            }
+            self.changed[type][level].push(element);
         },
         initialize: function () {
             var Mouse = root.Controls.Mouse;
@@ -69,25 +83,20 @@
             Mouse.removeEventListener('mousedown', mousedown);
             Mouse.removeEventListener('mouseup', mouseup)
         },
-        addToLevel: function (level, element) {
-            var self = this;
-            if (self.levels[level] == undefined) {
-                self.levels[level] = {};
-            }
-            self.levels[level][element.id] = element;
-        },
-        removeFromLevel: function (level, id) {
-            var self = this;
-            if (self.levels[level] != undefined) {
-                delete self.levels[level][id];
-            }
-        },
+        /**
+         *
+         * @param element
+         */
         add: function (element) {
             var self = this;
             if (self.contents.indexOf(element) == -1) {
                 self.contents.push(element);
             }
         },
+        /**
+         *
+         * @param element
+         */
         remove: function (element) {
             var self = this;
             var index = self.contents.indexOf(element);
@@ -98,7 +107,7 @@
         updateScroll: function () {
             var self = this;
             var Mouse = root.Controls.Mouse;
-            if(Mouse.left){
+            if (Mouse.left) {
                 if (self.scrolling_data.element != null) {
                     scroll(self.scrolling_data);
                 }
@@ -106,33 +115,43 @@
         },
         update: function () {
             var self = this;
-
             self.updateScroll();
             var i;
             var j;
             var layer = null;
-            var ids;
-            var id;
-            var keys = Object.keys(self.changed);
-            var lengthA = keys.length;
+            var types = Object.keys(self.changed);
+            var layers = [];
+            var lengthA = types.length;
             var lengthB;
-            var key;
+            var layerIndex;
+            var type;
 
             for (i = 0; i < lengthA; i++) {
-                key = keys[i];
-                if (self.changed[key] && self.levels[key]) {
-                    layer = viewport.getLayer('UI', key);
-                    ids = Object.keys(self.changed[key]);
-                    lengthB = ids.length;
-                    for (j = 0; j < lengthB; j++) {
-                        id = ids[j];
-                        self.levels[key][id].clear(layer, viewport);
-                        self.levels[key][id].update(layer, viewport);
-                        delete self.changed[key][id];
+                type = types[i];
+                layers = Object.keys(self.changed[type]);
+                lengthB = layers.length;
+                for(j = 0; j < lengthB;j++){
+                    layerIndex = parseInt(layers[j]);
+                    layer = viewport.getLayer('UI', layerIndex);
+                    var elements = self.changed[type][layerIndex];
+                    while(elements.length > 0){
+                        var el = elements.pop();
+                        el.clear(layer, viewport);
+                        el.update(layer, viewport);
+                        switch(type){
+                            case 'all':
+                                fire_update(el.contents,layerIndex+1);
+                                break;
+                        }
                     }
                 }
             }
         },
+        /**
+         *
+         * @param state
+         * @param ui_element
+         */
         addState: function (state, ui_element) {
             var self = this;
             if (self.ui_states[state] == undefined) {
@@ -142,6 +161,11 @@
                 self.ui_states[state].push(ui_element);
             }
         },
+        /**
+         * @param state
+         * @param ui_element
+         * @returns {*}
+         */
         removeState: function (state, ui_element) {
             var self = this;
             if (self.ui_states[state] != undefined) {
@@ -159,6 +183,10 @@
             }
             return null;
         },
+        /**
+         * @param state
+         * @returns {*}
+         */
         getStates: function (state) {
             var self = this;
             if (self.ui_states[state] != undefined) {
@@ -167,7 +195,7 @@
 
             return [];
         },
-        resetScrollingData:function(){
+        resetScrollingData: function () {
             var self = this;
             self.scrolling_data.element = null;
             self.scrolling_data.sign = 0;
@@ -190,8 +218,28 @@
     });
 
 
+    var get_tree = function(element,levels){
+        levels = levels || [];
+        var contents = element.contents;
+        var length = contents.length;
+        if(length > 0){
+            levels.unshift(contents);
+            for(var i =0; i < length;i++){
+                get_tree(contents[i],levels);
+            }
+        }
+        return levels;
+    };
+
+    /**
+     *
+     * @param x
+     * @param y
+     * @returns {{contents: Array, left: number, top: number, width: number, height: number, realLeft: number, realTop: number, absoluteLeft: number, absoluteTop: number, realWidth: number, realHeight: number, borderWidth: number, scrollTop: number, scrollLeft: number, padding: number, visible: boolean, scrolling_data: {element: null, startX: number, startY: number, sign: number, type: string, scrollTop: number}, changed: {}, ui_states: {}, propagating: Array, mousedown: Function, change: Function, initialize: Function, finalize: Function, add: Function, remove: Function, updateScroll: Function, update: Function, addState: Function, removeState: Function, getStates: Function, resetScrollingData: Function}}
+     */
     var retrieve_element = function (x, y) {
-        var keysA = Object.keys(Document.levels).reverse();
+        var levels = get_tree(Document);
+        var keysA = Object.keys(levels);
         var keysB;
         var kA;
         var kB;
@@ -203,14 +251,13 @@
 
         for (kA = 0; kA < lengthA; kA++) {
             level = keysA[kA];
-            keysB = Object.keys(Document.levels[level]);
+            keysB = Object.keys(levels[level]);
             lengthB = keysB.length;
             for (kB = 0; kB < lengthB; kB++) {
                 id = keysB[kB];
-                el = Document.levels[level][id];
-                var l = el.scrollActive?el.scrollWidth:0;
-                var t = 0;
-                if (inside_bounds(x, y, el.absoluteLeft, el.absoluteTop, el.realWidth+l, el.realHeight+t)) {
+                el = levels[level][id];
+                var bounds = el.visibleBounds;
+                if (inside_bounds(x, y, bounds.x, bounds.y, bounds.width, bounds.height)) {
                     return el;
                 }
 
@@ -219,15 +266,30 @@
         return Document;
     };
 
+    /**
+     *
+     * @param mx
+     * @param my
+     * @param bx
+     * @param by
+     * @param bWidth
+     * @param bHeight
+     * @returns {boolean}
+     */
     var inside_bounds = function (mx, my, bx, by, bWidth, bHeight) {
         return mx >= bx && mx <= bx + bWidth && my >= by && my <= by + bHeight;
     };
 
-
+    /**
+     *
+     * @param x
+     * @param y
+     */
     var mousemove = function (x, y) {
         if (!Document.propagating['hover']) {
             Document.propagating['hover'] = true;
             var element = retrieve_element(x, y);
+            console.log('hover',element.id);
             if (element != null) {
                 var ui_states = Document.getStates('hover');
                 var propagated = propagate('hover', element, [x, y]);
@@ -248,23 +310,45 @@
             }
         }
     };
-
-    var check_element_scroll = function(el,x,y){
+    /**
+     *
+     * @param el
+     * @param x
+     * @param y
+     */
+    var check_element_scroll = function (el, x, y) {
         var sign = 0;
+        var scrollbar = '';
 
         if (collide_scroll_up(el, x, y)) {
             sign = -1;
+            scrollbar = 'vertical';
         }
         else if (collide_scroll_down(el, x, y)) {
             sign = 1;
+            scrollbar = 'vertical';
         }
-        else if(collide_scrollbar(el,x,y)){
+        else if (collide_vertical_scrollbar(el, x, y)) {
+            scrollbar = 'vertical';
             sign = 2;
         }
+        else if(collide_scroll_left(el,x,y)){
+            sign = -1;
+            scrollbar = 'horizontal';
+        }
+        else if(collide_scroll_right(el,x,y)){
+            sign = 1;
+            scrollbar = 'horizontal';
+        }
+        else if(collide_horizontal_scrollbar(el,x,y)){
+            sign = 2;
+            scrollbar = 'horizontal';
+        }
 
-        if(sign != 0){
+        if (sign != 0) {
             Document.scrolling_data.element = el;
-            switch(sign) {
+            Document.scrolling_data.scrollbar = scrollbar;
+            switch (sign) {
                 case -1:
                 case 1:
                     Document.scrolling_data.sign = sign;
@@ -274,13 +358,23 @@
                     Document.scrolling_data.startX = x;
                     Document.scrolling_data.startY = y;
                     Document.scrolling_data.type = 'drag';
-                    Document.scrolling_data.scrollTop = el.scrollTop;
+                    switch(scrollbar){
+                        case 'vertical':
+                            Document.scrolling_data.scrollTop = el.scrollTop;
+                            break;
+                        case 'horizontal':
+                            Document.scrolling_data.scrollLeft = el.scrollLeft;
+                    }
+
                     break;
             }
         }
     };
-
-
+    /**
+     *
+     * @param x
+     * @param y
+     */
     var mouseup = function (x, y) {
         if (!Document.propagating['mouseup']) {
             Document.propagating['mouseup'] = true;
@@ -291,7 +385,11 @@
             }
         }
     };
-
+    /**
+     *
+     * @param x
+     * @param y
+     */
     var mousedown = function (x, y) {
         if (!Document.propagating['mousedown']) {
             Document.propagating['mousedown'] = true;
@@ -313,7 +411,14 @@
             length--;
         }
     };
-
+    /**
+     *
+     * @param event
+     * @param element
+     * @param args
+     * @param propagated
+     * @returns {*|Array}
+     */
     var propagate = function (event, element, args, propagated) {
         propagated = propagated || [];
         args = args || [];
@@ -323,7 +428,7 @@
                 element.hover = true;
                 break;
             case 'mousedown':
-                check_element_scroll(element,args[0],args[1]);
+                check_element_scroll(element, args[0], args[1]);
                 element.mousedown(args[0], args[1]);
                 break;
         }
@@ -335,20 +440,40 @@
         }
         return propagated;
     };
-
+    /**
+     *
+     * @param data
+     */
     var scroll = function (data) {
         var self = data.element;
 
-        switch(data.type){
+        switch (data.type) {
             case 'button':
                 var step = (10 * data.sign);
-                self.scrollTop = self.scrollTop + step;
+                switch(data.scrollbar){
+                    case 'vertical':
+                        self.scrollTop = self.scrollTop + step;
+                        break;
+                    case 'horizontal':
+                        self.scrollLeft = self.scrollLeft + step;
+                        break;
+                }
+
                 break;
             case 'drag':
                 var Mouse = root.Controls.Mouse;
-                var step = Mouse.lastY-data.startY;
-                var scroll_y =  data.scrollTop + step*(self.contentHeight/self.containerHeight);
-                self.scrollTop = scroll_y;
+                var step = Mouse.lastY - data.startY;
+                switch(data.scrollbar){
+                    case 'vertical':
+                        var scroll_y = data.scrollTop + step * (self.contentHeight / self.containerHeight);
+                        self.scrollTop = scroll_y;
+                        break;
+                    case 'horizontal':
+                        var scroll_x = data.scrollLeft + step * (self.contentWidth / self.containerWidth);
+                        self.scrollLeft = scroll_x;
+                        break;
+                }
+
                 break;
         }
     };
@@ -357,32 +482,109 @@
     system.addSteplistener(function () {
         Document.update();
     });
-
+    /**
+     *
+     * @param el
+     * @param x
+     * @param y
+     * @returns {boolean}
+     */
     var collide_scroll_up = function (el, x, y) {
         var sw = el.scrollWidth;
-        var sx = el.scrollButton1Left;
-        var sy = el.scrollButton1Top;
+        var sx = el.scrollUpButtonX;
+        var sy = el.scrollUpButtonY;
         return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
     };
-
+    /**
+     *
+     * @param el
+     * @param x
+     * @param y
+     * @returns {boolean}
+     */
     var collide_scroll_down = function (el, x, y) {
         var sw = el.scrollWidth;
-        var sx = el.scrollButton2Left;
-        var sy = el.scrollButton2Top;
+        var sx = el.scrollDownButtonX;
+        var sy = el.scrollDownButtonY;
+        return x >= sx && x <= sx+sw && y >= sy && y <= sy+sw;
+    };
+
+    /**
+     *
+     * @param el
+     * @param x
+     * @param y
+     * @returns {boolean}
+     */
+    var collide_scroll_left = function (el, x, y) {
+        var sw = el.scrollWidth;
+        var sx = el.scrollLeftButtonX;
+        var sy = el.scrollLeftButtonY;
+        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
+    };
+    /**
+     *
+     * @param el
+     * @param x
+     * @param y
+     * @returns {boolean}
+     */
+    var collide_scroll_right = function (el, x, y) {
+        var sw = el.scrollWidth;
+        var sx = el.scrollRightButtonX;
+        var sy = el.scrollRightButtonY;
+
         return x >= sx && x <= sx + sw && y >= sy && y <= sy + sw;
     };
 
-    var collide_scrollbar = function(el,x,y){
+    /**
+     *
+     * @param el
+     * @param x
+     * @param y
+     * @returns {boolean}
+     */
+    var collide_vertical_scrollbar = function (el, x, y) {
         var sw = el.scrollWidth;
         var sh = el.railHeight;
         var rail_y = el.absoluteTop + sw;
         var content_height = el.contentHeight;
-        var container_height = el.containerHeight;
-        var scroll_height = (container_height / content_height) * sh;
-        var sx = el.scrollButton1Left;
+        var sx = el.scrollUpButtonX;
         var sy = rail_y + sh * (el.scrollTop / content_height);
-
         return x >= sx && x <= sx + sw && y >= sy && y <= sy + sh;
+    };
+
+    /**
+     *
+     * @param el
+     * @param x
+     * @param y
+     * @returns {boolean}
+     */
+    var collide_horizontal_scrollbar = function (el, x, y) {
+        var sw = el.railWidth;
+        var sh = el.scrollWidth;
+        var rail_x = el.absoluteLeft + sw;
+        var content_width = el.contentWidth;
+        var sy = el.scrollLeftButtonY;
+        var sx = rail_x + sh * (el.scrollLeft / content_width);
+        return x >= sx && x <= sx + sw && y >= sy && y <= sy + sh;
+    };
+
+    /**
+     *
+     * @param elements
+     * @param index
+     */
+    var fire_update = function(elements,index){
+        var length = elements.length;
+        var layer = viewport.getLayer('UI', index);
+
+        for(var i =0; i < length;i++){
+            var el = elements[i];
+            el.update(layer, viewport);
+            fire_update(el.contents,index+1);
+        }
     };
 
     root.Document = Document;

@@ -7,7 +7,118 @@
 
     var ID = 0;
     const TRANSPARENT_REG = /^\s*transparent\s*|rgba\((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*0\s*\)\s*$/;
+    var prop_implies = {
+        'width':{
+            'self':['realWidth']
+        },
+        'height':{
+            'self':['realHeight']
+        },
+        'realWidth':{
+            'self':['containerWidth','realLeft','scrollRightButtonX','scrollUpButtonX','scrollDownButtonX','railWidth','horizontalScrollActive','visibleBoundsWidth'],
+            'children':['realWidth','realLeft']
+        },
+        realHeight:{
+            'self':['containerHeight','realTop','scrollLeftButtonY','scrollRightButtonY','scrollDownButtonY','railHeight','verticalScrollActive','visibleBoundsHeight'],
+            'children':['realHeight','realTop']
+        },
+        'padding':{
+            'self':['containerWidth','containerHeight','containerX','containerY','verticalScrollActive','horizontalScrollActive'],
+            'children':['absoluteLeft','absoluteTop']
+        },
+        'verticalScrollActive':{
+            'self':['containerWidth']
+        },
+        'horizontalScrollActive':{
+            'self':['containerHeight']
+        },
+        'left':{
+            'self':['realLeft']
+        },
+        'top':{
+            'self':['realTop']
+        },
+        'horizontalAlign':{
+            'self':['realLeft']
+        },
+        'verticalAlign':{
+            'self':['realTop']
+        },
+        'absoluteLeft':{
+            'self':['containerX','scrollLeftButtonX','scrollRightButtonX','scrollUpButtonX','scrollDownButtonX','visibleBoundsX','visibleBoundsWidth'],
+            'children':['absoluteLeft']
+        },
+        'absoluteTop':{
+            'self':['containerY', 'scrollLeftButtonY','scrollRightButtonY','scrollUpButtonY','scrollDownButtonY','visibleBoundsY','visibleBoundsHeight'],
+            'children':['absoluteTop']
+        },
+        'scrollLeft':{
+            'children':['absoluteLeft']
+        },
+        'scrollTop':{
+            'children':['absoluteTop']
+        },
+        'realLeft':{
+            'self':['absoluteLeft']
+        },
+        'realTop':{
+            'self':['absoluteTop']
+        },
+        'level':{
+            'children':['level']
+        },
+        'scrollWidth':{
+            'self':['scrollLeftButtonX','scrollLeftButtonY','scrollRightButtonX', 'scrollRightButtonY','scrollUpButtonX','scrollUpButtonY','scrollDownButtonX','scrollDownButtonY','railWidth','railHeight']
+        },
+        'contentHeight': {
+            'self': ['maxScrollTop','verticalScrollActive']
+        },
+        'contentWidth':{
+            'self': ['maxScrollLeft','horizontalScrollActive']
+        },
+        'containerHeight':{
+            'self':['maxScrollTop'],
+            'children':['visibleBoundsHeight']
+        },
+        'containerWidth':{
+            'self':['maxScrollLeft'],
+            'children':['visibleBoundsWidth']
+        },
+        'scrollableX':{
+            'self':['horizontalScrollActive']
+        },
+        'scrollableY':{
+            'self':['verticalScrollActive']
+        },
+        'containerX':{
+            'children':['visibleBoundsX','visibleBoundsWidth']
+        },
+        'containerY':{
+            'children':['visibleBoundsY','visibleBoundsHeight']
+        },
+        'visibleBoundsX':{
+            'self':['visibleBounds']
+        },
+        'visibleBoundsY':{
+            'self':['visibleBounds']
+        },
+        'visibleBoundsWidth':{
+            'self':['visibleBounds']
+        },
+        'visibleBoundsHeight':{
+            'self':['visibleBounds']
+        }
+    };
 
+
+
+
+    /**
+     *
+     * @param parent
+     * @param options
+     * @constructor
+     */
     var UI_Element = function (parent, options) {
         var self = this;
         options = options || {};
@@ -26,7 +137,7 @@
         self.padding = options.padding || 0;
         self.backgroundOpacity = options.backgroundOpacity || 100;
         self.borderOpacity = options.borderOpacity || 100;
-        self.backgroundColor = options.backgroundColor || 'transparent';
+        self.backgroundColor = options.backgroundColor || '#f1f1f1';
         self.borderColor = options.borderColor || 'yellow';
         self.borderWidth = options.borderWidth || 0;
         self.borderStyle = options.borderStyle || 'rounded';
@@ -37,7 +148,8 @@
         self.scrollHeight = 0;
         self.draggable = false;
         self.overflow = 'hidden';
-        self.scrollable = options.scrollable || false;
+        self.scrollableX = options.scrollableX || false;
+        self.scrollableY = options.scrollableY || false;
         self.type = 'Element';
         self.scrolling = 0;
         self.scrollingStart = null;
@@ -46,7 +158,7 @@
         self.startScrollTop = self.scrollTop;
         self.parent = parent || document;
         self.initialized = true;
-        fire_change(self);
+         UI_Element.fire_change('all', self);
     };
 
 
@@ -69,6 +181,11 @@
         return null;
     };
 
+    /**
+     *
+     * @param element
+     * @returns {UI_Element}
+     */
     UI_Element.prototype.remove = function (element) {
         var self = this;
         if (element != undefined) {
@@ -124,6 +241,7 @@
     };
 
     var initialize = function (self) {
+        //FIXED VARS
         var width = [100];
         var height = [100];
         var opacity = [50];
@@ -136,27 +254,188 @@
         var borderStyle = ['rounded'];
         var visible = [true];
         var draggable = ['draggable'];
-        var old_width = null;
-        var old_height = null;
-        var old_left = null;
-        var old_top = null;
-        var old_borderWidth = null;
-        var old_background_opacity = null;
-        var old_padding = null;
         var parent = null;
         var state = 0;
         var cursor = ['default'];
         var backgroundOpacity = [100];
         var horizontalAlign = [null];
         var verticalAlign = [null];
-        var overflow = ['hidden'];
-        var scrollable = false;
+        var scrollableX = false;
+        var scrollableY = false;
         var scrollLeft = 0;
         var scrollTop = 0;
         var scrollWidth = 15;
         var scrollHeight = 0;
         var index = 0;
 
+
+        //SIZE
+        //SIZE VARS
+        var realWidth = null;       //self.width,parent.realWidth
+        var realHeight = null;      //self.height,parent.realHeight
+        var containerWidth = null;  //self.realWidth,self.padding,self.verticalScrollActive
+        var containerHeight = null; //self.realHeight,self.padding,self.horizontalScrollActive
+
+
+        Object.defineProperty(self, 'realWidth', {
+            get: function () {
+                if (realWidth == null) {
+                    realWidth = calc_size(self.width, parent ? parent.realWidth : 0);
+                }
+                return realWidth;
+            },
+            set: function (rw) {
+                if (!rw) {
+                    realWidth = null;
+                    UI_Element.uncache(self,'realWidth');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'realHeight', {
+            get: function () {
+                if (realHeight == null) {
+                    realHeight = calc_size(self.height, parent ? parent.realHeight : 0);
+                }
+                return realHeight;
+            },
+            set: function (rh) {
+                if (!rh) {
+                    realHeight = null;
+                    UI_Element.uncache(self,'realHeight');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'containerWidth', {
+            get: function () {
+                if (containerWidth == null) {
+                    containerWidth = self.realWidth - self.padding * 2 - (self.verticalScrollActive ? scrollWidth : 0);
+                }
+                return containerWidth;
+            },
+            set: function (cw) {
+                if (!cw) {
+                    containerWidth = null;
+                    UI_Element.uncache(self,'containerWidth');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'containerHeight', {
+            get: function () {
+                if (containerHeight == null) {
+                    containerHeight = self.realHeight - self.padding * 2 - (self.horizontalScrollActive ? scrollWidth : 0);
+                }
+                return containerHeight;
+            },
+            set: function (ch) {
+                if (!ch) {
+                    containerHeight = null;
+                    UI_Element.uncache(self,'containerHeight');
+                }
+            }
+        });
+
+
+        //POSITION
+        //POSITION VARS
+        var realLeft = null;     //self.left,self.horizontalAlign,parent.realWidth,self.realWidth
+        var realTop = null;      //self.top,self.verticalAlign,parent.realHeight,self.realHeight
+        var absoluteLeft = null; //parent.absoluteLeft,parent.padding,parent.scrollLeft,self.realLeft
+        var absoluteTop = null;  //parent.absoluteTop, parent.padding,parent.scrollTop,self.realTop
+        var containerX = null;   //self.absoluteLeft,self.padding;
+        var containerY = null;   //self.absoluteTop,self.padding;
+        var level = null;        //parent.level
+
+        //POSITION VARS CACHED
+        Object.defineProperty(self, 'realLeft', {
+            get: function () {
+                if (realLeft == null) {
+                    var sum = 0;
+                    var ha = horizontalAlign[state] || horizontalAlign[0];
+                    var l = calc_size(self.left, parent ? parent.realWidth : 0);
+
+                    if (ha != null) {
+                        sum = calculate_align(ha, self.realWidth, parent ? parent.realWidth : 0);
+                    }
+
+                    realLeft = l + sum;
+                }
+                return realLeft;
+            },
+            set: function (rl) {
+                if (!rl) {
+                    realLeft = null;
+                    UI_Element.uncache(self,'realLeft');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'realTop', {
+            get: function () {
+                if (realTop == null) {
+                    var sum = 0;
+                    var va = verticalAlign[state] || verticalAlign[0];
+                    var t = calc_size(self.top, parent ? parent.realHeight : 0);
+
+
+                    if (va != null) {
+                        sum = calculate_align(va, self.realHeight, parent ? parent.realHeight : 0);
+                    }
+
+
+                    realTop = t + sum;
+                }
+                return realTop;
+            },
+            set: function (rt) {
+                if (!rt) {
+                    realTop = null;
+                    UI_Element.uncache(self,'realTop');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'absoluteLeft', {
+            get: function () {
+                if (absoluteLeft == null) {
+                    var parent = self.parent;
+                    var sum = 0;
+                    if (parent != null) {
+                        sum += parent.absoluteLeft + parent.padding - parent.scrollLeft;
+                    }
+                    absoluteLeft = self.realLeft + sum;
+                }
+                return absoluteLeft;
+            },
+            set: function (al) {
+                if (!al) {
+                    absoluteLeft = null;
+                    UI_Element.uncache(self,'absoluteLeft');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'absoluteTop', {
+            get: function () {
+                if (absoluteTop == null) {
+                    var parent = self.parent;
+                    var sum = 0;
+                    if (parent != null) {
+                        sum += parent.absoluteTop + parent.padding - parent.scrollTop;
+                    }
+                    absoluteTop = self.realTop + sum;
+                }
+                return absoluteTop;
+            },
+            set: function (at) {
+                if (!at) {
+                    absoluteTop = null;
+                    UI_Element.uncache(self,'absoluteTop');
+                }
+            }
+        });
 
         Object.defineProperty(self, 'index', {
             get: function () {
@@ -165,61 +444,8 @@
             set: function (i) {
                 if (i != index) {
                     index = i;
-                    fire_change(self);
+                     UI_Element.fire_change('all', self);
                 }
-            }
-        });
-
-        Object.defineProperty(self, 'realLeft', {
-            get: function () {
-                var sum = 0;
-                var ha = horizontalAlign[state] || horizontalAlign[0];
-                var l = calc_size(self.left, parent ? parent.realWidth : 0);
-
-                if (ha != null) {
-                    sum = calculate_align(ha, self.realWidth, parent ? parent.realWidth : 0);
-                }
-
-                return l + sum;
-            }
-        });
-
-        Object.defineProperty(self, 'realTop', {
-            get: function () {
-                var sum = 0;
-                var va = verticalAlign[state] || verticalAlign[0];
-                var t = calc_size(self.top, parent ? parent.realHeight : 0);
-
-
-                if (va != null) {
-                    sum = calculate_align(va, self.realHeight, parent ? parent.realHeight : 0);
-                }
-
-
-                return t + sum;
-            }
-        });
-
-
-        Object.defineProperty(self, 'absoluteLeft', {
-            get: function () {
-                var parent = self.parent;
-                var sum = 0;
-                if (parent != null) {
-                    sum += parent.absoluteLeft + parent.padding - parent.scrollLeft;
-                }
-                return self.realLeft + sum;
-            }
-        });
-
-        Object.defineProperty(self, 'absoluteTop', {
-            get: function () {
-                var parent = self.parent;
-                var sum = 0;
-                if (parent != null) {
-                    sum += parent.absoluteTop + parent.padding - parent.scrollTop;
-                }
-                return self.realTop + sum;
             }
         });
 
@@ -230,12 +456,13 @@
             },
             set: function (ha) {
                 if (ha != horizontalAlign[state]) {
-                    save_state(self);
                     horizontalAlign[state] = ha;
-                    fire_change(self);
+                    UI_Element.uncache(self, 'horizontalAlign');
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
+
 
         Object.defineProperty(self, 'verticalAlign', {
             get: function () {
@@ -243,48 +470,86 @@
             },
             set: function (va) {
                 if (va != verticalAlign[state]) {
-                    save_state(self);
                     verticalAlign[state] = va;
-                    fire_change(self);
+                    UI_Element.uncache(self, 'verticalAlign');
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
 
 
-        Object.defineProperty(self, 'realWidth', {
-            get: function () {
-                return calc_size(self.width, parent ? parent.realWidth : 0);
-            }
-        });
-
-        Object.defineProperty(self, 'realHeight', {
-            get: function () {
-                return calc_size(self.height, parent ? parent.realHeight : 0);
-            }
-        });
-
         Object.defineProperty(self, 'containerX', {
             get: function () {
-                return self.absoluteLeft + self.padding;
+                if (containerX == null) {
+                    containerX = self.absoluteLeft + self.padding;
+                }
+                return containerX;
+            },
+            set: function (cx) {
+                if (!cx) {
+                    containerX = null;
+                    UI_Element.uncache(self,'containerX');
+                }
             }
         });
 
 
         Object.defineProperty(self, 'containerY', {
             get: function () {
-                return self.absoluteTop + self.padding;
+                if (containerY == null) {
+                    containerY = self.absoluteTop + self.padding;
+                }
+                return containerY;
+            },
+            set:function(cy){
+                if(!cy){
+                    containerY = null;
+                    UI_Element.uncache(self,'containerY');
+                }
             }
         });
 
-        Object.defineProperty(self, 'containerWidth', {
+
+        //set if element can appear on screen
+        Object.defineProperty(self, 'visible', {
             get: function () {
-                return self.realWidth - self.padding * 2;
+                return (visible[state] || visible[0]) && (parent ? parent.visible : true);
+            },
+            set: function (v) {
+                if (v != visible[state]) {
+                    visible[state] = v;
+                     UI_Element.fire_change('all', self);
+                }
             }
         });
 
-        Object.defineProperty(self, 'containerHeight', {
+        //Checks if element is visible on screen
+        //returns boolean;
+        Object.defineProperty(self, 'visibleOnScreen', {
             get: function () {
-                return self.realHeight - self.padding * 2;
+                var xa = self.absoluteLeft;
+                var ya = self.absoluteTop;
+                var wa = self.realWidth;
+                var ha = self.realHeight;
+                var xb = parent ? parent.containerX : 0;
+                var yb = parent ? parent.containerY : 0;
+                var wb = parent ? parent.containerWidth : 0;
+                var hb = parent ? parent.containerHeight : 0;
+                return collide_bounds(xa, ya, wa, ha, xb, yb, wb, hb);
+            }
+        });
+
+        Object.defineProperty(self, 'level', {
+            get: function () {
+                if (level == null) {
+                    if (self.parent instanceof  UI_Element) {
+                        level = self.parent.level + 1;
+                    }
+                    else {
+                        level = 0;
+                    }
+                }
+                return level;
             }
         });
 
@@ -294,9 +559,9 @@
             },
             set: function (w) {
                 if (w != width[state]) {
-                    save_state(self);
                     width[state] = w;
-                    fire_change(self);
+                    UI_Element.uncache(self,'width');
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
@@ -307,9 +572,9 @@
             },
             set: function (h) {
                 if (h != height[state]) {
-                    save_state(self);
                     height[state] = h;
-                    fire_change(self);
+                    UI_Element.uncache(self,'height');
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
@@ -321,9 +586,9 @@
             },
             set: function (pad) {
                 if (pad != padding[state]) {
-                    save_state(self);
                     padding[state] = pad;
-                    fire_change(self);
+                    UI_Element.uncache(self,'padding');
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
@@ -334,9 +599,9 @@
             },
             set: function (l) {
                 if (l != left[state]) {
-                    save_state(self);
                     left = l;
-                    fire_change(self);
+                    UI_Element.uncache(self,'left');
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
@@ -347,35 +612,10 @@
             },
             set: function (t) {
                 if (t != top[state]) {
-                    save_state(self);
                     top = t;
-                    fire_change(self);
+                    UI_Element.uncache(self,'top');
+                     UI_Element.fire_change('all', self);
                 }
-            }
-        });
-
-
-        Object.defineProperty(self, 'clearX', {
-            get: function () {
-                return self.absoluteLeft;
-            }
-        });
-
-        Object.defineProperty(self, 'clearY', {
-            get: function () {
-                return self.absoluteTop;
-            }
-        });
-
-        Object.defineProperty(self, 'clearWidth', {
-            get: function () {
-                return self.realWidth;
-            }
-        });
-
-        Object.defineProperty(self, 'clearHeight', {
-            get: function () {
-                return self.realHeight;
             }
         });
 
@@ -385,9 +625,8 @@
             },
             set: function (bw) {
                 if (bw != borderWidth[state]) {
-                    save_state(self);
                     borderWidth[state] = bw;
-                    fire_change(self);
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
@@ -399,7 +638,7 @@
             set: function (o) {
                 if (o != opacity[state]) {
                     opacity[state] = o;
-                    fire_change(self);
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
@@ -439,7 +678,7 @@
                                 });
                         }
                     }
-                    fire_change(self);
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
@@ -451,7 +690,7 @@
             set: function (bo) {
                 if (bo != backgroundOpacity[state]) {
                     backgroundOpacity[state] = bo;
-                    fire_change(self);
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
@@ -462,9 +701,8 @@
             },
             set: function (bc) {
                 if (bc != borderColor[state]) {
-                    save_state(self);
                     borderColor[state] = bc;
-                    fire_change(self);
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
@@ -476,34 +714,8 @@
             set: function (bs) {
                 if (bs != borderStyle[state]) {
                     borderStyle[state] = bs;
-                    fire_change(self);
+                     UI_Element.fire_change('self', self);
                 }
-            }
-        });
-
-        Object.defineProperty(self, 'visible', {
-            get: function () {
-                return (visible[state] || visible[0]) && (parent ? parent.visible : true);
-            },
-            set: function (v) {
-                if (v != visible[state]) {
-                    visible[state] = v;
-                    fire_change(self);
-                }
-            }
-        });
-
-        Object.defineProperty(self, 'visibleOnScreen', {
-            get: function () {
-                var xa = self.absoluteLeft;
-                var ya = self.absoluteTop
-                var wa = self.realWidth;
-                var ha = self.realHeight;
-                var xb = parent ? parent.containerX:0;
-                var yb = parent ? parent.containerY:0;
-                var wb = parent ? parent.containerWidth : 0;
-                var hb = parent ? parent.containerHeight : 0;
-                return collide_bounds(xa, ya, wa, ha, xb, yb, wb, hb);
             }
         });
 
@@ -519,22 +731,6 @@
             }
         });
 
-        Object.defineProperty(self, 'changed', {
-            set: function (c) {
-                if (c) {
-                    document.change(self.level, self.id);
-                }
-            }
-        });
-
-        Object.defineProperty(self, 'level', {
-            get: function () {
-                if (self.parent instanceof  UI_Element) {
-                    return self.parent.level + 1;
-                }
-                return 0;
-            }
-        });
 
         Object.defineProperty(self, 'parent', {
             get: function () {
@@ -543,12 +739,10 @@
             set: function (p) {
                 if (p != parent) {
                     if (parent != null) {
-                        document.removeFromLevel(self.level, self);
                         parent.remove(self);
                     }
                     parent = p;
                     if (parent != null) {
-                        document.addToLevel(self.level, self);
                         parent.add(self);
                     }
                 }
@@ -575,9 +769,8 @@
             },
             set: function (s) {
                 if (s != state) {
-                    save_state(self);
                     state = s;
-                    fire_change(self);
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
@@ -589,128 +782,297 @@
             set: function (c) {
                 if (c != cursor[state]) {
                     cursor[state] = c;
-                    fire_change(self);
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
 
-        Object.defineProperty(self, 'oldWidth', {
-            set: function (ow) {
-                old_width = ow;
-            },
+
+        //SCROLL
+        //SCROLL VARS
+        var scrollLeftButtonX = null; //self.absoluteLeft,self.scrollWidth
+        var scrollLeftButtonY = null; //self.absoluteTop,self.realHeight,self.scrollWidth
+        var scrollRightButtonX = null;//self.absoluteLeft,self.realWidth,self.scrollWidth
+        var scrollRightButtonY = null;//self.absoluteTop,self.realHeight,self.scrollWidth
+        var scrollUpButtonX = null;    //self.absoluteLeft,self.realWidth,self.scrollWidth;
+        var scrollUpButtonY = null;   //self.absoluteTop,self.scrollWidth;
+        var scrollDownButtonX = null; //self.absoluteLeft,self.realWidth,self.scrollWidth
+        var scrollDownButtonY = null; //self.absoluteTop,self.realHeight,self.scrollWidth
+        var railWidth = null;         //self.realWidth,self.scrollWidth
+        var railHeight = null;        //self.realHeight,self.scrollWidth
+        var maxScrollTop = null;      //self.contentHeight,self.containerHeight
+        var maxScrollLeft = null;     //self.contentWidth,self.containerWidth;
+        var verticalScrollActive = null; //self.scrollableY,self.contentHeight,self.realHeight,self.padding
+        var horizontalScrollActive = null;//self.scrollableX,self.contentWidth,self.realWidth, self.padding
+
+
+        //SCROLL CACHE
+        Object.defineProperty(self, 'scrollLeftButtonX', {
             get: function () {
-                return old_width;
-            }
-        });
-
-        Object.defineProperty(self, 'oldHeight', {
-            set: function (oh) {
-                old_height = oh;
-            },
-            get: function () {
-                return old_height;
-            }
-        });
-
-        Object.defineProperty(self, 'oldLeft', {
-            set: function (ol) {
-                old_left = ol;
-            },
-            get: function () {
-                return old_left;
-            }
-        });
-
-        Object.defineProperty(self, 'oldTop', {
-            set: function (ot) {
-                old_top = ot;
-            },
-            get: function () {
-                return old_top;
-            }
-        });
-
-        Object.defineProperty(self, 'oldBorderWidth', {
-            set: function (obw) {
-                old_borderWidth = obw;
-            },
-            get: function () {
-                return old_borderWidth;
-            }
-        });
-
-        Object.defineProperty(self, 'oldBackgroundOpacity', {
-            set: function (obp) {
-                old_background_opacity = obp;
-            },
-            get: function () {
-                return old_background_opacity;
-            }
-        });
-
-        Object.defineProperty(self, 'oldPadding', {
-            set: function (op) {
-                old_padding = op;
-            },
-            get: function () {
-                return old_padding;
-            }
-        });
-
-
-        Object.defineProperty(self, 'overflow', {
-            set: function (o) {
-                if (o != overflow) {
-                    overflow = o;
+                if(scrollLeftButtonX == null){
+                    scrollLeftButtonX = self.absoluteLeft + scrollWidth;
                 }
+                return scrollLeftButtonX;
             },
-            get: function () {
-                return overflow;
+            set:function(slbx){
+                if(!slbx){
+                    scrollLeftButtonX = null;
+                    UI_Element.uncache(self,'scrollLeftButtonX')
+                }
             }
         });
 
-        Object.defineProperty(self, 'scrollable', {
+        Object.defineProperty(self, 'scrollLeftButtonY', {
             get: function () {
-                return scrollable;
+                if(scrollLeftButtonY == null){
+                    scrollLeftButtonY = self.absoluteTop + self.realHeight - self.scrollWidth;
+                }
+                return scrollLeftButtonY;
+            },
+            set:function(slby){
+                if(!slby){
+                    scrollLeftButtonY = null;
+                    UI_Element.uncache(self,'scrollLeftButtonY')
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollRightButtonX', {
+            get: function () {
+                if(scrollRightButtonX == null){
+                    scrollRightButtonX = self.absoluteLeft + self.realWidth - self.scrollWidth * 2;
+                }
+                return scrollRightButtonX;
+            },
+            set:function(srbx){
+                if(!srbx){
+                    scrollRightButtonX = null;
+                    UI_Element.uncache(self,'scrollRightButtonX')
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollRightButtonY', {
+            get: function () {
+                if(scrollRightButtonY == null){
+                    scrollRightButtonY = self.absoluteTop + self.realHeight - self.scrollWidth;
+                }
+                return scrollRightButtonY;
+            },
+            set:function(srby){
+                if(!srby){
+                    scrollRightButtonY = null;
+                    UI_Element.uncache(self,'scrollRightButtonY')
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollUpButtonX', {
+            get: function () {
+                if(scrollUpButtonX == null){
+                    scrollUpButtonX = self.absoluteLeft + self.realWidth - self.scrollWidth;
+                }
+                return scrollUpButtonX;
+            },
+            set:function(subx){
+                if(!subx){
+                    scrollUpButtonX = null;
+                    UI_Element.uncache(self,'scrollUpButtonX')
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollUpButtonY', {
+            get: function () {
+                if(scrollUpButtonY == null){
+                    scrollUpButtonY = self.absoluteTop + self.scrollWidth;
+                }
+                return scrollUpButtonY;
+            },
+            set:function(suby){
+                if(!suby){
+                    scrollUpButtonY = null;
+                    UI_Element.uncache(self,'scrollUpButtonY')
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollDownButtonX', {
+            get: function () {
+                if(scrollDownButtonX == null){
+                    scrollDownButtonX = self.absoluteLeft + self.realWidth - self.scrollWidth;
+                }
+                return scrollDownButtonX;
+            },
+            set:function(sdbx){
+                if(!sdbx){
+                    scrollDownButtonX = null;
+                    UI_Element.uncache(self,'scrollDownButtonX')
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'scrollDownButtonY', {
+            get: function () {
+                if(scrollDownButtonY == null){
+                    scrollDownButtonY = self.absoluteTop + self.realHeight - self.scrollWidth * 2;
+                }
+                return scrollDownButtonY;
+            },
+            set:function(sdby){
+                if(!sdby){
+                    scrollDownButtonY = null;
+                    UI_Element.uncache(self,'scrollDownButtonY')
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'railWidth', {
+            get: function () {
+                if(railWidth == null){
+                    railWidth = self.realWidth - self.scrollWidth * 4;
+                }
+                return railWidth;
+            },
+            set:function(rw){
+                if(!rw){
+                    railWidth = null;
+                    UI_Element.uncache(self,'railWidth');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'railHeight', {
+            get: function () {
+                if(railHeight == null){
+                    railHeight = self.realHeight - self.scrollWidth * 4;
+                }
+                return railHeight;
+            },
+            set:function(rh){
+                if(!rh){
+                    railHeight = null;
+                    UI_Element.uncache(self,'railHeight');
+                }
+            }
+        });
+
+
+        Object.defineProperty(self, 'maxScrollTop', {
+            get: function () {
+                if(maxScrollTop == null){
+                    maxScrollTop = self.contentHeight - self.containerHeight;
+                }
+                return maxScrollTop;
+            },
+            set:function(mst){
+                if(!mst){
+                    maxScrollTop = null;
+                    UI_Element.uncache(self,'maxScrollTop');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'maxScrollLeft', {
+            get: function () {
+                if(maxScrollLeft == null){
+                    maxScrollLeft = self.contentWidth - self.containerWidth;
+                }
+                return maxScrollLeft;
+            },
+            set:function(msl){
+                if(!msl){
+                    maxScrollLeft = null;
+                    UI_Element.uncache(self,'maxScrollLeft');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'verticalScrollActive', {
+            get: function () {
+                if(verticalScrollActive == null){
+                    verticalScrollActive = scrollableY && self.contentHeight > (self.realHeight - self.padding * 2);
+                }
+                return verticalScrollActive;
+            },
+            set:function(vsa){
+                if(!vsa){
+                    verticalScrollActive = null;
+                    UI_Element.uncache(self,'verticalScrollActive');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'horizontalScrollActive', {
+            get: function () {
+                if(horizontalScrollActive == null){
+                    horizontalScrollActive = scrollableX && self.contentWidth > (self.realWidth - self.padding * 2);
+                }
+                return horizontalScrollActive;
+            },
+            set:function(hsa){
+                if(!hsa){
+                    horizontalScrollActive = null;
+                    UI_Element.uncache(self,'horizontalScrollActive');
+                }
+            }
+        });
+
+        //SCROLL FIXED VARS
+        Object.defineProperty(self, 'scrollableX', {
+            get: function () {
+                return scrollableX;
             },
             set: function (s) {
-                if (s != scrollable) {
-                    scrollable = s;
-                    fire_change(self);
+                if (s != scrollableX) {
+                    scrollableX = s;
+                    UI_Element.uncache(self,'scrollableX');
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
 
-        Object.defineProperty(self, 'scrollHeight', {
+        Object.defineProperty(self, 'scrollableY', {
             get: function () {
-                return scrollHeight;
+                return scrollableY;
             },
-            set: function (sh) {
-                if (sh != scrollHeight) {
-                    scrollHeight = sh;
-                    fire_change(self);
+            set: function (s) {
+                if (s != scrollableY) {
+                    scrollableY = s;
+                    UI_Element.uncache(self,'scrollableY');
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
+
 
         Object.defineProperty(self, 'scrollLeft', {
             get: function () {
-                if (scrollable) {
+                if (scrollableX) {
                     return scrollLeft;
                 }
                 return 0;
             },
-            set: function (s) {
-                if (s != scrollLeft) {
-                    scrollLeft = s;
-                    fire_change(self);
+            set: function (sl) {
+                if (sl != scrollLeft) {
+                    var max = self.maxScrollLeft;
+                    if (sl < 0) {
+                        sl = 0;
+                    }
+                    else if (sl > max) {
+                        sl = max;
+                    }
+
+                    scrollLeft = sl;
+                    UI_Element.uncache(self,'scrollLeft');
+                     UI_Element.fire_change('all', self);
                 }
             }
         });
 
         Object.defineProperty(self, 'scrollTop', {
             get: function () {
-                if (scrollable) {
+                if (scrollableY) {
                     return scrollTop;
                 }
                 return 0;
@@ -726,108 +1088,169 @@
                     }
 
                     scrollTop = st;
-                    fire_change(self);
+                    UI_Element.uncache(self,'scrollTop');
+                     UI_Element.fire_change('all', self);
                 }
-            }
-        });
-
-        Object.defineProperty(self, 'scrollButton1Left', {
-            get: function () {
-                return self.absoluteLeft + self.realWidth;
-            }
-        });
-
-        Object.defineProperty(self, 'scrollButton1Top', {
-            get: function () {
-                return self.absoluteTop;
-            }
-        });
-
-        Object.defineProperty(self, 'scrollButton2Left', {
-            get: function () {
-                return self.absoluteLeft + self.realWidth;
-            }
-        });
-
-        Object.defineProperty(self, 'scrollButton2Top', {
-            get: function () {
-                return self.absoluteTop + self.realHeight - self.scrollWidth;
             }
         });
 
         Object.defineProperty(self, 'scrollWidth', {
             get: function () {
-                return self.scrollable ? scrollWidth : 0;
+                return scrollWidth;
             },
             set: function (sw) {
                 if (sw != scrollWidth) {
                     scrollWidth = sw;
+                    UI_Element.uncache(self,'scrollWidth');
+                     UI_Element.fire_change('self', self);
                 }
             }
         });
 
-        Object.defineProperty(self, 'scrollActive', {
+        Object.defineProperty(self, 'scrollHeight', {
             get: function () {
-                return self.scrollable && self.contentHeight > self.containerHeight;
+                return scrollHeight;
+            },
+            set: function (sh) {
+                if (sh != scrollHeight) {
+                    scrollHeight = sh;
+                    UI_Element.uncache(self,'scrollHeight');
+                     UI_Element.fire_change('self', self);
+                }
             }
         });
 
-        Object.defineProperty(self, 'contentHeight', {
+
+        //BOUND VARS
+        var visibleBoundsX = null;      //parent.containerX, self.absoluteLeft
+        var visibleBoundsY = null;      //parent.containerY, self.absoluteTop
+        var visibleBoundsWidth = null;  //parent.containerWidth, parent.containerX,self.absoluteLeft,self.realWidth
+        var visibleBoundsHeight = null; //parent.containerHeight,parent.containerY,self.absoluteTop,self.realHeight
+        var visibleBounds = null; //self.visibleBoundsX,self.visibleBoundsY,self.visibleBoundsWidth,self.visibleBoundsHeight
+
+        Object.defineProperty(self, 'visibleBoundsX', {
             get: function () {
-                return self.contents.reduce(function (prev, current) {
-                    return prev + (current.visible ? current.realHeight : 0);
-                }, 0);
+                if(visibleBoundsX == null){
+                    var parent_container_x = parent.containerX;
+                    var x = self.absoluteLeft;
+                    if (x < parent_container_x) {
+                        x = parent_container_x;
+                    }
+                    visibleBoundsX = x;
+                }
+                return visibleBoundsX;
+            },
+            set:function(vbx){
+                if(!vbx){
+                    visibleBoundsX = null;
+                    UI_Element.uncache(self,'visibleBoundsX');
+                }
             }
         });
 
-        Object.defineProperty(self, 'railHeight', {
+        Object.defineProperty(self, 'visibleBoundsY', {
             get: function () {
-                return self.realHeight - self.scrollWidth * 2;
+                if(visibleBoundsY == null){
+                    var parent_container_y = parent.containerY;
+                    var y = self.absoluteTop;
+                    if (y < parent_container_y) {
+                        y = parent_container_y;
+                    }
+                    visibleBoundsY = y;
+                }
+                return visibleBoundsY;
+            },
+            set:function(vby){
+                if(!vby){
+                    visibleBoundsY = null;
+                    UI_Element.uncache(self,'visibleBoundsY');
+                }
             }
         });
 
-        Object.defineProperty(self, 'maxScrollTop', {
+        Object.defineProperty(self, 'visibleBoundsWidth', {
             get: function () {
-                return self.contentHeight - self.containerHeight;
+                if(visibleBoundsWidth == null){
+                    var parent_container_width = parent.containerWidth;
+                    var parent_container_x = parent.containerX;
+                    var x = self.absoluteLeft;
+                    var w = self.realWidth;
+                    if ((x + w) > (parent_container_x + parent_container_width)) {
+                        w = (parent_container_x + parent_container_width) - x;
+                    }
+                    visibleBoundsWidth = w;
+                }
+                return visibleBoundsWidth;
+            },
+            set:function(vbw){
+                if(!vbw){
+                    visibleBoundsWidth = null;
+                    UI_Element.uncache(self,'visibleBoundsWidth');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'visibleBoundsHeight', {
+            get: function () {
+                if(visibleBoundsHeight == null){
+                    var parent_container_y = parent.containerY;
+                    var parent_container_height = parent.containerHeight;
+                    var y = self.absoluteTop;
+                    var h = self.realHeight;
+                    if ((y + h) > (parent_container_y + parent_container_height)) {
+                        h = (parent_container_y + parent_container_height) - y;
+                    }
+                    visibleBoundsHeight = h;
+                }
+                return visibleBoundsHeight;
+            },
+            set:function(vbh){
+                if(!vbh){
+                    visibleBoundsHeight = null;
+                    UI_Element.uncache(self,'visibleBoundsHeight');
+                }
+            }
+        });
+
+        Object.defineProperty(self, 'visibleBounds', {
+            get: function () {
+                if(visibleBounds == null){
+                    visibleBounds = {
+                        x: self.visibleBoundsX,
+                        y: self.visibleBoundsY,
+                        width: self.visibleBoundsWidth,
+                        height: self.visibleBoundsHeight
+                    };
+                }
+                return visibleBounds;
+            },
+            set:function(vb){
+                if(!vb){
+                    visibleBounds = null;
+                }
             }
         });
     };
-
+    /**
+     *
+     * @param layer
+     */
     UI_Element.prototype.update = function (layer) {
         var self = this;
         if (self.visible && self.visibleOnScreen) {
-            var parent = self.parent;
-            var width = self.realWidth;
-            var height = self.realHeight;
             var lineWidth = self.borderWidth;
-            var containerX = parent.containerX;
-            var containerY = parent.containerY;
-            var content_height = self.contentHeight;
-            var container_height = parent.containerHeight;
-            var container_width = parent.containerWidth;
+            var self_content_width = self.contentWidth;
+            var self_content_height = self.contentHeight;
+            var self_container_width = self.containerWidth;
+            var self_container_height = self.containerHeight;
             var fillStyle = self.backgroundColor;
             var strokeStyle = self.borderColor;
             var borderOpacity = self.borderOpacity;
             var backgroundOpacity = self.backgroundOpacity;
-
-            var x = self.absoluteLeft;
-            var y = self.absoluteTop;
-
-            if (x < containerX) {
-                width -= containerX - x;
-                x = containerX;
-            }
-            else if((x+width) > (containerX+container_width)){
-                width = (containerX+container_width)-x;
-            }
-
-            if (y < containerY) {
-                height -= containerY - y;
-                y = containerY;
-            }
-            else if((y+height) > (containerY+container_height)){
-                height = (containerY+container_height)-y;
-            }
+            var x = self.visibleBoundsX;
+            var y = self.visibleBoundsY;
+            var width = self.visibleBoundsWidth;
+            var height = self.visibleBoundsHeight;
 
             layer.rect({
                 x: x,
@@ -841,17 +1264,21 @@
                 borderOpacity: borderOpacity
             });
 
-            if (self.scrollable && content_height > container_height) {
-                var scrollbar_size = self.scrollWidth;
-                var fontSize = scrollbar_size / 1.5;
-                var button1_left = self.scrollButton1Left;
-                var button2_top = self.scrollButton2Top;
-                var rail_y = y + scrollbar_size;
+            var scrollbar_size = self.scrollWidth;
+            var fontSize = scrollbar_size / 1.5;
+
+            //SCROLL VERTICAL
+            if (self.scrollableY && self_content_height > self_container_height) {
+                var buttonUpX = self.scrollUpButtonX;
+                var buttonUpY = self.scrollUpButtonY;
+                var buttonDownX = self.scrollDownButtonX;
+                var buttonDownY = self.scrollDownButtonY;
+                var rail_y = y + scrollbar_size * 2;
                 var rail_height = self.railHeight;
 
                 //Scrollbar background
                 layer.rect({
-                    x: button1_left,
+                    x: buttonUpX,
                     y: rail_y,
                     width: scrollbar_size,
                     height: rail_height,
@@ -859,13 +1286,13 @@
                     backgroundOpacity: 80
                 });
 
-                var scroll_y = rail_y + rail_height * (self.scrollTop / content_height);
-                var scroll_height = (container_height / content_height) * rail_height;
+                var scroll_y = rail_y + rail_height * (self.scrollTop / self_content_height);
+                var scroll_height = (self_container_height / self_content_height) * rail_height;
 
 
                 //  Scrollbar Slider
                 layer.rect({
-                    x: button1_left,
+                    x: buttonUpX,
                     y: scroll_y,
                     width: scrollbar_size,
                     height: scroll_height,
@@ -877,8 +1304,8 @@
 
                 //Scrollbar button up
                 layer.rect({
-                    x: button1_left,
-                    y: y,
+                    x: buttonUpX,
+                    y: buttonUpY,
                     width: scrollbar_size,
                     height: scrollbar_size,
                     fillStyle: 'White',
@@ -888,8 +1315,8 @@
 
                 //Scrollbar character up
                 layer.text('▲', {
-                    x: button1_left,
-                    y: y,
+                    x: buttonUpX,
+                    y: buttonUpY,
                     color: 'Blue',
                     width: scrollbar_size,
                     height: scrollbar_size,
@@ -899,8 +1326,8 @@
 
                 //Scrollbar button down
                 layer.rect({
-                    x: button1_left,
-                    y: button2_top,
+                    x: buttonDownX,
+                    y: buttonDownY,
                     width: scrollbar_size,
                     height: scrollbar_size,
                     fillStyle: 'White',
@@ -910,8 +1337,88 @@
 
                 //Scrollbar character down
                 layer.text('▼', {
-                    x: button1_left,
-                    y: button2_top + (scrollbar_size / 7.5),
+                    x: buttonDownX,
+                    y: buttonDownY + (scrollbar_size / 7.5),
+                    color: 'Blue',
+                    width: scrollbar_size,
+                    height: scrollbar_size,
+                    textAlign: 'center',
+                    fontSize: fontSize
+                });
+            }
+
+            //SCROLL HORIZONTAL
+            if (self.scrollableX && self_content_width > self_container_width) {
+                var buttonLeftX = self.scrollLeftButtonX;
+                var buttonLeftY = self.scrollLeftButtonY;
+                var buttonRightX = self.scrollRightButtonX;
+                var buttonRightY = self.scrollRightButtonY;
+
+                var rail_x = x + scrollbar_size * 2;
+                var rail_width = self.railWidth;
+
+                //Scrollbar background
+                layer.rect({
+                    x: rail_x,
+                    y: buttonLeftY,
+                    width: rail_width,
+                    height: scrollbar_size,
+                    fillStyle: 'Blue',
+                    backgroundOpacity: 80
+                });
+
+                var scroll_x = rail_x + rail_width * (self.scrollLeft / self_content_width);
+                var scroll_width = (self_container_width / self_content_width) * rail_width;
+
+                //  Scrollbar Slider
+                layer.rect({
+                    x: scroll_x,
+                    y: buttonLeftY,
+                    width: scroll_width,
+                    height: scrollbar_size,
+                    fillStyle: 'White',
+                    lineWidth: 1,
+                    strokeStyle: 'Black'
+                });
+
+
+                //Scrollbar button left
+                layer.rect({
+                    x: buttonLeftX,
+                    y: buttonLeftY,
+                    width: scrollbar_size,
+                    height: scrollbar_size,
+                    fillStyle: 'White',
+                    lineWidth: 1,
+                    strokeStyle: 'Black'
+                });
+
+                //Scrollbar character left
+                layer.text('◀', {
+                    x: buttonLeftX,
+                    y: buttonLeftY + (scrollbar_size / 7.5),
+                    color: 'Blue',
+                    width: scrollbar_size,
+                    height: scrollbar_size,
+                    textAlign: 'center',
+                    fontSize: fontSize
+                });
+
+                //Scrollbar button right
+                layer.rect({
+                    x: buttonRightX,
+                    y: buttonRightY,
+                    width: scrollbar_size,
+                    height: scrollbar_size,
+                    fillStyle: 'White',
+                    lineWidth: 1,
+                    strokeStyle: 'Black'
+                });
+
+                //Scrollbar character right
+                layer.text('▶', {
+                    x: buttonRightX,
+                    y: buttonRightY + (scrollbar_size / 7.5),
                     color: 'Blue',
                     width: scrollbar_size,
                     height: scrollbar_size,
@@ -929,18 +1436,24 @@
     UI_Element.prototype.mouseup = function () {
 
     };
-
+    /**
+     *
+     * @param layer
+     */
     UI_Element.prototype.clear = function (layer) {
         var self = this;
-        var x = self.clearX;
-        var y = self.clearY;
-        var width = self.clearWidth;
-        var height = self.clearHeight;
-        if (width != 0 && height != 0) {
-            layer.clear(x, y, width, height);
+        var bounds = self.visibleBounds;
+        if (bounds.width != 0 && bounds.height != 0) {
+            layer.clear(bounds.x, bounds.y, bounds.width, bounds.height);
         }
     };
-
+    /**
+     *
+     * @param state
+     * @param style
+     * @param value
+     * @returns {UI_Element}
+     */
     UI_Element.prototype.setStateStyle = function (state, style, value) {
         var self = this;
         var tmp = self.state;
@@ -949,32 +1462,70 @@
         self.state = tmp;
         return self;
     };
-
-    var fire_change = function (self) {
+    /**
+     *
+     * @param type
+     * @param self
+     */
+    UI_Element.fire_change = function (type, self) {
         if (self.initialized) {
-            self.changed = true;
-            var length = self.contents.length;
+            document.change(type, self.level, self);
+        }
+    };
+
+
+    UI_Element.uncache = function (el, prop) {
+        if(prop_implies[prop] != undefined){
+            var implies = prop_implies[prop];
             var i;
-            for (i = 0; i < length; i++) {
-                save_state(self.contents[i]);
-                self.contents[i].changed = true;
+            var key;
+
+            if(implies['self']){
+                var length = implies['self'].length;
+                for(i =0; i < length;i++){
+                    key = implies['self'][i];
+                    el[key] = false;
+                }
+            }
+
+            if(implies['children'] && el.contents.length > 0){
+                var children = el.contents;
+                var lengthA = el.contents.length;
+                var lengthB = implies['children'].length;
+                var j;
+                var child;
+
+                for(i = 0; i < lengthA;i++){
+                    child = children[i];
+                    for(j =0; j < lengthB;j++){
+                        key = implies['children'][j];
+                        child[key] = false;
+                    }
+                }
             }
         }
     };
 
-    var save_state = function (self) {
-        if (self.initialized) {
-            self.oldWidth = self.realWidth;
-            self.oldHeight = self.realHeight;
-            self.oldLeft = self.absoluteLeft;
-            self.oldTop = self.absoluteTop;
-            self.oldBorderWidth = self.borderWidth;
-            self.oldBackgroundOpacity = self.backgroundOpacity;
-            self.oldPadding = self.padding;
-            fire_change(self);
-        }
-    };
 
+    //var save_state = function (self) {
+    //    if (self.initialized) {
+    //        self.oldWidth = self.realWidth;
+    //        self.oldHeight = self.realHeight;
+    //        self.oldLeft = self.absoluteLeft;
+    //        self.oldTop = self.absoluteTop;
+    //        self.oldBorderWidth = self.borderWidth;
+    //        self.oldBackgroundOpacity = self.backgroundOpacity;
+    //        self.oldPadding = self.padding;
+    //        fire_change(self);
+    //    }
+    //};
+
+    /**
+     *
+     * @param size
+     * @param total
+     * @returns {*}
+     */
     var calc_size = function (size, total) {
         if (/[0-9]+(.\[0-9]+)?%/.test(size)) {
             var pc = parseFloat(size);
@@ -983,6 +1534,13 @@
         return size;
     };
 
+    /**
+     *
+     * @param align
+     * @param objSize
+     * @param contSize
+     * @returns {number}
+     */
     var calculate_align = function (align, objSize, contSize) {
         switch (align) {
             case 'top':
@@ -999,6 +1557,18 @@
         }
     };
 
+    /**
+     *
+     * @param xa
+     * @param ya
+     * @param wa
+     * @param ha
+     * @param xb
+     * @param yb
+     * @param wb
+     * @param hb
+     * @returns {boolean}
+     */
     var collide_bounds = function (xa, ya, wa, ha, xb, yb, wb, hb) {
         return !(xa > xb + wb || xb > xa + wa || ya > yb + hb || yb > ya + ha);
     };

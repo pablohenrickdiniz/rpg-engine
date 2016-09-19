@@ -1,4 +1,10 @@
 (function (root) {
+    /**
+     *
+     * @param fps
+     * @param frame_count
+     * @constructor
+     */
     var Animation = function (fps, frame_count) {
         var self = this;
         self.fps = fps;
@@ -10,9 +16,9 @@
         self.direction = 'positive';
     };
 
-    /*
-     getIndexFrame():int
-     Retorna o índice do quadro atual da animação
+    /**
+     *
+     * @returns {*}
      */
     Animation.prototype.getIndexFrame = function () {
         var self = this;
@@ -40,7 +46,10 @@
         }
     };
 
-
+    /**
+     *
+     * @returns {number}
+     */
     Animation.prototype.getFrames = function () {
         var diff = null;
         var self = this;
@@ -59,7 +68,10 @@
         var sec = diff / 1000;
         return Math.ceil(sec * self.fps);
     };
-
+    /**
+     *
+     * @returns {boolean|*}
+     */
     Animation.prototype.isRunning = function () {
         var self = this;
         if (self.stop_on_end && self.running && self.getFrames() >= self.frame_count) {
@@ -69,10 +81,10 @@
         return self.running;
     };
 
-
-    /*
-     execute():void
-     Executa a animação
+    /**
+     *
+     * @param stop_on_end
+     * @param direction
      */
     Animation.prototype.execute = function (stop_on_end, direction) {
         var self = this;
@@ -84,9 +96,7 @@
         }
     };
 
-    /*
-     pause:Pausa a execução da animação
-     */
+
     Animation.prototype.pause = function () {
         var self = this;
         if (self.running) {
@@ -95,9 +105,9 @@
         }
     };
 
-    /*
-     pauseToFrame(int index):void
-     Pausa a animação no quadro index
+    /**
+     *
+      * @param index
      */
     Animation.prototype.pauseToFrame = function (index) {
         var self = this;

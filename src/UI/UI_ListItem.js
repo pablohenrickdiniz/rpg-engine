@@ -4,7 +4,12 @@
     }
 
     var UI_Element = root.UI_Element;
-
+    /**
+     *
+     * @param parent
+     * @param options
+     * @constructor
+     */
     var UI_ListItem = function (parent, options) {
         var self = this;
         options.height = options.height || 20;

@@ -8,7 +8,12 @@
 
     var UI_Element = root.UI_Element;
 
-
+    /**
+     *
+     * @param parent
+     * @param options
+     * @constructor
+     */
     var UI_Text = function (parent, options) {
         var self = this;
         options = options || {};
@@ -25,7 +30,10 @@
     UI_Text.prototype = Object.create(UI_Element.prototype);
     UI_Text.prototype.constructor = UI_Text;
 
-
+    /**
+     *
+     * @param layer
+     */
     UI_Text.prototype.update = function (layer) {
         var self = this;
         if (self.visible && self.visibleOnScreen) {
@@ -101,7 +109,10 @@
             //}
         }
     };
-
+    /**
+     *
+     * @param self
+     */
     var initialize = function (self) {
         var text = '';
         var fontSize = [10];
@@ -184,7 +195,10 @@
             }
         });
     };
-
+    /**
+     *
+     * @param self
+     */
     var update_size = function (self) {
         if(self.initialized){
             var fontSize = self.fontSize;
@@ -197,7 +211,12 @@
             self.height = processed.length * fontSize;
         }
     };
-
+    /**
+     *
+     * @param text
+     * @param options
+     * @returns {Array}
+     */
     var processText = function (text, options) {
         var width = options.width || null;
         var fontSize = options.fontSize || 10;

@@ -8,6 +8,7 @@
     var UI_ListHorizontal = function (parent, options) {
         var self = this;
         UI_Element.call(self, parent, options);
+        initialize(self);
         self.type = 'List';
     };
 
@@ -76,6 +77,45 @@
             }
             el.top = top;
         }
+    };
+
+    var initialize = function(self){
+        var contentWidth = null;
+        var contentHeight = null;
+
+        Object.defineProperty(self,'contentWidth',{
+            get:function(){
+                if(contentWidth == null){
+                    contentWidth = self.contents.reduce(function(prev,current){
+                        return prev + current.realWidth;
+                    },0);
+                }
+                return contentWidth;
+            },
+            set:function(cw){
+                if(!cw){
+                    contentWidth = null;
+                    UI_Element.uncache(self,'contentWidth');
+                }
+            }
+        });
+
+        Object.defineProperty(self,'contentHeight',{
+            get:function(){
+                if(contentHeight == null){
+                    contentHeight = self.contents.reduce(function(prev,current){
+                        return Math.max(prev,current.realHeight);
+                    },0);
+                }
+                return contentHeight;
+            },
+            set:function(ch){
+                if(!ch){
+                    contentHeight = null;
+                    UI_Element.uncache(self,'contentHeight');
+                }
+            }
+        });
     };
 
     root.UI_ListHorizontal = UI_ListHorizontal;
