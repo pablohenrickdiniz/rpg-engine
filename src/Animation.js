@@ -1,4 +1,6 @@
 (function (root) {
+    var Game_Timer = root.Game_Timer;
+
     /**
      *
      * @param fps
@@ -9,7 +11,7 @@
         var self = this;
         self.fps = fps;
         self.frame_count = frame_count;
-        self.start_time = root.System.time;
+        self.start_time = Game_Timer.currentTime;
         self.end_time = self.start_time;
         self.running = false;
         self.stop_on_end = false;
@@ -53,9 +55,8 @@
     Animation.prototype.getFrames = function () {
         var diff = null;
         var self = this;
-
         if (self.running) {
-            diff = root.System.time - self.start_time;
+            diff = Game_Timer.currentTime - self.start_time;
         }
         else {
             diff = self.end_time - self.start_time;
@@ -86,17 +87,17 @@
      * @param stop_on_end
      * @param direction
      */
-    Animation.prototype.execute = function (stop_on_end, direction) {
+    Animation.prototype.start = function (stop_on_end, direction) {
         var self = this;
         if (!self.running) {
-            self.start_time = root.System.time;
             self.running = true;
+            self.start_time = Game_Timer.currentTime;
             self.stop_on_end = stop_on_end == undefined ? false : stop_on_end;
             self.direction = direction == undefined ? 'positive' : direction;
         }
     };
 
-
+    /**
     Animation.prototype.pause = function () {
         var self = this;
         if (self.running) {
@@ -111,10 +112,10 @@
      */
     Animation.prototype.pauseToFrame = function (index) {
         var self = this;
+        self.running = false;
         if (self.frame_count > index) {
             var diff = (index / self.fps) * 1000;
             self.end_time = self.start_time + diff;
-            self.running = false;
         }
     };
 

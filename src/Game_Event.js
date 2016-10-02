@@ -5,7 +5,11 @@
 
     var Game_Character = root.Game_Character;
 
-
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Game_Event = function (options) {
         var self = this;
         Game_Character.call(self, options);
@@ -27,9 +31,9 @@
     Game_Event.prototype = Object.create(Game_Character.prototype);
     Game_Event.prototype.constructor = Game_Event;
 
-    /*
-     getCurrentFrame():Object
-     Retorna o quadtro atual de animação
+    /**
+     *
+     * @returns {*}
      */
     Game_Event.prototype.getCurrentFrame = function () {
         var self = this;
@@ -41,9 +45,9 @@
         return null;
     };
 
-    /*
-     enableSwitch(String name):void
-     Ativa o evento local "name"
+    /**
+     *
+     * @param name
      */
     Game_Event.prototype.enableSwitch = function (name) {
         var self = this;
@@ -55,9 +59,9 @@
         }
     };
 
-    /*
-     disableSwitch(String name):void
-     Desativa o evento local "name"
+    /**
+     *
+     * @param name
      */
     Game_Event.prototype.disableSwitch = function (name) {
         var self = this;
@@ -68,9 +72,10 @@
             });
         }
     };
-    /*
-     _switchCallback(String name, function callback):void
-     Registra a função de callback para ativar ou desativar o switch
+    /**
+     *
+     * @param name
+     * @param callback
      */
     Game_Event.prototype.switchCallback = function (name, callback) {
         var self = this;
@@ -81,9 +86,9 @@
         self.switches_callbacks[name].push(callback);
     };
 
-    /*
-     addPage(Page page):void
-     Adiciona uma nova página ao evento
+    /**
+     *
+     * @param page
      */
     Game_Event.prototype.addPage = function (page) {
         var self = this;

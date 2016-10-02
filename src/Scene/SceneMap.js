@@ -3,63 +3,71 @@
         throw "SceneMap requires Scene"
     }
 
-    if (root.Viewport == undefined) {
-        throw "SceneMap requires Viewport"
+    if (root.Canvas == undefined) {
+        throw "SceneMap requires Canvas"
+    }
+
+    if(root.Graphics == undefined){
+        throw "SceneMap requires Graphics"
     }
 
     var Scene = root.Scene,
-        Viewport = root.Viewport,
+        Canvas = root.Canvas,
+        Consts = root.Consts,
         Main = root.Main,
-        Consts = root.Consts;
+        Graphics = root.Graphics;
 
-
-    var SceneMap = function () {
+    /**
+     *
+     * @param options
+     * @constructor
+     */
+    var SceneMap = function (options) {
         var self = this;
-        Scene.call(self, arguments);
-        self.focused_character = null;//Character/Evento/Player que está sendo focado
+        Scene.call(self, options);
+        self.focused_character = null;
         self.bg_refreshed = false;
-        self.player_refreshed = false;
         self.character_steps = [];
+        self.map_data = {
+            map: null,
+            spriteset_map: null
+        };
+        self.json_data = options.map || {};
     };
 
     SceneMap.prototype = Object.create(Scene.prototype);
     SceneMap.prototype.constructor = SceneMap;
 
-    /*
-     _focusOnEvent(Character character):void
-     Focaliza a câmera em um character específico
+    /**
+     *
+     * @param character
      */
-    SceneMap.prototype.focusOnEvent = function (event) {
+    SceneMap.prototype.focusOnCharacter = function (character) {
         var self = this;
-        if (self.focused_event !== null) {
-            self.focused_event.camera_focus = false;
+        if (self.focused_character !== null) {
+            self.focused_character.camera_focus = false;
         }
-        event.camera_focus = true;
-        self.focused_event = event;
+        character.camera_focus = true;
+        self.focused_character = character;
     };
 
     SceneMap.prototype.step = function () {
         Scene.prototype.step.apply(this);
         var self = this;
-        if (Main.player != null) {
-            step_player.apply(this);
-        }
-
-        if (Main.map != null) {
-            step_events();
-            step_focus.apply(self);
-            refresh_BG.apply(self);
-            clear_graphics();
-            draw_graphics.apply(self);
-        }
+        step_events(self);
+        step_focus(self);
+        refresh_BG(self);
+        clear_graphics(self);
+        draw_graphics(self);
     };
 
 
     //Private Methods
 
-    /*
-     getAreaInterval(Object options):Object
-     Obtém o intervalo si,sj,ei,ei de uma área dentro do mapa
+    /**
+     *
+     * @param options
+     * @returns {{si: Number, sj: Number, ei: Number, ej: Number}}
      */
     var get_area_interval = function (options) {
         var x = options.x || 0;
@@ -76,54 +84,56 @@
         return {si: si, sj: sj, ei: ei, ej: ej};
     };
 
-    var refresh_map = function () {
-        var sx = Viewport.x;
-        var sy = Viewport.y;
-        var width = Viewport.width;
-        var height = Viewport.height;
-        var map = root.Main.map;
+    var refresh_spriteset_map = function (self) {
+        var sx = Canvas.x;
+        var sy = Canvas.y;
+        var width = Canvas.width;
+        var height = Canvas.height;
+        var spriteset_map = self.map_data.spriteset_map;
 
         var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
         for (var i = interval.si; i <= interval.ei; i++) {
             for (var j = interval.sj; j <= interval.ej; j++) {
-                if (map.tile_map[i] !== undefined && map.tile_map[i][j] !== undefined) {
-                    map.tile_map[i][j].forEach(function (tile, index) {
-                        var layer = Viewport.getLayer(index);
+                if (spriteset_map.sprites[i] !== undefined && spriteset_map.sprites[i][j] !== undefined) {
+                    for(var k in  spriteset_map.sprites[i][j]){
+                        var tile = spriteset_map.sprites[i][j][k];
+                        var layer = Canvas.getLayer(Consts.BACKGROUND_LAYER,k);
                         if (layer != null) {
                             var context = layer.getContext();
-                            var graphic = tile.getGraphic();
-                            var dx = j * graphic.dWidth - sx;
-                            var dy = i * graphic.dHeight - sy;
+                            var dx = j * tile.width - sx;
+                            var dy = i * tile.height - sy;
                             dx = parseInt(dx);
                             dy = parseInt(dy);
-                            context.drawImage(graphic.image, graphic.sx, graphic.sy, graphic.sWidth, graphic.sHeight, dx, dy, graphic.dWidth, graphic.dHeight);
+                            var image = Graphics.get('tilesets',tile.image);
+                            context.drawImage(image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tile.width, tile.height);
                         }
-                    });
+                    }
                 }
             }
         }
     };
 
-    var refresh_BG = function(){
-        var self = this;
-        if (!self.bg_refreshed) {
-            Viewport.clear('BG1');
-            Viewport.clear('BG2');
-            Viewport.clear('BG3');
-            refresh_map();
+    /**
+     *
+     * @param self
+     */
+    var refresh_BG = function (self) {
+     //   if (!self.bg_refreshed) {
+            Canvas.clear(Consts.BACKGROUND_LAYER);
+            refresh_spriteset_map(self);
             self.bg_refreshed = true;
-        }
+       // }
     };
 
-    var clear_graphics = function () {
-        var player = root.Main.player;
-        var map = root.Main.map;
+    var clear_graphics = function (self) {
+        var player = Main.Player;
+        var map = self.map_data.map;
         var bounds = player.bounds;
         var graphic = player.graphic;
         var event;
         var i;
 
-        Viewport.clearArea(bounds.lx, bounds.ly, graphic.width, graphic.height, player.layer);
+        Canvas.clear(Consts.EVENT_LAYER,player.layer,bounds.lx, bounds.ly, graphic.width, graphic.height);
 
         var events = map.events;
         var size = events.length;
@@ -131,13 +141,17 @@
             event = events[i];
             bounds = event.bounds;
             graphic = event.graphic;
-            Viewport.clearArea(bounds.lx, bounds.ly, graphic.width, graphic.height, event.layer);
+            Canvas.clear(Consts.EVENT_LAYER,event.layer,bounds.lx, bounds.ly, graphic.width, graphic.height);
         }
     };
 
-    var draw_graphics = function(){
-        var player = root.Main.player;
-        var events = root.Main.map.events;
+    /**
+     *
+     * @param self
+     */
+    var draw_graphics = function (self) {
+        var player = Main.Player;
+        var events = self.map_data.map.events;
         var size = events.length;
         var bounds;
         var graphic;
@@ -148,63 +162,63 @@
             if (event.page !== null) {
                 bounds = event.bounds;
                 graphic = event.graphic;
-                Viewport.drawImage(graphic.image,{
-                    dx:bounds.x,
-                    dy:bounds.y,
-                    dWidth:graphic.dWidth,
-                    dHeight:graphic.dHeight,
-                    sx:graphic.sx,
-                    sy:graphic.sy,
-                    sWidth:graphic.sWidth,
-                    sHeight:graphic.sHeight,
-                    layer:event.layer
+                Canvas.drawImage(graphic.image, {
+                    dx: bounds.x,
+                    dy: bounds.y,
+                    dWidth: graphic.dWidth,
+                    dHeight: graphic.dHeight,
+                    sx: graphic.sx,
+                    sy: graphic.sy,
+                    sWidth: graphic.sWidth,
+                    sHeight: graphic.sHeight,
+                    layer: event.layer
                 });
             }
         }
 
         var frame = player.getCurrentFrame();
-
-        if (frame !== undefined) {
-            graphic = frame.getGraphic();
+        if (frame !== null) {
             bounds = player.bounds;
-            var x = bounds.x - root.Viewport.x;
-            var y = bounds.y - root.Viewport.y;
+            var x = bounds.x - root.Canvas.x;
+            var y = bounds.y - root.Canvas.y;
+
             bounds.lx = x;
             bounds.ly = y;
 
-            Viewport.drawImage(graphic.image,{
-                dx:x,
-                dy:y,
-                dWidth:graphic.dWidth,
-                dHeight:graphic.dHeight,
-                sx:graphic.sx,
-                sy:graphic.sy,
-                sWidth:graphic.sWidth,
-                sHeight:graphic.sHeight,
-                layer:player.layer
+            var image = Graphics.get('characters',frame.image);
+            Canvas.drawImage(image, {
+                dx: x,
+                dy: y,
+                dWidth: frame.width,
+                dHeight: frame.height,
+                sx: frame.sx,
+                sy: frame.sy,
+                sWidth: frame.width,
+                sHeight: frame.height,
+                layer: player.layer,
+                type:Consts.EVENT_LAYER
             });
-            var self = this;
+
             self.player_refreshed = true;
         }
     };
 
-    /*
-     stepFocus():void
-     executa o passo que focaliza em um evento
+    /**
+     *
+     * @param self
      */
-    var step_focus = function(){
-        var self = this;
-        if (self.focused_event != null) {
-            var event = self.focused_event;
-            var m = root.Main.map;
+    var step_focus = function (self) {
+        if (self.focused_character != null) {
+            var event = self.focused_character;
+            var m = self.map_data.map;
 
-            var viewport_width = Viewport.width;
-            var viewport_height = Viewport.height;
+            var viewport_width = Canvas.width;
+            var viewport_height = Canvas.height;
 
             var viewport_x = event.bounds.x - (viewport_width / 2) + (event.graphic.width / 2);
             var viewport_y = event.bounds.y - (viewport_height / 2) + (event.graphic.width / 2);
-            var max_screen_x = m.getWidth() - viewport_width;
-            var max_screen_y = m.getWidth() - viewport_height;
+            var max_screen_x = m.width - viewport_width;
+            var max_screen_y = m.height - viewport_height;
 
             if (viewport_x < 0) {
                 viewport_x = 0;
@@ -220,27 +234,25 @@
                 viewport_y = max_screen_y;
             }
 
-            Viewport.setX(viewport_x);
-            Viewport.setY(viewport_y);
+            Canvas.x = viewport_x;
+            Canvas.y = viewport_y;
         }
     };
 
-    var step_events = function () {
-        var events = Main.map.events;
+    var step_events = function (self) {
+        var events = self.map_data.map.events;
         var length = events.length;
         var i;
-        for(i =0; i < length;i++) {
+        Main.Player.update();
+        for (i = 0; i < length; i++) {
             events[i].update();
         }
     };
 
-
-    /*action_events():void
-     * Tratamento de eventos relacionados às ações do jogador
-     */
-    var action_events =  function () {
-        var player = Main.player;
-        var tree = Main.map.getTree();
+    var action_events = function () {
+        var self = this;
+        var player = self.player;
+        var tree = self.map.getTree();
 
         var bounds_tmp = {
             x: player.bounds.x,
@@ -289,5 +301,5 @@
         });
     };
 
-    root.SceneMap = new SceneMap();
+    root.Scene.SceneMap = SceneMap;
 })(RPG);

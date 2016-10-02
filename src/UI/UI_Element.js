@@ -1131,12 +1131,7 @@
         Object.defineProperty(self, 'visibleBoundsX', {
             get: function () {
                 if(visibleBoundsX == null){
-                    var parent_container_x = parent.containerX;
-                    var x = self.absoluteLeft;
-                    if (x < parent_container_x) {
-                        x = parent_container_x;
-                    }
-                    visibleBoundsX = x;
+                    visibleBoundsX = self.visibleBounds.x;
                 }
                 return visibleBoundsX;
             },
@@ -1151,12 +1146,7 @@
         Object.defineProperty(self, 'visibleBoundsY', {
             get: function () {
                 if(visibleBoundsY == null){
-                    var parent_container_y = parent.containerY;
-                    var y = self.absoluteTop;
-                    if (y < parent_container_y) {
-                        y = parent_container_y;
-                    }
-                    visibleBoundsY = y;
+                    visibleBoundsY = self.visibleBounds.y;
                 }
                 return visibleBoundsY;
             },
@@ -1171,14 +1161,7 @@
         Object.defineProperty(self, 'visibleBoundsWidth', {
             get: function () {
                 if(visibleBoundsWidth == null){
-                    var parent_container_width = parent.containerWidth;
-                    var parent_container_x = parent.containerX;
-                    var x = self.absoluteLeft;
-                    var w = self.realWidth;
-                    if ((x + w) > (parent_container_x + parent_container_width)) {
-                        w = (parent_container_x + parent_container_width) - x;
-                    }
-                    visibleBoundsWidth = w;
+                    visibleBoundsWidth = self.visibleBounds.width;
                 }
                 return visibleBoundsWidth;
             },
@@ -1193,14 +1176,7 @@
         Object.defineProperty(self, 'visibleBoundsHeight', {
             get: function () {
                 if(visibleBoundsHeight == null){
-                    var parent_container_y = parent.containerY;
-                    var parent_container_height = parent.containerHeight;
-                    var y = self.absoluteTop;
-                    var h = self.realHeight;
-                    if ((y + h) > (parent_container_y + parent_container_height)) {
-                        h = (parent_container_y + parent_container_height) - y;
-                    }
-                    visibleBoundsHeight = h;
+                    visibleBoundsHeight = self.visibleBounds.height;
                 }
                 return visibleBoundsHeight;
             },
@@ -1215,12 +1191,25 @@
         Object.defineProperty(self, 'visibleBounds', {
             get: function () {
                 if(visibleBounds == null){
-                    visibleBounds = {
-                        x: self.visibleBoundsX,
-                        y: self.visibleBoundsY,
-                        width: self.visibleBoundsWidth,
-                        height: self.visibleBoundsHeight
-                    };
+                    var xb = self.absoluteLeft;
+                    var yb = self.absoluteTop;
+                    var wb = self.realWidth;
+                    var hb = self.realHeight;
+                    if(parent){
+                        var xa = parent.containerX;
+                        var ya = parent.containerY;
+                        var wa = parent.containerWidth;
+                        var ha = parent.containerHeight;
+                        visibleBounds = rect_intersect(xa,ya,wa,ha,xb,yb,wb,hb);
+                    }
+                    else{
+                        visibleBounds = {
+                            x:xb,
+                            y:yb,
+                            width:wb,
+                            height:hb
+                        };
+                    }
                 }
                 return visibleBounds;
             },
@@ -1247,16 +1236,18 @@
             var strokeStyle = self.borderColor;
             var borderOpacity = self.borderOpacity;
             var backgroundOpacity = self.backgroundOpacity;
-            var x = self.visibleBoundsX;
-            var y = self.visibleBoundsY;
-            var width = self.visibleBoundsWidth;
-            var height = self.visibleBoundsHeight;
+
+            var bounds = self.visibleBounds;
+            var x = bounds.x;
+            var y = bounds.y;
+            var width = bounds.width;
+            var height = bounds.height;
 
             layer.rect({
-                x: x,
-                y: y,
-                width: width,
-                height: height,
+                x:x,
+                y:y,
+                width:width,
+                height:height,
                 lineWidth: lineWidth,
                 fillStyle: fillStyle,
                 strokeStyle: strokeStyle,
@@ -1571,6 +1562,33 @@
      */
     var collide_bounds = function (xa, ya, wa, ha, xb, yb, wb, hb) {
         return !(xa > xb + wb || xb > xa + wa || ya > yb + hb || yb > ya + ha);
+    };
+
+
+    var rect_intersect = function(xa,ya,wa,ha,xb,yb,wb,hb){
+        var rect = {
+            x:0,
+            y:0,
+            width:0,
+            height:0
+        };
+
+        var xaw = xa+wa;
+        var xbw = xb+wb;
+        var yah = ya+ha;
+        var ybh = yb+hb;
+
+        if(xb > xaw || xa > xbw || yb > yah || ya > ybh){
+            return rect;
+        }
+
+        rect.x = Math.max(xa,xb);
+        rect.y = Math.max(ya,yb);
+        rect.width = Math.min(xa+wa,xb+wb)-rect.x;
+        rect.height = Math.min(ya+ha,yb+hb)-rect.y;
+
+
+        return rect;
     };
 
 

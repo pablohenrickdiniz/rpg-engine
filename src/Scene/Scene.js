@@ -3,31 +3,33 @@
         throw "Scene requires Animation"
     }
 
-    if(root.Viewport == undefined){
+    if(root.Canvas == undefined){
         throw "Scene requires Viewport"
     }
 
+    if(root.Consts == undefined){
+        throw "Scene requires Consts"
+    }
+
     var Animation = root.Animation,
-        Viewport = root.Viewport;
+        Canvas = root.Canvas,
+        Consts = root.Consts;
+
 
     var Scene =  function (options) {
         var self = this;
         options = options || {};
-        self.start = options.start || null;
         self.audio = options.audio || {};
-        self.images = options.images || {};
+        self.graphics = options.graphics || {};
         self.animation_queue = [];
         self.fps = options.fps || 60;
+        self.eventListeners = [];
+        if(options.start){
+            self.addEventListener('start',options.start);
+        }
     };
 
-    Scene.prototype.onstart = function(start){
-        var self = this;
-        self.start = start;
-    };
 
-    /*
-     fadeIn(int time, function callback)>void
-     */
     Scene.prototype.fadeIn = function (time, oncomplete) {
         fade_screen_effect.apply(this, [time, oncomplete, 'negative']);
     };
@@ -37,91 +39,57 @@
     Scene.prototype.fadeOut =  function (time, oncomplete) {
         fade_screen_effect.apply(this, [time, oncomplete, 'positive']);
     };
-    Scene.prototype.fadeInImage = function (image, options, oncomplete) {
-        fade_image_effect.apply(this, [image, options, oncomplete, 'positive']);
-    };
-    Scene.prototype.fadeOutImage = function (image, options, oncomplete) {
-        fade_image_effect.apply(this, [image, options, oncomplete, 'negative']);
-    };
 
 
-    Scene.prototype.drawProgressBar = function(progress){
+    Scene.prototype.exit = function(){
+
+    };
+
+    Scene.prototype.trigger = function(event){
         var self = this;
-        self.clearProgressBar();
-        var layer = Viewport.getLayer('UI3');
-        var ctx = layer.getContext();
-        var width = Viewport.width/2;
-        var height = width/20;
-        var y = Viewport.height/2 - height/2;
-        var x = Viewport.width/2 - width/2;
-
-        progress = parseInt(progress);
-        progress = isNaN(progress) ?0:progress;
-        progress = Math.min(progress,100);
-        progress = Math.max(progress,0);
-
-        var filled_width = (width*progress)/100;
-        var empty_width = width-filled_width;
-
-
-        ctx.fillStyle = '#666666';
-        ctx.fillRect(x+filled_width,y,empty_width,height);
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(x,y,filled_width,height);
-
-        ctx.strokeStyle = 'yellow';
-        ctx.lineWidth = 1;
-        ctx.lineCap = 'square';
-        ctx.strokeRect(x,y,width,height);
-        var fontSize = parseInt(ctx.font);
-        ctx.fillStyle = 'yellow';
-        ctx.fillText(progress+'%',x+filled_width-(fontSize/2),y+(fontSize))
+        if(self.eventListeners[event] != undefined){
+            var length = self.eventListeners[event].length;
+            for(var i = 0; i < length;i++){
+                self.eventListeners[event][i]();
+            }
+        }
     };
 
-    Scene.prototype.clearProgressBar = function(){
-        var layer = Viewport.getLayer('UI',2);
-        layer.clear();
+    Scene.prototype.addEventListener = function(event,callback){
+        var self = this;
+        if(self.eventListeners[event] == undefined){
+            self.eventListeners[event] = [];
+        }
+        if(self.eventListeners[event].indexOf(callback) == -1){
+            self.eventListeners[event].push(callback);
+        }
     };
+
+    Scene.prototype.removeEventListener = function(event,callback){
+        var self = this;
+        if(self.eventListeners[event] != undefined){
+            var index =self.eventListeners[event].indexOf(callback);
+            if(index != -1){
+                self.eventListeners[event].splice(index,1);
+            }
+        }
+    };
+
+
+    Scene.prototype.fadeInGraphic = function (image, options, oncomplete) {
+        fade_graphic_effect.apply(this, [image, options, oncomplete, 'positive']);
+    };
+    Scene.prototype.fadeOutGraphic = function (image, options, oncomplete) {
+        fade_graphic_effect.apply(this, [image, options, oncomplete, 'negative']);
+    };
+
 
     Scene.prototype.step = function(){
         var self = this;
-        step_animations.apply(self);
+        step_animations(self);
     };
 
-    Scene.prototype.drawImage = function(){
-        Viewport.drawImage.apply(Viewport,arguments);
-    };
-
-    Scene.prototype.clear = function(){
-        Viewport.clear.apply(Viewport,arguments);
-    };
-
-    var fade_screen_effect = function (time, oncomplete, direction) {
-        var self = this;
-        time = parseInt(time);
-        time = isNaN(time) || time < 0 ? 2000 : time;
-        var type = '';
-        if (direction == 'negative') {
-            type = 'fade_out_screen';
-        }
-        else {
-            direction = 'positive';
-            type = 'fade_in_screen';
-        }
-
-        var animation = new Animation(self.fps, self.fps * (time / 1000));
-        animation.execute(true, direction);
-        var animation_set = {
-            type: type,
-            time: time,
-            oncomplete: oncomplete,
-            animation: animation
-        };
-
-        self.animation_queue.push(animation_set);
-    };
-
-    var fade_image_effect = function (image, options, oncomplete, direction) {
+    var fade_graphic_effect = function (image, options, oncomplete, direction) {
         options = options || {};
         var sx = options.sx || 0;
         var sy = options.sy || 0;
@@ -132,10 +100,9 @@
         var dWidth = options.dWidth || image.width;
         var dHeight = options.dHeight || image.height;
         var time = options.time || 1000;
-        var layer_name = options.layer || 'EF1';
         var vAlign = options.vAlign || null;
         var hAlign = options.hAlign || null;
-        var layer = Viewport.getLayer(layer_name);
+        var layer = Canvas.getLayer(Consts.EFFECT_LAYER,Consts.FADE_SCREEN_LAYER);
 
         var self = this;
 
@@ -170,14 +137,14 @@
         var animation = new Animation(self.fps, self.fps * (time / 1000));
         var type = '';
         if (direction == 'positive') {
-            type = 'fade_in_image'
+            type = 'fade_in_graphic'
         }
         else {
             direction = 'negative';
-            type = 'fade_out_image'
+            type = 'fade_out_graphic'
         }
 
-        animation.execute(true, direction);
+        animation.run(true, direction);
         var animation_set = {
             type: type,
             time: time,
@@ -192,7 +159,6 @@
                 dHeight: dHeight,
                 image: image
             },
-            layer: layer_name,
             animation: animation,
             oncomplete: oncomplete
         };
@@ -200,8 +166,7 @@
         return animation_set;
     };
 
-    var step_animations = function () {
-        var self = this;
+    var step_animations = function (self) {
         var length = self.animation_queue.length;
         var i;
         for (i = 0; i < length; i++) {
@@ -230,12 +195,12 @@
                         opacity = (index / (animation.frame_count - 1));
                     }
 
-                    ctx = Viewport.getLayer('EF1').getContext();
-                    ctx.clearRect(0, 0, Viewport.width, Viewport.height);
+                    ctx = Canvas.getLayer(Consts.EFFECT_LAYER,Consts.FADE_SCREEN_LAYER).getContext();
+                    ctx.clearRect(0, 0, Canvas.width, Canvas.height);
 
                     if (opacity > 0) {
                         ctx.fillStyle = 'rgba(0,0,0,' + opacity + ')';
-                        ctx.fillRect(0, 0, Viewport.width, Viewport.height);
+                        ctx.fillRect(0, 0, Canvas.width, Canvas.height);
                     }
 
                     if (!running) {
@@ -247,51 +212,76 @@
                         }
                     }
                     break;
-                case 'fade_in_image':
-                case 'fade_out_image':
-                    animation = animation_set.animation;
-                    running = animation.isRunning();
-                    index = animation.getIndexFrame();
-
-                    if (!running) {
-                        if (animation.direction == 'negative') {
-                            opacity = 0;
-                        }
-                        else {
-                            opacity = 1;
-                        }
-                    }
-                    else {
-                        opacity = (index / (animation.frame_count - 1));
-                    }
-
-                    var layer_name = animation_set.layer;
-                    var layer = Viewport.getLayer(layer_name);
-                    var image_data = animation_set.image_data;
-                    ctx = layer.getContext();
-
-                    ctx.clearRect(image_data.dx, image_data.dy, image_data.dWidth, image_data.dHeight);
-
-                    if (opacity > 0) {
-                        ctx.globalAlpha = opacity;
-                        ctx.drawImage(image_data.image, image_data.sx, image_data.sy, image_data.sWidth, image_data.sHeight, image_data.dx, image_data.dy, image_data.dWidth, image_data.dHeight);
-                        ctx.globalAlpha = 1;
-                    }
-
-
-                    if (!running) {
-                        self.animation_queue.splice(i, 1);
-                        i--;
-                        length--;
-
-                        if (animation_set.oncomplete) {
-                            animation_set.oncomplete();
-                        }
-                    }
-                    break;
+                //case 'fade_in_graphic':
+                //case 'fade_out_image':
+                //    animation = animation_set.animation;
+                //    running = animation.isRunning();
+                //    index = animation.getIndexFrame();
+                //
+                //    if (!running) {
+                //        if (animation.direction == 'negative') {
+                //            opacity = 0;
+                //        }
+                //        else {
+                //            opacity = 1;
+                //        }
+                //    }
+                //    else {
+                //        opacity = (index / (animation.frame_count - 1));
+                //    }
+                //
+                //
+                //    var layer = Canvas.getLayer(layer_name);
+                //    var image_data = animation_set.image_data;
+                //    ctx = layer.getContext();
+                //
+                //    ctx.clearRect(image_data.dx, image_data.dy, image_data.dWidth, image_data.dHeight);
+                //
+                //    if (opacity > 0) {
+                //        ctx.globalAlpha = opacity;
+                //        ctx.drawImage(image_data.image, image_data.sx, image_data.sy, image_data.sWidth, image_data.sHeight, image_data.dx, image_data.dy, image_data.dWidth, image_data.dHeight);
+                //        ctx.globalAlpha = 1;
+                //    }
+                //
+                //
+                //    if (!running) {
+                //        self.animation_queue.splice(i, 1);
+                //        i--;
+                //        length--;
+                //
+                //        if (animation_set.oncomplete) {
+                //            animation_set.oncomplete();
+                //        }
+                //    }
+                //    break;
                 default:
             }
         }
+    };
+
+    var fade_screen_effect = function (time, oncomplete, direction) {
+        var self = this;
+        time = parseInt(time);
+        time = isNaN(time) || time < 0 ? 2000 : time;
+        var type = '';
+        if (direction == 'negative') {
+            type = 'fade_out_screen';
+        }
+        else {
+            direction = 'positive';
+            type = 'fade_in_screen';
+        }
+
+        var animation = new Animation(self.fps, self.fps * (time / 1000));
+        animation.execute(true, direction);
+        var animation_set = {
+            type: type,
+            time: time,
+            oncomplete: oncomplete,
+            animation: animation
+        };
+
+        self.animation_queue.push(animation_set);
     };
 
 

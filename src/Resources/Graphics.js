@@ -1,12 +1,12 @@
 (function (root) {
-    if(root.Resources == undefined){
-        throw "Graphic requires Resources"
-    }
-
-    var Resources = root.Resources;
-
-    Resources.Graphic = {
+    root.Graphics = {
         graphics: {},
+        /**
+         *
+         * @param type
+         * @param name
+         * @returns {*}
+         */
         get: function (type, name) {
             var self = this;
             if (self.graphics[type] && self.graphics[type][name]) {
@@ -14,6 +14,12 @@
             }
             return null;
         },
+        /**
+         *
+         * @param type
+         * @param name
+         * @param graphics
+         */
         set: function (type, name, graphics) {
             var self = this;
             if (self.graphics[type] == undefined) {
@@ -27,6 +33,11 @@
                 self.graphics[type][name] = graphics;
             }
         },
+        /**
+         *
+         * @param type
+         * @param data
+         */
         setAll: function (type, data) {
             var self = this;
             var names = Object.keys(data);
@@ -36,6 +47,11 @@
                 self.set(type, name, graphics);
             }
         },
+        /**
+         *
+         * @param type
+         * @param name
+         */
         unset: function (type, name) {
             var self = this;
             if (self.graphics[type] != undefined) {
@@ -44,6 +60,12 @@
                 }
             }
         },
+        /**
+         *
+         * @param type
+         * @param name
+         * @returns {*}
+         */
         exists: function (type, name) {
             var self = this;
             return self.graphics[type] && self.graphics[type][name];

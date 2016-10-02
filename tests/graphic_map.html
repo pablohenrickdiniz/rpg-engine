@@ -37,7 +37,7 @@
 
     <!-- System-->
     <script type="text/javascript" src="../src/System/System.js"></script>
-    <script type="text/javascript" src="../src/System/Canvas.js"></script>
+    <script type="text/javascript" src="../src/System/Viewport.js"></script>
     <script type="text/javascript" src="../src/System/Audio.js"></script>
 
 
@@ -46,12 +46,12 @@
     <script type="text/javascript" src="../src/Scene/SceneMap.js"></script>
 
     <!--Imports-->
-    <script type="text/javascript" src="../src/Frame.js"></script>
+    <script type="text/javascript" src="../src/Tile.js"></script>
     <script type="text/javascript" src="../src/AnimatedTile.js"></script>
     <script type="text/javascript" src="../src/Game_Map.js"></script>
     <script type="text/javascript" src="../src/Tileset.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
-    <script type="text/javascript" src="../src/Character_Graphic.js"></script>
+    <script type="text/javascript" src="../src/CharacterGraphic.js"></script>
     <script type="text/javascript" src="../src/Game_Player.js"></script>
 
 
@@ -66,7 +66,6 @@
     <script type="text/javascript" src="../plugins/zebra/zebra.js"></script>
 
     <!-- Scene-->
-    <script type="text/javascript" src="../src/Scene/SceneTitle.js"></script>
     <script type="text/javascript" src="../src/Scene/SceneManager.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
 
@@ -86,8 +85,7 @@
     </script>
 </head>
 <body onload="init()">
-<div id="container" style="z-index:0;left:10px;top:10px;position:absolute;"></div>
-<!--<div id="ui" style="position:absolute;z-index:1;left:10px;top:10px;width:600px;height:600px;"></div>-->
+<div id="container"></div>
 <div id="fps"></div>
 </body>
 </html>

@@ -22,6 +22,7 @@
     "Keyboard": "https://github.com/pablohenrickdiniz/Keyboard.git",
     "math-lib": "https://github.com/pablohenrickdiniz/math-lib.git",
     "Mouse": "https://github.com/pablohenrickdiniz/Mouse.git",
-    "quadtree": "git@github.com:pablohenrickdiniz/quadtree.git"
+    "quadtree": "git@github.com:pablohenrickdiniz/quadtree.git",
+    "zebra": "https://github.com/barmalei/zebra.git"
   }
 }

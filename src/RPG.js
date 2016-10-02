@@ -11,34 +11,54 @@
         throw "RPG requires Mouse"
     }
 
+    if(w.TimerTicker == undefined){
+        throw "RPG requires TimeTicker"
+    }
+
+
     var Keyboard = w.Keyboard,
-        Mouse = w.Mouse;
+        Mouse = w.Mouse,
+        TimerTicker = w.TimerTicker;
 
     w.RPG = {
+        Main:{
+            Player:null
+        },
+        Game_Timer:new TimerTicker(),
         Resources:{},
-        Main: null,
-        Viewport:null,
-        Document:null,
+        Canvas:null,
         Controls:{
             Keyboard:null,
             Mouse:null
         },
-        /*
-         initialize(String container):void
-         inicializa a engine de rpg dentro do elemento container
+        /**
+         *
+         * @param container
          */
-        initialize: function (container) {
+        initialize: function (options) {
             var self = this;
+            options = options || {};
+            var container = options.container;
             self.Controls.Keyboard = new Keyboard(container);
             self.Controls.Mouse = new Mouse(container);
-            self.Viewport.initialize(container);
-            self.Document.initialize();
-            self.initializeEvents();
+            self.Canvas.initialize(container);
+            self.Main.Player = options.player || new RPG.Game_Player();
+            self.registerEvents();
         },
-        initializeEvents:function(){
+        registerEvents:function(){
             var self = this;
-            w.addEventListener('blur',self.System.freeze);
-            w.addEventListener('focus',self.System.resume)
+            w.addEventListener('blur',function(){
+                self.Game_Timer.stop();
+            });
+            w.addEventListener('focus',function(){
+                self.Game_Timer.run();
+            });
+
+            self.Game_Timer.addEventListener('tick',function(){
+                if(self.Main.scene != null){
+                    self.Main.scene.step();
+                }
+            });
         }
     };
 })(window);

@@ -1,21 +1,21 @@
 (function (root) {
-    if (root.Tile == undefined) {
-        throw "AnimatedTile requires Tile"
+    if (root.Frame == undefined) {
+        throw "AnimatedFrame requires Frae"
     }
 
-    var Tile = root.Tile;
+    var Frame = root.Frame;
 
     var AnimatedTile = function (parent, sx, sy, ex, ey, speed) {
         var self = this;
-        Tile.call(self, [parent, sx, sy]);
-        self.ex = ex;
-        self.ey = ey;
+        Frame.call(self, [parent, sx, sy]);
+        self.ex = ex || 0;
+        self.ey = ey || 0;
         self.speed = speed;
         self.animation = null;
         self.initialize();
     };
 
-    AnimatedTile.prototype = Object.create(Tile.prototype);
+    AnimatedTile.prototype = Object.create(Frame.prototype);
     AnimatedTile.prototype.constructor = AnimatedTile;
 
 
@@ -29,9 +29,9 @@
         self.animation = new Animation(self.speed, frame_count);
     };
 
-    AnimatedTile.prototype.execute = function () {
+    AnimatedTile.prototype.run = function () {
         var self = this;
-        self.animation.execute();
+        self.animation.run();
     };
 
     AnimatedTile.prototype.stop = function () {
@@ -41,8 +41,8 @@
 
     AnimatedTile.prototype.getGraphic = function () {
         var self = this;
-        var tile_width = self.parent.getTileWidth();
-        var tile_height = self.parent.getTileHeight();
+        var tile_width = self.parent.tileWidth;
+        var tile_height = self.parent.tileHeight;
         var frame = self.animation.getIndexFrame();
 
         var cols = Math.floor(width / (self.ex - self.sx));
@@ -59,32 +59,6 @@
             dHeight: tile_height
         };
     };
-
-    AnimatedTile.prototype.setEx = function (ex) {
-        var self = this;
-        self.ex = ex;
-    };
-
-    AnimatedTile.prototype.setEy = function (ey) {
-        var self = this;
-        self.ey = ey;
-    };
-
-    AnimatedTile.prototype.setWidth = function (width) {
-        var self = this;
-        self.width = width;
-    };
-
-    AnimatedTile.prototype.setHeight = function (height) {
-        var self = this;
-        self.height = height;
-    };
-
-    AnimatedTile.prototype.setSpeed = function (speed) {
-        var self = this;
-        self.speed = speed;
-    };
-
 
     root.AnimatedTile = AnimatedTile;
 })(RPG);

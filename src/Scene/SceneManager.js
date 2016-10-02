@@ -1,42 +1,68 @@
 (function (root) {
-    if (root.SceneLoader == undefined) {
+    if (root.Scene.SceneLoader == undefined) {
         throw "SceneManager requires SceneLoader"
+    }
+
+    if(root.Scene.SceneMapLoader == undefined){
+        throw "SceneManager requires SceneMapLoader"
     }
 
     if (root.Main == undefined) {
         throw "SceneManager requires Main"
     }
 
-    var SceneLoader = root.SceneLoader,
-        Main = root.Main;
+    if(root.Game_Timer == undefined){
+        throw "SceneManager requires Game_Timer"
+    }
+
+    var SceneLoader = new root.Scene.SceneLoader(),
+        SceneMapLoader = new root.Scene.SceneMapLoader(),
+        SceneMap = root.Scene.SceneMap,
+        Scene = root.Scene.Scene,
+        Main = root.Main,
+        Game_Timer = root.Game_Timer;
+
 
     root.SceneManager = {
-        scenes: {
-            default: root.SceneTitle
-        },
+        scenes: {},
         queue: [],
-        defaultScene: root.SceneTitle,
-        run: function () {
-            if (Main.scene == null) {
-                var self = this;
-                self.call('default');
+        scene: null,
+        new: function (type,name, options) {
+            var scene = null;
+            switch (type) {
+                case 'Map':
+                    scene = new SceneMap(options);
+                    break;
+                default:
+                    scene = new Scene(options);
             }
-            else{
-                SceneLoader.load(Main.scene, function () {
-                    Main.scene.start();
-                });
-            }
-            root.System.run();
+            var self = this;
+            self.scenes[name] = scene;
         },
         call: function (name) {
             var self = this;
             var scene = self.get(name);
-
-            if (Main.scene != scene) {
-                Main.scene = scene;
-                SceneLoader.load(scene, function () {
-                    scene.start();
-                });
+            if(scene != null){
+                if(scene instanceof SceneMap){
+                    SceneMapLoader.load(scene, function () {
+                        self.scene = scene;
+                        Main.scene = scene;
+                        if(!Game_Timer.running){
+                            Game_Timer.run();
+                        }
+                        scene.trigger('start');
+                    });
+                }
+                else{
+                    SceneLoader.load(scene, function () {
+                        self.scene = scene;
+                        Main.scene = scene;
+                        if(!Game_Timer.running){
+                            Game_Timer.run();
+                        }
+                        scene.trigger('start');
+                    });
+                }
             }
         },
         set: function (name, scene) {

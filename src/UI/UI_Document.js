@@ -6,11 +6,11 @@
         throw "UI_Document requires System"
     }
 
-    if (root.Viewport == undefined) {
+    if (root.Canvas == undefined) {
         throw "UI_Document requires Viewport"
     }
 
-    var viewport = root.Viewport,
+    var viewport = root.Canvas,
         system = root.System;
 
     var hover = false;
@@ -35,6 +35,10 @@
         scrollTop: 0,
         scrollLeft: 0,
         padding: 0,
+        containerX:0,
+        containerY:0,
+        containerWidth:600,
+        containerHeight:600,
         visible: true,
         scrolling_data: {
             element: null,
@@ -289,7 +293,6 @@
         if (!Document.propagating['hover']) {
             Document.propagating['hover'] = true;
             var element = retrieve_element(x, y);
-            console.log('hover',element.id);
             if (element != null) {
                 var ui_states = Document.getStates('hover');
                 var propagated = propagate('hover', element, [x, y]);
