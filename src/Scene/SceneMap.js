@@ -62,6 +62,13 @@
     };
 
 
+    var sort_objects = function(objects){
+        return objects.sort(function(a,b){
+            return a.y+ a.graphic.height > b.y+ b.graphic.height;
+        });
+    };
+
+
     //Private Methods
 
     /**
@@ -133,12 +140,11 @@
         var event;
         var i;
 
-        Canvas.clear(Consts.EVENT_LAYER, player.layer, bounds.lx, bounds.ly, graphic.width, graphic.height);
+        var objects = map.objects.concat(Main.Player);
+        var size = objects.length;
 
-        var events = map.objects;
-        var size = events.length;
         for (i = 0; i < size; i++) {
-            event = events[i];
+            event = objects[i];
             bounds = event.bounds;
             graphic = event.graphic;
             Canvas.clear(Consts.EVENT_LAYER, event.layer, bounds.lx, bounds.ly, graphic.width, graphic.height);
@@ -150,16 +156,17 @@
      * @param self
      */
     var draw_graphics = function (self) {
-        var player = Main.Player;
         var objects = self.map_data.map.objects;
-        var size = objects.length;
         var bounds;
-        var graphic;
         var i;
         var image;
         var frame;
         var x;
         var y;
+
+        objects = objects.concat(Main.Player);
+        objects = sort_objects(objects);
+        var size = objects.length;
 
         for (i = 0; i < size; i++) {
             var object = objects[i];
@@ -187,30 +194,30 @@
             }
         }
 
-        frame = player.getCurrentFrame();
-        if (frame !== null) {
-            bounds = player.bounds;
-            x = parseInt(bounds.x - root.Canvas.x);
-            y = parseInt(bounds.y - root.Canvas.y);
-            bounds.lx = x;
-            bounds.ly = y;
-
-            image = Graphics.get('characters', frame.image);
-            Canvas.drawImage(image, {
-                dx: x,
-                dy: y,
-                dWidth: frame.width,
-                dHeight: frame.height,
-                sx: frame.sx,
-                sy: frame.sy,
-                sWidth: frame.width,
-                sHeight: frame.height,
-                layer: player.layer,
-                type: Consts.EVENT_LAYER
-            });
-
-            self.player_refreshed = true;
-        }
+        //frame = player.getCurrentFrame();
+        //if (frame !== null) {
+        //    bounds = player.bounds;
+        //    x = parseInt(bounds.x - root.Canvas.x);
+        //    y = parseInt(bounds.y - root.Canvas.y);
+        //    bounds.lx = x;
+        //    bounds.ly = y;
+        //
+        //    image = Graphics.get('characters', frame.image);
+        //    Canvas.drawImage(image, {
+        //        dx: x,
+        //        dy: y,
+        //        dWidth: frame.width,
+        //        dHeight: frame.height,
+        //        sx: frame.sx,
+        //        sy: frame.sy,
+        //        sWidth: frame.width,
+        //        sHeight: frame.height,
+        //        layer: player.layer,
+        //        type: Consts.EVENT_LAYER
+        //    });
+        //
+        //    self.player_refreshed = true;
+        //}
     };
 
     /**

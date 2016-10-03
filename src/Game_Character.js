@@ -53,7 +53,11 @@
         self.setGraphic(options.graphic || new Character_Graphic());
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
         self.type = 'character';
+        self.id = Game_Character.ID;
+        Game_Character.ID++;
     };
+
+    Game_Character.ID = 0;
 
     /**
      *
@@ -374,6 +378,12 @@
                     currentAnimation = ca;
                     currentAnimation.start();
                 }
+            }
+        });
+
+        Object.defineProperty(self,'index',{
+            get:function(){
+                return self.bounds.y+'-'+self.id;
             }
         });
     };
