@@ -97,14 +97,6 @@
         }
     };
 
-    /**
-    Animation.prototype.pause = function () {
-        var self = this;
-        if (self.running) {
-            self.end_time = root.System.time;
-            self.running = false;
-        }
-    };
 
     /**
      *
@@ -119,10 +111,14 @@
         }
     };
 
-
-    Animation.prototype.stop = function () {
+    /**
+     *
+     * @param index
+     */
+    Animation.prototype.stop = function (index) {
+        index = index || 0;
         var self = this;
-        self.pauseToFrame(0);
+        self.pauseToFrame(index);
     };
 
     root.Animation = Animation;

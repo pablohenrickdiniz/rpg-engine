@@ -27,6 +27,7 @@
         self.sHeight = options.sHeight || null;
         self.image = options.image || '';
         self.sprites = [];
+        self.startFrame = options.startFrame || 0;
     };
     /**
      *

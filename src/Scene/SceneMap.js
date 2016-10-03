@@ -64,7 +64,7 @@
 
     var sort_objects = function(objects){
         return objects.sort(function(a,b){
-            return a.y+ a.graphic.height > b.y+ b.graphic.height;
+            return a.y+(a.graphic? a.graphic.height:0) > b.y + (b.graphic?b.graphic.height:0)
         });
     };
 
@@ -147,7 +147,9 @@
             event = objects[i];
             bounds = event.bounds;
             graphic = event.graphic;
-            Canvas.clear(Consts.EVENT_LAYER, event.layer, bounds.lx, bounds.ly, graphic.width, graphic.height);
+            if(graphic != null){
+                Canvas.clear(Consts.EVENT_LAYER, event.layer, bounds.lx, bounds.ly, graphic.width, graphic.height);
+            }
         }
     };
 

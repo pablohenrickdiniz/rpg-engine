@@ -43,24 +43,26 @@
 
     /**
      *
-     * @param event
+     * @param obj
      */
-    Game_Map.prototype.add = function (event) {
+    Game_Map.prototype.add = function (obj) {
         var self = this;
-        self.objects.push(event);
-        self.getTree().insert(event.bounds);
+        self.objects.push(obj);
+        obj.parent = self;
+        self.getTree().insert(obj.bounds);
     };
 
     /**
      *
-     * @param event
+     * @param obj
      */
-    Game_Map.prototype.remove = function (event) {
+    Game_Map.prototype.remove = function (obj) {
         var self = this;
-        var index = self.objects.indexOf(event);
+        var index = self.objects.indexOf(obj);
         if (index != -1) {
             self.objects.splice(index, 1);
-            QuadTree.remove(event.bounds);
+            obj.parent = null;
+            QuadTree.remove(obj.bounds);
         }
     };
 

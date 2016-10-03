@@ -71,7 +71,7 @@
             playerX = data.player.x || playerX;
             playerY = data.player.y || playerY;
         }
-
+        console.log(playerX,playerX);
         Main.Player.x = playerX;
         Main.Player.y = playerY;
         scene.focusOnCharacter(Main.Player);

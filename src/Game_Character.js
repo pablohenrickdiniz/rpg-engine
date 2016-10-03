@@ -53,6 +53,7 @@
         self.setGraphic(options.graphic || new Character_Graphic());
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
         self.type = 'character';
+        self.parent = options.parent || null;
         self.id = Game_Character.ID;
         Game_Character.ID++;
     };
@@ -82,9 +83,9 @@
      */
     Game_Character.prototype.getCurrentFrame = function () {
         var self = this;
-        if(self.currentAnimation !=null){
+        if(self.currentAnimation !=null && self.graphic != null){
             var index = self.currentAnimation.getIndexFrame();
-            return self.graphic.get(self.direction, index);
+            return self.graphic.get(self.direction, index+self.graphic.startFrame);
         }
         return null;
     };
@@ -208,14 +209,32 @@
                 if (direction instanceof Game_Character) {
                     var d_x = self.bounds.x - direction.bounds.x;
                     var d_y = self.bounds.y - direction.bounds.y;
-                    self.direction = (d_x === d_y || d_x === 0) ? d_y < 0 ? Consts.CHARACTER_DIRECTION_DOWN : Consts.CHARACTER_DIRECTION_UP : d_x < 0 ? Consts.CHARACTER_DIRECTION_RIGHT : Consts.CHARACTER_DIRECTION_LEFT;
+                    console.log(d_x,d_y);
+
+                    if(Math.abs(d_x) > Math.abs(d_y)){
+                        if(d_x > 0){
+                            self.direction = Consts.CHARACTER_DIRECTION_LEFT;
+                        }
+                        else if(d_x < 0){
+                            self.direction = Consts.CHARACTER_DIRECTION_RIGHT;
+                        }
+                    }
+                    else{
+                        if(d_y > 0){
+                            self.direction = Consts.CHARACTER_DIRECTION_UP;
+                        }
+                        else if(d_y < 0){
+                            self.direction = Consts.CHARACTER_DIRECTION_DOWN;
+                        }
+                    }
+
                 }
         }
     };
 
     Game_Character.prototype.lookToPlayer = function () {
         var self = this;
-        self.look(Main.player);
+        self.look(Main.Player);
     };
     /**
      *
@@ -373,7 +392,7 @@
             set:function(ca){
                 if(currentAnimation != ca){
                     if(currentAnimation != null){
-                        currentAnimation.stop();
+                        currentAnimation.stop(self.graphic.startFrame);
                     }
                     currentAnimation = ca;
                     currentAnimation.start();
@@ -386,6 +405,13 @@
                 return self.bounds.y+'-'+self.id;
             }
         });
+    };
+
+    var next_frame = function(index,frameCount){
+        if(index < frameCount){
+            return index;
+        }
+        return frameCount % index;
     };
 
     root.Game_Character = Game_Character;

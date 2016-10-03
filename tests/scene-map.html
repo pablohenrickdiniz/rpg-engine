@@ -35,6 +35,7 @@
     <script type="text/javascript" src="../src/Character_Graphic.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
     <script type="text/javascript" src="../src/Game_Player.js"></script>
+    <script type="text/javascript" src="../src/Game_Event.js"></script>
     <script type="text/javascript" src="../src/SpritesetMap.js"></script>
 
 
@@ -513,7 +514,7 @@
 
             var Game_Player = RPG.Game_Player,
                     Character_Graphic = RPG.Character_Graphic,
-                    Game_Character = RPG.Game_Character;
+                    Game_Event = RPG.Game_Event;
 
 
             var player = new Game_Player({
@@ -535,11 +536,11 @@
                 map: {
                     tileWidth: 32,
                     tileHeight: 32,
-                    spriteset: spriteset
-                },
-                player: {
-                    x: 100,
-                    y: 100
+                    spriteset: spriteset,
+                    player: {
+                        x: 100,
+                        y: 100
+                    }
                 },
                 graphics: {
                     characters: {
@@ -552,9 +553,13 @@
                 },
                 start: function () {
                     console.log('started...');
-                    var character = RPG.Characters.get('character1');
+                    var character1 = RPG.Characters.get('character1');
                     var self = this;
-                    self.map_data.map.add(character);
+                    self.map_data.map.add(character1);
+
+
+                    var event= new Game_Event();
+                    self.map_data.map.add(event);
                 }
             });
             RPG.SceneManager.call('map01');

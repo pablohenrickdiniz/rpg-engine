@@ -58,17 +58,19 @@
     };
 
     var tick = function (timer) {
-        timer.interval = w.requestAnimationFrame(function () {
-            tick(timer);
-        });
-        var passed = 0;
-        var current_time = new Date().getTime();
-        if (timer.last_tick != null) {
-            passed = current_time - timer.last_tick;
+        if(timer.running){
+            timer.interval = w.requestAnimationFrame(function () {
+                tick(timer);
+            });
+            var passed = 0;
+            var current_time = new Date().getTime();
+            if (timer.last_tick != null) {
+                passed = current_time - timer.last_tick;
+            }
+            timer.currentTime += passed;
+            timer.trigger('tick');
+            timer.last_tick = current_time;
         }
-        timer.currentTime += passed;
-        timer.trigger('tick');
-        timer.last_tick = current_time;
     };
 
     w.TimerTicker = TimerTicker;

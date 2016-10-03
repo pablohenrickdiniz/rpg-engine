@@ -1,6 +1,6 @@
 (function (root) {
     if (root.Game_Character == undefined) {
-        throw "Event requires Character"
+        throw "Game_Event requires Character"
     }
 
     var Game_Character = root.Game_Character;
@@ -39,9 +39,10 @@
         var self = this;
         self.switches[name] = true;
         if (self.switches_callbacks[name] !== undefined) {
-            self.switches_callbacks[name].forEach(function (callback) {
-                callback();
-            });
+            var length = self.switches_callbacks.length;
+            for(var i =0; i < length;i++){
+                self.switches_callbacks[name][i].apply(self);
+            }
         }
     };
 
@@ -53,9 +54,10 @@
         var self = this;
         self.switches[name] = false;
         if (self.switches_callbacks[name] !== undefined) {
-            self.switches_callbacks[name].forEach(function (callback) {
-                callback();
-            });
+            var length = self.switches_callbacks.length;
+            for(var i =0; i < length;i++){
+                self.switches_callbacks[name][i].apply(self);
+            }
         }
     };
     /**
@@ -95,5 +97,5 @@
         }
     };
 
-    root.Event = Game_Event;
+    root.Game_Event = Game_Event;
 })(RPG);
