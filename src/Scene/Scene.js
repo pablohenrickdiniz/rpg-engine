@@ -50,7 +50,7 @@
         if(self.eventListeners[event] != undefined){
             var length = self.eventListeners[event].length;
             for(var i = 0; i < length;i++){
-                self.eventListeners[event][i]();
+                self.eventListeners[event][i].apply(self);
             }
         }
     };

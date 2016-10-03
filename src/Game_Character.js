@@ -29,6 +29,7 @@
         var self = this;
         initialize(self);
         options = options || {};
+        self.animations = [];
         self.speed = options.speed || 5;
         var x = options.x || 0;
         var y = options.y || 0;
@@ -42,16 +43,16 @@
             _ref: self,
             groups: ['EV']
         };
-
-        self.layer = 2;
+        self.layer = options.layer || 2;
         self.direction = Consts.CHARACTER_DIRECTION_DOWN;
         self.h_speed = 32;
         self.v_speed = 32;
         self.moving = false;
         self.refreshed = false;
-        self.animations = [];
         self.character_movement = null;
         self.setGraphic(options.graphic || new Character_Graphic());
+        self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
+        self.type = 'character';
     };
 
     /**
@@ -65,6 +66,10 @@
         self.animations[Consts.CHARACTER_STEP_UP] = new Animation(self.speed, graphic.cols);
         self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation(self.speed, graphic.cols);
         self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation(self.speed, graphic.cols);
+        self.animations[Consts.CHARACTER_STOP_DOWN] =  new Animation(self.speed, 1);
+        self.animations[Consts.CHARACTER_STOP_UP] =  new Animation(self.speed, 1);
+        self.animations[Consts.CHARACTER_STOP_RIGHT] =  new Animation(self.speed, 1);
+        self.animations[Consts.CHARACTER_STOP_LEFT] =  new Animation(self.speed, 1);
     };
 
     /**
@@ -73,24 +78,8 @@
      */
     Game_Character.prototype.getCurrentFrame = function () {
         var self = this;
-        var animation = null;
-        switch(self.direction){
-            case Consts.CHARACTER_DIRECTION_DOWN:
-                animation = self.animations[Consts.CHARACTER_STEP_DOWN];
-                break;
-            case Consts.CHARACTER_DIRECTION_UP:
-                animation = self.animations[Consts.CHARACTER_STEP_UP];
-                break;
-            case Consts.CHARACTER_DIRECTION_LEFT:
-                animation = self.animations[Consts.CHARACTER_STEP_LEFT];
-                break;
-            case Consts.CHARACTER_DIRECTION_RIGHT:
-                animation = self.animations[Consts.CHARACTER_STEP_RIGHT];
-                break;
-        }
-
-        if(animation != null){
-            var index = animation.getIndexFrame();
+        if(self.currentAnimation !=null){
+            var index = self.currentAnimation.getIndexFrame();
             return self.graphic.get(self.direction, index);
         }
         return null;
@@ -106,6 +95,7 @@
     Game_Character.prototype.moveTo = function (direction, times, complete, allow) {
         allow = allow === undefined ? false : allow;
         var self = this;
+
         if (!self.moving || allow) {
             self.moving = true;
             var x = self.bounds.x;
@@ -116,57 +106,58 @@
             switch (direction) {
                 case Consts.CHARACTER_DIRECTION_UP:
                     y -= self.h_speed;
+                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_UP];
                     break;
                 case Consts.CHARACTER_DIRECTION_RIGHT:
                     x += self.h_speed;
+                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_RIGHT];
                     break;
                 case Consts.CHARACTER_DIRECTION_LEFT:
                     x -= self.h_speed;
+                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_LEFT];
                     break;
                 case Consts.CHARACTER_DIRECTION_DOWN:
                     y += self.h_speed;
+                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_DOWN];
                     break;
             }
 
             if (times < 1) {
                 self.moving = false;
+                if(self.type != 'player'){
+                    self.stop();
+                }
                 if (typeof complete === 'function') {
                     complete();
                 }
             }
             else {
-                switch(direction){
-                    case Consts.CHARACTER_DIRECTION_DOWN:
-                        self.animations[Consts.CHARACTER_STEP_DOWN].start();
-                        break;
-                    case Consts.CHARACTER_DIRECTION_LEFT:
-                        self.animations[Consts.CHARACTER_STEP_LEFT].start();
-                        break;
-                    case Consts.CHARACTER_DIRECTION_RIGHT:
-                        self.animations[Consts.CHARACTER_STEP_RIGHT].start();
-                        break;
-                    case Consts.CHARACTER_DIRECTION_UP:
-                        self.animations[Consts.CHARACTER_STEP_UP].start();
-                        break;
-                }
                 self.direction = direction;
                 self.move(x, y, time, function () {
-                    times--;
-                    self.moveTo(direction, times, complete, true);
+                    self.moveTo(direction, times-1, complete, true);
                 });
             }
         }
     };
 
-    Game_Character.prototype.resetAnimations = function(){
+    Game_Character.prototype.stop = function(){
         var self = this;
-        var keys = Object.keys(self.animations);
-        var length = keys.length;
-        for(var i =0; i < length;i++){
-            var key = keys[i];
-            self.animations[key].pauseToFrame(0);
+        switch (self.direction) {
+            case Consts.CHARACTER_DIRECTION_UP:
+                self.currentAnimation = self.animations[Consts.CHARACTER_STOP_UP];
+                break;
+            case Consts.CHARACTER_DIRECTION_RIGHT:
+                self.currentAnimation = self.animations[Consts.CHARACTER_STOP_RIGHT];
+                break;
+            case Consts.CHARACTER_DIRECTION_LEFT:
+                self.currentAnimation = self.animations[Consts.CHARACTER_STOP_LEFT];
+                break;
+            case Consts.CHARACTER_DIRECTION_DOWN:
+                self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
+                break;
         }
     };
+
 
     /**
      *
@@ -307,10 +298,11 @@
                 bounds.x = data.end_position.x;
                 bounds.y = data.end_position.y;
                 var callback = data.oncomplete;
+                self.character_movement = null;
                 if (typeof callback === 'function') {
                     callback();
                 }
-                self.character_movement = null;
+
             }
             else {
                 var distance_x = (data.end_position.x - data.start_position.x);
@@ -327,6 +319,9 @@
     };
 
     var initialize = function(self){
+        var speed = 5;
+        var currentAnimation = null;
+
         Object.defineProperty(self,'x',{
             get:function(){
                 return self.bounds.x;
@@ -345,6 +340,39 @@
             set:function(y){
                 if(y != self.bounds.y){
                     self.bounds.y = y;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'speed',{
+            get:function(){
+                return speed;
+            },
+            set:function(s){
+                if(s != speed){
+                    speed = s;
+                    var keys = Object.keys(self.animations);
+                    var length = keys.length;
+                    var key;
+                    for(var i =0; i < length;i++){
+                        key = keys[i];
+                        self.animations[key].fps = speed;
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'currentAnimation',{
+            get:function(){
+                return currentAnimation;
+            },
+            set:function(ca){
+                if(currentAnimation != ca){
+                    if(currentAnimation != null){
+                        currentAnimation.stop();
+                    }
+                    currentAnimation = ca;
+                    currentAnimation.start();
                 }
             }
         });

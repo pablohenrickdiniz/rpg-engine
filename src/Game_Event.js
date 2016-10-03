@@ -33,20 +33,6 @@
 
     /**
      *
-     * @returns {*}
-     */
-    Game_Event.prototype.getCurrentFrame = function () {
-        var self = this;
-        if (self.page !== null) {
-            var animation_name = 'step_' + self.direction;
-            var animation = self.page.graphic.animations[animation_name];
-            return animation.frames[animation.getIndexFrame()];
-        }
-        return null;
-    };
-
-    /**
-     *
      * @param name
      */
     Game_Event.prototype.enableSwitch = function (name) {

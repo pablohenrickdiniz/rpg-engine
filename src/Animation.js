@@ -119,5 +119,11 @@
         }
     };
 
+
+    Animation.prototype.stop = function () {
+        var self = this;
+        self.pauseToFrame(0);
+    };
+
     root.Animation = Animation;
 })(RPG);

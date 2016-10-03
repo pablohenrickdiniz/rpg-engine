@@ -78,7 +78,7 @@
             var type = options.type || Consts.EFFECT_LAYER;
             var index = options.layer || 0;
             var layer = self.getLayer(type,index);
-            var context = layer.getContext();
+            var context = layer.context;
             var sx = options.sx || 0;
             var sy = options.sy || 0;
             var dx = options.dx || 0;

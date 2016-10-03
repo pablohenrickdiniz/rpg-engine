@@ -122,7 +122,7 @@
     var UI_Element = function (parent, options) {
         var self = this;
         options = options || {};
-        self.events = {};
+        self.objects = {};
         self.contents = [];
         self.id = ID;
         ID++;
@@ -209,20 +209,20 @@
 
     UI_Element.prototype.addEventListener = function (name, callback) {
         var self = this;
-        if (self.events[name] == undefined) {
-            self.events[name] = [];
+        if (self.objects[name] == undefined) {
+            self.objects[name] = [];
         }
 
-        self.events[name].push(callback);
+        self.objects[name].push(callback);
         return self;
     };
 
     UI_Element.prototype.removeEventListener = function (name, callback) {
         var self = this;
-        if (self.events[name] != undefined) {
-            var index = self.events[name].indexOf(callback);
+        if (self.objects[name] != undefined) {
+            var index = self.objects[name].indexOf(callback);
             if (index != -1) {
-                self.events[name].splice(index, 1);
+                self.objects[name].splice(index, 1);
             }
         }
         return self;

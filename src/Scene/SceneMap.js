@@ -7,7 +7,7 @@
         throw "SceneMap requires Canvas"
     }
 
-    if(root.Graphics == undefined){
+    if (root.Graphics == undefined) {
         throw "SceneMap requires Graphics"
     }
 
@@ -95,16 +95,16 @@
         for (var i = interval.si; i <= interval.ei; i++) {
             for (var j = interval.sj; j <= interval.ej; j++) {
                 if (spriteset_map.sprites[i] !== undefined && spriteset_map.sprites[i][j] !== undefined) {
-                    for(var k in  spriteset_map.sprites[i][j]){
+                    for (var k in  spriteset_map.sprites[i][j]) {
                         var tile = spriteset_map.sprites[i][j][k];
-                        var layer = Canvas.getLayer(Consts.BACKGROUND_LAYER,k);
+                        var layer = Canvas.getLayer(Consts.BACKGROUND_LAYER, k);
                         if (layer != null) {
-                            var context = layer.getContext();
+                            var context = layer.context;
                             var dx = j * tile.width - sx;
                             var dy = i * tile.height - sy;
                             dx = parseInt(dx);
                             dy = parseInt(dy);
-                            var image = Graphics.get('tilesets',tile.image);
+                            var image = Graphics.get('tilesets', tile.image);
                             context.drawImage(image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tile.width, tile.height);
                         }
                     }
@@ -118,11 +118,11 @@
      * @param self
      */
     var refresh_BG = function (self) {
-     //   if (!self.bg_refreshed) {
+        if (!self.bg_refreshed) {
             Canvas.clear(Consts.BACKGROUND_LAYER);
             refresh_spriteset_map(self);
             self.bg_refreshed = true;
-       // }
+        }
     };
 
     var clear_graphics = function (self) {
@@ -133,15 +133,15 @@
         var event;
         var i;
 
-        Canvas.clear(Consts.EVENT_LAYER,player.layer,bounds.lx, bounds.ly, graphic.width, graphic.height);
+        Canvas.clear(Consts.EVENT_LAYER, player.layer, bounds.lx, bounds.ly, graphic.width, graphic.height);
 
-        var events = map.events;
+        var events = map.objects;
         var size = events.length;
         for (i = 0; i < size; i++) {
             event = events[i];
             bounds = event.bounds;
             graphic = event.graphic;
-            Canvas.clear(Consts.EVENT_LAYER,event.layer,bounds.lx, bounds.ly, graphic.width, graphic.height);
+            Canvas.clear(Consts.EVENT_LAYER, event.layer, bounds.lx, bounds.ly, graphic.width, graphic.height);
         }
     };
 
@@ -151,41 +151,51 @@
      */
     var draw_graphics = function (self) {
         var player = Main.Player;
-        var events = self.map_data.map.events;
-        var size = events.length;
+        var objects = self.map_data.map.objects;
+        var size = objects.length;
         var bounds;
         var graphic;
         var i;
+        var image;
+        var frame;
+        var x;
+        var y;
 
         for (i = 0; i < size; i++) {
-            var event = events[i];
-            if (event.page !== null) {
-                bounds = event.bounds;
-                graphic = event.graphic;
-                Canvas.drawImage(graphic.image, {
-                    dx: bounds.x,
-                    dy: bounds.y,
-                    dWidth: graphic.dWidth,
-                    dHeight: graphic.dHeight,
-                    sx: graphic.sx,
-                    sy: graphic.sy,
-                    sWidth: graphic.sWidth,
-                    sHeight: graphic.sHeight,
-                    layer: event.layer
+            var object = objects[i];
+            frame = object.getCurrentFrame();
+            if(frame != null){
+                bounds = object.bounds;
+                x = parseInt(bounds.x - root.Canvas.x);
+                y = parseInt(bounds.y - root.Canvas.y);
+                bounds.lx = x;
+                bounds.ly = y;
+                image = Graphics.get('characters', frame.image);
+
+                Canvas.drawImage(image, {
+                    dx: x,
+                    dy: y,
+                    dWidth: frame.width,
+                    dHeight: frame.height,
+                    sx: frame.sx,
+                    sy: frame.sy,
+                    sWidth: frame.width,
+                    sHeight: frame.height,
+                    layer: object.layer,
+                    type: Consts.EVENT_LAYER
                 });
             }
         }
 
-        var frame = player.getCurrentFrame();
+        frame = player.getCurrentFrame();
         if (frame !== null) {
             bounds = player.bounds;
-            var x = bounds.x - root.Canvas.x;
-            var y = bounds.y - root.Canvas.y;
-
+            x = parseInt(bounds.x - root.Canvas.x);
+            y = parseInt(bounds.y - root.Canvas.y);
             bounds.lx = x;
             bounds.ly = y;
 
-            var image = Graphics.get('characters',frame.image);
+            image = Graphics.get('characters', frame.image);
             Canvas.drawImage(image, {
                 dx: x,
                 dy: y,
@@ -196,7 +206,7 @@
                 sWidth: frame.width,
                 sHeight: frame.height,
                 layer: player.layer,
-                type:Consts.EVENT_LAYER
+                type: Consts.EVENT_LAYER
             });
 
             self.player_refreshed = true;
@@ -234,13 +244,17 @@
                 viewport_y = max_screen_y;
             }
 
+            if (Canvas.x != viewport_x || Canvas.y != viewport_y) {
+                self.bg_refreshed = false;
+            }
+
             Canvas.x = viewport_x;
             Canvas.y = viewport_y;
         }
     };
 
     var step_events = function (self) {
-        var events = self.map_data.map.events;
+        var events = self.map_data.map.objects;
         var length = events.length;
         var i;
         Main.Player.update();

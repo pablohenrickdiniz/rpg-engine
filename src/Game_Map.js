@@ -14,7 +14,7 @@
         self.name = options.name || '';
         self.width = options.width || 640;
         self.height = options.height || 640;
-        self.events = options.events || [];
+        self.objects = options.objects || [];
         self.autoplay_bgs = options.autoplay_bgs || false;
         self.autoplay_bgm = options.autoplay_bgm || false;
         self.bgm = options.bgm || null;
@@ -47,7 +47,7 @@
      */
     Game_Map.prototype.add = function (event) {
         var self = this;
-        self.events.push(event);
+        self.objects.push(event);
         self.getTree().insert(event.bounds);
     };
 
@@ -57,9 +57,9 @@
      */
     Game_Map.prototype.remove = function (event) {
         var self = this;
-        var index = self.events.indexOf(event);
+        var index = self.objects.indexOf(event);
         if (index != -1) {
-            self.events.splice(index, 1);
+            self.objects.splice(index, 1);
             QuadTree.remove(event.bounds);
         }
     };

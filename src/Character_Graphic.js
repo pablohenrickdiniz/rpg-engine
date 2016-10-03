@@ -23,6 +23,8 @@
         self.cols = options.cols || 1;
         self.sx = options.sx || 0;
         self.sy = options.sy || 0;
+        self.sWidth = options.sWidth || null;
+        self.sHeight = options.sHeight || null;
         self.image = options.image || '';
         self.sprites = [];
     };
@@ -60,19 +62,32 @@
     var initialize = function(self){
         Object.defineProperty(self,'width',{
             get:function(){
-                var image = Graphics.get('characters',self.image);
-                if(image != null){
-                    return image.width/self.cols;
+                var width = self.sWidth;
+                if(width == null){
+                    var image = Graphics.get('characters',self.image);
+                    if(image != null){
+                        width = image.width;
+                    }
                 }
+                if(width != null){
+                    return width/self.cols;
+                }
+
                 return 0;
             }
         });
 
         Object.defineProperty(self,'height',{
             get:function(){
-                var image = Graphics.get('characters',self.image);
-                if(image != null){
-                    return image.height/self.rows;
+                var height = self.sHeight;
+                if(height == null){
+                    var image = Graphics.get('characters',self.image);
+                    if(image != null){
+                        height = image.height;
+                    }
+                }
+                if(height != null){
+                    return height/self.rows;
                 }
                 return 0;
             }

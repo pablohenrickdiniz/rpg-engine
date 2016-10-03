@@ -59,11 +59,38 @@
     <script type="text/javascript" src="../src/Scene/SceneManager.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
 
+
+    <!--data -->
+    <script type="text/javascript" src="../src/Characters.js"></script>
+    <script type="text/javascript" src="dat/game_data.js"></script>
+
     <script type="text/javascript">
         function init() {
             var spriteset = [
                 [
-                    [['1', 0, 0, 32, 32, 32, 32],],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]],
+                    [['1', 0, 0, 32, 32, 32, 32]]
+                ],
+                [
+                    [['1', 0, 0, 32, 32, 32, 32]],
                     [['1', 0, 0, 32, 32, 32, 32]],
                     [['1', 0, 0, 32, 32, 32, 32]],
                     [['1', 0, 0, 32, 32, 32, 32]],
@@ -482,30 +509,33 @@
                 ]
             ];
 
-
-
-
             var container = document.getElementById('container');
 
             var Game_Player = RPG.Game_Player,
-                    Character_Graphic = RPG.Character_Graphic;
+                    Character_Graphic = RPG.Character_Graphic,
+                    Game_Character = RPG.Game_Character;
+
+
             var player = new Game_Player({
                 graphic: new Character_Graphic({
                     image: '1',
                     rows: 4,
                     cols: 9
-                })
+                }),
+                speed: 8
             });
+
 
             RPG.initialize({
                 container: container,
                 player: player
             });
+
             RPG.SceneManager.new('Map', 'map01', {
                 map: {
                     tileWidth: 32,
                     tileHeight: 32,
-                    spriteset:spriteset
+                    spriteset: spriteset
                 },
                 player: {
                     x: 100,
@@ -513,7 +543,8 @@
                 },
                 graphics: {
                     characters: {
-                        '1': '../src/images/Las2vdS.png'
+                        '1': '../src/images/Las2vdS.png',
+                        '2': '../src/images/mack_char01.png'
                     },
                     tilesets: {
                         '1': '../src/images/tilea2.png'
@@ -521,6 +552,11 @@
                 },
                 start: function () {
                     console.log('started...');
+                    var character = RPG.Characters.get('character1');
+                    var self = this;
+                    self.map_data.map.add(character);
+                    character.moveTo(0,5);
+
                 }
             });
             RPG.SceneManager.call('map01');
