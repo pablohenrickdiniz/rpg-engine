@@ -200,8 +200,8 @@
                 if(RPG.debug){
                    var layer = Canvas.getLayer(Consts.EVENT_LAYER,object.layer);
                    layer.rect({
-                       x:bounds.x,
-                       y:bounds.y,
+                       x:parseInt(bounds.x- root.Canvas.x),
+                       y:parseInt(bounds.y- root.Canvas.y),
                        width:bounds.width,
                        height:bounds.height,
                        lineWidth:2
