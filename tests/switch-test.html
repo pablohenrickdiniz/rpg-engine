@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Scene Map</title>
+    <title>Switch Test</title>
     <!-- canvas engine-->
     <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
     <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
@@ -70,7 +70,9 @@
         function init() {
             var container = document.getElementById('container');
             var Game_Player = RPG.Game_Player,
-                    Character_Graphic = RPG.Character_Graphic;
+                    Character_Graphic = RPG.Character_Graphic,
+                    Game_Event = RPG.Game_Event,
+                    Event_Page = RPG.Event_Page;
 
             var player = new Game_Player({
                 graphic: new Character_Graphic({
@@ -99,17 +101,46 @@
                 graphics: {
                     characters: {
                         '1': '../src/images/Las2vdS.png',
-                        '2': '../src/images/mack_char01.png'
+                        '2': '../src/images/mack_char01.png',
+                        'switches':'../src/images/recolored-handle-switches-2.png'
                     },
                     tilesets: {
                         '1': '../src/images/tilea2.png'
                     }
                 },
                 start: function () {
+                    var Consts = RPG.Consts;
                     console.log('started...');
                     var character1 = RPG.Characters.get('character1');
                     var self = this;
                     self.map_data.map.add(character1);
+                    var page1 = new Event_Page({
+                          graphic:new Character_Graphic({
+                              image:'switches',
+                              rows:4,
+                              cols:3,
+                              sWidth:96,
+                              sHeight:128
+                          }),
+                          script:function(){
+                              if(this.isEnabled('A')){
+                                  this.look(Consts.CHARACTER_DIRECTION_DOWN);
+                                  this.disableSwitch('A');
+                              }
+                              else{
+                                  this.look(Consts.CHARACTER_DIRECTION_RIGHT);
+                                  this.enableSwitch('A');
+                              }
+                          },
+                           trigger:  Consts.TRIGGER_ACTION_BUTTON
+                    });
+
+                    var eventSwitch = new Game_Event({
+                        x:150,
+                        y:100,
+                        pages:[page1]
+                    });
+                    self.map_data.map.add(eventSwitch);
                 }
             });
             RPG.SceneManager.call('map01');

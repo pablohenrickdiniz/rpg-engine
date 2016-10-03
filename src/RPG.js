@@ -31,6 +31,7 @@
             Keyboard:null,
             Mouse:null
         },
+        debug:true,
         /**
          *
          * @param container
@@ -59,6 +60,10 @@
                     self.Main.scene.step();
                 }
             });
+
+            self.Controls.Keyboard.addShortcutListener('ENTER',function(){
+                self.Main.scene.action_button = true;
+            })
         }
     };
 })(window);

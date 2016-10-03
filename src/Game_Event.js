@@ -3,6 +3,13 @@
         throw "Game_Event requires Character"
     }
 
+    if(root.Event_Page == undefined){
+        throw "Game_Event requires Event_Page"
+    }
+
+    var Event_Page = root.Event_Page;
+
+
     var Game_Character = root.Game_Character;
 
     /**
@@ -13,19 +20,12 @@
     var Game_Event = function (options) {
         var self = this;
         Game_Character.call(self, options);
-        self.switches_callbacks = [];
+        initialize(self);
         self.switches = [];
-        self.page = null;
-        self.pages = [];
-        self.bounds.groups = ['EV', 'ACTION_BUTTON'];
-        Object.defineProperty(self, 'graphic', {
-            get: function () {
-                if (self.page !== null && self.page.graphic !== null) {
-                    return self.page.graphic;
-                }
-                return null;
-            }
-        });
+        self.currentPage = null;
+        self.pages = options.pages || [];
+        self.bounds.groups = ['EV', 'ACTION_BUTTON','STEP'];
+        updateCurrentPage(self);
     };
 
     Game_Event.prototype = Object.create(Game_Character.prototype);
@@ -34,15 +34,22 @@
     /**
      *
      * @param name
+     * @returns {boolean}
+     */
+    Game_Event.prototype.isEnabled = function(name){
+        var self = this;
+        return self.switches[name] == true;
+    };
+
+    /**
+     *
+     * @param name
      */
     Game_Event.prototype.enableSwitch = function (name) {
         var self = this;
-        self.switches[name] = true;
-        if (self.switches_callbacks[name] !== undefined) {
-            var length = self.switches_callbacks.length;
-            for(var i =0; i < length;i++){
-                self.switches_callbacks[name][i].apply(self);
-            }
+        if(!self.switches[name]){
+            self.switches[name] = true;
+            updateCurrentPage(self);
         }
     };
 
@@ -52,14 +59,12 @@
      */
     Game_Event.prototype.disableSwitch = function (name) {
         var self = this;
-        self.switches[name] = false;
-        if (self.switches_callbacks[name] !== undefined) {
-            var length = self.switches_callbacks.length;
-            for(var i =0; i < length;i++){
-                self.switches_callbacks[name][i].apply(self);
-            }
+        if(self.switches[name]){
+            delete self.switches[name];
+            updateCurrentPage(self);
         }
     };
+
     /**
      *
      * @param name
@@ -78,14 +83,24 @@
      *
      * @param page
      */
-    Game_Event.prototype.addPage = function (page) {
+    Game_Event.prototype.add = function (page) {
         var self = this;
-        self.pages.push(page);
+        if(page instanceof Event_Page){
+            self.pages.push(page);
+        }
+    };
+
+    Game_Event.prototype.remove = function(page){
+        var self = this;
+        var index = self.pages.indexOf(page);
+        if(index != -1){
+            self.pages.splice(index,1);
+        }
     };
 
     Game_Event.prototype.update = function(){
         var self =this;
-        if (self.page !== null) {
+        if (self.currentPage !== null) {
             if (!self.moving) {
                 if (self.graphic !== null) {
                     self.animations[self.direction].pauseToFrame(1);
@@ -95,6 +110,56 @@
                 self.refreshed = false;
             }
         }
+    };
+
+    var initialize = function(self){
+        Object.defineProperty(self, 'graphic', {
+            get: function () {
+                if (self.currentPage !== null && self.currentPage.graphic !== null) {
+                    return self.currentPage.graphic;
+                }
+                return null;
+            }
+        });
+    };
+
+    /**
+     *
+     * @param self
+     */
+    var updateCurrentPage = function(self){
+        var pages = self.pages;
+        var length = pages.length;
+        var currentPage = null;
+        for(var i =0; i < length;i++){
+            if(validateConditions(pages[i])){
+                currentPage = pages[i];
+            }
+        }
+        self.currentPage = currentPage;
+    };
+
+    /**
+     *
+     * @param page
+     * @returns {boolean}
+     */
+    var validateConditions = function(page){
+        var conditions = page.conditions;
+        var event = page.event;
+        for(var scope in conditions){
+            switch(scope){
+                case 'LOCAL':
+                    for(var id in conditions[scope]){
+                        var status = event.switches[id]?true:false;
+                        if(conditions[scope][id] != status){
+                            return false;
+                        }
+                    }
+            }
+        }
+
+        return true;
     };
 
     root.Game_Event = Game_Event;

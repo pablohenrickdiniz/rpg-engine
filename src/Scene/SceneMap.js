@@ -33,6 +33,7 @@
             spriteset_map: null
         };
         self.json_data = options.map || {};
+        self.action_button = false;
     };
 
     SceneMap.prototype = Object.create(Scene.prototype);
@@ -54,6 +55,7 @@
     SceneMap.prototype.step = function () {
         Scene.prototype.step.apply(this);
         var self = this;
+        action_events(self);
         step_events(self);
         step_focus(self);
         refresh_BG(self);
@@ -175,11 +177,12 @@
             frame = object.getCurrentFrame();
             if(frame != null){
                 bounds = object.bounds;
-                x = parseInt(bounds.x - root.Canvas.x);
-                y = parseInt(bounds.y - root.Canvas.y);
+                image = Graphics.get('characters', frame.image);
+                x = parseInt(bounds.x - root.Canvas.x)-(frame.width-bounds.width)/2;
+                y = parseInt(bounds.y - root.Canvas.y)-(frame.height-bounds.height)/2;
                 bounds.lx = x;
                 bounds.ly = y;
-                image = Graphics.get('characters', frame.image);
+
 
                 Canvas.drawImage(image, {
                     dx: x,
@@ -193,6 +196,17 @@
                     layer: object.layer,
                     type: Consts.EVENT_LAYER
                 });
+
+                if(RPG.debug){
+                   var layer = Canvas.getLayer(Consts.EVENT_LAYER,object.layer);
+                   layer.rect({
+                       x:bounds.x,
+                       y:bounds.y,
+                       width:bounds.width,
+                       height:bounds.height,
+                       lineWidth:2
+                   });
+                }
             }
         }
 
@@ -272,10 +286,9 @@
         }
     };
 
-    var action_events = function () {
-        var self = this;
-        var player = self.player;
-        var tree = self.map.getTree();
+    var action_events = function (self) {
+        var player = Main.Player;
+        var tree = self.map_data.map.getTree();
 
         var bounds_tmp = {
             x: player.bounds.x,
@@ -288,40 +301,39 @@
         var d = player.direction;
 
         switch (d) {
-            case Consts.UP:
+            case Consts.CHARACTER_DIRECTION_UP:
                 bounds_tmp.y -= bounds_tmp.height;
                 bounds_tmp.height *= 2;
                 break;
-            case Consts.RIGHT:
+            case Consts.CHARACTER_DIRECTION_RIGHT:
                 bounds_tmp.width *= 2;
                 break;
-            case Consts.DOWN:
+            case Consts.CHARACTER_DIRECTION_DOWN:
                 bounds_tmp.height *= 2;
                 break;
-            case Consts.LEFT:
+            case Consts.CHARACTER_DIRECTION_LEFT:
                 bounds_tmp.x -= bounds_tmp.width;
                 bounds_tmp.width *= 2;
                 break;
         }
 
         var collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
-        var keyboard = root.System.Controls.Keyboard;
-
-
-        collisions.forEach(function (colision) {
-            if (colision.ref !== undefined) {
-                var event = colision.ref;
-                if (event.page !== undefined && event.page !== null) {
-                    var page = event.page;
-                    if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH) {
-                        page.script();
-                    }
-                    else if (page.trigger === Consts.TRIGGER_ACTION_BUTTON && keyboard.ENTER) {
-                        page.script();
+        var length = collisions.length;
+        for(var i =0; i < length;i++){
+            var collision = collisions[i];
+            if (collision._ref !== undefined) {
+                var obj = collision._ref;
+                if (obj.currentPage) {
+                    var page = obj.currentPage;
+                    if(typeof page.script == 'function'){
+                        if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
+                            page.script.apply(obj);
+                        }
                     }
                 }
             }
-        });
+        }
+        self.action_button = false;
     };
 
     root.Scene.SceneMap = SceneMap;

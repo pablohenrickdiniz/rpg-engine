@@ -251,22 +251,25 @@
 
         var quadtree = c_map.getTree();
         var collisions = quadtree.retrieve(final_bounds, 'STEP');
+        var length = collisions.length;
 
-        collisions.forEach(function (colision) {
-            if (vec.x > 0 && colision.x < (final_bounds.x + bounds.width)) {
-                final_bounds.x = colision.x - bounds.width;
+        for(var i =0; i < length;i++){
+            var collision = collisions[i];
+            if (vec.x > 0 && collision.x < (final_bounds.x + bounds.width)) {
+                final_bounds.x = collision.x - bounds.width;
             }
-            else if (vec.x < 0 && ((colision.x + colision.width) > final_bounds.x)) {
-                final_bounds.x = colision.x + colision.width;
+            else if (vec.x < 0 && ((collision.x + collision.width) > final_bounds.x)) {
+                final_bounds.x = collision.x + collision.width;
             }
 
-            if (vec.y > 0 && colision.y < (final_bounds.y + bounds.height)) {
-                final_bounds.y = colision.y - bounds.height;
+            if (vec.y > 0 && collision.y < (final_bounds.y + bounds.height)) {
+                final_bounds.y = collision.y - bounds.height;
             }
-            else if (vec.y < 0 && ((colision.y + colision.height) > final_bounds.y)) {
-                final_bounds.y = colision.y + colision.height;
+            else if (vec.y < 0 && ((collision.y + collision.height) > final_bounds.y)) {
+                final_bounds.y = collision.y + collision.height;
             }
-        });
+        }
+
 
         if (final_bounds.x < 0) {
             final_bounds.x = 0;
