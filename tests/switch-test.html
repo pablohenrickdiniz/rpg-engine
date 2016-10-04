@@ -126,14 +126,17 @@
                               if(this.isEnabled('A')){
                                   this.look(Consts.CHARACTER_DIRECTION_DOWN);
                                   this.disableSwitch('A');
+                                  this.through = false;
                               }
                               else{
                                   this.look(Consts.CHARACTER_DIRECTION_RIGHT);
                                   this.enableSwitch('A');
+                                  this.through = true;
                               }
                           },
                            trigger:  Consts.TRIGGER_ACTION_BUTTON
                     });
+
 
                     var eventSwitch = new Game_Event({
                         x:150,

@@ -34,14 +34,12 @@
         var x = options.x || 0;
         var y = options.y || 0;
         self.bounds = {
-            x: x,
-            y: y,
-            lx: x,
-            ly: y,
+            x:x,
+            y:y,
             width: 32,
             height: 32,
             _ref: self,
-            groups: ['EV']
+            groups: ['EV','STEP']
         };
         self.layer = options.layer || 2;
         self.direction = Consts.CHARACTER_DIRECTION_DOWN;
@@ -55,6 +53,10 @@
         self.type = 'character';
         self.parent = options.parent || null;
         self.id = Game_Character.ID;
+        self.clearX = null;
+        self.clearY = null;
+        self.clearWidth = null;
+        self.clearHeight = null;
         Game_Character.ID++;
     };
 
@@ -85,7 +87,7 @@
         var self = this;
         if(self.currentAnimation !=null && self.graphic != null){
             var index = self.currentAnimation.getIndexFrame();
-            return self.graphic.get(self.direction, index+self.graphic.startFrame);
+            return self.graphic.get(self.direction, index);
         }
         return null;
     };
@@ -344,6 +346,16 @@
         }
     };
 
+    Game_Character.prototype.addCollisionGroup = function(group){
+        var self = this;
+        QuadTree.addGroup(self.bounds,group);
+    };
+
+    Game_Character.prototype.removeCollisionGroup = function(name){
+        var self = this;
+        QuadTree.removeGroup(self.bounds,name);
+    };
+
     var initialize = function(self){
         var speed = 5;
         var currentAnimation = null;
@@ -402,20 +414,9 @@
                 }
             }
         });
-
-        Object.defineProperty(self,'index',{
-            get:function(){
-                return self.bounds.y+'-'+self.id;
-            }
-        });
     };
 
-    var next_frame = function(index,frameCount){
-        if(index < frameCount){
-            return index;
-        }
-        return frameCount % index;
-    };
+
 
     root.Game_Character = Game_Character;
 })(RPG, window);

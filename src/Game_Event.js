@@ -20,11 +20,11 @@
     var Game_Event = function (options) {
         var self = this;
         Game_Character.call(self, options);
-        initialize(self);
         self.switches = [];
         self.currentPage = null;
         self.pages = options.pages || [];
-        self.bounds.groups = ['EV', 'ACTION_BUTTON','STEP'];
+        self.bounds.groups.push('ACTION_BUTTON');
+        initialize(self);
         updateCurrentPage(self);
     };
 
@@ -112,13 +112,53 @@
         }
     };
 
+    /**
+     *
+     * @param self
+     */
     var initialize = function(self){
+        var length = self.pages.length;
+        for(var i =0; i < length;i++){
+            self.pages[i].event = self;
+        }
+
+        var currentPage = null;
+
         Object.defineProperty(self, 'graphic', {
             get: function () {
-                if (self.currentPage !== null && self.currentPage.graphic !== null) {
-                    return self.currentPage.graphic;
+                if (currentPage !== null && currentPage.graphic !== null) {
+                    return currentPage.graphic;
                 }
                 return null;
+            }
+        });
+
+
+        Object.defineProperty(self,'currentPage',{
+            get:function(){
+                return currentPage;
+            },
+            set:function(cp){
+                if(cp != currentPage){
+                    currentPage = cp;
+                    if(currentPage.through){
+                        self.removeCollisionGroup('STEP');
+                    }
+                    else{
+                        self.addCollisionGroup('STEP');
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'through',{
+            get:function(){
+                return currentPage || true;
+            },
+            set:function(t){
+                if(currentPage){
+                    currentPage.through = t;
+                }
             }
         });
     };

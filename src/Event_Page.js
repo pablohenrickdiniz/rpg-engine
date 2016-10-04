@@ -15,6 +15,7 @@
         self.script = options.script || null;
         self.event = options.event || null;
         self.trigger = options.trigger || Consts.TRIGGER_AUTO_RUN;
+        self.through = options.through || false;
     };
 
 
@@ -36,6 +37,8 @@
 
     var initialize = function(self){
         var conditions = [];
+        var through = false;
+
         Object.defineProperty(self,'conditions',{
             set:function(cond){
                 conditions = [];
@@ -46,6 +49,25 @@
             },
             get:function(){
                 return conditions;
+            }
+        });
+
+        Object.defineProperty(self,'through',{
+            get:function(){
+                return through;
+            },
+            set:function(t){
+                if(t != through){
+                    through = t;
+                    if(self.event && self.event.currentPage == self){
+                        if(through){
+                            self.event.removeCollisionGroup('STEP');
+                        }
+                        else{
+                            self.event.addCollisionGroup('STEP');
+                        }
+                    }
+                }
             }
         });
     };

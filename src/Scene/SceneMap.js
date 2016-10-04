@@ -137,21 +137,15 @@
     var clear_graphics = function (self) {
         var player = Main.Player;
         var map = self.map_data.map;
-        var bounds = player.bounds;
-        var graphic = player.graphic;
         var event;
         var i;
 
-        var objects = map.objects.concat(Main.Player);
+        var objects = map.objects.concat(player);
         var size = objects.length;
 
         for (i = 0; i < size; i++) {
             event = objects[i];
-            bounds = event.bounds;
-            graphic = event.graphic;
-            if(graphic != null){
-                Canvas.clear(Consts.EVENT_LAYER, event.layer, bounds.lx, bounds.ly, graphic.width, graphic.height);
-            }
+            Canvas.clear(Consts.EVENT_LAYER, event.layer, event.clearX, event.clearY, event.clearWidth, event.clearHeight);
         }
     };
 
@@ -180,9 +174,10 @@
                 image = Graphics.get('characters', frame.image);
                 x = parseInt(bounds.x - root.Canvas.x)-(frame.width-bounds.width)/2;
                 y = parseInt(bounds.y - root.Canvas.y)-(frame.height-bounds.height)/2;
-                bounds.lx = x;
-                bounds.ly = y;
-
+                object.clearX = x;
+                object.clearY = y;
+                object.clearWidth = frame.width;
+                object.clearHeight = frame.height;
 
                 Canvas.drawImage(image, {
                     dx: x,
