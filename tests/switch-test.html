@@ -123,18 +123,24 @@
                               sHeight:128
                           }),
                           script:function(){
-                              if(this.isEnabled('A')){
-                                  this.look(Consts.CHARACTER_DIRECTION_DOWN);
-                                  this.disableSwitch('A');
-                                  this.through = false;
+                              if(!this.isEnabled('A')){
+                                  this.enableSwitch('A');
+                                  this.turnRight();
                               }
                               else{
-                                  this.look(Consts.CHARACTER_DIRECTION_RIGHT);
-                                  this.enableSwitch('A');
-                                  this.through = true;
+                                  this.disableSwitch('A');
+                                  this.turnDown();
                               }
                           },
-                           trigger:  Consts.TRIGGER_ACTION_BUTTON
+                           trigger:  Consts.TRIGGER_ACTION_BUTTON,
+//                           movement_type:Consts.MOVE_ROUTE,
+//                           repeatRoute:false,
+//                           route:[
+//                               'MOVE_RIGHT',
+//                               'MOVE_DOWN',
+//                               'MOVE_LEFT',
+//                               'MOVE_UP'
+//                           ]
                     });
 
 

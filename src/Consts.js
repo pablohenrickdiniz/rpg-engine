@@ -4,6 +4,8 @@
         RIGHT:39,
         DOWN:40,
         LEFT:37,
+        MOVE_FIXED:'fixed',
+        MOVE_ROUTE:'route',
         CHARACTER_DIRECTION_DOWN:0,
         CHARACTER_DIRECTION_UP:3,
         CHARACTER_DIRECTION_RIGHT:2,

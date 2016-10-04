@@ -10,7 +10,8 @@
     var Event_Page = root.Event_Page;
 
 
-    var Game_Character = root.Game_Character;
+    var Game_Character = root.Game_Character,
+        Consts = root.Consts;
 
     /**
      *
@@ -100,16 +101,38 @@
 
     Game_Event.prototype.update = function(){
         var self =this;
-        if (self.currentPage !== null) {
-            if (!self.moving) {
-                if (self.graphic !== null) {
-                    self.animations[self.direction].pauseToFrame(1);
-                }
-            }
-            else {
-                self.refreshed = false;
+        if (!self.moving && self.currentPage !== null) {
+            var page = self.currentPage;
+            switch(page.movement_type){
+                case Consts.MOVE_ROUTE:
+                    if(page.route.length > 0 && page.currentMove != -1){
+                        if(page.route[page.currentMove] == undefined){
+                             page.currentMove = page.repeatRoute?0:-1;
+                        }
+                        if(page.currentMove != -1){
+                            var move = page.route[page.currentMove];
+                            page.currentMove++;
+
+                            switch(move){
+                                case 'MOVE_UP':
+                                    self.moveUp();
+                                    break;
+                                case 'MOVE_DOWN':
+                                    self.moveDown();
+                                    break;
+                                case 'MOVE_LEFT':
+                                    self.moveLeft();
+                                    break;
+                                case 'MOVE_RIGHT':
+                                    self.moveRight();
+                                    break;
+                            }
+                        }
+                    }
             }
         }
+
+        Game_Character.prototype.update.call(self);
     };
 
     /**
@@ -123,6 +146,7 @@
         }
 
         var currentPage = null;
+        var currentAnimation = self.currentAnimation;
 
         Object.defineProperty(self, 'graphic', {
             get: function () {
@@ -147,6 +171,12 @@
                     else{
                         self.addCollisionGroup('STEP');
                     }
+                    if(self.currentAnimation.running && !currentPage.walkingAnimation){
+                        self.currentAnimation.stop();
+                    }
+                    else if(!self.currentAnimation.running && currentPage.walkingAnimation){
+                        self.currentAnimation.start();
+                    }
                 }
             }
         });
@@ -158,6 +188,36 @@
             set:function(t){
                 if(currentPage){
                     currentPage.through = t;
+                }
+            }
+        });
+
+
+
+        Object.defineProperty(self,'currentAnimation',{
+            get:function(){
+                return currentAnimation;
+            },
+            set:function(ca){
+                if(currentAnimation != ca){
+                    if(currentAnimation != null){
+                        currentAnimation.stop(self.graphic.startFrame);
+                    }
+                    currentAnimation = ca;
+                    if(self.walkingAnimation){
+                        self.currentAnimation.start();
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'walkingAnimation',{
+            get:function(){
+                return currentPage.walkingAnimation || false;
+            },
+            set:function(wa){
+                if(currentPage){
+                    currentPage.walkingAnimation = wa;
                 }
             }
         });

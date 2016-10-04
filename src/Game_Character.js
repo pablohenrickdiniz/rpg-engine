@@ -102,14 +102,13 @@
     Game_Character.prototype.moveTo = function (direction, times, complete, allow) {
         allow = allow === undefined ? false : allow;
         var self = this;
-
         if (!self.moving || allow) {
             self.moving = true;
             var x = self.bounds.x;
             var y = self.bounds.y;
             var time = 1000 / self.speed;
 
-            times = times === undefined ? 1 : times;
+            times = times == undefined?1:times;
             switch (direction) {
                 case Consts.CHARACTER_DIRECTION_UP:
                     y -= self.h_speed;
@@ -165,7 +164,6 @@
         }
     };
 
-
     /**
      *
      * @param x
@@ -185,6 +183,26 @@
         };
     };
 
+    Game_Character.prototype.moveUp = function(){
+        var self = this;
+        self.moveTo(Consts.CHARACTER_DIRECTION_UP);
+    };
+
+    Game_Character.prototype.moveDown = function(){
+        var self = this;
+        self.moveTo(Consts.CHARACTER_DIRECTION_DOWN);
+    };
+
+    Game_Character.prototype.moveRight = function(){
+        var self = this;
+        self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT);
+    };
+
+    Game_Character.prototype.moveLeft = function(){
+        var self = this;
+        self.moveTo(Consts.CHARACTER_DIRECTION_LEFT);
+    };
+
     Game_Character.prototype.stepForward = function () {
         var self = this;
         self.moveTo(self.direction);
@@ -198,7 +216,7 @@
      *
      * @param direction
      */
-    Game_Character.prototype.look = function (direction) {
+    Game_Character.prototype.turn = function (direction) {
         var self = this;
         switch (direction) {
             case Consts.CHARACTER_DIRECTION_UP:
@@ -211,7 +229,6 @@
                 if (direction instanceof Game_Character) {
                     var d_x = self.bounds.x - direction.bounds.x;
                     var d_y = self.bounds.y - direction.bounds.y;
-                    console.log(d_x,d_y);
 
                     if(Math.abs(d_x) > Math.abs(d_y)){
                         if(d_x > 0){
@@ -234,9 +251,29 @@
         }
     };
 
+    Game_Character.prototype.turnDown = function(){
+        var self = this;
+        self.turn(Consts.CHARACTER_DIRECTION_DOWN);
+    };
+
+    Game_Character.prototype.turnUp = function(){
+        var self = this;
+        self.turn(Consts.CHARACTER_DIRECTION_UP);
+    };
+
+    Game_Character.prototype.turnLeft = function(){
+        var self = this;
+        self.turn(Consts.CHARACTER_DIRECTION_LEFT);
+    };
+
+    Game_Character.prototype.turnRight = function(){
+        var self = this;
+        self.turn(Consts.CHARACTER_DIRECTION_RIGHT);
+    };
+
     Game_Character.prototype.lookToPlayer = function () {
         var self = this;
-        self.look(Main.Player);
+        self.turn(Main.Player);
     };
     /**
      *
@@ -330,7 +367,6 @@
                 if (typeof callback === 'function') {
                     callback();
                 }
-
             }
             else {
                 var distance_x = (data.end_position.x - data.start_position.x);
@@ -401,6 +437,7 @@
         });
 
         Object.defineProperty(self,'currentAnimation',{
+            configurable:true,
             get:function(){
                 return currentAnimation;
             },

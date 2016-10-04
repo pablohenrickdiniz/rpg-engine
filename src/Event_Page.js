@@ -16,6 +16,11 @@
         self.event = options.event || null;
         self.trigger = options.trigger || Consts.TRIGGER_AUTO_RUN;
         self.through = options.through || false;
+        self.route = options.route || [];
+        self.currentMove = 0;
+        self.repeatRoute = options.repeatRoute || false;
+        self.movement_type = options.movement_type || Consts.MOVE_FIXED;
+        self.walkingAnimation = options.walkingAnimation || false;
     };
 
 
@@ -38,6 +43,7 @@
     var initialize = function(self){
         var conditions = [];
         var through = false;
+        var walkingAnimation =false;
 
         Object.defineProperty(self,'conditions',{
             set:function(cond){
@@ -65,6 +71,26 @@
                         }
                         else{
                             self.event.addCollisionGroup('STEP');
+                        }
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'walkingAnimation',{
+            get:function(){
+                return walkingAnimation;
+            },
+            set:function(wa){
+                if(wa != walkingAnimation){
+                    walkingAnimation = wa;
+                    if(self.event){
+                        var event = self.event;
+                        if(walkingAnimation && !event.currentAnimation.running){
+                            event.currentAnimation.start();
+                        }
+                        else if(!walkingAnimation && event.currentAnimation.running){
+                            event.currentAnimation.stop();
                         }
                     }
                 }
