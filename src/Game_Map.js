@@ -60,10 +60,11 @@
         var self = this;
         var index = self.objects.indexOf(obj);
         if (index != -1) {
-            self.objects.splice(index, 1);
             obj.parent = null;
             QuadTree.remove(obj.bounds);
+            return self.objects.splice(index, 1)[0];
         }
+        return null;
     };
 
     root.Game_Map = Game_Map;

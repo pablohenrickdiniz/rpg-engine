@@ -7,8 +7,13 @@
         throw "Character_Graphic requires Graphics"
     }
 
+    if(root.Graphic == undefined){
+        throw "Character_Graphic requires Object_Graphic"
+    }
+
     var Frame = root.Frame,
-        Graphics = root.Graphics;
+        Graphics = root.Graphics,
+        Object_Graphic = root.Graphic;
     /**
      *
      * @param image
@@ -17,18 +22,19 @@
      */
     var Character_Graphic = function (options) {
         var self = this;
+        Object_Graphic.call(self,options);
         initialize(self);
         options = options || {};
         self.rows = options.rows || 1;
         self.cols = options.cols || 1;
-        self.sx = options.sx || 0;
-        self.sy = options.sy || 0;
-        self.sWidth = options.sWidth || null;
-        self.sHeight = options.sHeight || null;
-        self.image = options.image || '';
         self.sprites = [];
         self.startFrame = options.startFrame || 0;
     };
+
+
+    Character_Graphic.prototype = Object.create(Object_Graphic.prototype);
+    Character_Graphic.prototype.constructor = Character_Graphic;
+
     /**
      *
      * @param i
@@ -65,7 +71,7 @@
             get:function(){
                 var width = self.sWidth;
                 if(width == null){
-                    var image = Graphics.get('characters',self.image);
+                    var image = Graphics.get('character',self.image);
                     if(image != null){
                         width = image.width;
                     }
@@ -82,7 +88,7 @@
             get:function(){
                 var height = self.sHeight;
                 if(height == null){
-                    var image = Graphics.get('characters',self.image);
+                    var image = Graphics.get('character',self.image);
                     if(image != null){
                         height = image.height;
                     }

@@ -11,11 +11,21 @@
         throw "SceneMap requires Graphics"
     }
 
+    if (root.Game_Item == undefined) {
+        throw "SceneMap requires Game_Item"
+    }
+
+    if (root.Game_Event == undefined) {
+        throw "SceneMap requires Game_Event"
+    }
+
     var Scene = root.Scene,
         Canvas = root.Canvas,
         Consts = root.Consts,
         Main = root.Main,
-        Graphics = root.Graphics;
+        Graphics = root.Graphics,
+        Game_Event = root.Game_Event,
+        Game_Item = root.Game_Item;
 
     /**
      *
@@ -34,6 +44,7 @@
         };
         self.json_data = options.map || {};
         self.action_button = false;
+        self.clear_queue = [];
     };
 
     SceneMap.prototype = Object.create(Scene.prototype);
@@ -64,9 +75,30 @@
     };
 
 
-    var sort_objects = function(objects){
-        return objects.sort(function(a,b){
-            return a.y+(a.graphic? a.graphic.height:0) > b.y + (b.graphic?b.graphic.height:0)
+    var sort_objects = function (objects) {
+        return objects.sort(function (a, b) {
+            var aby = parseInt(a.y - root.Canvas.y);
+            var bby = parseInt(b.y - root.Canvas.y);
+
+            var ah_height = 0;
+            var bh_height = 0;
+            var a_height = 0;
+            var b_height = 0;
+
+            if (a.graphic) {
+                a_height = a.graphic.height;
+                ah_height = a_height / 2;
+            }
+
+            if (b.graphic) {
+                b_height = b.graphic.height;
+                bh_height = b_height / 2;
+            }
+
+            var ya = aby + a.bounds.height / 2 - ah_height;
+            var yb = bby + b.bounds.height / 2 - bh_height;
+
+            return ya + a_height > yb + b_height;
         });
     };
 
@@ -113,7 +145,7 @@
                             var dy = i * tile.height - sy;
                             dx = parseInt(dx);
                             dy = parseInt(dy);
-                            var image = Graphics.get('tilesets', tile.image);
+                            var image = Graphics.get('tileset', tile.image);
                             context.drawImage(image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tile.width, tile.height);
                         }
                     }
@@ -135,17 +167,9 @@
     };
 
     var clear_graphics = function (self) {
-        var player = Main.Player;
-        var map = self.map_data.map;
-        var event;
-        var i;
-
-        var objects = map.objects.concat(player);
-        var size = objects.length;
-
-        for (i = 0; i < size; i++) {
-            event = objects[i];
-            Canvas.clear(Consts.EVENT_LAYER, event.layer, event.clearX, event.clearY, event.clearWidth, event.clearHeight);
+        while(self.clear_queue.length > 0){
+            var clear = self.clear_queue.pop();
+            Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
         }
     };
 
@@ -165,19 +189,20 @@
         objects = objects.concat(Main.Player);
         objects = sort_objects(objects);
         var size = objects.length;
-
         for (i = 0; i < size; i++) {
             var object = objects[i];
             frame = object.getCurrentFrame();
-            if(frame != null){
+            if (frame != null) {
                 bounds = object.bounds;
-                image = Graphics.get('characters', frame.image);
-                x = parseInt(bounds.x - root.Canvas.x)-(frame.width-bounds.width)/2;
-                y = parseInt(bounds.y - root.Canvas.y)-(frame.height-bounds.height)/2;
-                object.clearX = x;
-                object.clearY = y;
-                object.clearWidth = frame.width;
-                object.clearHeight = frame.height;
+                image = Graphics.get(object.graphic_type, frame.image);
+                var bx = parseInt(bounds.x - root.Canvas.x);
+                var by = parseInt(bounds.y - root.Canvas.y);
+                var h_width = frame.width / 2;
+                var h_height = frame.height / 2;
+
+                x = bx + bounds.width / 2 - h_width;
+                y = by + bounds.height / 2 - h_height;
+
 
                 Canvas.drawImage(image, {
                     dx: x,
@@ -192,15 +217,24 @@
                     type: Consts.EVENT_LAYER
                 });
 
-                if(RPG.debug){
-                   var layer = Canvas.getLayer(Consts.EVENT_LAYER,object.layer);
-                   layer.rect({
-                       x:parseInt(bounds.x- root.Canvas.x),
-                       y:parseInt(bounds.y- root.Canvas.y),
-                       width:bounds.width,
-                       height:bounds.height,
-                       lineWidth:2
-                   });
+                self.clear_queue.push({
+                    layer_type:Consts.EVENT_LAYER,
+                    layer:object.layer,
+                    x:Math.min(x, bx),
+                    y:Math.min(y, by),
+                    width:Math.max(frame.width, 32),
+                    height:Math.max(frame.height, 32)
+                });
+
+                if (RPG.debug) {
+                    var layer = Canvas.getLayer(Consts.EVENT_LAYER, object.layer);
+                    layer.rect({
+                        x: bx,
+                        y: by,
+                        width: bounds.width,
+                        height: bounds.height,
+                        lineWidth: 2
+                    });
                 }
             }
         }
@@ -283,7 +317,8 @@
 
     var action_events = function (self) {
         var player = Main.Player;
-        var tree = self.map_data.map.getTree();
+        var map = self.map_data.map;
+        var tree = map.getTree();
 
         var bounds_tmp = {
             x: player.bounds.x,
@@ -312,22 +347,45 @@
                 break;
         }
 
-        var collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
-        var length = collisions.length;
-        for(var i =0; i < length;i++){
-            var collision = collisions[i];
+        var length;
+        var collisions;
+        var i;
+        var collision;
+        var obj;
+
+        collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
+        length = collisions.length;
+        for (i = 0; i < length; i++) {
+            collision = collisions[i];
             if (collision._ref !== undefined) {
-                var obj = collision._ref;
-                if (obj.currentPage) {
+                obj = collision._ref;
+                if (obj instanceof Game_Event && obj.currentPage) {
                     var page = obj.currentPage;
-                    if(typeof page.script == 'function'){
-                        if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
+                    if (typeof page.script == 'function') {
+                        if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
                             page.script.apply(obj);
                         }
+                    }
+
+                }
+            }
+        }
+
+        collisions = tree.retrieve(player.bounds, 'ITEM');
+        length = collisions.length;
+        for (i = 0; i < length; i++) {
+            collision = collisions[i];
+            if (collision._ref !== undefined) {
+                obj = collision._ref;
+                if (obj instanceof Game_Item) {
+                    if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
+                        var item = map.remove(obj);
+                        player.addItem(obj.id,item.amount);
                     }
                 }
             }
         }
+
         self.action_button = false;
     };
 

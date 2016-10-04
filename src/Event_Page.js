@@ -42,7 +42,7 @@
 
     var initialize = function(self){
         var conditions = [];
-        var through = false;
+        var through = null;
         var walkingAnimation =false;
 
         Object.defineProperty(self,'conditions',{

@@ -6,6 +6,8 @@
         LEFT:37,
         MOVE_FIXED:'fixed',
         MOVE_ROUTE:'route',
+        CHARACTER:'character',
+        ICON:'icon',
         CHARACTER_DIRECTION_DOWN:0,
         CHARACTER_DIRECTION_UP:3,
         CHARACTER_DIRECTION_RIGHT:2,

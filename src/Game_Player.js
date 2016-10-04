@@ -1,9 +1,9 @@
 (function (root, window) {
-    if (root.Game_Character == undefined) {
-        throw new Error('Player Requires Character');
+    if (root.Game_Actor == undefined) {
+        throw new Error('Game_Player Requires Game_Actor');
     }
 
-    var Game_Character = root.Game_Character,
+    var Game_Actor = root.Game_Actor,
         Consts = root.Consts,
         Keyboard = window.Keyboard;
 
@@ -15,11 +15,11 @@
     var Game_Player = function (options) {
         var self = this;
         options = options || {};
-        Game_Character.call(self, options);
+        Game_Actor.call(self, options);
         self.type = 'player';
     };
 
-    Game_Player.prototype = Object.create(Game_Character.prototype);
+    Game_Player.prototype = Object.create(Game_Actor.prototype);
     Game_Player.prototype.constructor = Game_Player;
 
     Game_Player.prototype.update = function () {
@@ -46,7 +46,7 @@
 
 
 
-        Game_Character.prototype.update.call(self);
+        Game_Actor.prototype.update.call(self);
     };
 
     root.Game_Player = Game_Player;
