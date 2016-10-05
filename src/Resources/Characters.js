@@ -1,0 +1,40 @@
+(function(root){
+    if(root.Game_Character == undefined){
+        throw "Characters requires Game_Character"
+    }
+
+    if(root.Character_Graphic == undefined){
+        throw "Characters requires Character_Graphic"
+    }
+
+    var Game_Character = root.Game_Character,
+        Character_Graphic = root.Character_Graphic;
+
+    root.Characters = {
+        characters:{},
+        set:function(id,character){
+            var self = this;
+            self.characters[id] = character;
+        },
+        get:function(id){
+            var self = this;
+            if(self.characters[id] != undefined){
+                return self.characters[id];
+            }
+            return null;
+        },
+        createInstance:function(id,options){
+            var self = this;
+            if(self.characters[id] != undefined){
+                var graphic = new Character_Graphic(self.characters[id].graphic);
+                options = options || {};
+                options.id = id;
+                options.graphic = graphic;
+                var opt = {x:0, y:0, graphic:graphic};
+                opt = Object.assign(opt,options);
+                return new Game_Character(opt);
+            }
+            return null;
+        }
+    };
+})(RPG);

@@ -56,10 +56,8 @@
         var q = function(){
             count++;
             if(count == 1){
-                scene.map_data = {
-                    spriteset_map:spriteset_map,
-                    map:map
-                };
+                scene.map = map;
+                scene.spriteset_map = spriteset_map;
                 callback();
             }
         };
@@ -71,7 +69,7 @@
             playerX = data.player.x || playerX;
             playerY = data.player.y || playerY;
         }
-        console.log(playerX,playerX);
+
         Main.Player.x = playerX;
         Main.Player.y = playerY;
         scene.focusOnCharacter(Main.Player);

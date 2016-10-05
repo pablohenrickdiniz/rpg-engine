@@ -12,7 +12,7 @@
         options = options || {};
         self.durability = options.durability || 'INDESTRUCTIBLE';
         self.amount = options.amount || 1;
-        self.effects = [];
+        self.effects = options.effects || [];
         self.graphic_type = 'icon';
         self.through = options.through || true;
         self.capture = options.capture || Consts.TRIGGER_PLAYER_TOUCH;

@@ -38,10 +38,8 @@
         self.focused_character = null;
         self.bg_refreshed = false;
         self.character_steps = [];
-        self.map_data = {
-            map: null,
-            spriteset_map: null
-        };
+        self.map = null;
+        self.spriteset_map = null;
         self.json_data = options.map || {};
         self.action_button = false;
         self.clear_queue = [];
@@ -130,7 +128,7 @@
         var sy = Canvas.y;
         var width = Canvas.width;
         var height = Canvas.height;
-        var spriteset_map = self.map_data.spriteset_map;
+        var spriteset_map = self.spriteset_map;
 
         var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
         for (var i = interval.si; i <= interval.ei; i++) {
@@ -178,7 +176,7 @@
      * @param self
      */
     var draw_graphics = function (self) {
-        var objects = self.map_data.map.objects;
+        var objects = self.map.objects;
         var bounds;
         var i;
         var image;
@@ -272,7 +270,7 @@
     var step_focus = function (self) {
         if (self.focused_character != null) {
             var event = self.focused_character;
-            var m = self.map_data.map;
+            var m = self.map;
 
             var viewport_width = Canvas.width;
             var viewport_height = Canvas.height;
@@ -306,7 +304,7 @@
     };
 
     var step_events = function (self) {
-        var events = self.map_data.map.objects;
+        var events = self.map.objects;
         var length = events.length;
         var i;
         Main.Player.update();
@@ -317,7 +315,7 @@
 
     var action_events = function (self) {
         var player = Main.Player;
-        var map = self.map_data.map;
+        var map = self.map;
         var tree = map.getTree();
 
         var bounds_tmp = {

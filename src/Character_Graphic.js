@@ -8,7 +8,7 @@
     }
 
     if(root.Graphic == undefined){
-        throw "Character_Graphic requires Object_Graphic"
+        throw "Character_Graphic requires Graphic"
     }
 
     var Frame = root.Frame,

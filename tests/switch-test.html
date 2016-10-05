@@ -40,6 +40,8 @@
     <script type="text/javascript" src="../src/Game_Player.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
+    <script type="text/javascript" src="../src/Game_Item.js"></script>
+    <script type="text/javascript" src="../src/Item_Graphic.js"></script>
     <script type="text/javascript" src="../src/SpritesetMap.js"></script>
 
 
@@ -66,7 +68,8 @@
 
 
     <!--data -->
-    <script type="text/javascript" src="../src/Characters.js"></script>
+    <script type="text/javascript" src="../src/Resources/Characters.js"></script>
+    <script type="text/javascript" src="../src/Resources/Items.js"></script>
     <script type="text/javascript" src="dat/game_data.js"></script>
 
     <script type="text/javascript">
@@ -75,8 +78,7 @@
             var Game_Player = RPG.Game_Player,
                     Character_Graphic = RPG.Character_Graphic,
                     Game_Event = RPG.Game_Event,
-                    Event_Page = RPG.Event_Page,
-                    Game_Character = RPG.Game_Character;
+                    Event_Page = RPG.Event_Page;
 
             var player = new Game_Player({
                 graphic: new Character_Graphic({
@@ -103,24 +105,24 @@
                     }
                 },
                 graphics: {
-                    characters: {
+                    character: {
                         '1': '../src/images/Las2vdS.png',
                         '2': '../src/images/mack_char01.png',
                         'switches':'../src/images/recolored-handle-switches-2.png'
                     },
-                    tilesets: {
+                    tileset: {
                         '1': '../src/images/tilea2.png'
                     },
-                    icons:{
+                    icon:{
                         '1':'../src/images/icons1.png'
                     }
                 },
                 start: function () {
                     console.log('started...');
                     var Consts = RPG.Consts;
-                    var character1 = RPG.Characters.get('character1');
+                    var character1 = RPG.Characters.createInstance('character1');
                     var self = this;
-                    self.map_data.map.add(character1);
+                    self.map.add(character1);
                     var page1 = new Event_Page({
                           graphic:new Character_Graphic({
                               image:'switches',
@@ -148,7 +150,7 @@
                         y:100,
                         pages:[page1]
                     });
-                    self.map_data.map.add(eventSwitch);
+                    self.map.add(eventSwitch);
                 }
             });
             RPG.SceneManager.call('map01');

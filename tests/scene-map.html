@@ -32,11 +32,16 @@
     <script type="text/javascript" src="../src/Game_Map.js"></script>
     <script type="text/javascript" src="../src/Tileset.js"></script>
     <script type="text/javascript" src="../src/Consts.js"></script>
+    <script type="text/javascript" src="../src/Graphic.js"></script>
+    <script type="text/javascript" src="../src/Item_Graphic.js"></script>
     <script type="text/javascript" src="../src/Character_Graphic.js"></script>
+    <script type="text/javascript" src="../src/Game_Object.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
+    <script type="text/javascript" src="../src/Game_Actor.js"></script>
     <script type="text/javascript" src="../src/Game_Player.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
+    <script type="text/javascript" src="../src/Game_Item.js"></script>
     <script type="text/javascript" src="../src/SpritesetMap.js"></script>
 
 
@@ -63,7 +68,8 @@
 
 
     <!--data -->
-    <script type="text/javascript" src="../src/Characters.js"></script>
+    <script type="text/javascript" src="../src/Resources/Characters.js"></script>
+    <script type="text/javascript" src="../src/Resources/Items.js"></script>
     <script type="text/javascript" src="dat/game_data.js"></script>
 
     <script type="text/javascript">
@@ -97,19 +103,23 @@
                     }
                 },
                 graphics: {
-                    characters: {
+                    character: {
                         '1': '../src/images/Las2vdS.png',
-                        '2': '../src/images/mack_char01.png'
+                        '2': '../src/images/mack_char01.png',
+                        'switches':'../src/images/recolored-handle-switches-2.png'
                     },
-                    tilesets: {
+                    tileset: {
                         '1': '../src/images/tilea2.png'
+                    },
+                    icon:{
+                        '1':'../src/images/icons1.png'
                     }
                 },
                 start: function () {
                     console.log('started...');
-                    var character1 = RPG.Characters.get('character1');
+                    var character1 = RPG.Characters.createInstance('character1');
                     var self = this;
-                    self.map_data.map.add(character1);
+                    self.map.add(character1);
                 }
             });
             RPG.SceneManager.call('map01');

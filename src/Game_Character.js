@@ -96,9 +96,12 @@
             var x = self.bounds.x;
             var y = self.bounds.y;
             var time = 1000 / self.speed;
-
             times = times == undefined?1:times;
-            switch (direction) {
+            var dir = direction;
+            if(dir == Consts.CHARACTER_DIRECTION_RANDOM){
+                dir = Math.floor(Math.random()*4);
+            }
+            switch (dir) {
                 case Consts.CHARACTER_DIRECTION_UP:
                     y -= self.h_speed;
                     self.currentAnimation = self.animations[Consts.CHARACTER_STEP_UP];
@@ -127,7 +130,7 @@
                 }
             }
             else {
-                self.direction = direction;
+                self.direction = dir;
                 self.move(x, y, time, function () {
                     self.moveTo(direction, times-1, complete, true);
                 });
@@ -154,33 +157,33 @@
     };
 
 
-    Game_Character.prototype.moveUp = function(){
+    Game_Character.prototype.moveUp = function(times){
         var self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_UP);
+        self.moveTo(Consts.CHARACTER_DIRECTION_UP,times);
     };
 
-    Game_Character.prototype.moveDown = function(){
+    Game_Character.prototype.moveDown = function(times){
         var self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_DOWN);
+        self.moveTo(Consts.CHARACTER_DIRECTION_DOWN,times);
     };
 
-    Game_Character.prototype.moveRight = function(){
+    Game_Character.prototype.moveRight = function(times){
         var self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT);
+        self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT,times);
     };
 
-    Game_Character.prototype.moveLeft = function(){
+    Game_Character.prototype.moveLeft = function(times){
         var self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_LEFT);
+        self.moveTo(Consts.CHARACTER_DIRECTION_LEFT,times);
     };
 
-    Game_Character.prototype.stepForward = function () {
+    Game_Character.prototype.stepForward = function (times) {
         var self = this;
-        self.moveTo(self.direction);
+        self.moveTo(self.direction,times);
     };
 
-    Game_Character.prototype.stepRandom = function () {
-        this.moveTo(Math.floor(Math.random() * 4));
+    Game_Character.prototype.stepRandom = function (times) {
+        this.moveTo(Consts.CHARACTER_DIRECTION_RANDOM,times);
     };
 
     /**

@@ -9,7 +9,6 @@
         var self = this;
         Game_Character.call(self, options);
         options = options || {};
-        self.name = options.name || '';
         self.level = options.level || 1;
         self.hp = options.hp || 100;
         self.mp = options.mp || 100;

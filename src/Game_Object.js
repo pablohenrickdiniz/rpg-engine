@@ -35,6 +35,7 @@
         self.clearHeight = null;
         self.graphic = options.graphic || null;
         self.through = options.through || false;
+        self.name = options.name || '';
     };
 
     /**
@@ -97,7 +98,7 @@
     var calculate_final_position = function (bounds, ex, ey, time) {
         var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height, groups: ['STEP']};
         var vec = {x: ex - bounds.x, y: ey - bounds.y};
-        var c_map = root.Main.scene.map_data.map;
+        var c_map = root.Main.scene.map;
 
         var quadtree = c_map.getTree();
         var collisions = quadtree.retrieve(final_bounds, 'STEP');

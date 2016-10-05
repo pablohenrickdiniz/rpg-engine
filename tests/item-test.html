@@ -68,7 +68,8 @@
 
 
     <!--data -->
-    <script type="text/javascript" src="../src/Characters.js"></script>
+    <script type="text/javascript" src="../src/Resources/Characters.js"></script>
+    <script type="text/javascript" src="../src/Resources/Items.js"></script>
     <script type="text/javascript" src="dat/game_data.js"></script>
 
     <script type="text/javascript">
@@ -76,8 +77,9 @@
             var container = document.getElementById('container');
             var Game_Player = RPG.Game_Player,
                     Character_Graphic = RPG.Character_Graphic,
-                    Game_Item = RPG.Game_Item,
-                    Item_Graphic = RPG.Item_Graphic;
+                    Items = RPG.Items,
+                    Characters = RPG.Characters,
+                    Consts = RPG.Consts;
 
             var player = new Game_Player({
                 graphic: new Character_Graphic({
@@ -117,36 +119,20 @@
                     }
                 },
                 start: function () {
-                    console.log('started...');
                     var self = this;
-
-                    var graphic = new Item_Graphic({
-                        sx:48,
-                        sy:168,
-                        sWidth:24,
-                        sHeight:24,
-                        image:'1'
-                    });
-
-                    var item1 = new Game_Item({
-                        id:'pocao',
-                        x:200,
-                        y:200,
-                        graphic:graphic
-                    });
-
-                    var item2 = new Game_Item({
-                        id:'pocao',
+                    var item = Items.createInstance('pocao',{
                         x:150,
-                        y:100,
-                        graphic:graphic
+                        y:150
                     });
 
-                    self.map_data.map.add(item1);
-                    self.map_data.map.add(item2);
-                    setInterval(function(){
-                        console.log(RPG.Main.Player);
-                    },1000);
+                    var char1 = Characters.createInstance('character1',{
+                        x:300,
+                        y:300,
+                        through:true
+                    });
+
+                    self.map.add(item);
+                    self.map.add(char1);
                 }
             });
             RPG.SceneManager.call('map01');
