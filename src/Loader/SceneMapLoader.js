@@ -75,6 +75,8 @@
         scene.focusOnCharacter(Main.Player);
         SceneLoader.prototype.load.call(self, scene, function () {
             spriteset_map = loadSpriteSet(data.spriteset,data.tileWidth,data.tileHeight);
+            map.width = spriteset_map.width * spriteset_map.tileWidth;
+            map.height = spriteset_map.height * spriteset_map.tileHeight;
             q();
         });
     };
@@ -115,6 +117,7 @@
                 }
             }
         }
+
         return spriteset_map;
     };
 

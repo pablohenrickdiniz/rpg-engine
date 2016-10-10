@@ -9,7 +9,7 @@
         Game_Object.ID++;
         self.id = options.id || 'object-'+self.object_id;
         self.animations = [];
-        self.speed = options.speed || 5;
+        self.animationSpeed = options.animationSpeed || 5;
         var x = options.x || 0;
         var y = options.y || 0;
         self.bounds = {
@@ -21,8 +21,8 @@
             groups: []
         };
         self.layer = options.layer || 2;
-        self.h_speed = 32;
-        self.v_speed = 32;
+        self.hSpeed = options.hSpeed || 32;
+        self.vSpeed = options.vSpeed || 32;
         self.moving = false;
         self.refreshed = false;
         self.obj_movement = null;

@@ -25,12 +25,23 @@
         self.currentPage = null;
         self.pages = options.pages || [];
         self.bounds.groups.push('ACTION_BUTTON');
+        self.through = true;
         initialize(self);
-        updateCurrentPage(self);
+        self.updateCurrentPage();
     };
 
     Game_Event.prototype = Object.create(Game_Character.prototype);
     Game_Event.prototype.constructor = Game_Event;
+
+
+    Game_Event.prototype.newPage = function(options) {
+        options = options || {};
+        var self = this;
+        var page = new Event_Page(options);
+        self.pages.push(page);
+        self.updateCurrentPage();
+        return page;
+    };
 
     /**
      *
@@ -50,7 +61,7 @@
         var self = this;
         if(!self.switches[name]){
             self.switches[name] = true;
-            updateCurrentPage(self);
+            self.updateCurrentPage();
         }
     };
 
@@ -62,23 +73,10 @@
         var self = this;
         if(self.switches[name]){
             delete self.switches[name];
-            updateCurrentPage(self);
+            self.updateCurrentPage();
         }
     };
 
-    /**
-     *
-     * @param name
-     * @param callback
-     */
-    Game_Event.prototype.switchCallback = function (name, callback) {
-        var self = this;
-        if (self.switches_callbacks[name] === undefined) {
-            self.switches_callbacks[name] = [];
-        }
-
-        self.switches_callbacks[name].push(callback);
-    };
 
     /**
      *
@@ -86,8 +84,9 @@
      */
     Game_Event.prototype.add = function (page) {
         var self = this;
-        if(page instanceof Event_Page){
+        if(page instanceof Event_Page && self.pages.indexOf(page) == -1){
             self.pages.push(page);
+            self.updateCurrentPage();
         }
     };
 
@@ -96,6 +95,7 @@
         var index = self.pages.indexOf(page);
         if(index != -1){
             self.pages.splice(index,1);
+            self.updateCurrentPage();
         }
     };
 
@@ -165,17 +165,23 @@
             set:function(cp){
                 if(cp != currentPage){
                     currentPage = cp;
-                    if(currentPage.through){
-                        self.removeCollisionGroup('STEP');
+                    if(currentPage != null){
+                        if(currentPage.through){
+                            self.removeCollisionGroup('STEP');
+                        }
+                        else{
+                            self.addCollisionGroup('STEP');
+                        }
+
+                        if(self.currentAnimation.running && !currentPage.walkingAnimation){
+                            self.currentAnimation.stop();
+                        }
+                        else if(!self.currentAnimation.running && currentPage.walkingAnimation){
+                            self.currentAnimation.start();
+                        }
                     }
                     else{
-                        self.addCollisionGroup('STEP');
-                    }
-                    if(self.currentAnimation.running && !currentPage.walkingAnimation){
-                        self.currentAnimation.stop();
-                    }
-                    else if(!self.currentAnimation.running && currentPage.walkingAnimation){
-                        self.currentAnimation.start();
+                        self.removeCollisionGroup('STEP');
                     }
                 }
             }
@@ -223,11 +229,8 @@
         });
     };
 
-    /**
-     *
-     * @param self
-     */
-    var updateCurrentPage = function(self){
+    Game_Event.prototype.updateCurrentPage = function(){
+        var self = this;
         var pages = self.pages;
         var length = pages.length;
         var currentPage = null;
@@ -244,7 +247,7 @@
      * @param page
      * @returns {boolean}
      */
-    var validateConditions = function(page){
+    function validateConditions(page){
         var conditions = page.conditions;
         var event = page.event;
         for(var scope in conditions){
@@ -256,11 +259,19 @@
                             return false;
                         }
                     }
+                case 'GLOBAL':
+                    var GlobalSwitches = root.GlobalSwitches;
+                    for(var id in conditions[scope]){
+                        var status = GlobalSwitches.switches[id]?true:false;
+                        if(conditions[scope][id] != status){
+                            return false;
+                        }
+                    }
             }
         }
 
         return true;
-    };
+    }
 
     root.Game_Event = Game_Event;
 })(RPG);

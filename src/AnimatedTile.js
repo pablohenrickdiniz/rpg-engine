@@ -10,7 +10,7 @@
         Frame.call(self, [parent, sx, sy]);
         self.ex = ex || 0;
         self.ey = ey || 0;
-        self.speed = speed;
+        self.animationSpeed = speed;
         self.animation = null;
         self.initialize();
     };
@@ -26,7 +26,7 @@
         var cols = Math.floor(width / (self.ex - self.sx));
         var rows = Math.floor(height / (self.ey - self.sy));
         var frame_count = rows * cols;
-        self.animation = new Animation(self.speed, frame_count);
+        self.animation = new Animation(self.animationSpeed, frame_count);
     };
 
     AnimatedTile.prototype.run = function () {

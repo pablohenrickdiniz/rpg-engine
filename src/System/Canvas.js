@@ -10,26 +10,74 @@
     var Consts= root.Consts;
 
     root.Canvas = {
-        width: 600,
-        height: 600,
         visible: true,
         engine: null,
         layers:[[], [], [], [], []],
+        eventsListeners:[],
         /**
          *
          * @param container
          */
-        initialize: function (container) {
+        initialize: function (options) {
             var self = this;
-            var width = self.width;
-            var height = self.height;
+            options = options || {};
+            var container = options.container;
+            var width = options.width;
+            var height = options.height;
             self.engine = CE.create(container, {
                 width: width,
                 height: height,
                 style: {
                     backgroundColor: 'black'
-                }
+                },
+                resizeLayers:true
             });
+            self.engine.addEventListener('resize',function(){
+                self.trigger('resize');
+            });
+            container.style.margin = '0';
+        },
+        /**
+         *
+         * @param event
+         * @param callback
+         */
+        addEventListener:function(event,callback){
+            var self = this;
+            if(self.eventsListeners[event] == undefined){
+                self.eventsListeners[event] = [];
+            }
+            if(self.eventsListeners[event].indexOf(callback) == -1){
+                self.eventsListeners[event].push(callback);
+            }
+        },
+        /**
+         *
+         * @param event
+         * @param callback
+         */
+        removeEventListener:function(event,callback){
+            var self = this;
+            if(self.eventsListeners[event] != undefined){
+                var index = self.eventsListeners[event].indexOf(callback);
+                if(index != -1){
+                    self.eventsListeners[event].splice(index,1);
+                }
+            }
+        },
+        /**
+         *
+         * @param event
+         * @param args
+         */
+        trigger:function(event,args){
+            var self = this;
+            if(self.eventsListeners[event] != undefined){
+                var length = self.eventsListeners[event].length;
+                for(var i =0; i < length;i++){
+                    self.eventsListeners[event][i].apply(self,args);
+                }
+            }
         },
         /**
          *
@@ -161,27 +209,46 @@
 
     var x = 0;
     var y = 0;
+    var canvas = root.Canvas;
 
 
-    Object.defineProperty(root.Canvas,'x',{
+    Object.defineProperty(canvas,'x',{
         get:function(){
             return x;
         },
         set:function(nx){
-            if(nx >0 && nx != x){
+            if(nx != x){
                 x = nx;
             }
         }
     });
 
-    Object.defineProperty(root.Canvas,'y',{
+    Object.defineProperty(canvas,'y',{
         get:function(){
             return y;
         },
         set:function(ny){
-            if(ny >0 && ny != y){
+            if(ny != y){
                 y = ny;
             }
+        }
+    });
+
+    Object.defineProperty(canvas,'width',{
+        get:function(){
+            return canvas.engine.width;
+        },
+        set:function(w){
+            canvas.engine.width = w;
+        }
+    });
+
+    Object.defineProperty(canvas,'height',{
+        get:function(){
+            return canvas.engine.height;
+        },
+        set:function(h){
+            canvas.engine.height = h;
         }
     });
 })(RPG);

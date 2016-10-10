@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Switch Test</title>
     <!-- canvas engine-->
     <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
@@ -71,14 +72,17 @@
     <script type="text/javascript" src="../src/Resources/Characters.js"></script>
     <script type="text/javascript" src="../src/Resources/Items.js"></script>
     <script type="text/javascript" src="dat/game_data.js"></script>
+    <script type="text/javascript" src="../src/Global_Switches.js"></script>
 
     <script type="text/javascript">
         function init() {
+
+
             var container = document.getElementById('container');
             var Game_Player = RPG.Game_Player,
                     Character_Graphic = RPG.Character_Graphic,
                     Game_Event = RPG.Game_Event,
-                    Event_Page = RPG.Event_Page;
+                    Characters = RPG.Characters;
 
             var player = new Game_Player({
                 graphic: new Character_Graphic({
@@ -111,7 +115,7 @@
                         'switches':'../src/images/recolored-handle-switches-2.png'
                     },
                     tileset: {
-                        '1': '../src/images/tilea2.png'
+                        '1': '../src/images/Town & Village - 0034.png'
                     },
                     icon:{
                         '1':'../src/images/icons1.png'
@@ -123,41 +127,109 @@
                     var character1 = RPG.Characters.createInstance('character1');
                     var self = this;
                     self.map.add(character1);
-                    var page1 = new Event_Page({
-                          graphic:new Character_Graphic({
-                              image:'switches',
-                              rows:4,
-                              cols:3,
-                              sWidth:96,
-                              sHeight:128
-                          }),
-                          script:function(){
-                              if(!this.isEnabled('A')){
-                                  this.enableSwitch('A');
-                                  this.turnRight();
-                              }
-                              else{
-                                  this.disableSwitch('A');
-                                  this.turnDown();
-                              }
-                          },
-                           trigger:  Consts.TRIGGER_ACTION_BUTTON
-                    });
 
-
-                    var eventSwitch = new Game_Event({
+                    var event1 = new Game_Event({
                         x:150,
-                        y:100,
-                        pages:[page1]
+                        y:100
                     });
-                    self.map.add(eventSwitch);
+
+                    event1.newPage({
+                        graphic:new Character_Graphic({
+                            image:'switches',
+                            rows:4,
+                            cols:3,
+                            sWidth:96,
+                            sHeight:128
+                        }),
+                        script:function(){
+                            var global = RPG.GlobalSwitches;
+                            if(!global.isEnabled('A')){
+                                global.enable('A');
+                                this.turnRight();
+                            }
+                            else{
+                                global.disable('A');
+                                this.turnDown();
+                            }
+                        },
+                        trigger:  Consts.TRIGGER_ACTION_BUTTON
+                    });
+
+                    var event2 = new Game_Event({
+                        x:200,
+                        y:200
+                    });
+
+                    event2.newPage({
+                        graphic:new Character_Graphic({
+                            image:'switches',
+                            rows:4,
+                            cols:3,
+                            sWidth:96,
+                            sHeight:128
+                        }),
+                        conditions:[
+                            'GLOBAL:A:ON',
+                            'GLOBAL:B:ON'
+                        ]
+                    });
+
+
+                    var event3 = new Game_Event({
+                        x:200,
+                        y:100
+                    });
+
+                    event3.newPage({
+                        graphic:new Character_Graphic({
+                            image:'switches',
+                            rows:4,
+                            cols:3,
+                            sWidth:96,
+                            sHeight:128
+                        }),
+                        script:function(){
+                            var global = RPG.GlobalSwitches;
+                            if(!global.isEnabled('B')){
+                                global.enable('B');
+                                this.turnRight();
+                            }
+                            else{
+                                global.disable('B');
+                                this.turnDown();
+                            }
+                        },
+                        trigger:  Consts.TRIGGER_ACTION_BUTTON
+                    });
+
+                    self.map.add(event1);
+                    self.map.add(event2);
+                    self.map.add(event3);
+                    var chars = [];
+
+                    for(var i =0; i < 2;i++){
+                        var x = Math.floor(Math.random()*1000);
+                        var y = Math.floor(Math.random()*1000);
+                        var character = Characters.createInstance('character1',{
+                            x:x,
+                            y:y
+                        });
+                        self.map.add(character);
+                        chars.push(character);
+                    }
+
+                    setInterval(function(){
+                        chars.forEach(function(char){
+                            char.stepRandom(10);
+                        });
+                    },3000);
                 }
             });
             RPG.SceneManager.call('map01');
         }
     </script>
 </head>
-<body onload="init()">
-<div id="container"></div>
+<body onload="init()" id="container" style="height:600px;">
+
 </body>
 </html>

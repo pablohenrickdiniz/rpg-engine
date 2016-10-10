@@ -26,7 +26,9 @@
      */
     SpritesetMap.prototype.set = function (i, j, k, tile) {
         var self = this;
-
+        i = parseInt(i);
+        j = parseInt(j);
+        k = parseInt(k);
         if (tile instanceof Frame) {
             if (self.sprites[i] === undefined) {
                 self.sprites[i] = [];
@@ -34,6 +36,14 @@
 
             if(self.sprites[i][j] == undefined){
                 self.sprites[i][j] = [];
+            }
+
+            if(i > self.height){
+                self.height = i;
+            }
+
+            if(j > self.width){
+                self.width = j;
             }
 
             self.sprites[i][j][k] = tile;

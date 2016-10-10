@@ -35,8 +35,6 @@
         Game_Object.call(self,options);
         options = options || {};
         self.direction = Consts.CHARACTER_DIRECTION_DOWN;
-        self.h_speed = 32;
-        self.v_speed = 32;
         self.moving = false;
         self.refreshed = false;
         self.obj_movement = null;
@@ -58,14 +56,14 @@
     Game_Character.prototype.setGraphic = function (graphic) {
         var self = this;
         self.graphic = graphic;
-        self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation(self.speed, graphic.cols);
-        self.animations[Consts.CHARACTER_STEP_UP] = new Animation(self.speed, graphic.cols);
-        self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation(self.speed, graphic.cols);
-        self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation(self.speed, graphic.cols);
-        self.animations[Consts.CHARACTER_STOP_DOWN] =  new Animation(self.speed, 1);
-        self.animations[Consts.CHARACTER_STOP_UP] =  new Animation(self.speed, 1);
-        self.animations[Consts.CHARACTER_STOP_RIGHT] =  new Animation(self.speed, 1);
-        self.animations[Consts.CHARACTER_STOP_LEFT] =  new Animation(self.speed, 1);
+        self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation(graphic.cols, graphic.cols);
+        self.animations[Consts.CHARACTER_STEP_UP] = new Animation(graphic.cols, graphic.cols);
+        self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation(graphic.cols, graphic.cols);
+        self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation(graphic.cols, graphic.cols);
+        self.animations[Consts.CHARACTER_STOP_DOWN] =  new Animation(graphic.cols, 1);
+        self.animations[Consts.CHARACTER_STOP_UP] =  new Animation(graphic.cols, 1);
+        self.animations[Consts.CHARACTER_STOP_RIGHT] =  new Animation(graphic.cols, 1);
+        self.animations[Consts.CHARACTER_STOP_LEFT] =  new Animation(graphic.cols, 1);
     };
 
     /**
@@ -95,7 +93,7 @@
             self.moving = true;
             var x = self.bounds.x;
             var y = self.bounds.y;
-            var time = 1000 / self.speed;
+            var time = 1000 / self.animationSpeed;
             times = times == undefined?1:times;
             var dir = direction;
             if(dir == Consts.CHARACTER_DIRECTION_RANDOM){
@@ -103,19 +101,19 @@
             }
             switch (dir) {
                 case Consts.CHARACTER_DIRECTION_UP:
-                    y -= self.h_speed;
+                    y -= self.vSpeed;
                     self.currentAnimation = self.animations[Consts.CHARACTER_STEP_UP];
                     break;
                 case Consts.CHARACTER_DIRECTION_RIGHT:
-                    x += self.h_speed;
+                    x += self.hSpeed;
                     self.currentAnimation = self.animations[Consts.CHARACTER_STEP_RIGHT];
                     break;
                 case Consts.CHARACTER_DIRECTION_LEFT:
-                    x -= self.h_speed;
+                    x -= self.hSpeed;
                     self.currentAnimation = self.animations[Consts.CHARACTER_STEP_LEFT];
                     break;
                 case Consts.CHARACTER_DIRECTION_DOWN:
-                    y += self.h_speed;
+                    y += self.vSpeed;
                     self.currentAnimation = self.animations[Consts.CHARACTER_STEP_DOWN];
                     break;
             }
