@@ -1,6 +1,6 @@
 (function (root) {
-    if (root.Frame == undefined) {
-        throw "Character_Graphic requires Frame"
+    if (root.Tile == undefined) {
+        throw "Character_Graphic requires Tile"
     }
 
     if(root.Graphics == undefined){
@@ -11,20 +11,20 @@
         throw "Character_Graphic requires Graphic"
     }
 
-    var Frame = root.Frame,
+    var Tile = root.Tile,
         Graphics = root.Graphics,
-        Object_Graphic = root.Graphic;
+        Graphic = root.Graphic;
+
     /**
      *
-     * @param image
      * @param options
      * @constructor
      */
     var Character_Graphic = function (options) {
         var self = this;
-        Object_Graphic.call(self,options);
-        initialize(self);
         options = options || {};
+        Graphic.call(self,options);
+        initialize(self);
         self.rows = options.rows || 1;
         self.cols = options.cols || 1;
         self.sprites = [];
@@ -32,7 +32,7 @@
     };
 
 
-    Character_Graphic.prototype = Object.create(Object_Graphic.prototype);
+    Character_Graphic.prototype = Object.create(Graphic.prototype);
     Character_Graphic.prototype.constructor = Character_Graphic;
 
     /**
@@ -50,15 +50,10 @@
             }
 
             if (self.sprites[i][j] == undefined) {
-                var sx = self.sx + (j * self.width);
-                var sy = self.sy + (i * self.height);
-                self.sprites[i][j] = new Frame({
-                    image:self.image,
-                    sx:sx,
-                    sy:sy,
-                    width:self.width,
-                    height:self.height,
-                    parent:self
+                self.sprites[i][j] = new Tile({
+                    i:i,
+                    j:j,
+                    tileset:self
                 });
             }
 
@@ -67,13 +62,12 @@
     };
 
     var initialize = function(self){
-        Object.defineProperty(self,'width',{
+        Object.defineProperty(self,'tileWidth',{
             get:function(){
                 var width = self.sWidth;
                 if(width == null){
-                    var image = Graphics.get('character',self.image);
-                    if(image != null){
-                        width = image.width;
+                    if(self.image != null){
+                        width = self.image.width;
                     }
                 }
                 if(width != null){
@@ -84,13 +78,12 @@
             }
         });
 
-        Object.defineProperty(self,'height',{
+        Object.defineProperty(self,'tileHeight',{
             get:function(){
                 var height = self.sHeight;
                 if(height == null){
-                    var image = Graphics.get('character',self.image);
-                    if(image != null){
-                        height = image.height;
+                    if(self.image != null){
+                        height = self.image.height;
                     }
                 }
                 if(height != null){

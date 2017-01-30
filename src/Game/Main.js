@@ -1,56 +1,53 @@
 (function (root) {
+    var current_scene = null;
+    var current_map = null;
+    var current_player = null;
 
+    if(root.Scene == undefined){
+        throw "Main requires Scene"
+    }
 
+    if(root.Game_Map == undefined){
+        throw "Main requires Game_Map"
+    }
+
+    var Scene = root.Scene,
+        Game_Map = root.Game_Map;
 
     root.Main = {
-        scenes: [],
-        scene:null,//cena atual
-        map:null,
-        player: null,//Jogador Atual
-        actors: [],// Atores
-        switches: [],//Switches
-        variables: [],//Variáveis
-        switches_callbacks: [],//callbacks de switches
-        /*_switchCallback(String name, function callback)
-         * Registra função de callback para ativar ou desativar switch global
-         * */
-        switchCallback: function (name, callback) {
-            var self = this;
-            if (self.switches_callbacks[name] === undefined) {
-                self.switches_callbacks[name] = [];
-            }
-
-            self.switches_callbacks[name].push(callback);
+        Actors: null,   //Atores
+        Variables: null,//Variáveis
+        Scenes:null,    //Cenas
+        Switches:null,  //Switches
+        Items:null,
+        Maps:null,
+        get_current_scene:function(){
+            return current_scene;
         },
-        /*
-         enableSwitch(String name):void
-         Ativa um Switch "name" global
-         */
-        enableSwitch: function (name) {
-            var self = this;
-            self.switches[name] = true;
-            if (self.switches_callbacks[name] !== undefined) {
-                call_functions(self.switches_callbacks[name]);
+        set_current_scene:function(scene){
+            if(scene instanceof Scene){
+                current_scene = scene;
             }
         },
-        /*
-         disableSwitch(String name):void
-         Desativa um switch "name" global
-         */
-        disableSwitch: function (name) {
+        set_current_player:function(actor_id){
             var self = this;
-            self.switches[name] = false;
-            if (self.switches_callbacks[name] !== undefined) {
-                call_functions(self.switches_callbacks[name]);
+            if(actor_id == null){
+                self.current_player = null;
             }
-        }
-    };
-
-    var call_functions = function(array){
-        var length = array.length;
-        var i;
-        for(i =0; i < length;i++){
-            array[i]();
+            else if(self.Actors.get(actor_id) != null){
+                self.current_player = self.Actors.get(actor_id);
+            }
+        },
+        get_current_player:function(){
+            return current_player;
+        },
+        set_current_map:function(map){
+            if(map instanceof Game_Map){
+                current_map = map;
+            }
+        },
+        get_current_map:function(){
+            return current_map;
         }
     };
 })(RPG);

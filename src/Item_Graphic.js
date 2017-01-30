@@ -3,12 +3,12 @@
         throw "Item_Graphic requires Graphic"
     }
 
-    if(root.Frame == undefined){
-        throw "Item_Graphic requires Frame"
+    if(root.Tile == undefined){
+        throw "Item_Graphic requires Tile"
     }
 
     var Graphic = root.Graphic,
-        Frame = root.Frame;
+        Tile = root.Tile;
 
     var Item_Graphic = function(options){
         var self = this;
@@ -24,7 +24,7 @@
     Item_Graphic.prototype.getFrame = function(){
         var self = this;
         if(self.frame == null){
-            self.frame = new Frame({
+            self.frame = new Tile({
                 image:self.image,
                 sx:self.sx,
                 sy:self.sy,

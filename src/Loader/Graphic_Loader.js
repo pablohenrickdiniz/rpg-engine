@@ -4,37 +4,38 @@
     }
 
     var GlobalProgress = w.GlobalProgress;
+    var images = {};
 
-    var ImageLoader = {
-        images: {},//Imagens que já foram carregadas
-        /*
-         loadAll(Array[String] urls, function onsuccess, function onprogress):void
-         Carrega todas as images de urls e passa o
-         resultado para a função callback
+    var Graphic_Loader = {
+        /**
+         *
+         * @param urls
+         * @param options
          */
         loadAll: function (urls, options) {
+            options = options || {};
             var keys = Object.keys(urls);
             var loaded = [];
             var length = keys.length;
-            var onsuccess = options.onsuccess;
-            var onprogress = options.onprogress;
-            var onglobalprogress = options.onglobalprogress;
+            var onsuccess = options.onsuccess || null;
+            var onprogress = options.onprogress || null;
+            var onglobalprogress = options.onglobalprogress || null;
             var globalprogress = options.globalprogress || new GlobalProgress();
 
-            var onerror = options.onerror;
+            var onerror = options.onerror || null;
 
             if (length > 0) {
-                var q = function (image, id) {
+                function q(image, id) {
                     loaded[id] = image;
                     length--;
-                    if (length == 0) {
+                    if (length == 0 && onsuccess) {
                         onsuccess(loaded);
                     }
-                };
+                }
 
                 for (var k = 0; k < keys.length; k++) {
                     var key = keys[k];
-                    ImageLoader.load(urls[key], key, {
+                    Graphic_Loader.load(urls[key], key, {
                         onsuccess: q,
                         onprogress: onprogress,
                         onerror: onerror,
@@ -47,21 +48,23 @@
                 onsuccess(loaded);
             }
         },
-        /*
-         load:(String url,String id,function onsucess,function onprogress):void
-         Carrega a imagem da url e passa o resultado
-         para a função callback
+        /**
+         *
+         * @param url
+         * @param id
+         * @param options
          */
         load: function (url, id, options) {
+            options = options || {};
             var onsuccess = options.onsuccess || null;
             var onprogress = options.onprogress || null;
             var onerror = options.onerror || null;
-            var globalprogress = options.globalprogress || null;
+            var globalprogress = options.globalprogress || new GlobalProgress();
             var onglobalprogress = options.onglobalprogress || null;
 
             var media = null;
 
-            if (ImageLoader.images[url] === undefined) {
+            if (images[url] === undefined) {
                 var request = new XMLHttpRequest();
                 request.onprogress = function (e) {
                     var computable = e.lengthComputable;
@@ -102,7 +105,7 @@
 
                         var onload = function () {
                             image.removeEventListener('load', onload);
-                            ImageLoader.images[url] = image;
+                            images[url] = image;
                             if (onsuccess) {
                                 onsuccess(image, id);
                             }
@@ -123,7 +126,7 @@
                 request.send();
             }
             else if (onsuccess) {
-                onsuccess(ImageLoader.images[url], id);
+                onsuccess(images[url], id);
             }
         },
         /*
@@ -142,7 +145,7 @@
             canvas = null;
         },
         toDataURLS: function (urls, callback) {
-            ImageLoader.loadAll(urls, function (loaded) {
+            Graphic_Loader.loadAll(urls, function (loaded) {
                 var keys = Object.keys(loaded);
                 var loaded_data = [];
                 var length = keys.length;
@@ -155,7 +158,7 @@
                 };
                 for (var k = 0; k < keys.length; k++) {
                     var key = keys[k];
-                    ImageLoader.toDataURL(urls[key], key, q);
+                    Graphic_Loader.toDataURL(urls[key], key, q);
                 }
             });
         },
@@ -185,5 +188,5 @@
         }
     };
 
-    w.ImageLoader = ImageLoader;
+    w.Graphic_Loader = Graphic_Loader;
 })(window);

@@ -2,29 +2,47 @@
     if (w.Audio == undefined) {
         throw "AudioLoader requires Audio support"
     }
-    /*
-     current_progress(Audio aud):int
 
+    /**
+     *
+     * @param aud
+     * @returns {number}
      */
-    var current_progress = function (aud) {
-        var pos = aud.buffered.length - 1;
-        if (pos >= 0) {
-            var loaded = aud.buffered.end(pos);
+    function current_progress(aud) {
+        var loaded = loaded_audio(aud);
+        if (loaded >= 0) {
             var total = aud.duration;
-            var progress = parseInt(loaded * 100 / total);
+            var progress = parseFloat(loaded * 100 / total);
             return isNaN(progress) ? 0 : progress;
         }
         return 0;
-    };
+    }
 
-    var AudioLoader = {
-        audios: {},//Audios que já foram carregadas
-        /*
-         loadAll(Array[String] urls, function callback):void
-         Carrega todos as audios de urls e passa o
-         resultado para a função callback
+    /**
+     *
+     * @param aud
+     * @returns {*}
+     */
+    function loaded_audio(aud){
+        var pos = aud.buffered.length - 1;
+        if(pos >= 0){
+            return aud.buffered.end(pos);
+        }
+        return 0;
+    }
+
+
+    var audios = {};
+
+
+    var Audio_Loader = {
+        /**
+         *
+         * @param urls
+         * @param options
          */
         loadAll: function (urls,options) {
+            options = options ||{};
             var keys = Object.keys(urls);
             var loaded = [];
             var length = keys.length;
@@ -32,20 +50,20 @@
             var onprogress = options.onprogress || null;
             var onerror = options.onerror || null;
             var onglobalprogress = options.onglobalprogress || null;
-            var globalprogress = options.globalprogress || null;
+            var globalprogress = options.globalprogress || new GlobalProgress();
 
             if (length > 0) {
-                var q = function (audio, id) {
+                function q(audio, id) {
                     loaded[id] = audio;
                     length--;
-                    if (length == 0) {
+                    if (length == 0 && onsuccess) {
                         onsuccess(loaded);
                     }
-                };
+                }
 
                 for (var k = 0; k < keys.length; k++) {
                     var key = keys[k];
-                    AudioLoader.load(urls[key], key, {
+                    Audio_Loader.load(urls[key], key, {
                         onsuccess:q,
                         onprogress:onprogress,
                         onerror:onerror,
@@ -58,93 +76,101 @@
                 onsuccess(loaded);
             }
         },
-        /*
-         load:(String url,string id,function onsuccess,function onerror):void
-         Carrega o audio da url
-         url: Caminho para o arquivo de audio;
-         id:  Identificador para diferenciar os arquivos (carregamento asíncrono);
-         onsuccess: Essa função é chamada quando o audio foi carregado completamente;
-         onprogress: Essa função é chamada quando o audio está sendo carregado, e mosta o progresso;
+        /**
+         *
+         * @param url
+         * @param id
+         * @param options
          */
         load: function (url, id, options) {
-            var self = this;
+            options = options || {};
             var onsuccess = options.onsuccess || null;
             var onprogress = options.onprogress || null;
             var onerror = options.onerror || null;
             var onglobalprogress = options.onglobalprogress || null;
-            var globalprogress = options.globalprogress || null;
+            var globalprogress = options.globalprogress || new GlobalProgress();
 
-            if (self.audios[url] == undefined) {
+            if (audios[url] == undefined) {
                 var audio = new Audio();
                 //img.crossOrigin = "Anonymous";
                 audio.src = url;
                 audio.volume = 0;
-                self.audios[url] = audio;
+                audio.currentTime = loaded_audio(audio);
+                audios[url] = audio;
 
-                var unbind = function () {
+                function unbind() {
                     audio.removeEventListener('error', onerror_callback);
                     audio.removeEventListener('timeupdate', timeupdate_callback);
                     audio.removeEventListener('canplaythrough', can_play_callback);
-                };
+                }
 
-                var onsuccess_callback = function () {
+                function onsuccess_callback() {
                     unbind();
                     if (onsuccess) {
-                        onsuccess(audio, id);
+                        onsuccess(id,url);
                     }
-                };
+                }
 
-                var onerror_callback = function () {
-                    console.error('audio '+id+' error!');
+                function onerror_callback () {
                     unbind();
                     if (onerror) {
                         onerror(id);
                     }
-                };
+                }
 
                 var old_progress = 0;
                 var media = null;
 
-                var timeupdate_callback = function () {
-                    var progress = current_progress(audio);
+                function timeupdate_callback () {
+                    var loaded = loaded_audio(audio);
 
-                    if (progress == 100) {
+                    if(loaded == audio.duration){
                         audio.pause();
                         audio.volume = 1;
                         audio.playbackRate = audio.defaultPlaybackRate;
                         audio.currentTime = 0;
                         onsuccess_callback();
                     }
-                    else if (progress > old_progress) {
-                        old_progress = progress;
-
-                        if(globalprogress){
-                            if(media == null){
-                                media = {
-                                    loaded:progress,
-                                    total:100
-                                };
-                                globalprogress.add(media);
+                    else {
+                        var progress = current_progress(audio);
+                        if(progress != old_progress){
+                            old_progress = progress;
+                            if(globalprogress){
+                                if(media == null){
+                                    media = {
+                                        loaded:progress,
+                                        total:100
+                                    };
+                                    globalprogress.add(media);
+                                }
+                                else{
+                                    media.loaded = progress;
+                                }
                             }
-                            else{
-                                media.loaded = progress;
+
+                            if(onglobalprogress){
+                                onglobalprogress(globalprogress.progress());
+                            }
+
+                            if (onprogress) {
+                                onprogress(id, progress);
                             }
                         }
-
-                        if(onglobalprogress){
-                            onglobalprogress(globalprogress.progress());
-                        }
-
-                        if (onprogress) {
-                            onprogress(id, progress);
+                        else{
+                            var diff = audio.duration - loaded;
+                            if(diff > 0){
+                                audio.currentTime = loaded;
+                                audio.playbackRate = diff;
+                                audio.play();
+                            }
                         }
                     }
-                };
+                }
 
-                var can_play_callback = function () {
+                function can_play_callback() {
                     audio.playbackRate = audio.duration;
                     audio.play();
-                };
+                }
 
                 audio.addEventListener('error', onerror_callback);
                 audio.addEventListener('timeupdate', timeupdate_callback);
@@ -153,10 +179,10 @@
                 audio.load();
             }
             else if (onsuccess) {
-                onsuccess(self.audios[url], id);
+                onsuccess(id,url);
             }
         }
     };
 
-    w.AudioLoader = AudioLoader;
+    w.Audio_Loader = Audio_Loader;
 })(window);

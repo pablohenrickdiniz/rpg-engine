@@ -19,6 +19,9 @@
         self.bounds.groups.push('ITEM');
     };
 
+
+    
+
     Game_Item.prototype = Object.create(Game_Object.prototype);
     Game_Item.prototype.constructor = Game_Item;
 

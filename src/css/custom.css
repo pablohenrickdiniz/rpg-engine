@@ -1,0 +1,21 @@
+#loading-progress{
+    position: absolute;
+    height:20px;
+    width:70%;
+    margin:auto;
+    left:-100%;
+    right:-100%;
+    bottom:-100%;
+    top:-100%;
+}
+
+#intro{
+    position: absolute;
+    margin:auto;
+    left:-100%;
+    right:-100%;
+    bottom:-100%;
+    top:-100%;
+    width:150px;
+    height:100px;
+}

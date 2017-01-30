@@ -1,13 +1,13 @@
 (function (root) {
-    if (root.Frame == undefined) {
-        throw "AnimatedFrame requires Frae"
+    if (root.Tile == undefined) {
+        throw "Animated_Tile requires Tile"
     }
 
-    var Frame = root.Frame;
+    var Tile = root.Tile;
 
-    var AnimatedTile = function (parent, sx, sy, ex, ey, speed) {
+    var Animated_Tile = function (parent, sx, sy, ex, ey, speed) {
         var self = this;
-        Frame.call(self, [parent, sx, sy]);
+        Tile.call(self, [parent, sx, sy]);
         self.ex = ex || 0;
         self.ey = ey || 0;
         self.animationSpeed = speed;
@@ -15,31 +15,31 @@
         self.initialize();
     };
 
-    AnimatedTile.prototype = Object.create(Frame.prototype);
-    AnimatedTile.prototype.constructor = AnimatedTile;
+    Animated_Tile.prototype = Object.create(Tile.prototype);
+    Animated_Tile.prototype.constructor = Animated_Tile;
 
 
-    AnimatedTile.prototype.initialize = function () {
+    Animated_Tile.prototype.initialize = function () {
         var self = this;
-        var width = self.getWidth();
-        var height = self.getHeight();
+        var width = self.width;
+        var height = self.height;
         var cols = Math.floor(width / (self.ex - self.sx));
         var rows = Math.floor(height / (self.ey - self.sy));
         var frame_count = rows * cols;
         self.animation = new Animation(self.animationSpeed, frame_count);
     };
 
-    AnimatedTile.prototype.run = function () {
+    Animated_Tile.prototype.run = function () {
         var self = this;
         self.animation.run();
     };
 
-    AnimatedTile.prototype.stop = function () {
+    Animated_Tile.prototype.stop = function () {
         var self = this;
         self.animation.stop();
     };
 
-    AnimatedTile.prototype.getGraphic = function () {
+    Animated_Tile.prototype.getGraphic = function () {
         var self = this;
         var tile_width = self.parent.tileWidth;
         var tile_height = self.parent.tileHeight;
@@ -60,5 +60,5 @@
         };
     };
 
-    root.AnimatedTile = AnimatedTile;
+    root.Animated_Tile = Animated_Tile;
 })(RPG);

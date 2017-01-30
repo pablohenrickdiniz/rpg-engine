@@ -1,16 +1,20 @@
 (function (w) {
+    /*Canvas Engine*/
     if (w.CE == undefined) {
         throw 'RPG requires Canvas Engine'
     }
 
+    /*Keyboard*/
     if (w.Keyboard == undefined) {
         throw "RPG requires Keyboard"
     }
 
+    /*Mouse*/
     if (w.Mouse == undefined) {
         throw "RPG requires Mouse"
     }
 
+    /*TimeTicker*/
     if (w.TimerTicker == undefined) {
         throw "RPG requires TimeTicker"
     }
@@ -21,67 +25,87 @@
         TimerTicker = w.TimerTicker;
 
     w.RPG = {
-        Main: {
-            Player: null
-        },
+        Main: null,
+        UI:null,
         Game_Timer: new TimerTicker(),
-        Resources: {},
         Canvas: null,
         Controls: {
             Keyboard: null,
             Mouse: null
         },
-        debug:false,
+        debug:true,
         /**
          *
-         * @param container
+         * @param options
          */
         initialize: function (options) {
             var self = this;
             options = options || {};
             var container = options.container;
+            var ui_root = options.ui_root;
             self.Controls.Keyboard = new Keyboard({
                 element: container,
-                propagate: [Keyboard.F5, Keyboard.F11]
+                propagate: [Keyboard.F5, Keyboard.F11,Keyboard.F12]
             });
             self.Controls.Mouse = new Mouse(container);
+
             self.Canvas.initialize({
                 container: container,
                 width: w.innerWidth,
                 height: w.innerHeight
             });
-            self.Main.Player = options.player || new RPG.Game_Player();
-            self.registerEvents();
-        },
-        registerEvents: function () {
-            var self = this;
-            w.addEventListener('blur', function () {
-                self.Game_Timer.stop();
-            });
-            w.addEventListener('focus', function () {
-                self.Game_Timer.run();
-            });
 
-            self.Game_Timer.addEventListener('tick', function () {
-                if (self.Main.scene != null) {
-                    self.Main.scene.step();
-                }
+            self.UI.initialize({
+                container:ui_root,
+                width: w.innerWidth,
+                height: w.innerHeight
             });
-
-            self.Controls.Keyboard.addShortcutListener('ENTER', function () {
-                self.Main.scene.action_button = true;
-            });
-
-            self.Canvas.addEventListener('resize', function () {
-                self.Main.scene.bg_refreshed = false;
-            });
-
-            w.addEventListener('resize', function () {
-
-                self.Canvas.height = w.innerHeight;
-                self.Canvas.width = w.innerWidth;
-
-            });
+            registerEvents(self,w);
         }
     };
+
+
+    function registerEvents(root,w){
+        var Game_Timer = root.Game_Timer,
+            Keyboard = root.Controls.Keyboard,
+            Canvas = root.Canvas,
+            Main = root.Main,
+            UI = root.UI;
+
+
+        w.addEventListener('blur', function () {
+            Game_Timer.stop();
+        });
+        w.addEventListener('focus', function () {
+            Game_Timer.run();
+        });
+
+        Game_Timer.addEventListener('tick', function () {
+            var current_scene = Main.get_current_scene();
+            if (current_scene) {
+                current_scene.step();
+            }
+        });
+
+        Keyboard.addShortcutListener('ENTER', function () {
+            var current_scene = Main.get_current_scene();
+            if(current_scene){
+                current_scene.action_button = true;
+            }
+        });
+
+        Canvas.addEventListener('resize', function () {
+            var current_scene = Main.get_current_scene();
+            if(current_scene){
+                current_scene.bg_refreshed = false;
+            }
+        });
+
+        w.addEventListener('resize', function () {
+            Canvas.height = w.innerHeight;
+            Canvas.width = w.innerWidth;
+            UI.height = w.innerHeight;
+            UI.width = w.innerWidth;
+        });
+    }
 })(window);

@@ -16,7 +16,7 @@
         eventsListeners:[],
         /**
          *
-         * @param container
+         * @param options
          */
         initialize: function (options) {
             var self = this;
@@ -32,10 +32,10 @@
                 },
                 resizeLayers:true
             });
+
             self.engine.addEventListener('resize',function(){
                 self.trigger('resize');
             });
-            container.style.margin = '0';
         },
         /**
          *
@@ -217,7 +217,8 @@
             return x;
         },
         set:function(nx){
-            if(nx != x){
+            nx = parseFloat(nx);
+            if(!isNaN(nx) && nx != x){
                 x = nx;
             }
         }
@@ -228,7 +229,8 @@
             return y;
         },
         set:function(ny){
-            if(ny != y){
+            ny = parseFloat(ny);
+            if(!isNaN(ny) && ny != y){
                 y = ny;
             }
         }

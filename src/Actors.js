@@ -3,21 +3,25 @@
         throw "Actors requires Game_Actor"
     }
 
-    var Game_Actor = root.Game_Actor;
+    if(root.Main == undefined){
+        throw "Actors requires RPG Main";
+    }
 
-    root.Actors = {
-        actors:[],
+    var Main = root.Main;
+    var Game_Actor = root.Game_Actor;
+    var actors = [];
+
+    Main.Actors = {
         set:function(id,actor){
             if(actor instanceof Game_Actor){
-                var self = this;
-                self.actors[id] = actor;
+                actors[id] = actor;
             }
         },
         get:function(id){
-            var self = this;
-            if(self.actors[id] != undefined){
-                return self.actors[id];
+            if(actors[id] != undefined){
+               return actors[id];
             }
+            return null;
         }
     };
 })(RPG);

@@ -1,5 +1,5 @@
 (function (w) {
-    var TimerTicker = function (options) {
+    var Timer_Ticker = function (options) {
         var self = this;
         options = options || {};
         self.fps = options.fps || 60;
@@ -10,7 +10,7 @@
         self.eventListeners = [];
     };
 
-    TimerTicker.prototype.run = function () {
+    Timer_Ticker.prototype.run = function () {
         var self = this;
         if (!self.running) {
             self.running = true;
@@ -19,7 +19,7 @@
         }
     };
 
-    TimerTicker.prototype.stop = function () {
+    Timer_Ticker.prototype.stop = function () {
         var self = this;
         w.cancelAnimationFrame(self.interval);
         self.last_tick = null;
@@ -27,7 +27,7 @@
         self.trigger('stop');
     };
 
-    TimerTicker.prototype.addEventListener = function (eventName, callback) {
+    Timer_Ticker.prototype.addEventListener = function (eventName, callback) {
         var self = this;
         if(self.eventListeners[eventName] == undefined){
             self.eventListeners[eventName] = [];
@@ -37,7 +37,7 @@
         }
     };
 
-    TimerTicker.prototype.removeEventListener = function (event, callback) {
+    Timer_Ticker.prototype.removeEventListener = function (event, callback) {
         var self = this;
         if(self.eventListeners[event] != undefined){
             var index = self.eventListeners[event].indexOf(callback);
@@ -47,17 +47,19 @@
         }
     };
 
-    TimerTicker.prototype.trigger = function (eventName) {
+    Timer_Ticker.prototype.trigger = function (eventName,args) {
         var self = this;
+
         if(self.eventListeners[eventName] != undefined){
             var length = self.eventListeners[eventName].length;
+            args = args || [];
             for(var i =0; i < length;i++){
-                self.eventListeners[eventName][i]();
+                self.eventListeners[eventName][i].apply(self,args);
             }
         }
     };
 
-    var tick = function (timer) {
+    function tick(timer) {
         if(timer.running){
             timer.interval = w.requestAnimationFrame(function () {
                 tick(timer);
@@ -71,7 +73,7 @@
             timer.trigger('tick');
             timer.last_tick = current_time;
         }
-    };
+    }
 
-    w.TimerTicker = TimerTicker;
+    w.TimerTicker = Timer_Ticker;
 })(window);

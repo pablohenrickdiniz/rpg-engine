@@ -1,6 +1,7 @@
 (function (root) {
+    var graphics =  {};
+
     root.Graphics = {
-        graphics: {},
         /**
          *
          * @param type
@@ -8,9 +9,8 @@
          * @returns {*}
          */
         get: function (type, name) {
-            var self = this;
-            if (self.graphics[type] && self.graphics[type][name]) {
-                return self.graphics[type][name];
+            if (graphics[type] && graphics[type][name]) {
+                return graphics[type][name];
             }
             return null;
         },
@@ -18,20 +18,14 @@
          *
          * @param type
          * @param name
-         * @param graphics
+         * @param graphic
          */
-        set: function (type, name, graphics) {
-            var self = this;
-            if (self.graphics[type] == undefined) {
-                self.graphics[type] = {};
+        set: function (type, name, graphic) {
+            if (graphics[type] == undefined) {
+                graphics[type] = {};
             }
 
-            if (self.graphics[type][name] != graphics) {
-                if (self.graphics[type][name] != undefined) {
-                    self.graphics[type][name].stop();
-                }
-                self.graphics[type][name] = graphics;
-            }
+            graphics[type][name] = graphic;
         },
         /**
          *
@@ -43,8 +37,8 @@
             var names = Object.keys(data);
             for (var i = 0; i < names.length; i++) {
                 var name = names[i];
-                var graphics = data[name];
-                self.set(type, name, graphics);
+                var graphic = data[name];
+                self.set(type, name, graphic);
             }
         },
         /**
@@ -54,21 +48,11 @@
          */
         unset: function (type, name) {
             var self = this;
-            if (self.graphics[type] != undefined) {
-                if (self.graphics[type][name] != undefined) {
-                    delete self.graphics[type][name];
+            if (graphics[type] != undefined) {
+                if (graphics[type][name] != undefined) {
+                    delete graphics[type][name];
                 }
             }
-        },
-        /**
-         *
-         * @param type
-         * @param name
-         * @returns {*}
-         */
-        exists: function (type, name) {
-            var self = this;
-            return self.graphics[type] && self.graphics[type][name];
         }
     };
 })(RPG);

@@ -1,0 +1,62 @@
+progress[value]{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border:0;
+    color:blue;
+}
+
+progress[value]::-webkit-progress-bar{
+    background-color: #EEE;
+    color:blue;
+}
+
+progress::-webkit-progress-bar::after{
+    content:attr(value);
+    display: block;
+}
+
+
+.menu {
+    list-style: none;
+    border:3px outset white;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding:10px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color:rgba(0,0,200,0.5);
+}
+
+.menu-item{
+    font-family:'sans-serif',Verdana,Arial;
+    padding:2px 2px 2px 2px;
+    border:2px solid transparent;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.menu-item:hover,.menu-item.active{
+    border:2px solid rgba(255,255,255,0.5);
+    background-color: rgba(255,255,255,0.08);
+    cursor:default;
+}
+
+.menu-item,.menu-item:hover,.menu-item.active{
+    -webkit-transition-property: background-color,border;
+    -moz-transition-property: background-color,border;
+    -ms-transition-property: background-color,border;
+    -o-transition-property: background-color,border;
+    transition-property: background-color,border;
+    -webkit-transition-duration: 250ms;
+    -moz-transition-duration: 250ms;
+    -ms-transition-duration: 250ms;
+    -o-transition-duration: 250ms;
+    transition-duration: 250ms;
+}
+
+

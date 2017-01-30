@@ -32,27 +32,24 @@
      * @param options
      * @constructor
      */
-    var SceneMap = function (options) {
+    var Scene_Map = function (options) {
         var self = this;
         Scene.call(self, options);
         self.focused_character = null;
         self.bg_refreshed = false;
-        self.character_steps = [];
         self.map = null;
-        self.spriteset_map = null;
-        self.json_data = options.map || {};
         self.action_button = false;
         self.clear_queue = [];
     };
 
-    SceneMap.prototype = Object.create(Scene.prototype);
-    SceneMap.prototype.constructor = SceneMap;
+    Scene_Map.prototype = Object.create(Scene.prototype);
+    Scene_Map.prototype.constructor = Scene_Map;
 
     /**
      *
      * @param character
      */
-    SceneMap.prototype.focusOnCharacter = function (character) {
+    Scene_Map.prototype.focusOnCharacter = function (character) {
         var self = this;
         if (self.focused_character !== null) {
             self.focused_character.camera_focus = false;
@@ -61,19 +58,28 @@
         self.focused_character = character;
     };
 
-    SceneMap.prototype.step = function () {
+    Scene_Map.prototype.step = function () {
         Scene.prototype.step.apply(this);
         var self = this;
-        action_events(self);
-        step_events(self);
-        step_focus(self);
-        refresh_BG(self);
-        clear_graphics(self);
-        draw_graphics(self);
+
+        if(self.map != null){
+            if(Main.Player){
+                action_events(self);
+            }
+            step_events(self);
+            step_focus(self);
+            refresh_BG(self);
+            clear_graphics(self);
+            draw_graphics(self);
+        }
     };
 
-
-    var sort_objects = function (objects) {
+    /**
+     *
+     * @param objects
+     * @returns {Array.<T>}
+     */
+    function sort_objects(objects) {
         return objects.sort(function (a, b) {
             var aby = parseInt(a.y - root.Canvas.y);
             var bby = parseInt(b.y - root.Canvas.y);
@@ -98,7 +104,7 @@
 
             return ya + a_height > yb + b_height;
         });
-    };
+    }
 
 
     //Private Methods
@@ -108,7 +114,7 @@
      * @param options
      * @returns {{si: Number, sj: Number, ei: Number, ej: Number}}
      */
-    var get_area_interval = function (options) {
+    function get_area_interval(options) {
         var x = options.x || 0;
         var y = options.y || 0;
         var width = options.width || 0;
@@ -121,14 +127,20 @@
         var ei = parseInt(Math.floor((y + height) / tileHeight));
         var ej = parseInt(Math.floor((x + width) / tileWidth));
         return {si: si, sj: sj, ei: ei, ej: ej};
-    };
+    }
 
-    var refresh_spriteset_map = function (self) {
+    /**
+     *
+     * @param self
+     */
+    function refresh_spriteset_map(self) {
         var sx = Canvas.x;
         var sy = Canvas.y;
         var width = Canvas.width;
         var height = Canvas.height;
-        var spriteset_map = self.spriteset_map;
+        var spriteset_map = self.map.spriteset_map;
+        var tileWidth = spriteset_map.tileWidth;
+        var tileHeight = spriteset_map.tileHeight;
 
         var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
         for (var i = interval.si; i <= interval.ei; i++) {
@@ -136,46 +148,55 @@
                 if (spriteset_map.sprites[i] !== undefined && spriteset_map.sprites[i][j] !== undefined) {
                     for (var k in  spriteset_map.sprites[i][j]) {
                         var tile = spriteset_map.sprites[i][j][k];
-                        var layer = Canvas.getLayer(Consts.BACKGROUND_LAYER, k);
+                        var type = Consts.BACKGROUND_LAYER;
+                        if(k > 1){
+                           type = Consts.FOREGROUND_LAYER;
+                        }
+                        var layer = Canvas.getLayer(type, k);
                         if (layer != null) {
                             var context = layer.context;
-                            var dx = j * tile.width - sx;
-                            var dy = i * tile.height - sy;
+                            var dx = j * tileWidth - sx;
+                            var dy = i * tileHeight - sy;
                             dx = parseInt(dx);
                             dy = parseInt(dy);
-                            var image = Graphics.get('tileset', tile.image);
-                            context.drawImage(image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tile.width, tile.height);
+                            context.drawImage(tile.image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tileWidth, tileHeight);
                         }
                     }
                 }
             }
         }
-    };
+    }
 
     /**
      *
      * @param self
      */
-    var refresh_BG = function (self) {
+    function refresh_BG(self) {
         if (!self.bg_refreshed) {
             Canvas.clear(Consts.BACKGROUND_LAYER);
+            Canvas.clear(Consts.FOREGROUND_LAYER);
             refresh_spriteset_map(self);
             self.bg_refreshed = true;
         }
-    };
+    }
 
-    var clear_graphics = function (self) {
+
+    /**
+     *
+     * @param self
+     */
+    function clear_graphics(self) {
         while(self.clear_queue.length > 0){
             var clear = self.clear_queue.pop();
             Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
         }
-    };
+    }
 
     /**
      *
      * @param self
      */
-    var draw_graphics = function (self) {
+    function draw_graphics(self) {
         var objects = self.map.objects;
         var bounds;
         var i;
@@ -184,7 +205,9 @@
         var x;
         var y;
 
-        objects = objects.concat(Main.Player);
+        if(Main.Player){
+            objects = objects.concat(Main.Player);
+        }
         objects = sort_objects(objects);
         var size = objects.length;
         for (i = 0; i < size; i++) {
@@ -192,15 +215,14 @@
             frame = object.getCurrentFrame();
             if (frame != null) {
                 bounds = object.bounds;
-                image = Graphics.get(object.graphic_type, frame.image);
+                image = frame.image;
                 var bx = parseInt(bounds.x - root.Canvas.x);
                 var by = parseInt(bounds.y - root.Canvas.y);
                 var h_width = frame.width / 2;
-                var h_height = frame.height / 2;
+             //   var h_height = frame.height / 2;
 
                 x = bx + bounds.width / 2 - h_width;
-                y = by + bounds.height / 2 - h_height;
-
+                y = by + - bounds.height;
 
                 Canvas.drawImage(image, {
                     dx: x,
@@ -261,22 +283,23 @@
         //
         //    self.player_refreshed = true;
         //}
-    };
+    }
 
     /**
      *
      * @param self
      */
-    var step_focus = function (self) {
+    function step_focus(self) {
         if (self.focused_character != null) {
             var event = self.focused_character;
             var m = self.map;
 
-            var viewport_width = Canvas.width;
-            var viewport_height = Canvas.height;
+            var viewport_width = Math.min(Canvas.width, m.width);
+            var viewport_height = Math.min(Canvas.height, m.height);
 
-            var viewport_x = event.bounds.x - (viewport_width / 2) + (event.graphic.width / 2);
-            var viewport_y = event.bounds.y - (viewport_height / 2) + (event.graphic.width / 2);
+
+            var viewport_x = event.bounds.x - (viewport_width / 2) + (event.graphic.tileWidth / 2);
+            var viewport_y = event.bounds.y - (viewport_height / 2) + (event.graphic.tileHeight / 2);
             var max_screen_x = m.width - viewport_width;
             var max_screen_y = m.height - viewport_height;
 
@@ -298,22 +321,34 @@
                 self.bg_refreshed = false;
             }
 
+
             Canvas.x = viewport_x;
             Canvas.y = viewport_y;
         }
-    };
+    }
 
-    var step_events = function (self) {
+    /**
+     *
+     * @param self
+     */
+    function step_events(self) {
         var events = self.map.objects;
         var length = events.length;
         var i;
-        Main.Player.update();
+        if(Main.Player){
+            Main.Player.update();
+        }
+
         for (i = 0; i < length; i++) {
             events[i].update();
         }
-    };
+    }
 
-    var action_events = function (self) {
+    /**
+     *
+     * @param self
+     */
+    function action_events(self) {
         var player = Main.Player;
         var map = self.map;
         var tree = map.getTree();
@@ -385,7 +420,7 @@
         }
 
         self.action_button = false;
-    };
+    }
 
-    root.Scene.SceneMap = SceneMap;
+    root.Scene.SceneMap = Scene_Map;
 })(RPG);

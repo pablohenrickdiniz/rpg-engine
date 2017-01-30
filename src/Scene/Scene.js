@@ -19,22 +19,52 @@
     var Scene =  function (options) {
         var self = this;
         options = options || {};
-        self.audio = options.audio || {};
+        self.audios = options.audios || {};
         self.graphics = options.graphics || {};
         self.animation_queue = [];
         self.fps = options.fps || 60;
-        self.eventListeners = [];
+        self.eventListeners = {};
+
+
         if(options.start){
             self.addEventListener('start',options.start);
+        }
+
+        if(options.beforeload){
+            self.addEventListener('beforeload',options.beforeload);
+        }
+
+        if(options.afterload){
+            self.addEventListener('afterload',options.afterload);
+        }
+
+        if(options.onaudioprogress){
+            self.addEventListener('onaudioprogress',options.onaudioprogress);
+        }
+
+        if(options.ongraphicprogress){
+            self.addEventListener('ongraphicprogress',options.ongraphicprogress);
+        }
+
+        if(options.onprogress){
+            self.addEventListener('onprogress',options.onprogress);
         }
     };
 
 
+    /**
+     *
+     * @param time
+     * @param oncomplete
+     */
     Scene.prototype.fadeIn = function (time, oncomplete) {
         fade_screen_effect.apply(this, [time, oncomplete, 'negative']);
     };
-    /*
-     fadeOut(int time, function callback):void
+
+    /**
+     *
+     * @param time
+     * @param oncomplete
      */
     Scene.prototype.fadeOut =  function (time, oncomplete) {
         fade_screen_effect.apply(this, [time, oncomplete, 'positive']);
@@ -45,16 +75,26 @@
 
     };
 
-    Scene.prototype.trigger = function(event){
+    /**
+     *
+     * @param event
+     * @param args
+     */
+    Scene.prototype.trigger = function(event,args){
         var self = this;
         if(self.eventListeners[event] != undefined){
             var length = self.eventListeners[event].length;
             for(var i = 0; i < length;i++){
-                self.eventListeners[event][i].apply(self);
+                self.eventListeners[event][i].apply(self,args);
             }
         }
     };
 
+    /**
+     *
+     * @param event
+     * @param callback
+     */
     Scene.prototype.addEventListener = function(event,callback){
         var self = this;
         if(self.eventListeners[event] == undefined){
@@ -75,7 +115,12 @@
         }
     };
 
-
+    /**
+     *
+     * @param image
+     * @param options
+     * @param oncomplete
+     */
     Scene.prototype.fadeInGraphic = function (image, options, oncomplete) {
         fade_graphic_effect.apply(this, [image, options, oncomplete, 'positive']);
     };
@@ -83,13 +128,23 @@
         fade_graphic_effect.apply(this, [image, options, oncomplete, 'negative']);
     };
 
-
+    /**
+     *
+     */
     Scene.prototype.step = function(){
         var self = this;
         step_animations(self);
     };
 
-    var fade_graphic_effect = function (image, options, oncomplete, direction) {
+    /**
+     *
+     * @param image
+     * @param options
+     * @param oncomplete
+     * @param direction
+     * @returns {{type: string, time: (*|number), image_data: {sx: (options.sx|*|number), sy: (options.sy|*|number), sWidth: (*|Animated_Tile.getGraphic.sWidth|sWidth|root.Graphic.sWidth), sHeight: (*|Animated_Tile.getGraphic.sHeight|sHeight|root.Graphic.sHeight), dx: (*|dx|number), dy: (*|dy|number), dWidth: (*|Animated_Tile.getGraphic.dWidth|dWidth), dHeight: (*|Animated_Tile.getGraphic.dHeight|dHeight), image: *}, animation: root.Animation, oncomplete: *}}
+     */
+    function fade_graphic_effect(image, options, oncomplete, direction) {
         options = options || {};
         var sx = options.sx || 0;
         var sy = options.sy || 0;
@@ -166,7 +221,11 @@
         return animation_set;
     };
 
-    var step_animations = function (self) {
+    /**
+     *
+     * @param self
+     */
+    function step_animations(self) {
         var length = self.animation_queue.length;
         var i;
         for (i = 0; i < length; i++) {
@@ -257,9 +316,15 @@
                 default:
             }
         }
-    };
+    }
 
-    var fade_screen_effect = function (time, oncomplete, direction) {
+    /**
+     *
+     * @param time
+     * @param oncomplete
+     * @param direction
+     */
+    function fade_screen_effect(time, oncomplete, direction) {
         var self = this;
         time = parseInt(time);
         time = isNaN(time) || time < 0 ? 2000 : time;
@@ -282,7 +347,7 @@
         };
 
         self.animation_queue.push(animation_set);
-    };
+    }
 
 
     root.Scene = Scene;

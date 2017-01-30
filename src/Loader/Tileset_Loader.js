@@ -1,13 +1,14 @@
-(function (root) {
-    if (window.ImageLoader == undefined) {
-        throw "TilesetLoader requires ImageLoader"
+(function (root,w) {
+    if (w.Graphic_Loader == undefined) {
+        throw "TilesetLoader requires Graphic_Loader"
     }
 
     if (root.Tileset == undefined) {
         throw "TilesetLoader requires Tileset"
     }
 
-    var Tileset = root.Tileset;
+    var Tileset = root.Tileset,
+        Graphic_Loader = w.Graphic_Loader;
 
     var TilesetLoader = {
         tilesets: {},
@@ -37,7 +38,7 @@
         load: function (url, id, onsuccess, onprogress, onerror) {
             var self = this;
             if (self.tilesets[url] == undefined) {
-                ImageLoader.load(url, id, function (image, id) {
+                Graphic_Loader.load(url, id, function (image, id) {
                     self.tilesets[url] = new Tileset(image);
                     onsuccess(self.tilesets[url], id);
                 }, onprogress, onerror);
@@ -49,4 +50,4 @@
     };
 
     root.TilesetLoader = TilesetLoader;
-})(RPG);
+})(RPG,window);
