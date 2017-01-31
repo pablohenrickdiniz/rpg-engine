@@ -1,9 +1,9 @@
 (function (root) {
-    if (root.Scene.Scene_Loader == undefined) {
+    if (root.Scene_Loader == undefined) {
         throw "Scene_Manager requires Scene_Loader"
     }
 
-    if(root.Scene.Scene_Map_Loader == undefined){
+    if(root.Scene_Map_Loader == undefined){
         throw "Scene_Manager requires Scene_Map_Loader"
     }
 
@@ -18,10 +18,14 @@
         throw "Scene_Manager requires Game_Timer"
     }
 
+    if(root.Scene_Map == undefined){
+        throw "Scene_Manager requires Scene_Map"
+    }
 
-    var SceneLoader = new root.Scene.Scene_Loader(),
-        SceneMapLoader = new root.Scene.Scene_Map_Loader(),
-        SceneMap = root.Scene.SceneMap,
+
+    var Scene_Loader = new root.Scene_Loader(),
+        Scene_Map_Loader = new root.Scene_Map_Loader(),
+        Scene_Map = root.Scene_Map,
         Scene = root.Scene,
         Main = root.Main,
         Game_Timer = root.Game_Timer;
@@ -36,7 +40,7 @@
             options = options || {};
             switch (type) {
                 case 'map':
-                    scene = new SceneMap(options);
+                    scene = new Scene_Map(options);
                     break;
                 default:
                     scene = new Scene(options);
@@ -50,9 +54,9 @@
                 throw new Error('Cena '+name+' não existe!');
             }
             console.log('inicializando cena '+name+'...');
-            if(scene instanceof SceneMap){
+            if(scene instanceof Scene_Map){
                 scene.trigger('beforeload',[root]);
-                SceneMapLoader.load(scene, function () {
+                Scene_Map_Loader.load(scene, function () {
                     current_scene = scene;
                     Main.set_current_scene(scene);
                     scene.trigger('afterload',[root]);
@@ -64,7 +68,7 @@
             }
             else{
                 scene.trigger('beforeload',[root]);
-                SceneLoader.load(scene, function () {
+                Scene_Loader.load(scene, function () {
                     current_scene = scene;
                     Main.set_current_scene(scene);
                     scene.trigger('afterload',[root]);

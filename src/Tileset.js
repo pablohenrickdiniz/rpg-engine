@@ -3,7 +3,12 @@
         throw "Tileset requires Tile"
     }
 
-    var Tile= root.Tile;
+    if(root.Graphics == undefined){
+        throw "Tileset requires Graphics"
+    }
+
+    var Tile= root.Tile,
+        Graphics = root.Graphics;
     /**
      *
      * @param image
@@ -76,6 +81,7 @@
 
             return self.sprites[i][j];
         }
+        return null;
     };
 
     /**
@@ -155,6 +161,12 @@
                     self.sprites = [];
                     self.collision = [];
                 }
+            }
+        });
+
+        Object.defineProperty(self,'image',{
+            get:function(){
+                return Graphics.get('tilesets',self.id);
             }
         });
     };

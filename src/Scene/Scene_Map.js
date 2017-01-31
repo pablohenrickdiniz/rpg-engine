@@ -1,22 +1,38 @@
 (function (root) {
+    if (window.QuadTree == undefined) {
+        throw "Scane_Map requires QuadTree"
+    }
+
     if (root.Scene == undefined) {
-        throw "SceneMap requires Scene"
+        throw "Scene_Map requires Scene"
     }
 
     if (root.Canvas == undefined) {
-        throw "SceneMap requires Canvas"
+        throw "Scene_Map requires Canvas"
     }
 
     if (root.Graphics == undefined) {
-        throw "SceneMap requires Graphics"
+        throw "Scene_Map requires Graphics"
     }
 
     if (root.Game_Item == undefined) {
-        throw "SceneMap requires Game_Item"
+        throw "Scene_Map requires Game_Item"
     }
 
     if (root.Game_Event == undefined) {
-        throw "SceneMap requires Game_Event"
+        throw "Scene_Map requires Game_Event"
+    }
+
+    if(root.Main == undefined){
+        throw "Scene_Map requires Main"
+    }
+
+    if(root.Spriteset_Map == undefined){
+        throw "Scene_Map requires Spriteset_Map"
+    }
+
+    if(root.Tilesets == undefined){
+        throw "Scene_Map requires Tilesets"
     }
 
     var Scene = root.Scene,
@@ -25,7 +41,9 @@
         Main = root.Main,
         Graphics = root.Graphics,
         Game_Event = root.Game_Event,
-        Game_Item = root.Game_Item;
+        Game_Item = root.Game_Item,
+        Spriteset_Map = root.Spriteset_Map,
+        Tilesets = root.Tilesets;
 
     /**
      *
@@ -37,13 +55,31 @@
         Scene.call(self, options);
         self.focused_character = null;
         self.bg_refreshed = false;
-        self.map = null;
+        self.map = options.map || {};
         self.action_button = false;
         self.clear_queue = [];
+        self.tree = null;
+        self.spriteset = new Spriteset_Map(self.map.spriteset || {});
+        self.objects = [];
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
     Scene_Map.prototype.constructor = Scene_Map;
+
+
+    Scene_Map.prototype.getTree = function(){
+        var self = this;
+        if (self.tree === null) {
+            self.tree = new QuadTree({
+                x: 0,
+                y: 0,
+                width: self.map.width || 640,
+                height: self.map.height || 640
+            });
+        }
+        return self.tree;
+    };
+
 
     /**
      *
@@ -62,16 +98,15 @@
         Scene.prototype.step.apply(this);
         var self = this;
 
-        if(self.map != null){
-            if(Main.Player){
-                action_events(self);
-            }
-            step_events(self);
-            step_focus(self);
-            refresh_BG(self);
-            clear_graphics(self);
-            draw_graphics(self);
+
+        if(Main.Player){
+            action_events(self);
         }
+        step_events(self);
+        step_focus(self);
+        refresh_BG(self);
+        clear_graphics(self);
+        draw_graphics(self);
     };
 
     /**
@@ -138,28 +173,33 @@
         var sy = Canvas.y;
         var width = Canvas.width;
         var height = Canvas.height;
-        var spriteset_map = self.map.spriteset_map;
-        var tileWidth = spriteset_map.tileWidth;
-        var tileHeight = spriteset_map.tileHeight;
+        var spriteset = self.spriteset;
+        var tileWidth = spriteset.tileWidth;
+        var tileHeight = spriteset.tileHeight;
 
         var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
         for (var i = interval.si; i <= interval.ei; i++) {
             for (var j = interval.sj; j <= interval.ej; j++) {
-                if (spriteset_map.sprites[i] !== undefined && spriteset_map.sprites[i][j] !== undefined) {
-                    for (var k in  spriteset_map.sprites[i][j]) {
-                        var tile = spriteset_map.sprites[i][j][k];
-                        var type = Consts.BACKGROUND_LAYER;
-                        if(k > 1){
-                           type = Consts.FOREGROUND_LAYER;
-                        }
-                        var layer = Canvas.getLayer(type, k);
-                        if (layer != null) {
-                            var context = layer.context;
-                            var dx = j * tileWidth - sx;
-                            var dy = i * tileHeight - sy;
-                            dx = parseInt(dx);
-                            dy = parseInt(dy);
-                            context.drawImage(tile.image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tileWidth, tileHeight);
+                if (spriteset.data[i] !== undefined && spriteset.data[i][j] !== undefined) {
+                    for (var k in  spriteset.data[i][j]) {
+                        var tile_data = spriteset.data[i][j][k];
+                        var tileset = Tilesets.get(tile_data[0]);
+                        var tile = tileset.get(tile_data[1],tile_data[2]);
+
+                        if(tile != null){
+                            var type = Consts.BACKGROUND_LAYER;
+                            if(k > 1){
+                                type = Consts.FOREGROUND_LAYER;
+                            }
+                            var layer = Canvas.getLayer(type, k);
+                            if (layer != null) {
+                                var context = layer.context;
+                                var dx = j * tileWidth - sx;
+                                var dy = i * tileHeight - sy;
+                                dx = parseInt(dx);
+                                dy = parseInt(dy);
+                                context.drawImage(tile.image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tileWidth, tileHeight);
+                            }
                         }
                     }
                 }
@@ -197,7 +237,7 @@
      * @param self
      */
     function draw_graphics(self) {
-        var objects = self.map.objects;
+        var objects = self.objects;
         var bounds;
         var i;
         var image;
@@ -219,7 +259,7 @@
                 var bx = parseInt(bounds.x - root.Canvas.x);
                 var by = parseInt(bounds.y - root.Canvas.y);
                 var h_width = frame.width / 2;
-             //   var h_height = frame.height / 2;
+                //   var h_height = frame.height / 2;
 
                 x = bx + bounds.width / 2 - h_width;
                 y = by + - bounds.height;
@@ -332,7 +372,7 @@
      * @param self
      */
     function step_events(self) {
-        var events = self.map.objects;
+        var events = self.objects;
         var length = events.length;
         var i;
         if(Main.Player){
@@ -350,8 +390,7 @@
      */
     function action_events(self) {
         var player = Main.Player;
-        var map = self.map;
-        var tree = map.getTree();
+        var tree = self.getTree();
 
         var bounds_tmp = {
             x: player.bounds.x,
@@ -422,5 +461,5 @@
         self.action_button = false;
     }
 
-    root.Scene.SceneMap = Scene_Map;
+    root.Scene_Map = Scene_Map;
 })(RPG);

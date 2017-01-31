@@ -24,22 +24,7 @@
             if (graphics[type] == undefined) {
                 graphics[type] = {};
             }
-
             graphics[type][name] = graphic;
-        },
-        /**
-         *
-         * @param type
-         * @param data
-         */
-        setAll: function (type, data) {
-            var self = this;
-            var names = Object.keys(data);
-            for (var i = 0; i < names.length; i++) {
-                var name = names[i];
-                var graphic = data[name];
-                self.set(type, name, graphic);
-            }
         },
         /**
          *
@@ -47,7 +32,6 @@
          * @param name
          */
         unset: function (type, name) {
-            var self = this;
             if (graphics[type] != undefined) {
                 if (graphics[type][name] != undefined) {
                     delete graphics[type][name];

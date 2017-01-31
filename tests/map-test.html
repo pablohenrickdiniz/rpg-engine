@@ -66,22 +66,30 @@
     <script type="text/javascript" src="../src/System/Audio/Audio_File.js"></script>
     <script type="text/javascript" src="../src/System/Audio/Audio.js"></script>
 
+
+
+
+
+
+
+    <script type="text/javascript" src="../src/Tilesets.js"></script>
+
+
     <!--Scene-->
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
+    <script type="text/javascript" src="../src/Game/Main.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
 
 
 
 
 
-    <script type="text/javascript" src="../src/Game/Main.js"></script>
     <script type="text/javascript" src="../src/Actors.js"></script>
     <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Variables.js"></script>
     <script type="text/javascript" src="../src/Scenes.js"></script>
     <script type="text/javascript" src="../src/Maps.js"></script>
     <script type="text/javascript" src="../src/Items.js"></script>
-    <script type="text/javascript" src="../src/Tilesets.js"></script>
     <script type="text/javascript" src="../src/Animations.js"></script>
     <script type="text/javascript" src="../src/Skills.js"></script>
 
@@ -114,9 +122,77 @@
                 ui_root:ui_root
             });
 
-            RPG.Scene_Manager.new('','intro',{
+            RPG.Scene_Manager.new('map','intro',{
                 graphics:{
-
+                    tilesets:{
+                        forest1:'http://www.agenciaw3s.com.br/dev/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200001.png',
+                        forest2:'http://www.agenciaw3s.com.br/dev/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200091.png'
+                    }
+                },
+                map:{
+                    width:1280,
+                    height:1280,
+                    tileset:{
+                        id:'forest1',
+                        cols:8,
+                        rows:219,
+                        width:256,
+                        height:7028
+                    },
+                    spriteset:{
+                        width:40,
+                        height:30,
+                        tileWidth:32,
+                        tileHeight:32,
+                        data:[
+                            [
+                                [
+                                    ['forest1', 0, 0]
+                                ],
+                                [
+                                    ['forest1', 0, 1]
+                                ],
+                                [
+                                    ['forest1', 0, 2]
+                                ],
+                                [
+                                    ['forest1', 0, 3]
+                                ],
+                                [
+                                    ['forest1', 0, 4]
+                                ],
+                                [
+                                    ['forest1', 0, 5]
+                                ],
+                                [
+                                    ['forest1', 0, 6]
+                                ]
+                            ],
+                            [
+                                [
+                                    ['forest1', 1, 0]
+                                ],
+                                [
+                                    ['forest1', 1, 1]
+                                ],
+                                [
+                                    ['forest1', 1, 2]
+                                ],
+                                [
+                                    ['forest1', 1, 3]
+                                ],
+                                [
+                                    ['forest1', 1, 4]
+                                ],
+                                [
+                                    ['forest1', 1, 5]
+                                ],
+                                [
+                                    ['forest1', 1, 6]
+                                ]
+                            ]
+                        ]
+                    }
                 },
                 beforeload:function(root){
                     root.UI.set('loading-progress',{

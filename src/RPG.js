@@ -25,8 +25,6 @@
         TimerTicker = w.TimerTicker;
 
     w.RPG = {
-        Main: null,
-        UI:null,
         Game_Timer: new TimerTicker(),
         Canvas: null,
         Controls: {

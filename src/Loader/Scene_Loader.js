@@ -193,6 +193,6 @@
         }
     }
 
-    root.Scene.Scene_Loader = Scene_Loader;
+    root.Scene_Loader = Scene_Loader;
 })
 (RPG, window);

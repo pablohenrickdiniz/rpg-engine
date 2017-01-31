@@ -1,5 +1,5 @@
 (function (root) {
-    if (root.Scene.Scene_Loader == undefined) {
+    if (root.Scene_Loader == undefined) {
         throw "Scene_Map_Loader requires Scene_Loader"
     }
 
@@ -19,12 +19,21 @@
         throw "Scene_Map_Loader requires Tile"
     }
 
+    if(root.Tileset == undefined){
+        throw "Scene_Map_Loader requries Tileset"
+    }
+
+    if(root.Tilesets == undefined){
+        throw "Scene_Map_Loader requries Tilesets"
+    }
+
     var Spriteset_Map = root.Spriteset_Map,
         Game_Map = root.Game_Map,
-        Scene_Loader = root.Scene.Scene_Loader,
+        Scene_Loader = root.Scene_Loader,
         Graphics = root.Graphics,
         Tile = root.Tile,
-        Main = root.Main;
+        Tileset = root.Tileset,
+        Tilesets = root.Tilesets;
 
     var fields = [
         'image',
@@ -53,23 +62,15 @@
      */
     Scene_Map_Loader.prototype.load = function (scene, callback) {
         Scene_Loader.prototype.load.call(this,scene,function(){
-            var data = scene.data || {};
-            var playerX = 0;
-            var playerY = 0;
-
-            if (Main.Player) {
-                if (data.player) {
-                    playerX = data.player.x || playerX;
-                    playerY = data.player.y || playerY;
-                }
-                Main.Player.x = playerX;
-                Main.Player.y = playerY;
-                scene.focusOnCharacter(Main.Player);
+            var map = scene.map;
+            if(map.tileset && map.tileset.id){
+                var id = map.tileset.id;
+                var tileset = new Tileset(map.tileset);
+                Tilesets.set(id,tileset);
             }
-
             callback();
         });
     };
 
-    root.Scene.Scene_Map_Loader = Scene_Map_Loader;
+    root.Scene_Map_Loader = Scene_Map_Loader;
 })(RPG);
