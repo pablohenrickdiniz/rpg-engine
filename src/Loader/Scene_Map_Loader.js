@@ -96,6 +96,9 @@
                     Character_Graphics.set(id,graphic);
                     game_player.characterGraphicID = id;
                 }
+                if(player.speed){
+                    game_player.speed = player.speed;
+                }
             }
 
             callback();

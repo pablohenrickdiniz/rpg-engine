@@ -1,13 +1,13 @@
 (function(root){
+    var ID = 0;
     var Game_Timer = root.Game_Timer;
 
     var Game_Object = function(options){
         var self = this;
         initialize(self);
         options = options || {};
-        self.object_id = Game_Object.ID;
-        Game_Object.ID++;
-        self.id = options.id || 'object-'+self.object_id;
+        self.object_id = ID;
+        ID++;
         self.animations = [];
         self.animationSpeed = options.animationSpeed || 5;
         var x = options.x || 0;
@@ -33,19 +33,11 @@
         self.clearY = null;
         self.clearWidth = null;
         self.clearHeight = null;
-        self.graphic = options.graphic || null;
         self.through = options.through || false;
+        self.focused = false;
         self.name = options.name || '';
     };
 
-    /**
-     *
-     * @param graphic
-     */
-    Game_Object.prototype.setGraphic = function (graphic) {
-        var self = this;
-        self.graphic = graphic;
-    };
 
     Game_Object.prototype.addCollisionGroup = function(group){
         var self = this;
@@ -98,9 +90,9 @@
     var calculate_final_position = function (bounds, ex, ey, time) {
         var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height, groups: ['STEP']};
         var vec = {x: ex - bounds.x, y: ey - bounds.y};
-        var c_map = root.Main.current_scene.map;
-
-        var quadtree = c_map.getTree();
+        var scene = root.Main.get_current_scene();
+        var c_map = scene.map;
+        var quadtree = scene.getTree();
         var collisions = quadtree.retrieve(final_bounds, 'STEP');
         var length = collisions.length;
 
@@ -246,16 +238,6 @@
                 }
             }
         });
-
-
-        Object.defineProperty(self,'currentFrame',{
-            get:function(){
-                if(self.graphic != null){
-                    return self.graphic.getFrame();
-                }
-                return null;
-            }
-        });
     };
 
     /**
@@ -277,7 +259,6 @@
         };
     };
 
-    Game_Object.ID = 0;
 
     root.Game_Object = Game_Object;
 })(RPG);

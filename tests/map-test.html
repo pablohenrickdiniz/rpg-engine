@@ -135,8 +135,8 @@
                     }
                 },
                 map:{
-                    width:3500,
-                    height:3500,
+                    width:3200,
+                    height:3200,
                     tileset:{
                         graphicID:'forest2',
                         cols:8,
@@ -145,8 +145,8 @@
                         height:4768
                     },
                     spriteset:{
-                        width:40,
-                        height:30,
+                        width:100,
+                        height:100,
                         tileWidth:32,
                         tileHeight:32,
                         data:[]
@@ -159,7 +159,8 @@
                         graphicID:'char01',
                         rows:4,
                         cols:4
-                    }
+                    },
+                    speed:7
                 },
                 beforeload:function(root){
                     root.UI.set('loading-progress',{
@@ -180,21 +181,20 @@
                 afterload:function(root){
                     root.UI.hide('loading-progress');
                     var spriteset = root.Main.get_current_scene().spriteset;
-                    for(var i =0; i < 100;i++){
-                        for(var j = 0; j < 100;j++){
+                    for(var i =0; i < 300;i++){
+                        for(var j = 0; j < 300;j++){
                             spriteset.set(i,j,0,['forest2',0,0]);
                         }
                     }
 
 
-                    for(var i =0; i < 40;i++){
-                        for(var j = 0; j < 40;j++){
-                            spriteset.set(Math.floor(Math.random()*100),Math.floor(Math.random()*100),1,['forest2',6,6]);
-                        }
+                    for(var i =0; i < 3000;i++){
+                        spriteset.set(Math.floor(Math.random()*200),Math.floor(Math.random()*200),1,['forest2',6,6]);
                     }
                 },
                 start:function(root){
                     console.log('cena inicializada');
+                    root.Main.get_current_scene().focus(root.Main.get_current_player());
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.get('loading-progress');

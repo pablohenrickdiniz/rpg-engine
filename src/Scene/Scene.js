@@ -219,7 +219,7 @@
         };
         self.animation_queue.push(animation_set);
         return animation_set;
-    };
+    }
 
     /**
      *

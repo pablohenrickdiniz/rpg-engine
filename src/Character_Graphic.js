@@ -29,7 +29,7 @@
         self.cols = options.cols || 1;
         self.sprites = [];
         self.startFrame = options.startFrame || 0;
-        self.graphicType = 'characters';
+        self.graphicType = 'charasets';
     };
 
 

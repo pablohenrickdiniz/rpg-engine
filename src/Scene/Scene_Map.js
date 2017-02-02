@@ -53,7 +53,7 @@
     var Scene_Map = function (options) {
         var self = this;
         Scene.call(self, options);
-        self.focused_character = null;
+        self.focused_object = null;
         self.bg_refreshed = false;
         self.map = options.map || {};
         self.action_button = false;
@@ -84,15 +84,15 @@
 
     /**
      *
-     * @param character
+     * @param object
      */
-    Scene_Map.prototype.focusOnCharacter = function (character) {
+    Scene_Map.prototype.focus = function (object) {
         var self = this;
-        if (self.focused_character !== null) {
-            self.focused_character.camera_focus = false;
+        if (self.focused_object !== null) {
+            self.focused_object.focused = false;
         }
-        character.camera_focus = true;
-        self.focused_character = character;
+        object.focused = true;
+        self.focused_object = object;
     };
 
     Scene_Map.prototype.step = function () {
@@ -253,7 +253,7 @@
         var size = objects.length;
         for (i = 0; i < size; i++) {
             var object = objects[i];
-            frame = object.getCurrentFrame();
+            frame = object.currentFrame;
             if (frame != null && frame.image) {
                 bounds = object.bounds;
                 image = frame.image;
@@ -331,16 +331,16 @@
      * @param self
      */
     function step_focus(self) {
-        if (self.focused_character != null) {
-            var event = self.focused_character;
+        if (self.focused_object != null) {
+            var obj = self.focused_object;
             var m = self.map;
 
             var viewport_width = Math.min(Canvas.width, m.width);
             var viewport_height = Math.min(Canvas.height, m.height);
 
 
-            var viewport_x = event.bounds.x - (viewport_width / 2) + (event.graphic.tileWidth / 2);
-            var viewport_y = event.bounds.y - (viewport_height / 2) + (event.graphic.tileHeight / 2);
+            var viewport_x = obj.bounds.x - (viewport_width / 2) + (obj.graphic.tileWidth / 2);
+            var viewport_y = obj.bounds.y - (viewport_height / 2) + (obj.graphic.tileHeight / 2);
             var max_screen_x = m.width - viewport_width;
             var max_screen_y = m.height - viewport_height;
 

@@ -46,26 +46,11 @@
         self.obj_movement = null;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
         self.parent = options.parent || null;
-        self.id = Game_Character.ID;
         self.characterGraphicID = options.characterGraphicID;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
     Game_Character.prototype.constructor = Game_Character;
-
-
-    /**
-     *
-     * @returns {*|Object}
-     */
-    Game_Character.prototype.getCurrentFrame = function () {
-        var self = this;
-        if(self.currentAnimation !=null && self.graphic != null){
-            var index = self.currentAnimation.getIndexFrame();
-            return self.graphic.get(self.direction, index);
-        }
-        return null;
-    };
 
     /**
      *
@@ -288,6 +273,26 @@
             },
             get: function () {
                 return character_graphic_id;
+            }
+        });
+
+
+        Object.defineProperty(self,'graphic',{
+            get:function(){
+                return Character_Graphics.get(self.characterGraphicID);
+            }
+        });
+
+
+        Object.defineProperty(self,'currentFrame',{
+            configurable:false,
+            get:function(){
+
+                if(self.currentAnimation !=null && self.graphic != null){
+                    var index = self.currentAnimation.getIndexFrame();
+                    return self.graphic.get(self.direction, index);
+                }
+                return null;
             }
         });
     }

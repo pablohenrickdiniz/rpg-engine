@@ -31,7 +31,7 @@
             Keyboard: null,
             Mouse: null
         },
-        debug:true,
+        debug:false,
         /**
          *
          * @param options
@@ -42,7 +42,7 @@
             var container = options.container;
             var ui_root = options.ui_root;
             self.Controls.Keyboard = new Keyboard({
-                element: container,
+                element: ui_root,
                 propagate: [Keyboard.F5, Keyboard.F11,Keyboard.F12]
             });
             self.Controls.Mouse = new Mouse(container);
