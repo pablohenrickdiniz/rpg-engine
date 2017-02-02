@@ -246,6 +246,16 @@
                 }
             }
         });
+
+
+        Object.defineProperty(self,'currentFrame',{
+            get:function(){
+                if(self.graphic != null){
+                    return self.graphic.getFrame();
+                }
+                return null;
+            }
+        });
     };
 
     /**
@@ -265,18 +275,6 @@
             end_position: {x: final_bounds.x, y: final_bounds.y},
             oncomplete: callback
         };
-    };
-
-    /**
-     *
-     * @returns {*|Object}
-     */
-    Game_Object.prototype.getCurrentFrame = function () {
-        var self = this;
-        if(self.graphic != null){
-            return self.graphic.getFrame();
-        }
-        return null;
     };
 
     Game_Object.ID = 0;

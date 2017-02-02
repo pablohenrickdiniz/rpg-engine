@@ -1,4 +1,9 @@
 (function (root) {
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Spriteset_Map = function (options) {
         var self = this;
         initialize(self);
@@ -9,42 +14,6 @@
         self.tileHeight = options.tileHeight || 32;
         self.data =  options.data || [];
     };
-
-    function initialize(self){
-        var width = 0;
-        var height = 0;
-        Object.defineProperty(self,'width',{
-            get:function(){
-                return width;
-            },
-            set:function(w){
-                if(w != width){
-                    width = w;
-                    if(self.data){
-                        for(var i in self.data){
-                            if(self.data[i].length > width){
-                                self.data[i].length =width;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        Object.defineProperty(self,'height',{
-            get:function(){
-                return height;
-            },
-            set:function(h){
-                if(h != height){
-                    height = h;
-                    if(self.data && self.data.length > height){
-                        self.data.height = height;
-                    }
-                }
-            }
-        });
-    }
 
     /**
      *
@@ -116,6 +85,45 @@
         ];
     };
 
+    /**
+     *
+     * @param self
+     */
+    function initialize(self){
+        var width = 0;
+        var height = 0;
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return width;
+            },
+            set:function(w){
+                if(w != width){
+                    width = w;
+                    if(self.data){
+                        for(var i in self.data){
+                            if(self.data[i].length > width){
+                                self.data[i].length =width;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'height',{
+            get:function(){
+                return height;
+            },
+            set:function(h){
+                if(h != height){
+                    height = h;
+                    if(self.data && self.data.length > height){
+                        self.data.height = height;
+                    }
+                }
+            }
+        });
+    }
 
     root.Spriteset_Map = Spriteset_Map;
 })(RPG);

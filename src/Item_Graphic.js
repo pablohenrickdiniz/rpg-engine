@@ -1,24 +1,24 @@
 (function(root){
-    if(root.Graphic == undefined){
-        throw "Item_Graphic requires Graphic"
+    if(root.Game_Graphic == undefined){
+        throw "Item_Graphic requires Game_Graphic"
     }
 
     if(root.Tile == undefined){
         throw "Item_Graphic requires Tile"
     }
 
-    var Graphic = root.Graphic,
+    var Game_Graphic = root.Game_Graphic,
         Tile = root.Tile;
 
     var Item_Graphic = function(options){
         var self = this;
-        Graphic.call(self,options);
+        Game_Graphic.call(self,options);
         initialize(self);
         self.frame = null;
-        self.graphic_type = 'icon';
+        self.graphicType = 'icons';
     };
 
-    Item_Graphic.prototype = Object.create(Graphic.prototype);
+    Item_Graphic.prototype = Object.create(Game_Graphic.prototype);
     Item_Graphic.prototype.constructor = Item_Graphic;
 
     Item_Graphic.prototype.getFrame = function(){
@@ -38,7 +38,7 @@
     };
 
 
-    var initialize = function(self){
+    function initialize(self){
         Object.defineProperty(self,'width',{
             get:function(){
                 return self.sWidth;
@@ -50,7 +50,7 @@
                 return self.sHeight;
             }
         });
-    };
+    }
 
     root.Item_Graphic = Item_Graphic;
 })(RPG);

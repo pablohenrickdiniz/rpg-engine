@@ -20,12 +20,25 @@
     }
 
     if(root.Tileset == undefined){
-        throw "Scene_Map_Loader requries Tileset"
+        throw "Scene_Map_Loader requires Tileset"
     }
 
     if(root.Tilesets == undefined){
-        throw "Scene_Map_Loader requries Tilesets"
+        throw "Scene_Map_Loader requires Tilesets"
     }
+
+    if(root.Main == undefined){
+        throw "Scene_Map_Loader requires Main"
+    }
+
+    if(root.Character_Graphic == undefined){
+        throw "Scene_Map_Loader requires Character_Graphic"
+    }
+
+    if(root.Character_Graphics == undefined){
+        throw "Scene_Map_Loader requires Character_Graphics"
+    }
+
 
     var Spriteset_Map = root.Spriteset_Map,
         Game_Map = root.Game_Map,
@@ -33,7 +46,10 @@
         Graphics = root.Graphics,
         Tile = root.Tile,
         Tileset = root.Tileset,
-        Tilesets = root.Tilesets;
+        Tilesets = root.Tilesets,
+        Main = root.Main,
+        Character_Graphic = root.Character_Graphic,
+        Character_Graphics  = root.Character_Graphics;
 
     var fields = [
         'image',
@@ -63,11 +79,25 @@
     Scene_Map_Loader.prototype.load = function (scene, callback) {
         Scene_Loader.prototype.load.call(this,scene,function(){
             var map = scene.map;
-            if(map.tileset && map.tileset.id){
-                var id = map.tileset.id;
+            if(map.tileset && map.tileset.graphicID){
+                var id = map.tileset.graphicID;
                 var tileset = new Tileset(map.tileset);
                 Tilesets.set(id,tileset);
             }
+
+            var game_player = Main.get_current_player();
+            if(scene.player){
+                var player = scene.player;
+                if(player.x){game_player.x =player.x;}
+                if(player.y){game_player.y = player.y}
+                if(player.graphic){
+                    var id = player.graphic.graphicID;
+                    var graphic = new Character_Graphic(player.graphic);
+                    Character_Graphics.set(id,graphic);
+                    game_player.characterGraphicID = id;
+                }
+            }
+
             callback();
         });
     };

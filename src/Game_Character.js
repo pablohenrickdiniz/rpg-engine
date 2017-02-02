@@ -1,6 +1,6 @@
-(function (root, w) {
-    if (root.Animation == undefined) {
-        throw "Game_Character requires Animation"
+(function (root) {
+    if (root.Animation_Time == undefined) {
+        throw "Game_Character requires Animation_Time"
     }
 
     if (root.Consts == undefined) {
@@ -19,12 +19,17 @@
         throw "Game_Character requires Game_Object"
     }
 
-    var Animation = root.Animation,
+    if(root.Character_Graphics == undefined){
+        throw "Game_Character requires Character_Graphics"
+    }
+
+    var Animation_Time = root.Animation_Time,
         Consts = root.Consts,
         Main = root.Main,
         Game_Timer = root.Game_Timer,
         Character_Graphic = root.Character_Graphic,
-        Game_Object = root.Game_Object;
+        Game_Object = root.Game_Object,
+        Character_Graphics = root.Character_Graphics;
     /**
      *
      * @param options
@@ -33,38 +38,21 @@
     var Game_Character = function (options) {
         var self = this;
         Game_Object.call(self,options);
+        initialize(self);
         options = options || {};
         self.direction = Consts.CHARACTER_DIRECTION_DOWN;
         self.moving = false;
         self.refreshed = false;
         self.obj_movement = null;
-        self.setGraphic(options.graphic || new Character_Graphic());
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
-        self.graphic_type = 'character';
         self.parent = options.parent || null;
         self.id = Game_Character.ID;
+        self.characterGraphicID = options.characterGraphicID;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
     Game_Character.prototype.constructor = Game_Character;
 
-
-    /**
-     *
-     * @param graphic
-     */
-    Game_Character.prototype.setGraphic = function (graphic) {
-        var self = this;
-        self.graphic = graphic;
-        self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation(graphic.cols, graphic.cols);
-        self.animations[Consts.CHARACTER_STEP_UP] = new Animation(graphic.cols, graphic.cols);
-        self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation(graphic.cols, graphic.cols);
-        self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation(graphic.cols, graphic.cols);
-        self.animations[Consts.CHARACTER_STOP_DOWN] =  new Animation(graphic.cols, 1);
-        self.animations[Consts.CHARACTER_STOP_UP] =  new Animation(graphic.cols, 1);
-        self.animations[Consts.CHARACTER_STOP_RIGHT] =  new Animation(graphic.cols, 1);
-        self.animations[Consts.CHARACTER_STOP_LEFT] =  new Animation(graphic.cols, 1);
-    };
 
     /**
      *
@@ -136,6 +124,7 @@
         }
     };
 
+
     Game_Character.prototype.stop = function(){
         var self = this;
         switch (self.direction) {
@@ -154,32 +143,55 @@
         }
     };
 
-
+    /**
+     *
+     * @param times
+     */
     Game_Character.prototype.moveUp = function(times){
         var self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_UP,times);
     };
 
+    /**
+     *
+     * @param times
+     */
     Game_Character.prototype.moveDown = function(times){
         var self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_DOWN,times);
     };
 
+    /**
+     *
+     * @param times
+     */
     Game_Character.prototype.moveRight = function(times){
         var self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT,times);
     };
 
+    /**
+     *
+     * @param times
+     */
     Game_Character.prototype.moveLeft = function(times){
         var self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_LEFT,times);
     };
 
+    /**
+     *
+     * @param times
+     */
     Game_Character.prototype.stepForward = function (times) {
         var self = this;
         self.moveTo(self.direction,times);
     };
 
+    /**
+     *
+     * @param times
+     */
     Game_Character.prototype.stepRandom = function (times) {
         this.moveTo(Consts.CHARACTER_DIRECTION_RANDOM,times);
     };
@@ -248,5 +260,38 @@
         self.turn(Main.Player);
     };
 
+    /**
+     *
+     * @param self
+     */
+    function initialize(self) {
+        var character_graphic_id = null;
+        Object.defineProperty(self, 'characterGraphicID', {
+            set: function (id) {
+                if (id != character_graphic_id) {
+                    character_graphic_id = id;
+                    var graphic = Character_Graphics.get(id);
+                    if (graphic != null) {
+                        self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation_Time(graphic.cols, graphic.cols);
+                        self.animations[Consts.CHARACTER_STEP_UP] = new Animation_Time(graphic.cols, graphic.cols);
+                        self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation_Time(graphic.cols, graphic.cols);
+                        self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation_Time(graphic.cols, graphic.cols);
+                        self.animations[Consts.CHARACTER_STOP_DOWN] = new Animation_Time(graphic.cols, 1);
+                        self.animations[Consts.CHARACTER_STOP_UP] = new Animation_Time(graphic.cols, 1);
+                        self.animations[Consts.CHARACTER_STOP_RIGHT] = new Animation_Time(graphic.cols, 1);
+                        self.animations[Consts.CHARACTER_STOP_LEFT] = new Animation_Time(graphic.cols, 1);
+                    }
+                    else {
+                        self.animations = [];
+                    }
+                }
+            },
+            get: function () {
+                return character_graphic_id;
+            }
+        });
+    }
+
+
     root.Game_Character = Game_Character;
-})(RPG, window);
+})(RPG);

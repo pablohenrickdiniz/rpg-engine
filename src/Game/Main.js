@@ -32,10 +32,10 @@
         set_current_player:function(actor_id){
             var self = this;
             if(actor_id == null){
-                self.current_player = null;
+                current_player = null;
             }
             else if(self.Actors.get(actor_id) != null){
-                self.current_player = self.Actors.get(actor_id);
+                current_player = self.Actors.get(actor_id);
             }
         },
         get_current_player:function(){

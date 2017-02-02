@@ -181,8 +181,8 @@
         if(names.length > 0){
             var name = names.pop();
             Graphic_Loader.load(data[name],name, {
-                onsuccess: function (graphic,id) {
-                    Graphics.set(type, id, graphic);
+                onsuccess: function (id,image) {
+                    Graphics.set(type, id, image);
                     if(q){q(id);}
                 },
                 onglobalprogress: onglobalprogress,

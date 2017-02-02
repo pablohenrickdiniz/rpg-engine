@@ -7,13 +7,13 @@
         throw "Character_Graphic requires Graphics"
     }
 
-    if(root.Graphic == undefined){
-        throw "Character_Graphic requires Graphic"
+    if(root.Game_Graphic == undefined){
+        throw "Character_Graphic requires Game_Graphic"
     }
 
     var Tile = root.Tile,
         Graphics = root.Graphics,
-        Graphic = root.Graphic;
+        Game_Graphic = root.Game_Graphic;
 
     /**
      *
@@ -23,16 +23,17 @@
     var Character_Graphic = function (options) {
         var self = this;
         options = options || {};
-        Graphic.call(self,options);
+        Game_Graphic.call(self,options);
         initialize(self);
         self.rows = options.rows || 1;
         self.cols = options.cols || 1;
         self.sprites = [];
         self.startFrame = options.startFrame || 0;
+        self.graphicType = 'characters';
     };
 
 
-    Character_Graphic.prototype = Object.create(Graphic.prototype);
+    Character_Graphic.prototype = Object.create(Game_Graphic.prototype);
     Character_Graphic.prototype.constructor = Character_Graphic;
 
     /**
@@ -61,7 +62,7 @@
         }
     };
 
-    var initialize = function(self){
+    function initialize(self){
         Object.defineProperty(self,'tileWidth',{
             get:function(){
                 var width = self.sWidth;
@@ -92,8 +93,7 @@
                 return 0;
             }
         });
-    };
-
+    }
 
     root.Character_Graphic = Character_Graphic;
 })(RPG);

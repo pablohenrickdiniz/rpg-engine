@@ -23,7 +23,7 @@
         self.height = options.height || 0;
         self.rows = options.rows || null;
         self.cols = options.cols || null;
-        self.image = options.image || null;
+        self.graphicID = options.graphicID || null;
         self.sprites = [];
         self.collision = [];
         self.id = options.id || null;
@@ -166,7 +166,7 @@
 
         Object.defineProperty(self,'image',{
             get:function(){
-                return Graphics.get('tilesets',self.id);
+                return Graphics.get('tilesets',self.graphicID);
             }
         });
     };

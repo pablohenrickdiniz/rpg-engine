@@ -61,6 +61,7 @@
         self.tree = null;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
         self.objects = [];
+        self.player = options.player || {};
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
@@ -99,7 +100,7 @@
         var self = this;
 
 
-        if(Main.Player){
+        if(Main.get_current_player()){
             action_events(self);
         }
         step_events(self);
@@ -245,15 +246,15 @@
         var x;
         var y;
 
-        if(Main.Player){
-            objects = objects.concat(Main.Player);
+        if(Main.get_current_player()){
+            objects = objects.concat(Main.get_current_player());
         }
         objects = sort_objects(objects);
         var size = objects.length;
         for (i = 0; i < size; i++) {
             var object = objects[i];
             frame = object.getCurrentFrame();
-            if (frame != null) {
+            if (frame != null && frame.image) {
                 bounds = object.bounds;
                 image = frame.image;
                 var bx = parseInt(bounds.x - root.Canvas.x);
@@ -375,8 +376,8 @@
         var events = self.objects;
         var length = events.length;
         var i;
-        if(Main.Player){
-            Main.Player.update();
+        if(Main.get_current_player()){
+            Main.get_current_player().update();
         }
 
         for (i = 0; i < length; i++) {
@@ -389,7 +390,7 @@
      * @param self
      */
     function action_events(self) {
-        var player = Main.Player;
+        var player = Main.get_current_player();
         var tree = self.getTree();
 
         var bounds_tmp = {
