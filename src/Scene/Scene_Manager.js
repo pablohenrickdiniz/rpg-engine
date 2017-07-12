@@ -58,7 +58,7 @@
                 scene.trigger('beforeload',[root]);
                 Scene_Map_Loader.load(scene, function () {
                     current_scene = scene;
-                    Main.set_current_scene(scene);
+                    Main.currentScene = scene;
                     scene.trigger('afterload',[root]);
                     if(!Game_Timer.running){
                         Game_Timer.run();

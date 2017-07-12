@@ -9,7 +9,7 @@
         self.object_id = ID;
         ID++;
         self.animations = [];
-        self.animationSpeed = options.animationSpeed || 5;
+        self.animationSpeed = options.animationSpeed || 4;
         var x = options.x || 0;
         var y = options.y || 0;
         self.bounds = {
@@ -27,7 +27,7 @@
         self.refreshed = false;
         self.obj_movement = null;
         self.currentAnimation = null;
-        self.type = 'object';
+        self.type = options.type || 'Object';
         self.parent = options.parent || null;
         self.clearX = null;
         self.clearY = null;
@@ -90,7 +90,7 @@
     var calculate_final_position = function (bounds, ex, ey, time) {
         var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height, groups: ['STEP']};
         var vec = {x: ex - bounds.x, y: ey - bounds.y};
-        var scene = root.Main.get_current_scene();
+        var scene = root.Main.currentScene;
         var c_map = scene.map;
         var quadtree = scene.getTree();
         var collisions = quadtree.retrieve(final_bounds, 'STEP');

@@ -35,6 +35,10 @@
         throw "Scene_Map requires Tilesets"
     }
 
+    if(root.Game_Object == undefined){
+        throw "Scene_Map requires Game_Object"
+    }
+
     var Scene = root.Scene,
         Canvas = root.Canvas,
         Consts = root.Consts,
@@ -43,7 +47,8 @@
         Game_Event = root.Game_Event,
         Game_Item = root.Game_Item,
         Spriteset_Map = root.Spriteset_Map,
-        Tilesets = root.Tilesets;
+        Tilesets = root.Tilesets,
+        Game_Object = root.Game_Object;
 
     /**
      *
@@ -61,7 +66,8 @@
         self.tree = null;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
         self.objects = [];
-        self.player = options.player || {};
+        self.charas = options.charas || {};
+        self.actors = options.actors || {};
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
@@ -87,12 +93,14 @@
      * @param object
      */
     Scene_Map.prototype.focus = function (object) {
-        var self = this;
-        if (self.focused_object !== null) {
-            self.focused_object.focused = false;
+        if(object instanceof Game_Object){
+            var self = this;
+            if (self.focused_object !== null) {
+                self.focused_object.focused = false;
+            }
+            object.focused = true;
+            self.focused_object = object;
         }
-        object.focused = true;
-        self.focused_object = object;
     };
 
     Scene_Map.prototype.step = function () {
@@ -100,7 +108,7 @@
         var self = this;
 
 
-        if(Main.get_current_player()){
+        if(Main.currentPlayer){
             action_events(self);
         }
         step_events(self);
@@ -246,14 +254,16 @@
         var x;
         var y;
 
-        if(Main.get_current_player()){
-            objects = objects.concat(Main.get_current_player());
+        if(Main.currentPlayer){
+            objects = objects.concat(Main.currentPlayer);
         }
         objects = sort_objects(objects);
         var size = objects.length;
         for (i = 0; i < size; i++) {
             var object = objects[i];
             frame = object.currentFrame;
+
+
             if (frame != null && frame.image) {
                 bounds = object.bounds;
                 image = frame.image;
@@ -333,38 +343,37 @@
     function step_focus(self) {
         if (self.focused_object != null) {
             var obj = self.focused_object;
-            var m = self.map;
+            var graphic = obj.graphic;
+            if(graphic != null){
+                var m = self.map;
+                var viewport_width = Math.min(Canvas.width, m.width);
+                var viewport_height = Math.min(Canvas.height, m.height);
+                var viewport_x = obj.bounds.x - (viewport_width / 2) + (obj.graphic.tileWidth / 2);
+                var viewport_y = obj.bounds.y - (viewport_height / 2) + (obj.graphic.tileHeight / 2);
+                var max_screen_x = m.width - viewport_width;
+                var max_screen_y = m.height - viewport_height;
 
-            var viewport_width = Math.min(Canvas.width, m.width);
-            var viewport_height = Math.min(Canvas.height, m.height);
+                if (viewport_x < 0) {
+                    viewport_x = 0;
+                }
+                else if (viewport_x > max_screen_x) {
+                    viewport_x = max_screen_x;
+                }
 
+                if (viewport_y < 0) {
+                    viewport_y = 0;
+                }
+                else if (viewport_y > max_screen_y) {
+                    viewport_y = max_screen_y;
+                }
 
-            var viewport_x = obj.bounds.x - (viewport_width / 2) + (obj.graphic.tileWidth / 2);
-            var viewport_y = obj.bounds.y - (viewport_height / 2) + (obj.graphic.tileHeight / 2);
-            var max_screen_x = m.width - viewport_width;
-            var max_screen_y = m.height - viewport_height;
+                if (Canvas.x != viewport_x || Canvas.y != viewport_y) {
+                    self.bg_refreshed = false;
+                }
 
-            if (viewport_x < 0) {
-                viewport_x = 0;
+                Canvas.x = viewport_x;
+                Canvas.y = viewport_y;
             }
-            else if (viewport_x > max_screen_x) {
-                viewport_x = max_screen_x;
-            }
-
-            if (viewport_y < 0) {
-                viewport_y = 0;
-            }
-            else if (viewport_y > max_screen_y) {
-                viewport_y = max_screen_y;
-            }
-
-            if (Canvas.x != viewport_x || Canvas.y != viewport_y) {
-                self.bg_refreshed = false;
-            }
-
-
-            Canvas.x = viewport_x;
-            Canvas.y = viewport_y;
         }
     }
 
@@ -376,8 +385,8 @@
         var events = self.objects;
         var length = events.length;
         var i;
-        if(Main.get_current_player()){
-            Main.get_current_player().update();
+        if(Main.currentPlayer){
+            Main.currentPlayer.update();
         }
 
         for (i = 0; i < length; i++) {
@@ -390,7 +399,7 @@
      * @param self
      */
     function action_events(self) {
-        var player = Main.get_current_player();
+        var player = Main.currentPlayer;
         var tree = self.getTree();
 
         var bounds_tmp = {

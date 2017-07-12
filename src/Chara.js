@@ -8,7 +8,7 @@
     }
 
     if(root.Game_Graphic == undefined){
-        throw "Character_Graphic requires Game_Graphic"
+        throw "Chara requires Game_Graphic"
     }
 
     var Tile = root.Tile,
@@ -20,7 +20,7 @@
      * @param options
      * @constructor
      */
-    var Character_Graphic = function (options) {
+    var Chara = function (options) {
         var self = this;
         options = options || {};
         Game_Graphic.call(self,options);
@@ -33,8 +33,8 @@
     };
 
 
-    Character_Graphic.prototype = Object.create(Game_Graphic.prototype);
-    Character_Graphic.prototype.constructor = Character_Graphic;
+    Chara.prototype = Object.create(Game_Graphic.prototype);
+    Chara.prototype.constructor = Chara;
 
     /**
      *
@@ -42,7 +42,7 @@
      * @param j
      * @returns {*}
      */
-    Character_Graphic.prototype.get = function (i, j) {
+    Chara.prototype.get = function (i, j) {
         var self = this;
         if (i >= 0 && i < self.rows && j >= 0 && j < self.cols) {
 
@@ -95,5 +95,5 @@
         });
     }
 
-    root.Character_Graphic = Character_Graphic;
+    root.Chara = Chara;
 })(RPG);

@@ -7,8 +7,8 @@
         throw "Game_Character requires Consts"
     }
 
-    if(root.Character_Graphic == undefined){
-        throw "Game_Character requires Character_Graphic"
+    if(root.Chara == undefined){
+        throw "Game_Character requires Chara"
     }
 
     if(root.Game_Timer == undefined){
@@ -19,17 +19,17 @@
         throw "Game_Character requires Game_Object"
     }
 
-    if(root.Character_Graphics == undefined){
-        throw "Game_Character requires Character_Graphics"
+    if(root.Charas == undefined){
+        throw "Game_Character requires Charas"
     }
 
     var Animation_Time = root.Animation_Time,
         Consts = root.Consts,
         Main = root.Main,
         Game_Timer = root.Game_Timer,
-        Character_Graphic = root.Character_Graphic,
+        Chara = root.Chara,
         Game_Object = root.Game_Object,
-        Character_Graphics = root.Character_Graphics;
+        Charas = root.Charas;
     /**
      *
      * @param options
@@ -44,9 +44,9 @@
         self.moving = false;
         self.refreshed = false;
         self.obj_movement = null;
-        self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
         self.parent = options.parent || null;
-        self.characterGraphicID = options.characterGraphicID;
+        self.charaID = options.charaID;
+        self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -93,7 +93,7 @@
 
             if (times < 1) {
                 self.moving = false;
-                if(self.type != 'player'){
+                if(self.type != 'Player'){
                     self.stop();
                 }
                 if (typeof complete === 'function') {
@@ -250,21 +250,21 @@
      * @param self
      */
     function initialize(self) {
-        var character_graphic_id = null;
-        Object.defineProperty(self, 'characterGraphicID', {
+        var charaID = null;
+        Object.defineProperty(self, 'charaID', {
             set: function (id) {
-                if (id != character_graphic_id) {
-                    character_graphic_id = id;
-                    var graphic = Character_Graphics.get(id);
+                if (id != charaID) {
+                    charaID = id;
+                    var graphic = Charas.get(id);
                     if (graphic != null) {
-                        self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation_Time(graphic.cols, graphic.cols);
-                        self.animations[Consts.CHARACTER_STEP_UP] = new Animation_Time(graphic.cols, graphic.cols);
-                        self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation_Time(graphic.cols, graphic.cols);
-                        self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation_Time(graphic.cols, graphic.cols);
-                        self.animations[Consts.CHARACTER_STOP_DOWN] = new Animation_Time(graphic.cols, 1);
-                        self.animations[Consts.CHARACTER_STOP_UP] = new Animation_Time(graphic.cols, 1);
-                        self.animations[Consts.CHARACTER_STOP_RIGHT] = new Animation_Time(graphic.cols, 1);
-                        self.animations[Consts.CHARACTER_STOP_LEFT] = new Animation_Time(graphic.cols, 1);
+                        self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation_Time(self.animationSpeed, graphic.cols);
+                        self.animations[Consts.CHARACTER_STEP_UP] = new Animation_Time(self.animationSpeed, graphic.cols);
+                        self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation_Time(self.animationSpeed, graphic.cols);
+                        self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation_Time(self.animationSpeed, graphic.cols);
+                        self.animations[Consts.CHARACTER_STOP_DOWN] = new Animation_Time(self.animationSpeed, 1);
+                        self.animations[Consts.CHARACTER_STOP_UP] = new Animation_Time(self.animationSpeed, 1);
+                        self.animations[Consts.CHARACTER_STOP_RIGHT] = new Animation_Time(self.animationSpeed, 1);
+                        self.animations[Consts.CHARACTER_STOP_LEFT] = new Animation_Time(self.animationSpeed, 1);
                     }
                     else {
                         self.animations = [];
@@ -272,14 +272,14 @@
                 }
             },
             get: function () {
-                return character_graphic_id;
+                return charaID;
             }
         });
 
 
         Object.defineProperty(self,'graphic',{
             get:function(){
-                return Character_Graphics.get(self.characterGraphicID);
+                return Charas.get(self.charaID);
             }
         });
 

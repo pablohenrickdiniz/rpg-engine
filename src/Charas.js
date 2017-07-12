@@ -1,12 +1,12 @@
 (function(root){
-    if(root.Character_Graphic == undefined){
-        throw "Character_Graphics requires Character_Graphic"
+    if(root.Chara == undefined){
+        throw "Charas requires Chara"
     }
 
-    var Character_Graphic = root.Character_Graphic;
+    var Chara = root.Chara;
     var gpcs = [];
 
-    root.Character_Graphics = {
+    root.Charas = {
         get:function(id){
             if(gpcs[id] != undefined){
                 return gpcs[id];
@@ -14,7 +14,7 @@
             return null;
         },
         set:function(id,chrgpc){
-            if(chrgpc instanceof Character_Graphic){
+            if(chrgpc instanceof Chara){
                 gpcs[id] = chrgpc;
             }
         }

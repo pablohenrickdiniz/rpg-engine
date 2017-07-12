@@ -79,21 +79,21 @@
         });
 
         Game_Timer.addEventListener('tick', function () {
-            var current_scene = Main.get_current_scene();
+            var current_scene = Main.currentScene;
             if (current_scene) {
                 current_scene.step();
             }
         });
 
         Keyboard.addShortcutListener('ENTER', function () {
-            var current_scene = Main.get_current_scene();
+            var current_scene = Main.currentScene;
             if(current_scene){
                 current_scene.action_button = true;
             }
         });
 
         Canvas.addEventListener('resize', function () {
-            var current_scene = Main.get_current_scene();
+            var current_scene = Main.currentScene;
             if(current_scene){
                 current_scene.bg_refreshed = false;
             }

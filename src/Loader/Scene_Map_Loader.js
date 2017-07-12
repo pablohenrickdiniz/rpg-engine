@@ -31,12 +31,16 @@
         throw "Scene_Map_Loader requires Main"
     }
 
-    if(root.Character_Graphic == undefined){
-        throw "Scene_Map_Loader requires Character_Graphic"
+    if(root.Chara == undefined){
+        throw "Scene_Map_Loader requires Chara"
     }
 
-    if(root.Character_Graphics == undefined){
-        throw "Scene_Map_Loader requires Character_Graphics"
+    if(root.Charas == undefined){
+        throw "Scene_Map_Loader requires Charas"
+    }
+
+    if(root.Game_Actor == undefined){
+        throw "Scene_Map_Loader requires Game_Actor"
     }
 
 
@@ -48,8 +52,9 @@
         Tileset = root.Tileset,
         Tilesets = root.Tilesets,
         Main = root.Main,
-        Character_Graphic = root.Character_Graphic,
-        Character_Graphics  = root.Character_Graphics;
+        Chara = root.Chara,
+        Charas  = root.Charas,
+        Game_Actor = root.Game_Actor;
 
     var fields = [
         'image',
@@ -79,25 +84,38 @@
     Scene_Map_Loader.prototype.load = function (scene, callback) {
         Scene_Loader.prototype.load.call(this,scene,function(){
             var map = scene.map;
+            var keys;
+            var length;
+            var key;
+            var i;
+            var conf;
+
             if(map.tileset && map.tileset.graphicID){
                 var id = map.tileset.graphicID;
                 var tileset = new Tileset(map.tileset);
                 Tilesets.set(id,tileset);
             }
 
-            var game_player = Main.get_current_player();
-            if(scene.player){
-                var player = scene.player;
-                if(player.x){game_player.x =player.x;}
-                if(player.y){game_player.y = player.y}
-                if(player.graphic){
-                    var id = player.graphic.graphicID;
-                    var graphic = new Character_Graphic(player.graphic);
-                    Character_Graphics.set(id,graphic);
-                    game_player.characterGraphicID = id;
+            if(scene.charas && scene.charas.constructor == {}.constructor){
+                keys = Object.keys(scene.charas);
+                length = keys.length;
+                for(i =0; i < length;i++){
+                    key = keys[i];
+                    conf = scene.charas[key];
+                    var chara = new Chara(conf);
+                    Charas.set(key,chara);
                 }
-                if(player.speed){
-                    game_player.speed = player.speed;
+            }
+
+
+
+            if(scene.actors && scene.actors.constructor == {}.constructor){
+                keys = Object.keys(scene.actors);
+                length = keys.length;
+                for(i =0; i < length;i++){
+                    key = keys[i];
+                    conf = scene.actors[key];
+                    Main.Actors.set(key,new Game_Actor(conf));
                 }
             }
 

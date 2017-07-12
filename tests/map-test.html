@@ -50,11 +50,10 @@
     <script type="text/javascript" src="../src/Consts.js"></script>
     <script type="text/javascript" src="../src/Game_Graphic.js"></script>
     <script type="text/javascript" src="../src/Item_Graphic.js"></script>
-    <script type="text/javascript" src="../src/Character_Graphic.js"></script>
-    <script type="text/javascript" src="../src/Character_Graphics.js"></script>
+    <script type="text/javascript" src="../src/Chara.js"></script>
+    <script type="text/javascript" src="../src/Charas.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
-    <script type="text/javascript" src="../src/Game_Player.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
     <script type="text/javascript" src="../src/Game_Item.js"></script>
@@ -152,15 +151,23 @@
                         data:[]
                     }
                 },
-                player:{
-                    x:0,
-                    y:0,
-                    graphic:{
+                charas:{
+                    char1:{
                         graphicID:'char01',
                         rows:4,
                         cols:4
-                    },
-                    speed:7
+                    }
+                },
+                actors:{
+                    1:{
+                        x:450,
+                        y:300,
+                        charaID:'char1',
+                        vSpeed:32,
+                        hSpeed:32,
+                        animationSpeed:6,
+                        type:'Player'
+                    }
                 },
                 beforeload:function(root){
                     root.UI.set('loading-progress',{
@@ -170,31 +177,20 @@
                     root.UI.new('loading-progress','loading-progress');
                     root.UI.show('loading-progress');
 
-
-                    var actor = new RPG.Game_Player({
-
-                    });
-
-                    root.Main.Actors.set(1,actor);
-                    root.Main.set_current_player(1);
+                    root.Main.currentPlayerID = 1;
                 },
                 afterload:function(root){
                     root.UI.hide('loading-progress');
-                    var spriteset = root.Main.get_current_scene().spriteset;
+                    var spriteset = root.Main.currentScene.spriteset;
                     for(var i =0; i < 300;i++){
                         for(var j = 0; j < 300;j++){
                             spriteset.set(i,j,0,['forest2',0,0]);
                         }
                     }
-
-
-                    for(var i =0; i < 3000;i++){
-                        spriteset.set(Math.floor(Math.random()*200),Math.floor(Math.random()*200),1,['forest2',6,6]);
-                    }
                 },
                 start:function(root){
                     console.log('cena inicializada');
-                    root.Main.get_current_scene().focus(root.Main.get_current_player());
+                    root.Main.currentScene.focus(root.Main.currentPlayer);
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.get('loading-progress');
