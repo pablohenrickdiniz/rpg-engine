@@ -15,7 +15,6 @@
         self.through = options.through || true;
         self.capture = options.capture || Consts.TRIGGER_PLAYER_TOUCH;
         self.bounds.groups.push('ITEM');
-        self.itemID = options.itemID;
     };
 
     Game_Item.prototype = Object.create(Game_Object.prototype);

@@ -6,7 +6,9 @@
     var Game_Graphic = root.Game_Graphic;
 
     var Game_Icon = function(options){
-        self.graphic = options.graphicID;
+        var self = this;
+        options = options || {};
+        Game_Graphic.call(self,options);
         self.graphicType = 'icons';
     };
 

@@ -49,6 +49,7 @@
     <script type="text/javascript" src="../src/Game_Slot.js"></script>
     <script type="text/javascript" src="../src/Game_Inventory.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
+
     <script type="text/javascript" src="../src/Game_Item.js"></script>
     <script type="text/javascript" src="../src/Game_Skill.js"></script>
 
@@ -60,10 +61,13 @@
     <!--Scene-->
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
     <script type="text/javascript" src="../src/Game/Main.js"></script>
+    <script type="text/javascript" src="../src/Items.js"></script>
     <script type="text/javascript" src="../src/Graphics.js"></script>
     <script type="text/javascript" src="../src/Tileset.js"></script>
     <script type="text/javascript" src="../src/Tilesets.js"></script>
     <script type="text/javascript" src="../src/Game_Graphic.js"></script>
+    <script type="text/javascript" src="../src/Game_Icon.js"></script>
+    <script type="text/javascript" src="../src/Icons.js"></script>
     <script type="text/javascript" src="../src/Chara.js"></script>
     <script type="text/javascript" src="../src/Charas.js"></script>
     <script type="text/javascript" src="../src/Game_Face.js"></script>
@@ -76,12 +80,12 @@
 
 
 
+
     <script type="text/javascript" src="../src/Actors.js"></script>
     <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Variables.js"></script>
     <script type="text/javascript" src="../src/Scenes.js"></script>
     <script type="text/javascript" src="../src/Maps.js"></script>
-    <script type="text/javascript" src="../src/Items.js"></script>
     <script type="text/javascript" src="../src/Animations.js"></script>
     <script type="text/javascript" src="../src/Skills.js"></script>
 
@@ -128,6 +132,9 @@
                     },
                     faces:{
                         face01:'http://agenciaw3s.com.br/dev/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
+                    },
+                    icons:{
+                        icon01:'http://localhost/resources/Icons/Misc%2001%20(1.970)/Misc01%20-%200005.png'
                     }
                 },
                 audios:{
@@ -178,8 +185,16 @@
                         name:'Pablo Henrick Diniz'
                     }
                 },
+                icons:{
+                    icon01:{
+                        graphicID:'icon01'
+                    }
+                },
                 items:{
-
+                    1:{
+                        name:'sword1',
+                        icon:'icon01'
+                    }
                 },
                 beforeload:function(root){
                     root.UI.set('loading-progress',{
@@ -212,8 +227,6 @@
                     root.UI.get('player-info').MP = 400;
                     root.UI.get('player-info').name = root.Main.currentPlayer.name;
                     root.UI.show('player-info');
-                    console.log(root);
-
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.get('loading-progress');

@@ -19,6 +19,10 @@
         throw "Scene_Map_Loader requires Tileset"
     }
 
+    if(root.Game_Icon == undefined){
+        throw "Scene_Map_Loader requires Game_Icon"
+    }
+
     if(root.Main == undefined){
         throw "Scene_Map_Loader requires Main"
     }
@@ -35,8 +39,16 @@
             throw "Scene_Map_Loader requires Faces"
         }
 
-        if (root.Main.Graphics == undefined) {
-            throw "Scene_Map_Loader requires Graphics"
+        if(root.Main.Items == undefined){
+            throw "Scene_Map_Loader requires Items"
+        }
+
+        if(root.Main.Icons == undefined){
+            throw "Scene_Map_Loader requires Icons"
+        }
+
+        if(root.Main.Actors == undefined){
+            throw "Scene_Map_Loader requires Actors"
         }
     }
 
@@ -44,8 +56,6 @@
     if(root.Chara == undefined){
         throw "Scene_Map_Loader requires Chara"
     }
-
-
 
     if(root.Game_Actor == undefined){
         throw "Scene_Map_Loader requires Game_Actor"
@@ -62,7 +72,6 @@
     var Spriteset_Map = root.Spriteset_Map,
         Game_Map = root.Game_Map,
         Scene_Loader = root.Scene_Loader,
-        Graphics = root.Graphics,
         Tile = root.Tile,
         Tileset = root.Tileset,
         Main = root.Main,
@@ -70,9 +79,13 @@
         Game_Actor = root.Game_Actor,
         Game_Face = root.Game_Face,
         Game_Item = root.Game_Item,
+        Game_Icon = root.Game_Icon,
         Tilesets = Main.Tilesets,
         Charas  = Main.Charas,
-        Faces = Main.Faces;
+        Faces = Main.Faces,
+        Items = Main.Items,
+        Icons = Main.Icons,
+        Actors = Main.Actors;
 
     var fields = [
         'image',
@@ -131,7 +144,7 @@
                 for(i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.actors[key];
-                    Main.Actors.set(key,new Game_Actor(conf));
+                    Actors.set(key,new Game_Actor(conf));
                 }
             }
 
@@ -142,6 +155,16 @@
                     key = keys[i];
                     conf = scene.faces[key];
                     Faces.set(key,new Game_Face(conf));
+                }
+            }
+
+            if(scene.icons && scene.icons.constructor == {}.constructor){
+                keys = Object.keys(scene.icons);
+                length = keys.length;
+                for(i =0; i < length;i++){
+                    key = keys[i];
+                    conf = scene.icons[key];
+                    Icons.set(key,new Game_Icon(conf));
                 }
             }
 

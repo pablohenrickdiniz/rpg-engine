@@ -71,6 +71,7 @@
         self.actors = options.actors || {};
         self.faces = options.faces || {};
         self.items = options.items || {};
+        self.icons = options.icons || {};
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);

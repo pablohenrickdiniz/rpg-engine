@@ -4,11 +4,15 @@
     }
 
     var Game_Graphic = root.Game_Graphic;
-
-    root.Game_Face = function(options){
+    var Game_Face = function(options){
         var self = this;
         options = options || {};
         Game_Graphic.call(self,options);
         self.graphicType = 'faces';
     };
+
+    Game_Face.prototype = Object.create(Game_Graphic.prototype);
+    Game_Face.prototype.constructor = Game_Graphic;
+
+    root.Game_Face = Game_Face;
 })(RPG);

@@ -69,22 +69,6 @@
         });
 
 
-        Object.defineProperty(self,'parent',{
-            get:function(){
-                return parent;
-            },
-            set:function(p){
-                if(p instanceof Node && p != parent){
-                    var element = self.element;
-                    if(parent != null){
-                        parent.removeChild(element);
-                    }
-                    parent = p;
-                    parent.appendChild(element);
-                }
-            }
-        });
-
         Object.defineProperty(self,'items',{
             get:function(){
                 return items;
@@ -104,17 +88,6 @@
                             self.addItem(new Menu_Item(config));
                         }
                     }
-                }
-            }
-        });
-
-        Object.defineProperty(self,'id',{
-            get:function(){
-                return self.element.id;
-            },
-            set:function(i){
-                if(typeof i == 'string'){
-                    self.element.id = i;
                 }
             }
         });

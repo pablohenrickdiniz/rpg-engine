@@ -1,10 +1,10 @@
 (function(root){
-    if(root.Game_Actor == undefined){
-        throw "Actors requires Game_Actor"
+    if(root.Main == undefined){
+        throw "Icons requires Main";
     }
 
-    if(root.Main == undefined){
-        throw "Actors requires RPG Main";
+    if(root.Game_Icon == undefined){
+        throw "Icons requires Game_Icon"
     }
 
     var Main = root.Main;
