@@ -3,10 +3,14 @@
         throw "Faces requires Game_Face"
     }
 
-    var Game_Face = root.Game_Face;
+    if(root.Main == undefined){
+        throw "Faces requires Main"
+    }
+
+    var Game_Face = root.Game_Face, Main = root.Main;
     var faces = [];
 
-    root.Faces = {
+    Main.Faces = {
         set:function(id,face){
             if(face instanceof Game_Face){
                 faces[id] = face;

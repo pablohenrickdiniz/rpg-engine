@@ -1,4 +1,8 @@
 (function(root){
+    if(root.Main == undefined){
+        throw "Characters requires Main"
+    }
+
     if(root.Game_Character == undefined){
         throw "Characters requires Game_Character"
     }
@@ -8,9 +12,10 @@
     }
 
     var Game_Character = root.Game_Character,
-        Character_Graphic = root.Character_Graphic;
+        Character_Graphic = root.Character_Graphic,
+        Main = root.Main;
 
-    root.Characters = {
+    Main.Characters = {
         characters:{},
         set:function(id,character){
             var self = this;

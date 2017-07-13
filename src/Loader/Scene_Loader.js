@@ -1,4 +1,13 @@
 (function (root, w) {
+    if(root.Main == undefined){
+        throw "Scene_Loader requires Main"
+    }
+    else{
+        if(root.Main.Graphics == undefined){
+            throw "Scene_Loader requires Graphics"
+        }
+    }
+
     if (w.Graphic_Loader == undefined) {
         throw "SceneLoader requires Graphic_Loader"
     }
@@ -11,12 +20,8 @@
         throw "SceneLoader requires Audio"
     }
 
-    if (root.Graphics == undefined) {
-        throw "SceneLoader requires Graphics"
-    }
-
     var Audios = root.Audio,
-        Graphics = root.Graphics,
+        Graphics = root.Main.Graphics,
         Audio_Loader = w.Audio_Loader,
         Graphic_Loader = w.Graphic_Loader;
 

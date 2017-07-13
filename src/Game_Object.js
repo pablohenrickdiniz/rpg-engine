@@ -38,6 +38,13 @@
         self.name = options.name || '';
     };
 
+    Game_Object.prototype.clone = function(properties){
+        properties = properties || {};
+        var id = ID;
+        ID++;
+        return Object.assign({object_id:id},properties,this);
+    };
+
 
     Game_Object.prototype.addCollisionGroup = function(group){
         var self = this;

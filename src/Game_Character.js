@@ -19,11 +19,11 @@
         throw "Game_Character requires Game_Object"
     }
 
-    if(root.Charas == undefined){
+    if(root.Main.Charas == undefined){
         throw "Game_Character requires Charas"
     }
 
-    if(root.Faces == undefined){
+    if(root.Main.Faces == undefined){
         throw "Game_Character requires Faces"
     }
 
@@ -33,8 +33,8 @@
         Game_Timer = root.Game_Timer,
         Chara = root.Chara,
         Game_Object = root.Game_Object,
-        Charas = root.Charas,
-        Faces = root.Faces;
+        Charas = Main.Charas,
+        Faces = Main.Faces;
     /**
      *
      * @param options

@@ -1,6 +1,6 @@
 (function (root) {
     if (root.Game_Character == undefined) {
-        throw "Game_Event requires Character"
+        throw "Game_Event requires Game_Character"
     }
 
     if(root.Event_Page == undefined){

@@ -1,9 +1,14 @@
 (function(root){
-    if(root.Graphics == undefined){
-        throw "Game_Graphic requires Graphics"
+    if(root.Main == undefined){
+        throw "Game_Graphic requires Main"
+    }
+    else{
+        if(root.Main.Graphics == undefined){
+            throw "Game_Graphic requires Graphics"
+        }
     }
 
-    var Graphics = root.Graphics;
+    var Graphics = root.Main.Graphics;
 
     root.Game_Graphic = function(options){
         var self = this;

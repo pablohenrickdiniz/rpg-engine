@@ -11,10 +11,6 @@
         throw "Scene_Map requires Canvas"
     }
 
-    if (root.Graphics == undefined) {
-        throw "Scene_Map requires Graphics"
-    }
-
     if (root.Game_Item == undefined) {
         throw "Scene_Map requires Game_Item"
     }
@@ -26,13 +22,18 @@
     if(root.Main == undefined){
         throw "Scene_Map requires Main"
     }
+    else{
+        if (root.Main.Graphics == undefined) {
+            throw "Scene_Map requires Graphics"
+        }
+
+        if(root.Main.Tilesets == undefined){
+            throw "Scene_Map requires Tilesets"
+        }
+    }
 
     if(root.Spriteset_Map == undefined){
         throw "Scene_Map requires Spriteset_Map"
-    }
-
-    if(root.Tilesets == undefined){
-        throw "Scene_Map requires Tilesets"
     }
 
     if(root.Game_Object == undefined){
@@ -43,12 +44,12 @@
         Canvas = root.Canvas,
         Consts = root.Consts,
         Main = root.Main,
-        Graphics = root.Graphics,
         Game_Event = root.Game_Event,
         Game_Item = root.Game_Item,
         Spriteset_Map = root.Spriteset_Map,
-        Tilesets = root.Tilesets,
-        Game_Object = root.Game_Object;
+        Game_Object = root.Game_Object,
+        Tilesets = Main.Tilesets,
+        Graphics =  Main.Graphics;
 
     /**
      *

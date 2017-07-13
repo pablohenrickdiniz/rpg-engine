@@ -35,57 +35,44 @@
 
 
 
-    <!-- Resources-->
-    <script type="text/javascript" src="../src/Resources/Graphics.js"></script>
-
-
     <!--Imports-->
     <script type="text/javascript" src="../src/Animation.js"></script>
     <script type="text/javascript" src="../src/Animation_Time.js"></script>
     <script type="text/javascript" src="../src/Tile.js"></script>
+    <script type="text/javascript" src="../src/Item.js"></script>
     <script type="text/javascript" src="../src/Animated_Tile.js"></script>
-    <script type="text/javascript" src="../src/Tileset.js"></script>
     <script type="text/javascript" src="../src/Spriteset_Map.js"></script>
     <script type="text/javascript" src="../src/Game_Object.js"></script>
     <script type="text/javascript" src="../src/Game_Map.js"></script>
     <script type="text/javascript" src="../src/Consts.js"></script>
-    <script type="text/javascript" src="../src/Game_Graphic.js"></script>
-    <script type="text/javascript" src="../src/Item_Graphic.js"></script>
-    <script type="text/javascript" src="../src/Game_Face.js"></script>
-    <script type="text/javascript" src="../src/Chara.js"></script>
-    <script type="text/javascript" src="../src/Charas.js"></script>
-    <script type="text/javascript" src="../src/Faces.js"></script>
-    <script type="text/javascript" src="../src/Game_Character.js"></script>
-    <script type="text/javascript" src="../src/Game_Actor.js"></script>
+
+    <script type="text/javascript" src="../src/Game_Slot.js"></script>
+    <script type="text/javascript" src="../src/Game_Inventory.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
-    <script type="text/javascript" src="../src/Game_Event.js"></script>
     <script type="text/javascript" src="../src/Game_Item.js"></script>
     <script type="text/javascript" src="../src/Game_Skill.js"></script>
-
-
-
-
 
     <!-- System-->
     <script type="text/javascript" src="../src/System/Canvas.js"></script>
     <script type="text/javascript" src="../src/System/Audio/Audio_File.js"></script>
     <script type="text/javascript" src="../src/System/Audio/Audio.js"></script>
 
-
-
-
-
-
-
-    <script type="text/javascript" src="../src/Tilesets.js"></script>
-
-
     <!--Scene-->
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
     <script type="text/javascript" src="../src/Game/Main.js"></script>
+    <script type="text/javascript" src="../src/Graphics.js"></script>
+    <script type="text/javascript" src="../src/Tileset.js"></script>
+    <script type="text/javascript" src="../src/Tilesets.js"></script>
+    <script type="text/javascript" src="../src/Game_Graphic.js"></script>
+    <script type="text/javascript" src="../src/Chara.js"></script>
+    <script type="text/javascript" src="../src/Charas.js"></script>
+    <script type="text/javascript" src="../src/Game_Face.js"></script>
+    <script type="text/javascript" src="../src/Faces.js"></script>
+    <script type="text/javascript" src="../src/Game_Character.js"></script>
+    <script type="text/javascript" src="../src/Game_Event.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
-
-
+    <script type="text/javascript" src="../src/Game_Actor.js"></script>
+    <script type="text/javascript" src="../src/Item_Graphic.js"></script>
 
 
 
@@ -225,6 +212,7 @@
                     root.UI.get('player-info').MP = 400;
                     root.UI.get('player-info').name = root.Main.currentPlayer.name;
                     root.UI.show('player-info');
+                    console.log(root);
 
                 },
                 onprogress:function(progress){

@@ -11,10 +11,6 @@
         throw "Scene_Map_Loader requires Game_Map"
     }
 
-    if (root.Graphics == undefined) {
-        throw "Scene_Map_Loader requires Graphics"
-    }
-
     if (root.Tile == undefined) {
         throw "Scene_Map_Loader requires Tile"
     }
@@ -23,25 +19,33 @@
         throw "Scene_Map_Loader requires Tileset"
     }
 
-    if(root.Tilesets == undefined){
-        throw "Scene_Map_Loader requires Tilesets"
-    }
-
     if(root.Main == undefined){
         throw "Scene_Map_Loader requires Main"
     }
+    else{
+        if(root.Main.Tilesets == undefined){
+            throw "Scene_Map_Loader requires Tilesets"
+        }
+
+        if(root.Main.Charas == undefined){
+            throw "Scene_Map_Loader requires Charas"
+        }
+
+        if(root.Main.Faces == undefined){
+            throw "Scene_Map_Loader requires Faces"
+        }
+
+        if (root.Main.Graphics == undefined) {
+            throw "Scene_Map_Loader requires Graphics"
+        }
+    }
+
 
     if(root.Chara == undefined){
         throw "Scene_Map_Loader requires Chara"
     }
 
-    if(root.Charas == undefined){
-        throw "Scene_Map_Loader requires Charas"
-    }
 
-    if(root.Faces == undefined){
-        throw "Scene_Map_Loader requires Faces"
-    }
 
     if(root.Game_Actor == undefined){
         throw "Scene_Map_Loader requires Game_Actor"
@@ -61,14 +65,14 @@
         Graphics = root.Graphics,
         Tile = root.Tile,
         Tileset = root.Tileset,
-        Tilesets = root.Tilesets,
         Main = root.Main,
         Chara = root.Chara,
-        Charas  = root.Charas,
-        Faces = root.Faces,
         Game_Actor = root.Game_Actor,
         Game_Face = root.Game_Face,
-        Game_Item = root.Game_Item;
+        Game_Item = root.Game_Item,
+        Tilesets = Main.Tilesets,
+        Charas  = Main.Charas,
+        Faces = Main.Faces;
 
     var fields = [
         'image',

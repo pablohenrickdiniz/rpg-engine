@@ -1,18 +1,24 @@
 (function (root) {
     if (root.Tile == undefined) {
-        throw "Character_Graphic requires Tile"
+        throw "Chara requires Tile"
     }
 
-    if(root.Graphics == undefined){
-        throw "Character_Graphic requires Graphics"
+    if(root.Main == undefined){
+        throw "Chara requires Main"
     }
+    else{
+        if(root.Main.Graphics == undefined){
+            throw "Chara requires Graphics"
+        }
+    }
+
 
     if(root.Game_Graphic == undefined){
         throw "Chara requires Game_Graphic"
     }
 
     var Tile = root.Tile,
-        Graphics = root.Graphics,
+        Graphics = root.Main.Graphics,
         Game_Graphic = root.Game_Graphic;
 
     /**

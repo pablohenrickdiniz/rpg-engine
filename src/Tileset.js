@@ -1,17 +1,22 @@
 (function (root) {
+    if(root.Main == undefined){
+        throw "Tileset requires Main"
+    }
+    else{
+        if(root.Main.Graphics == undefined){
+            throw "Tileset requires Graphics"
+        }
+    }
+
     if (root.Tile == undefined) {
         throw "Tileset requires Tile"
     }
 
-    if(root.Graphics == undefined){
-        throw "Tileset requires Graphics"
-    }
-
     var Tile= root.Tile,
-        Graphics = root.Graphics;
+        Graphics = root.Main.Graphics;
+
     /**
      *
-     * @param image
      * @param options
      * @constructor
      */

@@ -10,17 +10,13 @@
         var self = this;
         Game_Object.call(self,options);
         options = options || {};
-        self.durability = options.durability || 'INDESTRUCTIBLE';
         self.amount = options.amount || 1;
-        self.effects = options.effects || [];
         self.graphic_type = 'icon';
         self.through = options.through || true;
         self.capture = options.capture || Consts.TRIGGER_PLAYER_TOUCH;
         self.bounds.groups.push('ITEM');
+        self.itemID = options.itemID;
     };
-
-
-    
 
     Game_Item.prototype = Object.create(Game_Object.prototype);
     Game_Item.prototype.constructor = Game_Item;

@@ -3,19 +3,24 @@
         throw "Charas requires Chara"
     }
 
-    var Chara = root.Chara;
-    var gpcs = [];
+    if(root.Main == undefined){
+        throw "Charas requires Main"
+    }
 
-    root.Charas = {
+    var Chara = root.Chara,
+        Main = root.Main;
+    var charas = [];
+
+    Main.Charas = {
         get:function(id){
-            if(gpcs[id] != undefined){
-                return gpcs[id];
+            if(charas[id] != undefined){
+                return charas[id];
             }
             return null;
         },
         set:function(id,chrgpc){
             if(chrgpc instanceof Chara){
-                gpcs[id] = chrgpc;
+                charas[id] = chrgpc;
             }
         }
     };

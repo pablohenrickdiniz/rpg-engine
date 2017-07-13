@@ -3,21 +3,24 @@
         throw "Game_Actor requires Game_Character"
     }
 
+    if(root.Game_Inventory == undefined){
+        throw "Game_Actor requires Game_Inventory"
+    }
+
     var Game_Character = root.Game_Character,
         Consts = root.Consts,
-        Keyboard = w.Keyboard;
-
+        Keyboard = w.Keyboard,
+        Game_Inventory = root.Game_Inventory;
 
     var Game_Actor = function(options){
         var self = this;
         Game_Character.call(self, options);
         options = options || {};
+        initialize(self);
         self.level = options.level || 1;
         self.MP = options.HP || 100;
         self.HP = options.MP || 100;
-        self.items = options.items || {};
         self.skills = [];
-        self.equiped_items = options.equiped_items || [];
         self.type = options.type || 'Actor';
     };
 
@@ -70,7 +73,28 @@
         Game_Character.prototype.update.call(self);
     };
 
+    function initialize(self){
+        var inventory = new Game_Inventory();
+        var level = 1;
 
+        Object.defineProperty(self,'inventory',{
+            get:function(){
+                return inventory;
+            }
+        });
+
+        Object.defineProperty(self,'level',{
+            get:function(){
+                return level;
+            },
+            set:function(l){
+                l = parseInt(l);
+                if(!isNaN(l) && l > 0){
+                    level = l;
+                }
+            }
+        });
+    }
 
     root.Game_Actor = Game_Actor;
 })(RPG,window);

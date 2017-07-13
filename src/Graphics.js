@@ -1,7 +1,13 @@
 (function (root) {
+    if(root.Main == undefined){
+        throw "Graphics requires Main"
+    }
+
+    var Main = root.Main;
+
     var graphics =  {};
 
-    root.Graphics = {
+    Main.Graphics = {
         /**
          *
          * @param type
