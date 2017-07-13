@@ -50,7 +50,7 @@
             count++;
             if (count >= total) {
                 if(callback){
-                    callback();
+                    callback(scene);
                 }
             }
         }

@@ -3,20 +3,29 @@
         throw "Menu requires UI"
     }
 
-    var UI = root.UI;
+    if(root.UI.classes.Element == undefined){
+        throw "Menu requires Element";
+    }
+
+    var UI = root.UI,
+        Element = UI.classes.Element;
 
     var Menu = function(options){
         var self = this;
         initialize(self);
         options = options || {};
+        Element.call(self,options);
         self.parent = options.parent || null;
         self.items = options.items || [];
         self.id = options.id;
     };
 
+    Menu.prototype = Object.create(Element.prototype);
+    Menu.prototype.constructor = Menu;
+
     Menu.prototype.addItem = function(item){
         var self = this;
-        if(item instanceof UI.Menu_Item && self.items.indexOf(item) == -1){
+        if(item instanceof UI.classes.Menu_Item && self.items.indexOf(item) == -1){
             self.items.push(item);
             item.parent = self;
             self.element.appendChild(item.element);
@@ -84,7 +93,7 @@
                 if(i instanceof Array){
                     var c = {}.constructor;
                     var length = i.length;
-                    var Menu_Item = UI.Menu_Item;
+                    var Menu_Item = UI.classes.Menu_Item;
                     for(var j =0; j < length;j++){
                         if(i[j] instanceof Menu_Item){
                             self.addItem(i[j]);

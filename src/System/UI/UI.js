@@ -56,7 +56,7 @@
         }
     };
 
-    function contextmenu(e){
+    function prevent(e){
         e.preventDefault();
         return false;
     }
@@ -74,14 +74,15 @@
                         container.removeChild(child);
                         c.appendChild(child);
                     }
-                    container.removeEventListener('oncontextmenu',oncontextmenu);
+                    container.removeEventListener('oncontextmenu',prevent);
                 }
                 container = c;
                 container.style.position = 'absolute';
                 container.style.left = 0;
                 container.style.top = 0;
                 container.style.zIndex = 2;
-                container.addEventListener('contextmenu',contextmenu);
+                container.setAttribute("tabindex","-1");
+                container.addEventListener('contextmenu',prevent);
             }
         }
     });

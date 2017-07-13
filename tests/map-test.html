@@ -5,6 +5,7 @@
     <title>Scene Map</title>
     <link rel="stylesheet" href="../src/css/rpg-engine.css"/>
     <link rel="stylesheet" href="../src/css/custom.css"/>
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 </head>
 <body onload="init()" style="padding:0;margin:0;">
 <div id="game-content">
@@ -114,6 +115,7 @@
 
     <!-- UI-->
     <script type="text/javascript" src="../src/System/UI/UI.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Element.js"></script>
     <script type="text/javascript" src="../src/System/UI/Progress_Bar.js"></script>
     <script type="text/javascript" src="../src/System/UI/Player_Info.js"></script>
     <script type="text/javascript" src="../src/System/UI/Menu.js"></script>
@@ -188,6 +190,9 @@
                         type:'Player',
                         name:'Pablo Henrick Diniz'
                     }
+                },
+                items:{
+
                 },
                 beforeload:function(root){
                     root.UI.set('loading-progress',{

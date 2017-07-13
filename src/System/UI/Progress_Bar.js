@@ -3,12 +3,18 @@
         throw "Progress_Bar requires UI"
     }
 
-    var UI = root.UI;
+    if(root.UI.classes.Element == undefined){
+        throw "Progress_Bar requires Element";
+    }
+
+    var UI = root.UI,
+        Element = UI.classes.Element;
 
     var Progress_Bar = function(options){
         var self = this;
         options = options || {};
         initialize(self);
+        Element.call(self,options);
         self.progress = options.progress || 0;
         self.total = options.total || 100;
         self.parent = options.parent || null;
@@ -19,6 +25,8 @@
         }
     };
 
+    Progress_Bar.prototype = Object.create(Element.prototype);
+    Progress_Bar.prototype.constructor = Progress_Bar;
 
     Progress_Bar.prototype.hide = function(){
         var self = this;
@@ -42,24 +50,6 @@
     function initialize(self){
         var element = null;
         var parent = null;
-
-
-        Object.defineProperty(self,'parent',{
-            get:function(){
-                return parent;
-            },
-            set:function(p){
-                if(p instanceof Node && p != parent){
-                    var element  =self.element;
-                    if(parent != null){
-                        parent.removeChild(element);
-                    }
-                    parent = p;
-                    parent.appendChild(element);
-                }
-            }
-        });
-
 
         Object.defineProperty(self,'element',{
             get:function(){
@@ -94,17 +84,6 @@
                 total = parseFloat(total);
                 if(!isNaN(total)){
                     self.element.max = total;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'id',{
-            get:function(){
-                return self.element.id;
-            },
-            set:function(i){
-                if(typeof i == 'string'){
-                    self.element.id = i;
                 }
             }
         });

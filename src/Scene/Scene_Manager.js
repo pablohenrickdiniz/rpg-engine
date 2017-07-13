@@ -34,6 +34,17 @@
     var current_scene = null;
     var queue = [];
 
+
+    function load_callback(scene){
+        current_scene = scene;
+        Main.currentScene = scene;
+        scene.trigger('afterload',[root]);
+        if(!Game_Timer.running){
+            Game_Timer.run();
+        }
+        scene.trigger('start',[root]);
+    }
+
     root.Scene_Manager = {
         new: function (type,name, options) {
             var scene = null;
@@ -56,29 +67,11 @@
             console.log('inicializando cena '+name+'...');
             if(scene instanceof Scene_Map){
                 scene.trigger('beforeload',[root]);
-                Scene_Map_Loader.load(scene, function () {
-                    current_scene = scene;
-                    Main.currentScene = scene;
-                    scene.trigger('afterload',[root]);
-                    if(!Game_Timer.running){
-                        Game_Timer.run();
-                    }
-                    scene.trigger('start',[root]);
-                });
+                Scene_Map_Loader.load(scene, load_callback);
             }
             else{
                 scene.trigger('beforeload',[root]);
-                Scene_Loader.load(scene, function () {
-                    current_scene = scene;
-                    Main.set_current_scene(scene);
-                    scene.trigger('afterload',[root]);
-
-                    if(!Game_Timer.running){
-
-                        Game_Timer.run();
-                    }
-                    scene.trigger('start',[root]);
-                });
+                Scene_Loader.load(scene, load_callback);
             }
         }
     };

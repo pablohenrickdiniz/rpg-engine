@@ -64,4 +64,6 @@ progress::after{
     transition-duration: 250ms;
 }
 
-
+#ui-root:focus{
+    outline: none;
+}

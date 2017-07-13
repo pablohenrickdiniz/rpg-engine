@@ -11,15 +11,21 @@
         throw  "Player_Info requires Progress_Bar"
     }
 
+    if(root.UI.classes.Element == undefined){
+        throw "Player_Info requires Element"
+    }
+
 
     var UI = root.UI,
         Game_Face = root.Game_Face,
-        Progress_Bar = root.UI.classes.Progress_Bar;
+        Progress_Bar = UI.classes.Progress_Bar,
+        Element = UI.classes.Element;
 
     var Player_Info = function(options){
         var self = this;
         options = options || {};
         initialize(self);
+        Element.call(self,options);
         self.parent = options.parent || null;
         self.style = options.style || {};
         self.id = options.id;
@@ -32,6 +38,8 @@
         self.name = options.playerName || 'player1';
     };
 
+    Player_Info.prototype = Object.create(Element.prototype);
+    Player_Info.prototype.constructor = Player_Info;
 
     Player_Info.prototype.hide = function(){
         var self = this;
@@ -64,23 +72,6 @@
         var ST = 0;
         var name = '';
 
-
-        Object.defineProperty(self,'parent',{
-            get:function(){
-                return parent;
-            },
-            set:function(p){
-                if(p instanceof Node && p != parent){
-                    var element  =self.element;
-                    if(parent != null){
-                        parent.removeChild(element);
-                    }
-                    parent = p;
-                    parent.appendChild(element);
-                }
-            }
-        });
-
         Object.defineProperty(self,'element',{
             get:function(){
                 if(element == null){
@@ -92,18 +83,6 @@
                 return element;
             }
         });
-
-        Object.defineProperty(self,'id',{
-            get:function(){
-                return self.element.id;
-            },
-            set:function(i){
-                if(typeof i == 'string'){
-                    self.element.id = i;
-                }
-            }
-        });
-
 
         /*Face Image*/
         var faceImage = document.createElement('img');

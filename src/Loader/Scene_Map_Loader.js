@@ -47,11 +47,13 @@
         throw "Scene_Map_Loader requires Game_Actor"
     }
 
-
     if(root.Game_Face == undefined){
         throw "Scene_Map_Loader requires Game_Face"
     }
 
+    if(root.Game_Item == undefined){
+        throw "Scene_Map_Loader requires Game_Item"
+    }
 
     var Spriteset_Map = root.Spriteset_Map,
         Game_Map = root.Game_Map,
@@ -65,7 +67,8 @@
         Charas  = root.Charas,
         Faces = root.Faces,
         Game_Actor = root.Game_Actor,
-        Game_Face = root.Game_Face;
+        Game_Face = root.Game_Face,
+        Game_Item = root.Game_Item;
 
     var fields = [
         'image',
@@ -138,7 +141,17 @@
                 }
             }
 
-            callback();
+            if(scene.items && scene.items.constructor == {}.constructor){
+                keys = Object.keys(scene.items);
+                length = keys.length;
+                for(i =0; i < length;i++){
+                    key = keys[i];
+                    conf = scene.items[key];
+                    Items.set(key,new Game_Item(conf));
+                }
+            }
+
+            callback(scene);
         });
     };
 
