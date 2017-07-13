@@ -29,7 +29,7 @@
         self.MP = options.MP || 100;
         self.HP = options.HP || 100;
         self.ST = options.ST || 100;
-        self.playerName = options.playerName || 'player1';
+        self.name = options.playerName || 'player1';
     };
 
 
@@ -62,6 +62,7 @@
         var MP = 0;
         var HP = 0;
         var ST = 0;
+        var name = '';
 
 
         Object.defineProperty(self,'parent',{
@@ -107,6 +108,7 @@
         /*Face Image*/
         var faceImage = document.createElement('img');
         faceImage.setAttribute("class","face-image");
+        faceImage.draggable = false;
 
 
         /*faceContainer*/
@@ -114,6 +116,10 @@
         faceContainer.setAttribute("class","face-container");
         faceContainer.appendChild(faceImage);
         self.element.appendChild(faceContainer);
+
+        var nameContainer = document.createElement('span');
+        nameContainer.setAttribute("class","name-container");
+        self.element.appendChild(nameContainer);
 
 
         var barContainer = document.createElement('div');
@@ -217,6 +223,18 @@
                     ST = st;
                     stBar.progress = ST*100/totalST;
                     stBar.text = ST+"/"+totalST;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'name',{
+            get:function(){
+                return name;
+            },
+            set:function(n){
+                if(n != name){
+                    name = n;
+                    nameContainer.innerHTML = name;
                 }
             }
         });

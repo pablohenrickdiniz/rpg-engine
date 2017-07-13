@@ -141,6 +141,11 @@
                         face01:'http://agenciaw3s.com.br/dev/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
                     }
                 },
+                audios:{
+                    music:{
+                        music1:'http://www.agenciaw3s.com.br/dev/resources/Audio/Music%20OGG/Final%20Fantasy%20IX%20-%20Awakened%20Forest.ogg'
+                    }
+                },
                 map:{
                     width:3200,
                     height:3200,
@@ -180,7 +185,8 @@
                         vSpeed:32,
                         hSpeed:32,
                         animationSpeed:6,
-                        type:'Player'
+                        type:'Player',
+                        name:'Pablo Henrick Diniz'
                     }
                 },
                 beforeload:function(root){
@@ -195,7 +201,6 @@
                     root.UI.new('player-info','player-info');
 
                     root.UI.show('loading-progress');
-                    root.UI.show('player-info');
                     root.Main.currentPlayerID = 1;
                 },
                 afterload:function(root){
@@ -210,9 +215,12 @@
                 start:function(root){
                     console.log('cena inicializada');
                     root.Main.currentScene.focus(root.Main.currentPlayer);
-                    RPG.UI.get('player-info').face = root.Main.currentPlayer.face;
-                    RPG.UI.get('player-info').totalMP = 500;
-                    RPG.UI.get('player-info').MP = 400;
+                    root.UI.get('player-info').face = root.Main.currentPlayer.face;
+                    root.UI.get('player-info').totalMP = 500;
+                    root.UI.get('player-info').MP = 400;
+                    root.UI.get('player-info').name = root.Main.currentPlayer.name;
+                    root.UI.show('player-info');
+
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.get('loading-progress');
