@@ -23,13 +23,18 @@
         throw "Game_Character requires Charas"
     }
 
+    if(root.Faces == undefined){
+        throw "Game_Character requires Faces"
+    }
+
     var Animation_Time = root.Animation_Time,
         Consts = root.Consts,
         Main = root.Main,
         Game_Timer = root.Game_Timer,
         Chara = root.Chara,
         Game_Object = root.Game_Object,
-        Charas = root.Charas;
+        Charas = root.Charas,
+        Faces = root.Faces;
     /**
      *
      * @param options
@@ -46,6 +51,7 @@
         self.obj_movement = null;
         self.parent = options.parent || null;
         self.charaID = options.charaID;
+        self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
     };
 
@@ -251,6 +257,7 @@
      */
     function initialize(self) {
         var charaID = null;
+        var faceID = null;
         Object.defineProperty(self, 'charaID', {
             set: function (id) {
                 if (id != charaID) {
@@ -276,10 +283,26 @@
             }
         });
 
+        Object.defineProperty(self, 'faceID', {
+            set: function (id) {
+                if (id != faceID) {
+                    faceID = id;
+                }
+            },
+            get: function () {
+                return faceID;
+            }
+        });
 
         Object.defineProperty(self,'graphic',{
             get:function(){
                 return Charas.get(self.charaID);
+            }
+        });
+
+        Object.defineProperty(self,'face',{
+            get:function(){
+                return Faces.get(self.faceID);
             }
         });
 

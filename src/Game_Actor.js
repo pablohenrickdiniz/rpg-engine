@@ -13,8 +13,8 @@
         Game_Character.call(self, options);
         options = options || {};
         self.level = options.level || 1;
-        self.hp = options.hp || 100;
-        self.mp = options.mp || 100;
+        self.MP = options.HP || 100;
+        self.HP = options.MP || 100;
         self.items = options.items || {};
         self.skills = [];
         self.equiped_items = options.equiped_items || [];

@@ -50,14 +50,17 @@
     <script type="text/javascript" src="../src/Consts.js"></script>
     <script type="text/javascript" src="../src/Game_Graphic.js"></script>
     <script type="text/javascript" src="../src/Item_Graphic.js"></script>
+    <script type="text/javascript" src="../src/Game_Face.js"></script>
     <script type="text/javascript" src="../src/Chara.js"></script>
     <script type="text/javascript" src="../src/Charas.js"></script>
+    <script type="text/javascript" src="../src/Faces.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
     <script type="text/javascript" src="../src/Game_Item.js"></script>
     <script type="text/javascript" src="../src/Game_Skill.js"></script>
+
 
 
 
@@ -95,6 +98,7 @@
     <script type="text/javascript" src="../src/Skills.js"></script>
 
 
+
     <!-- Loader-->
     <script type="text/javascript" src="../src/Loader/Global_Progress.js"></script>
     <script type="text/javascript" src="../src/Loader/Graphic_Loader.js"></script>
@@ -111,6 +115,7 @@
     <!-- UI-->
     <script type="text/javascript" src="../src/System/UI/UI.js"></script>
     <script type="text/javascript" src="../src/System/UI/Progress_Bar.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Player_Info.js"></script>
     <script type="text/javascript" src="../src/System/UI/Menu.js"></script>
     <script type="text/javascript" src="../src/System/UI/Menu_Item.js"></script>
     <script type="text/javascript">
@@ -131,6 +136,9 @@
                     },
                     charasets:{
                         char01:'http://www.agenciaw3s.com.br/dev/resources/Charasets/VARIOUS%204.200/0183.png'
+                    },
+                    faces:{
+                        face01:'http://agenciaw3s.com.br/dev/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
                     }
                 },
                 map:{
@@ -158,11 +166,17 @@
                         cols:4
                     }
                 },
+                faces:{
+                    face01:{
+                        graphicID:'face01'
+                    }
+                },
                 actors:{
                     1:{
                         x:450,
                         y:300,
                         charaID:'char1',
+                        faceID:'face01',
                         vSpeed:32,
                         hSpeed:32,
                         animationSpeed:6,
@@ -173,10 +187,15 @@
                     root.UI.set('loading-progress',{
                         type:'Progress_Bar'
                     });
+                    root.UI.set('player-info',{
+                        type:'Player_Info'
+                    });
 
                     root.UI.new('loading-progress','loading-progress');
-                    root.UI.show('loading-progress');
+                    root.UI.new('player-info','player-info');
 
+                    root.UI.show('loading-progress');
+                    root.UI.show('player-info');
                     root.Main.currentPlayerID = 1;
                 },
                 afterload:function(root){
@@ -191,6 +210,9 @@
                 start:function(root){
                     console.log('cena inicializada');
                     root.Main.currentScene.focus(root.Main.currentPlayer);
+                    RPG.UI.get('player-info').face = root.Main.currentPlayer.face;
+                    RPG.UI.get('player-info').totalMP = 500;
+                    RPG.UI.get('player-info').MP = 400;
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.get('loading-progress');

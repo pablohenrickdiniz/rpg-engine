@@ -11,9 +11,14 @@ progress[value]::-webkit-progress-bar{
     color:blue;
 }
 
-progress::-webkit-progress-bar::after{
-    content:attr(value);
+progress::after{
+    content:attr(text);
     display: block;
+    position: absolute;
+    margin:auto;
+    width: 100%;
+    top:0;
+    text-align: center;
 }
 
 

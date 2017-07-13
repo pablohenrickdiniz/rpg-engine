@@ -6,6 +6,7 @@
     var height = null;
 
     var UI = {
+        classes:[],
         initialize:function(options){
             var self = this;
             options = options || {};
@@ -35,19 +36,9 @@
                     parent:self.container,
                     id:id
                 });
-                switch(config.type){
-                    case 'Progress_Bar':
-                        var Progress_Bar = self.Progress_bar;
-                        ui_elements[id] = new Progress_Bar(config);
-                        return  ui_elements[id];
-                    case 'Menu':
-                        var Menu  = self.Menu;
-                        ui_elements[id] = new Menu(config);
-                        return  ui_elements[id];
-                    case 'Menu_Item':
-                        var Menu_Item  = self.Menu_Item;
-                        ui_elements[id] = new Menu_Item(config);
-                        return  ui_elements[id];
+                if(self.classes[config.type]){
+                    ui_elements[id] = new self.classes[config.type](config);
+                    return  ui_elements[id];
                 }
             }
             return null;
@@ -89,6 +80,7 @@
                 container.style.position = 'absolute';
                 container.style.left = 0;
                 container.style.top = 0;
+                container.style.zIndex = 2;
                 container.addEventListener('contextmenu',contextmenu);
             }
         }

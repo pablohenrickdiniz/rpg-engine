@@ -39,8 +39,17 @@
         throw "Scene_Map_Loader requires Charas"
     }
 
+    if(root.Faces == undefined){
+        throw "Scene_Map_Loader requires Faces"
+    }
+
     if(root.Game_Actor == undefined){
         throw "Scene_Map_Loader requires Game_Actor"
+    }
+
+
+    if(root.Game_Face == undefined){
+        throw "Scene_Map_Loader requires Game_Face"
     }
 
 
@@ -54,7 +63,9 @@
         Main = root.Main,
         Chara = root.Chara,
         Charas  = root.Charas,
-        Game_Actor = root.Game_Actor;
+        Faces = root.Faces,
+        Game_Actor = root.Game_Actor,
+        Game_Face = root.Game_Face;
 
     var fields = [
         'image',
@@ -107,8 +118,6 @@
                 }
             }
 
-
-
             if(scene.actors && scene.actors.constructor == {}.constructor){
                 keys = Object.keys(scene.actors);
                 length = keys.length;
@@ -116,6 +125,16 @@
                     key = keys[i];
                     conf = scene.actors[key];
                     Main.Actors.set(key,new Game_Actor(conf));
+                }
+            }
+
+            if(scene.faces && scene.faces.constructor == {}.constructor){
+                keys = Object.keys(scene.faces);
+                length = keys.length;
+                for(i =0; i < length;i++){
+                    key = keys[i];
+                    conf = scene.faces[key];
+                    Faces.set(key,new Game_Face(conf));
                 }
             }
 

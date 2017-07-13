@@ -14,6 +14,9 @@
         self.parent = options.parent || null;
         self.style = options.style || {};
         self.id = options.id;
+        if(options.visible){
+            self.show();
+        }
     };
 
 
@@ -39,6 +42,7 @@
     function initialize(self){
         var element = null;
         var parent = null;
+
 
         Object.defineProperty(self,'parent',{
             get:function(){
@@ -104,7 +108,16 @@
                 }
             }
         });
+
+        Object.defineProperty(self,'text',{
+            get:function(){
+                return self.element.getAttribute("text");
+            },
+            set:function(text){
+                self.element.setAttribute("text",text);
+            }
+        });
     }
 
-    UI.Progress_bar = Progress_Bar;
+    UI.classes.Progress_Bar = Progress_Bar;
 })(RPG);

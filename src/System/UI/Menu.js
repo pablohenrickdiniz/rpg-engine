@@ -111,5 +111,5 @@
         });
     }
 
-    UI.Menu = Menu;
+    UI.classes.Menu = Menu;
 })(RPG);

@@ -24,8 +24,9 @@
         Variables: null,//Variáveis
         Scenes:null,    //Cenas
         Switches:null,  //Switches
-        Items:null,
-        Maps:null
+        Items:null,     //Items
+        Maps:null,      //Maps
+        Faces:null      //Faces
     };
 
     Object.defineProperty(self,'currentScene',{

@@ -68,6 +68,7 @@
         self.objects = [];
         self.charas = options.charas || {};
         self.actors = options.actors || {};
+        self.faces = options.faces || {};
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);

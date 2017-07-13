@@ -28,7 +28,8 @@
                 width: width,
                 height: height,
                 style: {
-                    backgroundColor: 'black'
+                    backgroundColor: 'black',
+                    zIndex:1
                 },
                 resizeLayers:true
             });

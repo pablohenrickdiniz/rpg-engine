@@ -19,3 +19,96 @@
     width:150px;
     height:100px;
 }
+
+#player-info{
+    width:190px;
+    height:70px;
+    left:2%;
+    top:2%;
+    position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#player-info .face-container{
+    overflow: hidden;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    width:70px;
+    height:70px;
+    position: relative;
+    background-color: rgba(25,25,25,1);
+    z-index:2;
+}
+
+#player-info .face-container img{
+    max-width:80%;
+    position: absolute;
+    margin:auto;
+    left:-100%;
+    right:-100%;
+    bottom:-100%;
+    top:-100%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+}
+
+#player-info .bar-container{
+    background-color: rgba(25,25,25,0.8);
+    width:140px;
+    height:60px;
+    position: absolute;
+    top:5px;
+    left:50px;
+    z-index:1;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+#stamina-bar,#hp-bar,#mp-bar{
+    width:110px;
+    height:10px;
+    right:8px;
+    position: absolute;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    color:white;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+
+#stamina-bar{
+    top:40px;
+    color: gray;
+}
+
+#hp-bar{
+    top:10px;
+}
+
+#mp-bar{
+    top:25px;
+}
+
+
+#stamina-bar::-webkit-progress-value{
+    background-color: yellow;
+}
+
+#mp-bar::-webkit-progress-value{
+    background-color: blue;
+    color:white;
+}
+
+
+#hp-bar::-webkit-progress-value{
+    background-color: red;
+    color:white;
+}

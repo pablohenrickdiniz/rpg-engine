@@ -90,5 +90,5 @@
         });
     }
 
-    UI.Menu_Item = Menu_Item;
+    UI.classes.Menu_Item = Menu_Item;
 })(RPG);
