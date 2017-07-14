@@ -36,6 +36,7 @@
         self.through = options.through || false;
         self.focused = false;
         self.name = options.name || '';
+        self.listeners = [];
     };
 
     Game_Object.prototype.clone = function(properties){

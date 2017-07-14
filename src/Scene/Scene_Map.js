@@ -477,10 +477,6 @@
         self.action_button = false;
     }
 
-
-
-
-
     function initialize(self){
         var tree = null;
         Object.defineProperty(self,'tree',{

@@ -114,6 +114,7 @@
     <script type="text/javascript" src="../src/System/UI/Menu_Item.js"></script>
     <script type="text/javascript" src="../src/System/UI/Button.js"></script>
     <script type="text/javascript" src="../src/System/UI/Window.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Slot.js"></script>
     <script type="text/javascript" src="../src/System/UI/Inventory.js"></script>
     <script type="text/javascript">
         function init() {
@@ -170,7 +171,7 @@
                         itemID:'1',
                         x:300,
                         y:300,
-                        amount:10
+                        amount:1
                     }
                 ],
                 charas:{
@@ -198,7 +199,30 @@
                         name:'Pablo Henrick Diniz',
                         inventory:{
                             slots: {
-                                0: {max:99}
+                                0: {max:99},
+                                1: {max:99},
+                                2: {max:99},
+                                3: {max:99},
+                                4: {max:99},
+                                5: {max:99},
+                                6: {max:99},
+                                7: {max:99},
+                                8: {max:99},
+                                9: {max:99},
+                                10: {max:99},
+                                11: {max:99},
+                                12: {max:99},
+                                13: {max:99},
+                                14: {max:99},
+                                15: {max:99},
+                                16: {max:99},
+                                17: {max:99},
+                                18: {max:99},
+                                19: {max:99},
+                                20: {max:99},
+                                21: {max:99},
+                                22: {max:99},
+                                23: {max:99}
                             }
                         }
                     }
@@ -223,7 +247,7 @@
                     });
                     root.UI.set('inventory',{
                         type:'Inventory',
-                        class:'window'
+                        class:'window inventory'
                     });
 
                     root.UI.new('loading-progress','loading-progress');
@@ -260,6 +284,8 @@
                             inventory_ui.show();
                         }
                     });
+
+                    root.UI.get('inventory').inventory = root.Main.currentPlayer.inventory;
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.get('loading-progress');

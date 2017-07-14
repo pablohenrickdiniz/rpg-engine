@@ -15,6 +15,7 @@
         options = options || {};
         Element.call(self,options);
         initialize(self);
+        self.draggable = options.draggable || false;
     };
 
     Image.prototype = Object.create(Element.prototype);
@@ -29,7 +30,6 @@
                 if(element == null){
                     element = document.createElement('img');
                     element.setAttribute("class",self.class);
-                    element.draggable = false;
                     Element.bind(self,element);
                 }
                 return element;

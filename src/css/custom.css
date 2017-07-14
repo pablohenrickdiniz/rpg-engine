@@ -143,7 +143,7 @@
     background-color: red;
 }
 
-.window{
+.window,.inventory{
     position: absolute;
     border-bottom:3px solid #111;
     border-right:2px solid #111;
@@ -157,10 +157,8 @@
 
 .window-header{
     color:white;
-}
-
-.window-header{
     background-color: rgba(40,40,40,1);
+    position: relative;
 }
 
 .window-header-title{
@@ -190,4 +188,51 @@
 .window .button:hover{
     background-color: #111;
     cursor: pointer;
+}
+
+
+.inventory{
+    padding:3px;
+}
+
+.inventoryA,.inventoryB{
+    width:100%;
+    background-color: rgba(50,50,50,1);
+    height:165px;
+}
+
+.inventoryB .inventory-slot{
+    width:29px;
+    height:29px;
+    background-color: #111;
+    display: inline-block;
+    margin-right:1px;
+    margin-left:1px;
+    margin-top:0;
+    position: relative;
+    border:1px solid transparent;
+}
+.inventoryB .inventory-slot.dragover{
+    border:1px solid orange;
+}
+
+.inventory-slot .item-amount{
+    color: black;
+    font-size:10px;
+    position:absolute;
+    right:0;
+    bottom:0;
+    font-weight: bold;
+}
+
+.inventory-slot .item-icon{
+    position: absolute;
+    width:24px;
+    height:auto;
+}
+
+.inventory-slot .item{
+    background: white;
+    width:29px;
+    height:29px;
 }

@@ -10,7 +10,42 @@
         initialize(self);
         options = options || {};
         self.slots = options.slots || {};
+        self.actor = options.actor || null
+        self.listeners = [];
     };
+
+    Game_Inventory.prototype.on = function(event,callback){
+        var self = this;
+        if(!self.listeners[event]){
+            self.listeners[event] = [];
+        }
+        if(self.listeners[event].indexOf(callback) == -1){
+            self.listeners[event].push(callback);
+        }
+    };
+
+
+    Game_Inventory.prototype.off = function(event,callback){
+        var self = this;
+        if(self.listeners[event]){
+            var index = self.listeners[event].indexOf(callback);
+            if(index != -1){
+                self.listeners[event].splice(index,1);
+            }
+        }
+    };
+
+
+    Game_Inventory.prototype.trigger = function(event,args){
+        var self = this;
+        if(self.listeners[event]){
+            var length = self.listeners[event].length;
+            for(var i =0; i < length;i++){
+                self.listeners[event][i].apply(self,args);
+            }
+        }
+    };
+
 
     Game_Inventory.prototype.addItem = function(item,amount){
         var self = this;
@@ -29,9 +64,10 @@
                 if(slot.freeAmount < amount){
                     add = slot.freeAmount;
                 }
-                slot.amount += add;
                 slot.item = item;
+                slot.amount += add;
                 amount-=add;
+                self.trigger('addItem',[item,add]);
             }
         }
         return amount;

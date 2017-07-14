@@ -14,6 +14,7 @@
         self.id = options.id;
         self.listeners = [];
         self.class = options.class;
+        self.draggable = options.draggable || false;
     };
 
     Element.prototype.addEventListener = function(event,callback){
@@ -49,7 +50,7 @@
     Element.prototype.show = function(){
         var self = this;
         self.visible = true;
-        if(self.parent){
+        if(self.parent && !self.element.parent){
             self.parent.element.appendChild(self.element);
         }
         return self;
@@ -86,12 +87,23 @@
             get:function(){
                 if(element == null){
                     element = document.createElement(self.tag);
+                    element.draggable = self.draggable;
                     if(id != null){
                         element.id = id;
                     }
                     Element.bind(self,element);
                 }
                 return element;
+            }
+        });
+
+        Object.defineProperty(self,'draggable',{
+            get:function(){
+                return self.element.draggable;
+            },
+            set:function(d){
+                d = d?true:false;
+                self.element.draggable = d;
             }
         });
 
@@ -121,6 +133,26 @@
         });
     }
 
+    Element.prototype.addClass = function(className){
+        var self =this;
+        var old = self.class;
+        old = old.split(' ');
+        if(old.indexOf(className) == -1){
+            old.push(className);
+            self.class = old.join(' ');
+        }
+    };
+
+    Element.prototype.removeClass = function(className){
+        var self = this;
+        var old = self.class;
+        old = old.split(' ');
+        var index = old.indexOf(className);
+        if(index != -1){
+            old.splice(index,1);
+            self.class = old.join(' ');
+        }
+    };
 
     Element.bind = function(self,element){
         /*mouse events*/
@@ -136,25 +168,25 @@
                     self.trigger('rightclick');
                     break;
             }
-            e.preventDefault();
-            return false;
+            //e.preventDefault();
+            //return false;
         });
 
-        element.addEventListener('onclick',function(e){e.preventDefault();return false;});
+        //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
         element.addEventListener('ondblclick',function(e){
             e.preventDefault();
             self.trigger('doubleclick');
             return false;
         });
         element.addEventListener('onmouseover',function(e){
-            e.preventDefault();
+            //e.preventDefault();
             self.trigger('mouseover');
-            return false;
+            //return false;
         });
         element.addEventListener('onmouseout',function(e){
-            e.preventDefault();
+            //e.preventDefault();
             self.trigger('mouseout');
-            return false;
+            //return false;
         });
 
         /*keyboard events*/
@@ -177,58 +209,46 @@
         });
 
         element.addEventListener('onfocus',function(e){
-            e.preventDefault();
+            //e.preventDefault();
             self.trigger('focus');
-            return false;
+            //return false;
         });
 
         element.addEventListener('onfocusout',function(e){
-            e.preventDefault();
+            //e.preventDefault();
             self.trigger('focusout');
-            return false;
+            //return false;
         });
 
         /*drag and drop events*/
-        element.addEventListener('ondrag',function(e){
-            e.preventDefault();
+
+
+        element.addEventListener('drag',function(e){
             self.trigger('drag');
-            return false;
         });
 
-        element.addEventListener('ondragstart',function(e){
-            e.preventDefault();
+        element.addEventListener('dragstart',function(e){
             self.trigger('dragstart');
-            return false;
         });
 
-        element.addEventListener('ondragend',function(e){
-            e.preventDefault();
+        element.addEventListener('dragend',function(e){
             self.trigger('dragend');
-            return false;
         });
 
-        element.addEventListener('ondrop',function(e){
-            e.preventDefault();
+        element.addEventListener('drop',function(e){
             self.trigger('drop');
-            return false;
         });
 
-        element.addEventListener('ondragenter',function(e){
-            e.preventDefault();
+        element.addEventListener('dragenter',function(e){
             self.trigger('dragenter');
-            return false;
         });
 
-        element.addEventListener('ondragleave',function(e){
-            e.preventDefault();
+        element.addEventListener('dragleave',function(e){
             self.trigger('dragleave');
-            return false;
         });
 
-        element.addEventListener('ondragover',function(e){
-            e.preventDefault();
+        element.addEventListener('dragover',function(e){
             self.trigger('dragover');
-            return false;
         });
 
         /*Disable clipboard*/
