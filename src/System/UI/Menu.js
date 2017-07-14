@@ -12,12 +12,10 @@
 
     var Menu = function(options){
         var self = this;
-        initialize(self);
         options = options || {};
         Element.call(self,options);
-        self.parent = options.parent || null;
+        initialize(self);
         self.items = options.items || [];
-        self.id = options.id;
     };
 
     Menu.prototype = Object.create(Element.prototype);
@@ -41,17 +39,6 @@
         }
     };
 
-    Menu.prototype.show = function(){
-        var self = this;
-        self.element.style.display = 'inline-block';
-    };
-
-    Menu.prototype.hide = function(){
-        var self = this;
-        self.element.style.display = 'none';
-    };
-
-
     function initialize(self){
         var element = null;
         var parent = null;
@@ -61,8 +48,8 @@
             get:function(){
                 if(element == null){
                     element = document.createElement('ul');
-                    element.setAttribute('class','menu');
-                    element.style.display = 'none';
+                    element.setAttribute('class',self.class);
+                    Element.bind(self,element);
                 }
                 return element;
             }

@@ -7,12 +7,13 @@
 
     var Element = function(options){
         var self = this;
-        initialize(self);
         options = options || {};
+        self.tag = options.tag || 'div';
+        initialize(self);
         self.parent = options.parent || null;
         self.id = options.id;
         self.listeners = [];
-        registerListeners(self,options);
+        self.class = options.class;
     };
 
     Element.prototype.addEventListener = function(event,callback){
@@ -47,31 +48,61 @@
 
     Element.prototype.show = function(){
         var self = this;
-        self.element.style.display = 'block';
+        self.visible = true;
+        if(self.parent){
+            self.parent.element.appendChild(self.element);
+        }
+        return self;
     };
 
     Element.prototype.hide = function(){
         var self = this;
-        self.element.style.display = 'none';
+        self.visible = false;
+        if(self.parent){
+            self.parent.element.removeChild(self.element);
+        }
+        return self;
     };
-
 
     function initialize(self){
         var parent = null;
-
+        var element = null;
+        var id = null;
+        var className = '';
 
         Object.defineProperty(self,'parent',{
             get:function(){
                 return parent;
             },
             set:function(p){
-                if(p instanceof Node && p != parent){
-                    var element = self.element;
-                    if(parent != null){
-                        parent.removeChild(element);
-                    }
+                if((p == UI || p instanceof Element) && p != parent){
                     parent = p;
-                    parent.appendChild(element);
+                }
+            }
+        });
+
+        Object.defineProperty(self,'element',{
+            configurable:true,
+            get:function(){
+                if(element == null){
+                    element = document.createElement(self.tag);
+                    if(id != null){
+                        element.id = id;
+                    }
+                    Element.bind(self,element);
+                }
+                return element;
+            }
+        });
+
+        Object.defineProperty(self,'class',{
+            get:function(){
+                return className;
+            },
+            set:function(c){
+                if(c != className){
+                    className = c;
+                    self.element.setAttribute("class",className);
                 }
             }
         });
@@ -79,17 +110,21 @@
 
         Object.defineProperty(self,'id',{
             get:function(){
-                return self.element.id;
+                return id;
             },
             set:function(i){
-                if(typeof i == 'string'){
+                if(typeof i == 'string' && i != id){
+                    id = i;
                     self.element.id = i;
                 }
             }
         });
+    }
 
+
+    Element.bind = function(self,element){
         /*mouse events*/
-        self.element.addEventListener('mousedown',function(e){
+        element.addEventListener('mousedown',function(e){
             switch(e.which){
                 case 1:
                     self.trigger('leftclick');
@@ -105,140 +140,110 @@
             return false;
         });
 
-        self.element.addEventListener('onclick',function(e){e.preventDefault();return false;});
-        self.element.addEventListener('ondblclick',function(e){
+        element.addEventListener('onclick',function(e){e.preventDefault();return false;});
+        element.addEventListener('ondblclick',function(e){
             e.preventDefault();
             self.trigger('doubleclick');
             return false;
         });
-        self.element.addEventListener('onmouseover',function(e){
+        element.addEventListener('onmouseover',function(e){
             e.preventDefault();
             self.trigger('mouseover');
             return false;
         });
-        self.element.addEventListener('onmouseout',function(e){
+        element.addEventListener('onmouseout',function(e){
             e.preventDefault();
             self.trigger('mouseout');
             return false;
         });
 
         /*keyboard events*/
-        self.element.addEventListener('onkeydown',function(e){
+        element.addEventListener('onkeydown',function(e){
             e.preventDefault();
             self.trigger('keydown');
             return false;
         });
 
-        self.element.addEventListener('onkeypress',function(e){
+        element.addEventListener('onkeypress',function(e){
             e.preventDefault();
             self.trigger('keypress');
             return false;
         });
 
-        self.element.addEventListener('onkeyup',function(e){
+        element.addEventListener('onkeyup',function(e){
             e.preventDefault();
             self.trigger('keyup');
             return false;
         });
 
-        self.element.addEventListener('onfocus',function(e){
+        element.addEventListener('onfocus',function(e){
             e.preventDefault();
             self.trigger('focus');
             return false;
         });
 
-        self.element.addEventListener('onfocusout',function(e){
+        element.addEventListener('onfocusout',function(e){
             e.preventDefault();
             self.trigger('focusout');
             return false;
         });
 
         /*drag and drop events*/
-        self.element.addEventListener('ondrag',function(e){
+        element.addEventListener('ondrag',function(e){
             e.preventDefault();
             self.trigger('drag');
             return false;
         });
 
-        self.element.addEventListener('ondragstart',function(e){
+        element.addEventListener('ondragstart',function(e){
             e.preventDefault();
             self.trigger('dragstart');
             return false;
         });
 
-        self.element.addEventListener('ondragend',function(e){
+        element.addEventListener('ondragend',function(e){
             e.preventDefault();
             self.trigger('dragend');
             return false;
         });
 
-        self.element.addEventListener('ondrop',function(e){
+        element.addEventListener('ondrop',function(e){
             e.preventDefault();
             self.trigger('drop');
             return false;
         });
 
-        self.element.addEventListener('ondragenter',function(e){
+        element.addEventListener('ondragenter',function(e){
             e.preventDefault();
             self.trigger('dragenter');
             return false;
         });
 
-        self.element.addEventListener('ondragleave',function(e){
+        element.addEventListener('ondragleave',function(e){
             e.preventDefault();
             self.trigger('dragleave');
             return false;
         });
 
-        self.element.addEventListener('ondragover',function(e){
+        element.addEventListener('ondragover',function(e){
             e.preventDefault();
             self.trigger('dragover');
             return false;
         });
 
         /*Disable clipboard*/
-        self.element.addEventListener('oncopy',function(e){
+        element.addEventListener('oncopy',function(e){
             e.preventDefault();
             return false;
         });
-        self.element.addEventListener('oncut',function(e){
+        element.addEventListener('oncut',function(e){
             e.preventDefault();
             return false;
         });
-        self.element.addEventListener('onpaste',function(e){
+        element.addEventListener('onpaste',function(e){
             e.preventDefault();
             return false;
         });
-    }
-
-    function registerListeners(self,options){
-        if(options.leftclick){
-            self.addEventListener('leftclick',options.leftclick)
-        }
-        if(options.middleclick){
-            self.addEventListener('middleclick',options.middleclick)
-        }
-        if(options.rightclick){
-            self.addEventListener('rightclick',options.rightclick)
-        }
-        if(options.doubleclick){
-            self.addEventListener('doubleclick',options.doubleclick)
-        }
-        if(options.mouseover){
-            self.addEventListener('mouseover',options.mouseover);
-        }
-        if(options.mouseout){
-            self.addEventListener('mouseout',options.mouseout);
-        }
-        if(options.keydown){
-            self.addEventListener('keydown',options.keydown);
-        }
-        if(options.keypress){
-            self.addEventListener('keypress',options.keypress);
-        }
-        if(options.keyup){
-            self.addEventListener('keyup',options.keyup);
-        }
     }
 
     UI.classes.Element = Element;

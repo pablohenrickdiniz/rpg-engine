@@ -13,13 +13,10 @@
     var Progress_Bar = function(options){
         var self = this;
         options = options || {};
-        initialize(self);
         Element.call(self,options);
+        initialize(self);
         self.progress = options.progress || 0;
         self.total = options.total || 100;
-        self.parent = options.parent || null;
-        self.style = options.style || {};
-        self.id = options.id;
         if(options.visible){
             self.show();
         }
@@ -27,25 +24,6 @@
 
     Progress_Bar.prototype = Object.create(Element.prototype);
     Progress_Bar.prototype.constructor = Progress_Bar;
-
-    Progress_Bar.prototype.hide = function(){
-        var self = this;
-        self.element.style.display = 'none';
-    };
-
-    Progress_Bar.prototype.show = function(){
-        var self= this;
-        self.element.style.display = 'inline-block';
-    };
-
-
-    Progress_Bar.prototype.remove = function(){
-        var self = this;
-        var el = self.element;
-        if(el.parent){
-            el.parent.removeChild(el);
-        }
-    };
 
     function initialize(self){
         var element = null;
@@ -55,9 +33,14 @@
             get:function(){
                 if(element == null){
                     element = document.createElement('progress');
-                    element.style.appearance = 'none';
-                    element.style.webkitAppearance = 'none';
-                    element.style.display = 'none';
+                    if(self.class){
+                        element.setAttribute("class",self.class);
+                    }
+                    if(self.id != null){
+                        element.id = self.id;
+                    }
+
+                    Element.bind(self,element);
                 }
                 return element;
             }

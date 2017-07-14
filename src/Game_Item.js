@@ -34,9 +34,15 @@
 
 
     function initialize(self){
+        Object.defineProperty(self,'item',{
+            get:function(){
+                return Items.get(self.itemID)
+            }
+        });
+
         Object.defineProperty(self,'currentFrame',{
             get:function(){
-                return Items.get(self.itemID).graphic;
+                return self.item.graphic;
             }
         });
     }

@@ -15,20 +15,27 @@
         throw "Player_Info requires Element"
     }
 
+    if(root.UI.classes.Image == undefined){
+        throw "Player_Info requires Image"
+    }
+
+    if(root.UI.classes.Text == undefined){
+        throw "Player_Info requires Text"
+    }
+
 
     var UI = root.UI,
         Game_Face = root.Game_Face,
         Progress_Bar = UI.classes.Progress_Bar,
-        Element = UI.classes.Element;
+        Element = UI.classes.Element,
+        Image = UI.classes.Image,
+        Text = UI.classes.Text;
 
     var Player_Info = function(options){
         var self = this;
         options = options || {};
-        initialize(self);
         Element.call(self,options);
-        self.parent = options.parent || null;
-        self.style = options.style || {};
-        self.id = options.id;
+        initialize(self);
         self.totalMP = options.totalMP || 100;
         self.totalHP = options.totalHP || 100;
         self.totalST = options.totalST || 100;
@@ -41,28 +48,8 @@
     Player_Info.prototype = Object.create(Element.prototype);
     Player_Info.prototype.constructor = Player_Info;
 
-    Player_Info.prototype.hide = function(){
-        var self = this;
-        self.element.style.display = 'none';
-    };
-
-    Player_Info.prototype.show = function(){
-        var self= this;
-        self.element.style.display = 'inline-block';
-    };
-
-
-    Player_Info.prototype.remove = function(){
-        var self = this;
-        var el = self.element;
-        if(el.parent){
-            el.parent.removeChild(el);
-        }
-    };
-
     function initialize(self){
         var element = null;
-        var parent = null;
         var face = null;
         var totalMP = 1;
         var totalHP = 1;
@@ -76,34 +63,46 @@
             get:function(){
                 if(element == null){
                     element = document.createElement('div');
-                    element.style.appearance = 'none';
-                    element.style.webkitAppearance = 'none';
-                    element.style.display = 'none';
+                    element.id = self.id;
+                    Element.bind(self,element);
                 }
                 return element;
             }
         });
 
-        /*Face Image*/
-        var faceImage = document.createElement('img');
-        faceImage.setAttribute("class","face-image");
-        faceImage.draggable = false;
-
-
         /*faceContainer*/
-        var faceContainer = document.createElement('div');
-        faceContainer.setAttribute("class","face-container");
-        faceContainer.appendChild(faceImage);
-        self.element.appendChild(faceContainer);
+        var faceContainer = new Element({
+            parent:self,
+            class:"face-container"
+        });
+        faceContainer.show();
 
-        var nameContainer = document.createElement('span');
-        nameContainer.setAttribute("class","name-container");
-        self.element.appendChild(nameContainer);
+        /*Face Image*/
+        var faceImage = new Image({
+            parent:faceContainer,
+            class:"face-image"
+        });
+        faceImage.show();
 
+        var nameContainer = new Text({
+            parent:self,
+            class:"name-container"
+        });
+        nameContainer.show();
 
-        var barContainer = document.createElement('div');
-        barContainer.setAttribute("class","bar-container");
-        self.element.appendChild(barContainer);
+        var barContainer = new Element({
+            parent:self,
+            class:"bar-container"
+        });
+        barContainer.show();
+
+        var stBar = new Progress_Bar({parent:barContainer,id:'stamina-bar'});
+        var mpBar = new Progress_Bar({parent:barContainer,id:'mp-bar'});
+        var hpBar = new Progress_Bar({parent:barContainer,id:'hp-bar'});
+
+        stBar.show();
+        mpBar.show();
+        hpBar.show();
 
         Object.defineProperty(self,'face',{
             get:function(){
@@ -116,15 +115,6 @@
                 }
             }
         });
-
-        var stBar = new Progress_Bar({visible:true,id:'stamina-bar'});
-        var mpBar = new Progress_Bar({visible:true,id:'mp-bar'});
-        var hpBar = new Progress_Bar({visible:true,id:'hp-bar'});
-
-
-        barContainer.appendChild(stBar.element);
-        barContainer.appendChild(mpBar.element);
-        barContainer.appendChild(hpBar.element);
 
 
 
@@ -213,7 +203,7 @@
             set:function(n){
                 if(n != name){
                     name = n;
-                    nameContainer.innerHTML = name;
+                    nameContainer.value = name;
                 }
             }
         });

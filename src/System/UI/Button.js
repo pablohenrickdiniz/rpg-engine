@@ -1,17 +1,16 @@
 (function(root){
     if(root.UI == undefined){
-        throw "Menu_Item requires UI"
+        throw "Menu requires UI"
     }
 
     if(root.UI.classes.Element == undefined){
-        throw "Menu_Item requires UI.Element"
+        throw "Button requires Element";
     }
 
-
     var UI = root.UI,
-        Element = root.UI.classes.Element;
+        Element = UI.classes.Element;
 
-    var Menu_Item = function(options){
+    var Button = function(options){
         var self = this;
         options = options || {};
         Element.call(self,options);
@@ -19,35 +18,36 @@
         self.text = options.text || '';
     };
 
-    Menu_Item.prototype = Object.create(Element.prototype);
-    Menu_Item.prototype.constructor = Menu_Item;
+    Button.prototype = Object.create(Element.prototype);
+    Button.prototype.constructor = Button;
 
     function initialize(self){
         var element = null;
+        var text = '';
 
         Object.defineProperty(self,'element',{
             get:function(){
                 if(element == null){
-                    element = document.createElement('li');
+                    element = document.createElement('button');
                     element.setAttribute('class',self.class);
-                    element.style.color = 'white';
                     Element.bind(self,element);
                 }
-
                 return element;
             }
         });
 
-
         Object.defineProperty(self,'text',{
             get:function(){
-                return self.element.innerHTML;
+                return text;
             },
             set:function(t){
-                self.element.innerHTML = t;
+                if(t != text){
+                    text = t;
+                    self.element.innerHTML = text;
+                }
             }
         });
     }
 
-    UI.classes.Menu_Item = Menu_Item;
+    UI.classes.Button = Button;
 })(RPG);

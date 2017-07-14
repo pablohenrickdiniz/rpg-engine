@@ -467,8 +467,8 @@
                 obj = collision._ref;
                 if (obj instanceof Game_Item) {
                     if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
-                        //var item = map.remove(obj);
-                        //player.addItem(obj.id,item.amount);
+                        self.remove(obj);
+                        player.inventory.addItem(obj.item,obj.amount);
                     }
                 }
             }
@@ -476,6 +476,9 @@
 
         self.action_button = false;
     }
+
+
+
 
 
     function initialize(self){

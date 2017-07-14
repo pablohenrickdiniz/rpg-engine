@@ -22,6 +22,7 @@
         self.HP = options.MP || 100;
         self.skills = [];
         self.type = options.type || 'Actor';
+        self.inventory = options.inventory;
     };
 
     Game_Actor.prototype = Object.create(Game_Character.prototype);
@@ -80,6 +81,14 @@
         Object.defineProperty(self,'inventory',{
             get:function(){
                 return inventory;
+            },
+            set:function(inv){
+                if(inv instanceof Game_Inventory){
+                    inventory = inv;
+                }
+                else if(inv.constructor == {}.constructor){
+                    inventory = new Game_Inventory(inv);
+                }
             }
         });
 

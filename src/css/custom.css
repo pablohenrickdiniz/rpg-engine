@@ -61,6 +61,7 @@
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     font-family: Verdana;
+    margin:0;
 }
 
 #player-info .face-container img{
@@ -142,3 +143,51 @@
     background-color: red;
 }
 
+.window{
+    position: absolute;
+    border-bottom:3px solid #111;
+    border-right:2px solid #111;
+    margin:auto;
+    left: -100%;
+    top: -100%;
+    bottom: -100%;
+    right: -100%;
+    background-color: rgba(50,50,50,0.9);
+}
+
+.window-header{
+    color:white;
+}
+
+.window-header{
+    background-color: rgba(40,40,40,1);
+}
+
+.window-header-title{
+    margin:0;
+    font-size:18px;
+    text-align: center;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.window-header .button{
+    position: absolute;
+    top:0;
+    right:0;
+    font-weight: bolder;
+    font-size:20px;
+    background-color: transparent;
+    line-height: 20px;
+    padding:0 2px 0 2px;
+    border:none;
+    color:white;
+}
+
+.window .button:hover{
+    background-color: #111;
+    cursor: pointer;
+}

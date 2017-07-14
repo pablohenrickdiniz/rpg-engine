@@ -107,9 +107,14 @@
     <script type="text/javascript" src="../src/System/UI/UI.js"></script>
     <script type="text/javascript" src="../src/System/UI/Element.js"></script>
     <script type="text/javascript" src="../src/System/UI/Progress_Bar.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Image.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Text.js"></script>
     <script type="text/javascript" src="../src/System/UI/Player_Info.js"></script>
     <script type="text/javascript" src="../src/System/UI/Menu.js"></script>
     <script type="text/javascript" src="../src/System/UI/Menu_Item.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Button.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Window.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Inventory.js"></script>
     <script type="text/javascript">
         function init() {
             var container = document.getElementById('container');
@@ -190,7 +195,12 @@
                         hSpeed:32,
                         animationSpeed:6,
                         type:'Player',
-                        name:'Pablo Henrick Diniz'
+                        name:'Pablo Henrick Diniz',
+                        inventory:{
+                            slots: {
+                                0: {max:99}
+                            }
+                        }
                     }
                 },
                 icons:{
@@ -211,9 +221,14 @@
                     root.UI.set('player-info',{
                         type:'Player_Info'
                     });
+                    root.UI.set('inventory',{
+                        type:'Inventory',
+                        class:'window'
+                    });
 
                     root.UI.new('loading-progress','loading-progress');
                     root.UI.new('player-info','player-info');
+                    root.UI.new('inventory','inventory');
 
                     root.UI.show('loading-progress');
                     root.Main.currentPlayerID = 1;
@@ -235,6 +250,16 @@
                     root.UI.get('player-info').MP = 400;
                     root.UI.get('player-info').name = root.Main.currentPlayer.name;
                     root.UI.show('player-info');
+
+                    root.Controls.Keyboard.addShortcutListener('i', function () {
+                        var inventory_ui = root.UI.get('inventory');
+                        if(inventory_ui.visible){
+                            inventory_ui.hide();
+                        }
+                        else{
+                            inventory_ui.show();
+                        }
+                    });
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.get('loading-progress');
