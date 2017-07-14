@@ -23,6 +23,10 @@
         throw "Scene_Map_Loader requires Game_Icon"
     }
 
+    if(root.Game_Item == undefined){
+        throw "Scehe_Map_Loader requires Game_Item"
+    }
+
     if(root.Main == undefined){
         throw "Scene_Map_Loader requires Main"
     }
@@ -65,8 +69,8 @@
         throw "Scene_Map_Loader requires Game_Face"
     }
 
-    if(root.Game_Item == undefined){
-        throw "Scene_Map_Loader requires Game_Item"
+    if(root.Item == undefined){
+        throw "Scene_Map_Loader requires Item"
     }
 
     var Spriteset_Map = root.Spriteset_Map,
@@ -78,8 +82,9 @@
         Chara = root.Chara,
         Game_Actor = root.Game_Actor,
         Game_Face = root.Game_Face,
-        Game_Item = root.Game_Item,
+        Item = root.Item,
         Game_Icon = root.Game_Icon,
+        Game_Item = root.Game_Item,
         Tilesets = Main.Tilesets,
         Charas  = Main.Charas,
         Faces = Main.Faces,
@@ -174,7 +179,19 @@
                 for(i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.items[key];
-                    Items.set(key,new Game_Item(conf));
+                    Items.set(key,new Item(conf));
+                }
+            }
+
+            if(scene.objects){
+                var length = scene.objects.length;
+                for(i =0; i < length;i++){
+                    var conf = scene.objects[i];
+                    switch(conf.type){
+                        case 'Game_Item':
+                            scene.add(new Game_Item(conf));
+                            break;
+                    }
                 }
             }
 

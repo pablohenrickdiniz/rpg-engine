@@ -51,6 +51,10 @@
         Tilesets = Main.Tilesets,
         Graphics =  Main.Graphics;
 
+    var clear_queue = [];
+    var bg_refreshed = false;
+    var focused_object = null;
+
     /**
      *
      * @param options
@@ -59,38 +63,36 @@
     var Scene_Map = function (options) {
         var self = this;
         Scene.call(self, options);
-        self.focused_object = null;
-        self.bg_refreshed = false;
+        initialize(self);
         self.map = options.map || {};
         self.action_button = false;
-        self.clear_queue = [];
-        self.tree = null;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
-        self.objects = [];
+        self.objs = [];
         self.charas = options.charas || {};
         self.actors = options.actors || {};
         self.faces = options.faces || {};
         self.items = options.items || {};
         self.icons = options.icons || {};
+        self.objects = options.objects || [];
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
     Scene_Map.prototype.constructor = Scene_Map;
 
-
-    Scene_Map.prototype.getTree = function(){
+    Scene_Map.prototype.add= function(object){
         var self = this;
-        if (self.tree === null) {
-            self.tree = new QuadTree({
-                x: 0,
-                y: 0,
-                width: self.map.width || 640,
-                height: self.map.height || 640
-            });
-        }
-        return self.tree;
+        self.objs.push(object);
+        self.tree.insert(object.bounds);
     };
 
+    Scene_Map.prototype.remove = function(object){
+        var self = this;
+        var index = self.objs.indexOf(object);
+        if(index != -1){
+            self.objs.splice(index,1);
+        }
+        self.tree.remove(object.bounds);
+    };
 
     /**
      *
@@ -99,11 +101,11 @@
     Scene_Map.prototype.focus = function (object) {
         if(object instanceof Game_Object){
             var self = this;
-            if (self.focused_object !== null) {
-                self.focused_object.focused = false;
+            if (focused_object !== null) {
+                focused_object.focused = false;
             }
             object.focused = true;
-            self.focused_object = object;
+            focused_object = object;
         }
     };
 
@@ -225,11 +227,11 @@
      * @param self
      */
     function refresh_BG(self) {
-        if (!self.bg_refreshed) {
+        if (!bg_refreshed) {
             Canvas.clear(Consts.BACKGROUND_LAYER);
             Canvas.clear(Consts.FOREGROUND_LAYER);
             refresh_spriteset_map(self);
-            self.bg_refreshed = true;
+            bg_refreshed = true;
         }
     }
 
@@ -239,8 +241,8 @@
      * @param self
      */
     function clear_graphics(self) {
-        while(self.clear_queue.length > 0){
-            var clear = self.clear_queue.pop();
+        while(clear_queue.length > 0){
+            var clear = clear_queue.pop();
             Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
         }
     }
@@ -250,7 +252,7 @@
      * @param self
      */
     function draw_graphics(self) {
-        var objects = self.objects;
+        var objects = self.objs;
         var bounds;
         var i;
         var image;
@@ -262,12 +264,11 @@
             objects = objects.concat(Main.currentPlayer);
         }
         objects = sort_objects(objects);
+
         var size = objects.length;
         for (i = 0; i < size; i++) {
             var object = objects[i];
             frame = object.currentFrame;
-
-
             if (frame != null && frame.image) {
                 bounds = object.bounds;
                 image = frame.image;
@@ -275,6 +276,7 @@
                 var by = parseInt(bounds.y - root.Canvas.y);
                 var h_width = frame.width / 2;
                 //   var h_height = frame.height / 2;
+
 
                 x = bx + bounds.width / 2 - h_width;
                 y = by + - bounds.height;
@@ -292,7 +294,7 @@
                     type: Consts.EVENT_LAYER
                 });
 
-                self.clear_queue.push({
+                clear_queue.push({
                     layer_type:Consts.EVENT_LAYER,
                     layer:object.layer,
                     x:Math.min(x, bx),
@@ -345,8 +347,8 @@
      * @param self
      */
     function step_focus(self) {
-        if (self.focused_object != null) {
-            var obj = self.focused_object;
+        if (focused_object != null) {
+            var obj = focused_object;
             var graphic = obj.graphic;
             if(graphic != null){
                 var m = self.map;
@@ -372,7 +374,7 @@
                 }
 
                 if (Canvas.x != viewport_x || Canvas.y != viewport_y) {
-                    self.bg_refreshed = false;
+                    bg_refreshed = false;
                 }
 
                 Canvas.x = viewport_x;
@@ -386,7 +388,7 @@
      * @param self
      */
     function step_events(self) {
-        var events = self.objects;
+        var events = self.objs;
         var length = events.length;
         var i;
         if(Main.currentPlayer){
@@ -404,7 +406,7 @@
      */
     function action_events(self) {
         var player = Main.currentPlayer;
-        var tree = self.getTree();
+        var tree = self.tree;
 
         var bounds_tmp = {
             x: player.bounds.x,
@@ -465,8 +467,8 @@
                 obj = collision._ref;
                 if (obj instanceof Game_Item) {
                     if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
-                        var item = map.remove(obj);
-                        player.addItem(obj.id,item.amount);
+                        //var item = map.remove(obj);
+                        //player.addItem(obj.id,item.amount);
                     }
                 }
             }
@@ -474,6 +476,25 @@
 
         self.action_button = false;
     }
+
+
+    function initialize(self){
+        var tree = null;
+        Object.defineProperty(self,'tree',{
+           get:function(){
+               if(tree == null){
+                    tree = new QuadTree({
+                       x: 0,
+                       y: 0,
+                       width: self.map.width || 640,
+                       height: self.map.height || 640
+                   });
+               }
+               return tree;
+           }
+        });
+    }
+
 
     root.Scene_Map = Scene_Map;
 })(RPG);

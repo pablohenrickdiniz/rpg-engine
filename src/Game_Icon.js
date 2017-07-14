@@ -10,10 +10,20 @@
         options = options || {};
         Game_Graphic.call(self,options);
         self.graphicType = 'icons';
+        initialize(self);
     };
 
     Game_Icon.prototype = Object.create(Game_Graphic.prototype);
     Game_Icon.prototype.constructor = Game_Icon;
+
+
+    function initialize(self){
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return self.image.width;
+            }
+        });
+    }
 
     root.Game_Icon = Game_Icon;
 })(RPG);

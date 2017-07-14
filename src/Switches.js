@@ -82,7 +82,7 @@
     function propagate_switch_changes(){
         var scene = Main.get_current_scene();
         if(scene){
-            var objects = scene.objects;
+            var objects = scene.objs;
             var length = objects.length;
             for(var i =0; i < length;i++){
                 if(objects[i] instanceof Game_Event){

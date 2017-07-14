@@ -1,13 +1,13 @@
 (function(root){
-    if(root.Game_Item  == undefined){
-        throw "Items requires Game_Item"
+    if(root.Item  == undefined){
+        throw "Items requires Item"
     }
 
     if(root.Main == undefined){
         throw "Items requires Main"
     }
 
-    var Game_Item = root.Game_Item,
+    var Item = root.Item,
         Main = root.Main;
 
     var items = [];
@@ -20,7 +20,7 @@
             return null;
         },
         set:function(id,item){
-            if(item instanceof Game_Item){
+            if(item instanceof Item){
                 items[id] = item;
             }
         }

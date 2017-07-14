@@ -70,7 +70,7 @@
                 var p = self.Actors.get(player_id);
                 if(scene != null && p != null){
                     p.type = 'Player';
-                    scene.getTree().insert(p.bounds);
+                    scene.tree.insert(p.bounds);
                 }
             }
         }

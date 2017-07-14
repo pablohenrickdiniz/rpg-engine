@@ -1,4 +1,15 @@
 (function (root) {
+    if(root.Main == undefined){
+        throw "Item requires Main"
+    }
+    else{
+        if(root.Main.Icons == undefined){
+            throw "Item requires Icons"
+        }
+    }
+
+    var Icons = root.Main.Icons;
+
     /**
      *
      * @param options
@@ -6,11 +17,21 @@
      */
     var Item = function (options) {
         var self = this;
+        initialize(self);
         options = options || {};
         self.durability = options.durability || 'INDESTRUCTIBLE';
         self.effects = options.effects || [];
         self.unique = options.unique || false;
+        self.icon = options.icon;
     };
+
+    function initialize(self){
+        Object.defineProperty(self,'graphic',{
+            get:function(){
+                return Icons.get(self.icon);
+            }
+        });
+    }
 
     root.Item = Item;
 })(RPG);

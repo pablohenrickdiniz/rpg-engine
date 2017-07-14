@@ -99,8 +99,8 @@
         var vec = {x: ex - bounds.x, y: ey - bounds.y};
         var scene = root.Main.currentScene;
         var c_map = scene.map;
-        var quadtree = scene.getTree();
-        var collisions = quadtree.retrieve(final_bounds, 'STEP');
+        var tree = scene.tree;
+        var collisions = tree.retrieve(final_bounds, 'STEP');
         var length = collisions.length;
 
         for(var i =0; i < length;i++){
