@@ -32,10 +32,28 @@
         initialize(self);
         self.title = 'Inventory';
         self.inventory = options.inventory || null;
+        self.from = null;
+        self.to = null;
+        self.slots = [];
     };
 
     Inventory.prototype = Object.create(Window.prototype);
     Inventory.prototype.constructor = Inventory;
+
+
+    Inventory.prototype.swap = function(){
+        var self = this;
+        if(self.inventory != null && self.from != null && self.to != null && self.from != self.to){
+            var from = self.from, to = self.to;
+            self.from = null;
+            self.top = null;
+            if(self.inventory.swap(from,to)){
+                self.render();
+                return true;
+            }
+        }
+        return false;
+    };
 
     function initialize(self){
         var slots = {};
@@ -73,7 +91,7 @@
             },
             set:function(i){
                 if((i == null || i instanceof Game_Inventory) && i != inventory){
-                    var callback = function(){render(self,slots)};
+                    var callback = function(){self.render(slots)};
                     if(inventory != null){
                         inventory.off('addItem',callback);
                         inventory.off('dropItem',callback);
@@ -82,14 +100,16 @@
                     if(inventory != null){
                         inventory.on('addItem',callback);
                         inventory.on('addItem',callback);
-                        render(self,slots);
+                        self.render(slots);
                     }
                 }
             }
         });
     }
 
-    function render(self,slots){
+    Inventory.prototype.render = function(){
+        var self = this;
+        var slots = self.slots;
         var inventory = self.inventory;
         var old_keys = Object.keys(slots);
         var new_keys = Object.keys(inventory.slots);
@@ -103,7 +123,9 @@
                     amount:inventory.slots[id].amount,
                     item:inventory.slots[id].item,
                     parent:self.inventoryB,
-                    class:'inventory-slot'
+                    class:'inventory-slot',
+                    inventory:self,
+                    id:id
                 });
             }
             else{
@@ -120,7 +142,7 @@
                 delete slots[id];
             }
         }
-    }
+    };
 
     UI.classes.Inventory = Inventory;
 })(RPG);

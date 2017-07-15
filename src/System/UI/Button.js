@@ -16,6 +16,7 @@
         Element.call(self,options);
         initialize(self);
         self.text = options.text || '';
+        self.draggable = options.draggable || false;
     };
 
     Button.prototype = Object.create(Element.prototype);

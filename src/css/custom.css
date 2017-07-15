@@ -183,6 +183,10 @@
     padding:0 2px 0 2px;
     border:none;
     color:white;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .window .button:hover{
@@ -229,6 +233,10 @@
     position: absolute;
     width:24px;
     height:auto;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .inventory-slot .item{

@@ -10,8 +10,37 @@
         initialize(self);
         options = options || {};
         self.slots = options.slots || {};
-        self.actor = options.actor || null
+        self.actor = options.actor || null;
         self.listeners = [];
+    };
+
+    Game_Inventory.prototype.swap = function(slotA,slotB){
+        var self = this;
+        if(self.slots[slotA] && self.slots[slotB]){
+            var from = self.slots[slotA];
+            var to = self.slots[slotB];
+
+            if(from.item == to.item && to.freeAmount > 0){
+                var qtd = Math.min(from.amount,to.freeAmount);
+                from.amount -= qtd;
+                to.amount += qtd;
+                if(from.amount == 0){
+                    from.item = null;
+                }
+            }
+            else{
+                var tmp_amount = to.amount;
+                to.amount = from.amount;
+                from.amount = tmp_amount;
+                var tmp_item = to.item;
+                to.item = from.item;
+                from.item = tmp_item;
+            }
+
+
+            return true;
+        }
+        return false;
     };
 
     Game_Inventory.prototype.on = function(event,callback){

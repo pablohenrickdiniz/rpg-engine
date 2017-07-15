@@ -32,6 +32,8 @@
         initialize(self);
         self.amount = options.amount || 0;
         self.item = options.item || null;
+        self.id = options.id;
+        self.inventory = options.inventory;
     };
 
     Slot.prototype = Object.create(Element.prototype);
@@ -60,14 +62,33 @@
             parent:itemContainer
         });
 
-        self.addEventListener('dragenter',function(){
+        itemContainer.addEventListener('dragstart',function(){
+            self.inventory.from = self.id;
+        });
+
+        self.addEventListener('drop',function(){
+            self.inventory.to = self.id;
+            if(self.inventory.swap()){
+                root.Audio.play('fx','inventory',1);
+            }
+        });
+
+        itemContainer.addEventListener('dragend',function(){
+            self.removeClass('dragover');
+        });
+
+        self.addEventListener('dragenter',function(e){
             self.addClass('dragover');
+            e.preventDefault();
+        });
+
+        self.addEventListener('dragover',function(e){
+            e.preventDefault();
         });
 
         self.addEventListener('dragleave',function(){
             self.removeClass('dragover');
         });
-
 
         Object.defineProperty(self,'amount',{
             get:function(){

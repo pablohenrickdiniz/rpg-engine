@@ -224,31 +224,31 @@
 
 
         element.addEventListener('drag',function(e){
-            self.trigger('drag');
+            self.trigger('drag',[e]);
         });
 
         element.addEventListener('dragstart',function(e){
-            self.trigger('dragstart');
+            self.trigger('dragstart',[e]);
         });
 
         element.addEventListener('dragend',function(e){
-            self.trigger('dragend');
+            self.trigger('dragend',[e]);
         });
 
         element.addEventListener('drop',function(e){
-            self.trigger('drop');
+            self.trigger('drop',[e]);
         });
 
         element.addEventListener('dragenter',function(e){
-            self.trigger('dragenter');
+            self.trigger('dragenter',[e]);
         });
 
         element.addEventListener('dragleave',function(e){
-            self.trigger('dragleave');
+            self.trigger('dragleave',[e]);
         });
 
         element.addEventListener('dragover',function(e){
-            self.trigger('dragover');
+            self.trigger('dragover',[e]);
         });
 
         /*Disable clipboard*/
