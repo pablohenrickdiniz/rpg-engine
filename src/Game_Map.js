@@ -11,7 +11,7 @@
         self.name = options.name || '';
         self.width = options.width;
         self.height = options.height;
-        self.objs = options.objs || [];
+        self.listeners = options.listeners || [];
         self.autoplay_bgs = options.autoplay_bgs || false;
         self.autoplay_bgm = options.autoplay_bgm || false;
         self.bgm = options.bgm || null;
@@ -26,7 +26,7 @@
      */
     Game_Map.prototype.add = function (obj) {
         var self = this;
-        self.objs.push(obj);
+        self.listeners.push(obj);
     };
 
     /**
@@ -35,7 +35,7 @@
      */
     Game_Map.prototype.remove = function (obj) {
         var self = this;
-        var index = self.objs.indexOf(obj);
+        var index = self.listeners.indexOf(obj);
         if (index != -1) {
             delete obj.parent;
         }

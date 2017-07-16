@@ -22,7 +22,7 @@
             var Audio = function () {
                 var self = this;
                 var src = '';
-                self.objs = [];
+                self.listeners = [];
                 self.buffer = null;
                 self.source = null;
                 self.paused = true;
@@ -81,28 +81,28 @@
 
             Audio.prototype.addEventListener = function (event, callback) {
                 var self = this;
-                if (self.objs[event] == undefined) {
-                    self.objs[event] = [];
+                if (self.listeners[event] == undefined) {
+                    self.listeners[event] = [];
                 }
-                self.objs[event].push(callback);
+                self.listeners[event].push(callback);
             };
 
             Audio.prototype.removeEventListener = function (event, callback) {
                 var self = this;
-                if (self.objs[event] != undefined) {
-                    var index = self.objs[event].indexOf(callback);
+                if (self.listeners[event] != undefined) {
+                    var index = self.listeners[event].indexOf(callback);
                     if (index != -1) {
-                        self.objs[event].splice(index, 1);
+                        self.listeners[event].splice(index, 1);
                     }
                 }
             };
 
             Audio.prototype.trigger = function (event) {
                 var self = this;
-                if (self.objs[event] != undefined) {
+                if (self.listeners[event] != undefined) {
                     var i;
-                    for (i = 0; i < self.objs[event].length; i++) {
-                        self.objs[event][i].apply(self);
+                    for (i = 0; i < self.listeners[event].length; i++) {
+                        self.listeners[event][i].apply(self);
                     }
                 }
             };

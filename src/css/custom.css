@@ -228,7 +228,7 @@
     border:1px solid orange;
 }
 
-.inventory-slot .item-amount{
+.item .item-amount{
     color: black;
     font-size:10px;
     position:absolute;
@@ -237,7 +237,7 @@
     font-weight: bold;
 }
 
-.inventory-slot .item-icon{
+.item .item-icon{
     position: absolute;
     width:24px;
     height:auto;
@@ -247,7 +247,7 @@
     user-select: none;
 }
 
-.inventory-slot .item{
+.item{
     background: white;
     width:29px;
     height:29px;

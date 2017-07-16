@@ -26,10 +26,8 @@
         Element.call(self,options);
         initialize(self);
         self.title = options.title || 'window';
-        self.width = options.width || 200;
-        self.height = options.height || 200;
-        self.sl = 0;
-        self.st = 0;
+        self.left = options.left || (w.innerWidth/2-self.width/2);
+        self.top = options.top || (w.innerHeight/2-self.height/2);
     };
 
     Window.prototype = Object.create(Element.prototype);
@@ -97,52 +95,6 @@
                     headerTitle.value = title;
                 }
             }
-        });
-
-
-        Object.defineProperty(self,'width',{
-            get:function(){
-                return width;
-            },
-            set:function(w){
-                w = parseInt(w);
-                if(!isNaN(w) && w >= 0 && w != width){
-                    width = w;
-                    self.element.style.width = w+'px';
-                }
-            }
-        });
-
-        Object.defineProperty(self,'height',{
-            get:function(){
-                return height;
-            },
-            set:function(h){
-                h = parseInt(h);
-                if(!isNaN(h) && h >= 0 && h != height){
-                    height = h;
-                    self.element.style.height = h+'px';
-                }
-            }
-        });
-
-        self.addEventListener('dragstart',function(){
-            self.st = parseInt(self.element.top);
-            self.sl = parseInt(self.element.left);
-        });
-
-        self.addEventListener('dragend',function(e){
-            var width = w.innerWidth;
-            var height = w.innerHeight;
-
-            var left =e.clientX;
-            var top = e.clientY;
-
-            left = left*100/width;
-            top = top*100/height;
-
-            self.element.style.left = left+'%';
-            self.element.style.top = top+'%';
         });
     }
 

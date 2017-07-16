@@ -41,6 +41,12 @@
             options = options || {};
             var container = options.container;
             var ui_root = options.ui_root;
+
+            var root = new self.UI.classes.Element({
+                id:'ui-root',
+                element:ui_root
+            });
+
             self.Controls.Keyboard = new Keyboard({
                 element: ui_root,
                 propagate: [Keyboard.F5, Keyboard.F11,Keyboard.F12]
@@ -53,11 +59,9 @@
                 height: w.innerHeight
             });
 
-            self.UI.initialize({
-                container:ui_root,
-                width: w.innerWidth,
-                height: w.innerHeight
-            });
+            self.UI.root = root;
+            self.UI.width = w.innerWidth;
+            self.UI.height = w.innerHeight;
             registerEvents(self,w);
         }
     };

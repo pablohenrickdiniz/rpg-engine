@@ -1,15 +1,15 @@
-(function(root){
+(function(root,w){
     if(root.UI == undefined){
         throw "Element requires UI"
     }
 
     var UI = root.UI;
-
     var Element = function(options,tag){
         var self = this;
         options = options || {};
         self.tag = tag || 'div';
         initialize(self);
+        self.element = options.element || null;
         self.parent = options.parent || null;
         self.id = options.id;
         self.listeners = [];
@@ -18,6 +18,8 @@
         self.children = [];
         self.display = options.display || 'block';
         self.visible = options.visible != false;
+        self.width = options.width;
+        self.height = options.height;
     };
 
 
@@ -55,8 +57,8 @@
         var self = this;
         if(el instanceof Element && el != self && self.children.indexOf(el) == -1){
             self.children.push(el);
-            self.element.appendChild(el.element);
             el.parent = self;
+            self.element.appendChild(el.element);
         }
     };
 
@@ -65,16 +67,18 @@
         var index = self.children.indexOf(el);
         if(index != -1){
             self.children.splice(index,1);
-            self.element.removeChild(el.element);
-            self.element.parent = null;
+            if(self.element == el.element.parent){
+                self.element.removeChild(el.element);
+                el.parent = null;
+            }
         }
     };
 
     Element.prototype.destroy = function(){
         var self = this;
-       if(self.parent){
-          self.parent.remove(self);
-       }
+        if(self.parent){
+            self.parent.remove(self);
+        }
     };
 
     function initialize(self){
@@ -83,6 +87,7 @@
         var id = null;
         var className = '';
         var visible = true;
+        var draggable = false;
 
         Object.defineProperty(self,'parent',{
             get:function(){
@@ -120,10 +125,23 @@
         });
 
         Object.defineProperty(self,'element',{
+            set:function(el){
+                if(el instanceof Node && el != element){
+                    while(el.firstChild){
+                        el.removeChild(el.firstChild);
+                    }
+                    if(element){
+                        while(element.firstChild){
+                            element.removeChild(element.firstChild);
+                        }
+                    }
+                    element = el;
+                    bind(self);
+                }
+            },
             get:function(){
                 if(element == null){
                     element = document.createElement(self.tag);
-                    element.draggable = self.draggable;
                     if(self.visible){
                         element.style.display = self.display;
                     }
@@ -133,7 +151,7 @@
                     if(id != null){
                         element.id = id;
                     }
-                    Element.bind(self,element);
+                    bind(self);
                 }
                 return element;
             }
@@ -141,11 +159,13 @@
 
         Object.defineProperty(self,'draggable',{
             get:function(){
-                return self.element.draggable;
+                return draggable;
             },
             set:function(d){
                 d = d?true:false;
-                self.element.draggable = d;
+                if(d != draggable){
+                    draggable = d;
+                }
             }
         });
 
@@ -196,8 +216,8 @@
         for(var i =0; i < length;i++){
             var child = self.children[i];
             if(child.id == id){
-               result = child;
-               break;
+                result = child;
+                break;
             }
 
             result = child.findById(id);
@@ -235,11 +255,61 @@
         }
     };
 
-    Element.bind = function(self,element){
+    Element.prototype.empty = function(){
+        var self = this;
+        while(self.children.length > 0){
+            self.remove(self.children[0]);
+        }
+    };
+
+    function bind(self){
+        var oldposition = null;
+        var oldparent = null;
+        var element = self.element;
+
+        function mousemove(e){
+            var left = e.clientX-(self.width/2);
+            var top = e.clientY- (self.height/2);
+            self.left = left;
+            self.top = top;
+            self.trigger('drag',[e]);
+        }
+
+        function mouseup(e){
+            if(e.which == 1){
+                w.removeEventListener('mousemove',mousemove,false);
+                w.removeEventListener('mouseup',mouseup,false);
+                self.element.style.position = oldposition;
+                root.UI.root.remove(self);
+                if(oldparent){
+                    oldparent.add(self);
+                }
+                self.trigger('dragend',[e]);
+            }
+        }
+
+        element.addEventListener('mouseup',function(e){
+            self.trigger('mouseup',[e]);
+        });
+
         /*mouse events*/
         element.addEventListener('mousedown',function(e){
-            switch(e.which){
+            switch(e.which) {
                 case 1:
+                    if(self.draggable){
+                        e.stopPropagation();
+                        w.addEventListener('mousemove',mousemove,false);
+                        w.addEventListener('mouseup',mouseup,false);
+                        oldposition = self.element.style.position;
+                        oldparent = self.parent;
+                        self.element.style.position = 'absolute';
+                        if(self.parent){
+                            self.parent.remove(self);
+                        }
+                        root.UI.root.add(self);
+                        mousemove(e);
+                        self.trigger('dragstart',[e]);
+                    }
                     self.trigger('leftclick');
                     break;
                 case 2:
@@ -249,8 +319,54 @@
                     self.trigger('rightclick');
                     break;
             }
-            //e.preventDefault();
-            //return false;
+        });
+
+        Object.defineProperty(self,'left',{
+            get:function(){
+                return parseInt(window.getComputedStyle(self.element).left);
+            },
+            set:function(l){
+                l = parseInt(l);
+                if(!isNaN(l)){
+                    self.element.style.left = l+'px';
+                }
+            }
+        });
+
+        Object.defineProperty(self,'top',{
+            get:function(){
+                return parseInt(window.getComputedStyle(self.element).top);
+            },
+            set:function(t){
+                t = parseInt(t);
+                if(!isNaN(t)){
+                    self.element.style.top = t+'px';
+                }
+            }
+        });
+
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return parseInt(w.getComputedStyle(self.element).width);
+            },
+            set:function(w){
+                w = parseInt(w);
+                if(!isNaN(w) && w >= 0){
+                    self.element.style.width = w+'px';
+                }
+            }
+        });
+
+        Object.defineProperty(self,'height',{
+            get:function(){
+                return parseInt(w.getComputedStyle(self.element).height);
+            },
+            set:function(h){
+                h = parseInt(h);
+                if(!isNaN(h) && h >= 0){
+                    self.element.style.height = h+'px';
+                }
+            }
         });
 
         //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
@@ -272,21 +388,15 @@
 
         /*keyboard events*/
         element.addEventListener('onkeydown',function(e){
-            e.preventDefault();
             self.trigger('keydown');
-            return false;
         });
 
         element.addEventListener('onkeypress',function(e){
-            e.preventDefault();
             self.trigger('keypress');
-            return false;
         });
 
         element.addEventListener('onkeyup',function(e){
-            e.preventDefault();
             self.trigger('keyup');
-            return false;
         });
 
         element.addEventListener('onfocus',function(e){
@@ -301,73 +411,25 @@
             //return false;
         });
 
-        /*drag and drop events*/
-
-
-        element.addEventListener('drag',function(e){
-            if(e.target == element){
-                self.trigger('drag',[e]);
-            }
-        });
-
-        element.addEventListener('dragstart',function(e){
-            if(e.target == element){
-                self.trigger('dragstart',[e]);
-            }
-        });
-
-        element.addEventListener('dragend',function(e){
-            if(e.target == element){
-                self.trigger('dragend',[e]);
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        element.addEventListener('drop',function(e){
-            if(e.target == element){
-                self.trigger('drop',[e]);
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        element.addEventListener('dragenter',function(e){
-            if(e.target == element){
-                self.trigger('dragenter',[e]);
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        element.addEventListener('dragleave',function(e){
-            if(e.target == element){
-                self.trigger('dragleave',[e]);
-            }
-        });
-
-        element.addEventListener('dragover',function(e){
-            if(e.target == element){
-                self.trigger('dragover',[e]);
-                e.preventDefault();
-                return false;
-            }
-        });
+        /*disable drag and drop events*/
+        element.addEventListener('drag',prevent);
+        element.addEventListener('dragstart',prevent);
+        element.addEventListener('dragend',prevent);
+        element.addEventListener('drop',prevent);
+        element.addEventListener('dragenter',prevent);
+        element.addEventListener('dragleave',prevent);
+        element.addEventListener('dragover',prevent);
 
         /*Disable clipboard*/
-        element.addEventListener('oncopy',function(e){
-            e.preventDefault();
-            return false;
-        });
-        element.addEventListener('oncut',function(e){
-            e.preventDefault();
-            return false;
-        });
-        element.addEventListener('onpaste',function(e){
-            e.preventDefault();
-            return false;
-        });
-    };
+        element.addEventListener('oncopy',prevent);
+        element.addEventListener('oncut',prevent);
+        element.addEventListener('onpaste',prevent);
+    }
+
+    function prevent(e){
+        e.preventDefault();
+        return false;
+    }
 
     UI.classes.Element = Element;
-})(RPG);
+})(RPG,window);

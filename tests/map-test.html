@@ -296,25 +296,27 @@
                 },
                 beforeload:function(root){
                     var classes = root.UI.classes;
-                    root.UI.add(new classes.Progress_Bar({
+                    root.UI.root.add(new classes.Progress_Bar({
                         id:'loading-progress'
                     }));
-                    root.UI.add(new classes.Player_Info({
+                    root.UI.root.add(new classes.Player_Info({
                         id:'player-info',
                         visible:false
                     }));
-                    root.UI.add(new classes.Inventory({
+                    root.UI.root.add(new classes.Inventory({
                         id:'inventory',
                         class:'window inventory',
                         width:200,
                         height:323,
                         visible:false,
-                        draggable:true
+                        draggable:true,
+                        left:300,
+                        top:300
                     }));
                     root.Main.currentPlayerID = 1;
                 },
                 afterload:function(root){
-                    root.UI.findById('loading-progress').visible = false;
+                    root.UI.root.findById('loading-progress').visible = false;
                     var spriteset = root.Main.currentScene.spriteset;
                     for(var i =0; i < 300;i++){
                         for(var j = 0; j < 300;j++){
@@ -325,21 +327,21 @@
                 start:function(root){
                     console.log('cena inicializada');
                     root.Main.currentScene.focus(root.Main.currentPlayer);
-                    root.UI.findById('player-info').face = root.Main.currentPlayer.face;
-                    root.UI.findById('player-info').totalMP = 500;
-                    root.UI.findById('player-info').MP = 400;
-                    root.UI.findById('player-info').name = root.Main.currentPlayer.name;
-                    root.UI.findById('player-info').visible = true;
+                    root.UI.root.findById('player-info').face = root.Main.currentPlayer.face;
+                    root.UI.root.findById('player-info').totalMP = 500;
+                    root.UI.root.findById('player-info').MP = 400;
+                    root.UI.root.findById('player-info').name = root.Main.currentPlayer.name;
+                    root.UI.root.findById('player-info').visible = true;
 
                     root.Controls.Keyboard.addShortcutListener('i', function () {
-                        var inventory_ui = root.UI.findById('inventory');
+                        var inventory_ui = root.UI.root.findById('inventory');
                         inventory_ui.visible = !inventory_ui.visible;
                     });
 
-                    root.UI.findById('inventory').inventory = root.Main.currentPlayer.inventory;
+                    root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
                 },
                 onprogress:function(progress){
-                    var progress_bar = RPG.UI.findById('loading-progress');
+                    var progress_bar = RPG.UI.root.findById('loading-progress');
 
                     if(progress_bar != null){
                         progress_bar.progress = progress;

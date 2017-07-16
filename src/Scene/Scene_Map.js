@@ -67,7 +67,7 @@
         self.map = options.map || {};
         self.action_button = false;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
-        self.objs = [];
+        self.listeners = [];
         self.charas = options.charas || {};
         self.actors = options.actors || {};
         self.faces = options.faces || {};
@@ -81,15 +81,15 @@
 
     Scene_Map.prototype.add= function(object){
         var self = this;
-        self.objs.push(object);
+        self.listeners.push(object);
         self.tree.insert(object.bounds);
     };
 
     Scene_Map.prototype.remove = function(object){
         var self = this;
-        var index = self.objs.indexOf(object);
+        var index = self.listeners.indexOf(object);
         if(index != -1){
-            self.objs.splice(index,1);
+            self.listeners.splice(index,1);
         }
         self.tree.remove(object.bounds);
     };
@@ -252,7 +252,7 @@
      * @param self
      */
     function draw_graphics(self) {
-        var objects = self.objs;
+        var objects = self.listeners;
         var bounds;
         var i;
         var image;
@@ -388,7 +388,7 @@
      * @param self
      */
     function step_events(self) {
-        var events = self.objs;
+        var events = self.listeners;
         var length = events.length;
         var i;
         if(Main.currentPlayer){
