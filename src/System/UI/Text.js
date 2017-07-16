@@ -10,11 +10,11 @@
     var UI = root.UI,
         Element = UI.classes.Element;
 
-    var Text = function(options){
+    var Text = function(options,tag){
         var self = this;
+        tag = tag || 'p';
         options = options || {};
-        options.tag = options.tag || 'p';
-        Element.call(self,options);
+        Element.call(self,options,tag);
         initialize(self);
     };
 
@@ -22,22 +22,7 @@
     Text.prototype.constructor = Text;
 
     function initialize(self){
-        var element = null;
         var value = '';
-
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement(self.tag);
-                    element.setAttribute("class",self.class);
-                    if(self.id != null){
-                        element.id = self.id;
-                    }
-                    Element.bind(self,element);
-                }
-                return element;
-            }
-        });
 
         Object.defineProperty(self,'value',{
             get:function(){

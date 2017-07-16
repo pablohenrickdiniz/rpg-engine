@@ -13,30 +13,16 @@
     var Button = function(options){
         var self = this;
         options = options || {};
-        Element.call(self,options);
+        Element.call(self,options,'button');
         initialize(self);
         self.text = options.text || '';
-        self.draggable = options.draggable || false;
     };
 
     Button.prototype = Object.create(Element.prototype);
     Button.prototype.constructor = Button;
 
     function initialize(self){
-        var element = null;
         var text = '';
-
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement('button');
-                    element.setAttribute('class',self.class);
-                    Element.bind(self,element);
-                }
-                return element;
-            }
-        });
-
         Object.defineProperty(self,'text',{
             get:function(){
                 return text;

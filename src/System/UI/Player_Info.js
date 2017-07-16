@@ -59,50 +59,33 @@
         var ST = 0;
         var name = '';
 
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement('div');
-                    element.id = self.id;
-                    Element.bind(self,element);
-                }
-                return element;
-            }
-        });
-
         /*faceContainer*/
         var faceContainer = new Element({
             parent:self,
             class:"face-container"
         });
-        faceContainer.show();
 
         /*Face Image*/
         var faceImage = new Image({
             parent:faceContainer,
             class:"face-image"
         });
-        faceImage.show();
 
         var nameContainer = new Text({
             parent:self,
             class:"name-container"
         });
-        nameContainer.show();
 
         var barContainer = new Element({
             parent:self,
             class:"bar-container"
         });
-        barContainer.show();
 
-        var stBar = new Progress_Bar({parent:barContainer,id:'stamina-bar'});
-        var mpBar = new Progress_Bar({parent:barContainer,id:'mp-bar'});
-        var hpBar = new Progress_Bar({parent:barContainer,id:'hp-bar'});
 
-        stBar.show();
-        mpBar.show();
-        hpBar.show();
+        var stBar = new Progress_Bar({parent:barContainer,class:'stamina-bar'});
+        var mpBar = new Progress_Bar({parent:barContainer,class:'mp-bar'});
+        var hpBar = new Progress_Bar({parent:barContainer,class:'hp-bar'});
+
 
         Object.defineProperty(self,'face',{
             get:function(){

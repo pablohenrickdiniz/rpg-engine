@@ -1,4 +1,4 @@
-(function(root){
+(function(root,w){
     if(root.UI == undefined){
         throw "Window requires UI"
     }
@@ -27,55 +27,64 @@
         initialize(self);
         self.title = options.title || 'window';
         self.width = options.width || 200;
-        self.height = options.height || 350;
+        self.height = options.height || 200;
+        self.sl = 0;
+        self.st = 0;
     };
 
     Window.prototype = Object.create(Element.prototype);
     Window.prototype.constructor = Window;
 
+    Window.prototype.add = function(el){
+        var self = this;
+        self.body.add(el);
+    };
+
+    Window.prototype.remove = function(el){
+        var self = this;
+        self.body.remove(el);
+    };
 
     function initialize(self){
-        var element = null;
         var title = '';
         var width = 0;
         var height = 0;
 
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement('div');
-                    element.setAttribute('class',self.class);
-                    Element.bind(self,element);
-                }
-                return element;
-            }
-        });
+
 
         var header = new Element({
-            class:'window-header',
-            parent:self
+            class:'window-header'
         });
-
-        header.show();
-
-        var header_title = new Text({
-            class:'window-header-title',
-            parent:header,
-            tag:'h1'
-        });
-
-        header_title.show();
-
-        var header_close = new Button({
-            parent:header,
+        var close = new Button({
             class:'button'
         });
-        header_close.text = '&times';
-        header_close.show();
+        close.text = '&times';
+        close.addEventListener('leftclick',function(){
+            self.visible = false;
+        });
+
+        var body =   body =  new Element({
+            class:'window-body'
+        });
 
 
-        header_close.addEventListener('leftclick',function(){
-            self.hide();
+        var headerTitle = new Text({
+            class:'window-header-title'
+        },'h1');
+
+        header.add(headerTitle);
+        header.add(close);
+
+
+        self.children.push(header);
+        self.children.push(body);
+        self.element.appendChild(header.element);
+        self.element.appendChild(body.element);
+
+        Object.defineProperty(self,'body',{
+            get:function(){
+                return body;
+            }
         });
 
         Object.defineProperty(self,'title',{
@@ -85,7 +94,7 @@
             set:function(t){
                 if(t != title){
                     title = t;
-                    header_title.value = title;
+                    headerTitle.value = title;
                 }
             }
         });
@@ -116,7 +125,26 @@
                 }
             }
         });
+
+        self.addEventListener('dragstart',function(){
+            self.st = parseInt(self.element.top);
+            self.sl = parseInt(self.element.left);
+        });
+
+        self.addEventListener('dragend',function(e){
+            var width = w.innerWidth;
+            var height = w.innerHeight;
+
+            var left =e.clientX;
+            var top = e.clientY;
+
+            left = left*100/width;
+            top = top*100/height;
+
+            self.element.style.left = left+'%';
+            self.element.style.top = top+'%';
+        });
     }
 
     UI.classes.Window = Window;
-})(RPG);
+})(RPG,window);

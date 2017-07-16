@@ -18,9 +18,10 @@
 
     var Game_Item = function (options) {
         var self = this;
+        options = options || {};
+        options.type = options.type || 'generic';
         Game_Object.call(self,options);
         initialize(self);
-        options = options || {};
         self.amount = options.amount || 1;
         self.graphic_type = 'icon';
         self.through = options.through || true;

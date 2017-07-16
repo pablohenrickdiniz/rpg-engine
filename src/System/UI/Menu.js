@@ -13,7 +13,7 @@
     var Menu = function(options){
         var self = this;
         options = options || {};
-        Element.call(self,options);
+        Element.call(self,options,'ul');
         initialize(self);
         self.items = options.items || [];
     };
@@ -40,21 +40,8 @@
     };
 
     function initialize(self){
-        var element = null;
         var parent = null;
         var items = [];
-
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement('ul');
-                    element.setAttribute('class',self.class);
-                    Element.bind(self,element);
-                }
-                return element;
-            }
-        });
-
 
         Object.defineProperty(self,'items',{
             get:function(){

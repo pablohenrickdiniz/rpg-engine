@@ -14,7 +14,7 @@
     var Menu_Item = function(options){
         var self = this;
         options = options || {};
-        Element.call(self,options);
+        Element.call(self,options,'li');
         initialize(self);
         self.text = options.text || '';
     };
@@ -23,22 +23,6 @@
     Menu_Item.prototype.constructor = Menu_Item;
 
     function initialize(self){
-        var element = null;
-
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement('li');
-                    element.setAttribute('class',self.class);
-                    element.style.color = 'white';
-                    Element.bind(self,element);
-                }
-
-                return element;
-            }
-        });
-
-
         Object.defineProperty(self,'text',{
             get:function(){
                 return self.element.innerHTML;

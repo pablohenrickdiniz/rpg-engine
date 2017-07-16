@@ -89,69 +89,68 @@
     border-bottom-right-radius: 5px;
 }
 
-#stamina-bar,#hp-bar,#mp-bar{
+.stamina-bar,.hp-bar,.mp-bar{
     width:110px;
     height:10px;
     right:8px;
     position: absolute;
-    color:white;
+    color:white !important;
     font-size: 10px;
     font-weight: bold;
 }
 
-#stamina-bar{
+.stamina-bar{
     top:40px;
-    color: gray;
+    color: gray !important;
 }
 
-#hp-bar{
+.hp-bar{
     top:10px;
 }
 
-#mp-bar{
+.mp-bar{
     top:25px;
 }
 
 
-#stamina-bar::-webkit-progress-value{
+.stamina-bar::-webkit-progress-value{
     background-color: yellow;
 }
 
-#stamina-bar::-moz-progress-bar{
+.stamina-bar::-moz-progress-bar{
     background-color: yellow;
 }
 
 
-#mp-bar::-webkit-progress-value{
+.mp-bar::-webkit-progress-value{
     background-color: blue;
     color:white;
 }
 
 
-#mp-bar::-moz-progress-bar{
+.mp-bar::-moz-progress-bar{
     background-color: blue;
 }
 
 
-#hp-bar::-webkit-progress-value{
+.hp-bar::-webkit-progress-value{
     background-color: red;
     color:white;
 }
 
 
-#hp-bar::-moz-progress-bar{
+.hp-bar::-moz-progress-bar{
     background-color: red;
+}
+
+.window{
+    overflow: hidden;
 }
 
 .window,.inventory{
     position: absolute;
     border-bottom:3px solid #111;
     border-right:2px solid #111;
-    margin:auto;
-    left: -100%;
-    top: -100%;
-    bottom: -100%;
-    right: -100%;
     background-color: rgba(50,50,50,0.9);
 }
 
@@ -189,6 +188,10 @@
     user-select: none;
 }
 
+.window-body{
+    position: relative;
+}
+
 .window .button:hover{
     background-color: #111;
     cursor: pointer;
@@ -205,17 +208,22 @@
     height:165px;
 }
 
-.inventoryB .inventory-slot{
+.inventory-slot{
     width:29px;
     height:29px;
     background-color: #111;
+    border:1px solid transparent;
+}
+
+.inventoryB .inventory-slot{
     display: inline-block;
     margin-right:1px;
     margin-left:1px;
     margin-top:0;
     position: relative;
-    border:1px solid transparent;
 }
+
+
 .inventoryB .inventory-slot.dragover{
     border:1px solid orange;
 }
@@ -244,3 +252,52 @@
     width:29px;
     height:29px;
 }
+
+
+/*Equip Inventory*/
+
+.inventory-slot.elm,
+.inventory-slot.armor,
+.inventory-slot.boots,
+.inventory-slot.pants,
+.inventory-slot.glooves
+{
+    position: absolute;
+    left:50%;
+    margin-left:-14px;
+}
+
+.inventory-slot.elm{
+    top:15px;
+}
+
+.inventory-slot.armor{
+    top:50px;
+}
+
+.inventory-slot.pants{
+    top:85px;
+}
+
+.inventory-slot.boots{
+    top:120px;
+}
+
+.inventory-slot.glooves{
+    top:85px;
+    left:50%;
+    margin-left:-48px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

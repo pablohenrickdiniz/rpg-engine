@@ -126,6 +126,9 @@
                 ui_root:ui_root
             });
 
+
+
+
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
                     tilesets:{
@@ -139,7 +142,8 @@
                         face01:'http://agenciaw3s.com.br/dev/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
                     },
                     icons:{
-                        icon01:'http://localhost/resources/Icons/Misc%2001%20(1.970)/Misc01%20-%200005.png'
+                        icon01:'http://localhost/resources/Icons/Misc%2001%20(1.970)/Misc01%20-%200005.png',
+                        icon02:'http://localhost/resources/Icons/zFULL%20LOTS/Lot%200012.png'
                     }
                 },
                 audios:{
@@ -170,32 +174,18 @@
                 },
                 objects:[
                     {
-                        type:'Game_Item',
-                        itemID:'1',
+                        class:'Game_Item',
+                        itemID:'2',
                         x:0,
                         y:300,
                         amount:10
                     },
                     {
-                        type:'Game_Item',
-                        itemID:'1',
+                        class:'Game_Item',
+                        itemID:'3',
                         x:100,
                         y:300,
-                        amount:20
-                    },
-                    {
-                        type:'Game_Item',
-                        itemID:'1',
-                        x:150,
-                        y:300,
-                        amount:3
-                    },
-                    {
-                        type:'Game_Item',
-                        itemID:'1',
-                        x:300,
-                        y:300,
-                        amount:1
+                        amount:10
                     }
                 ],
                 charas:{
@@ -246,7 +236,27 @@
                                 20: {max:99},
                                 21: {max:99},
                                 22: {max:99},
-                                23: {max:99}
+                                23: {max:99},
+                                armor:{
+                                    max:1,
+                                    type:'armor'
+                                },
+                                boots:{
+                                    max:1,
+                                    type:'boots'
+                                },
+                                pants:{
+                                    max:1,
+                                    type:'pants'
+                                },
+                                glooves:{
+                                    max:1,
+                                    type:'gloves'
+                                },
+                                elm:{
+                                    max:1,
+                                    type:'elm'
+                                }
                             }
                         }
                     }
@@ -256,36 +266,55 @@
                         graphicID:'icon01'
                     },
                     apple:{
-                        graphicID:'apple01'
+                        graphicID:'icon02',
+                        sx:98,
+                        sy:0,
+                        sWidth:32,
+                        sHeight:32
+                    },
+                    grape:{
+                        graphicID:'icon02',
+                        sx:0,
+                        sy:0,
+                        sWidth:32,
+                        sHeight:32
                     }
                 },
                 items:{
                     1:{
                         name:'sword1',
                         icon:'icon01'
+                    },
+                    2:{
+                        name:'apple',
+                        icon:'apple'
+                    },
+                    3:{
+                        name:'grape',
+                        icon:'grape'
                     }
                 },
                 beforeload:function(root){
-                    root.UI.set('loading-progress',{
-                        type:'Progress_Bar'
-                    });
-                    root.UI.set('player-info',{
-                        type:'Player_Info'
-                    });
-                    root.UI.set('inventory',{
-                        type:'Inventory',
-                        class:'window inventory'
-                    });
-
-                    root.UI.new('loading-progress','loading-progress');
-                    root.UI.new('player-info','player-info');
-                    root.UI.new('inventory','inventory');
-
-                    root.UI.show('loading-progress');
+                    var classes = root.UI.classes;
+                    root.UI.add(new classes.Progress_Bar({
+                        id:'loading-progress'
+                    }));
+                    root.UI.add(new classes.Player_Info({
+                        id:'player-info',
+                        visible:false
+                    }));
+                    root.UI.add(new classes.Inventory({
+                        id:'inventory',
+                        class:'window inventory',
+                        width:200,
+                        height:323,
+                        visible:false,
+                        draggable:true
+                    }));
                     root.Main.currentPlayerID = 1;
                 },
                 afterload:function(root){
-                    root.UI.hide('loading-progress');
+                    root.UI.findById('loading-progress').visible = false;
                     var spriteset = root.Main.currentScene.spriteset;
                     for(var i =0; i < 300;i++){
                         for(var j = 0; j < 300;j++){
@@ -296,26 +325,21 @@
                 start:function(root){
                     console.log('cena inicializada');
                     root.Main.currentScene.focus(root.Main.currentPlayer);
-                    root.UI.get('player-info').face = root.Main.currentPlayer.face;
-                    root.UI.get('player-info').totalMP = 500;
-                    root.UI.get('player-info').MP = 400;
-                    root.UI.get('player-info').name = root.Main.currentPlayer.name;
-                    root.UI.show('player-info');
+                    root.UI.findById('player-info').face = root.Main.currentPlayer.face;
+                    root.UI.findById('player-info').totalMP = 500;
+                    root.UI.findById('player-info').MP = 400;
+                    root.UI.findById('player-info').name = root.Main.currentPlayer.name;
+                    root.UI.findById('player-info').visible = true;
 
                     root.Controls.Keyboard.addShortcutListener('i', function () {
-                        var inventory_ui = root.UI.get('inventory');
-                        if(inventory_ui.visible){
-                            inventory_ui.hide();
-                        }
-                        else{
-                            inventory_ui.show();
-                        }
+                        var inventory_ui = root.UI.findById('inventory');
+                        inventory_ui.visible = !inventory_ui.visible;
                     });
 
-                    root.UI.get('inventory').inventory = root.Main.currentPlayer.inventory;
+                    root.UI.findById('inventory').inventory = root.Main.currentPlayer.inventory;
                 },
                 onprogress:function(progress){
-                    var progress_bar = RPG.UI.get('loading-progress');
+                    var progress_bar = RPG.UI.findById('loading-progress');
 
                     if(progress_bar != null){
                         progress_bar.progress = progress;

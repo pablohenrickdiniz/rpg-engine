@@ -68,9 +68,6 @@
             parent:self
         });
 
-        inventoryA.show();
-        inventoryB.show();
-
         Object.defineProperty(self,'inventoryA',{
             get:function(){
                 return inventoryA;
@@ -116,29 +113,42 @@
         var length = new_keys.length;
         var i;
         var id;
+        var equip = [
+            'armor',
+            'elm',
+            'glooves',
+            'pants',
+            'boots'
+        ];
         for(i = 0; i < length;i++){
             id = new_keys[i];
             if(slots[id] == undefined){
+                var index = equip.indexOf(id);
+                var is_equip = index != -1;
+                var className = 'inventory-slot';
+                if(is_equip){
+                    className += ' '+equip[index];
+                }
+
                 slots[id] = new Slot({
                     amount:inventory.slots[id].amount,
                     item:inventory.slots[id].item,
-                    parent:self.inventoryB,
-                    class:'inventory-slot',
+                    parent:is_equip?self.inventoryA:self.inventoryB,
+                    class:className,
                     inventory:self,
-                    id:id
+                    index:id
                 });
             }
             else{
                 slots[id].amount = inventory.slots[id].amount;
                 slots[id].item =  inventory.slots[id].item;
             }
-            slots[id].show();
         }
         length = old_keys.length;
         for(i =0 ; i < length;i++){
             id = old_keys[i];
             if(inventory.slots[id] == undefined && slots[id]){
-                slots[id].hide();
+                slots[id].destroy();
                 delete slots[id];
             }
         }

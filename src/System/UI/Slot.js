@@ -32,7 +32,7 @@
         initialize(self);
         self.amount = options.amount || 0;
         self.item = options.item || null;
-        self.id = options.id;
+        self.index = options.index;
         self.inventory = options.inventory;
     };
 
@@ -47,7 +47,8 @@
         var itemContainer = new Element({
             class:'item',
             parent:self,
-            draggable:true
+            draggable:true,
+            visible:false
         });
 
         var image = new Image({
@@ -57,33 +58,27 @@
         });
 
         var amountContainer = new Text({
-            tag:'span',
             class:'item-amount',
             parent:itemContainer
-        });
+        },'span');
 
         itemContainer.addEventListener('dragstart',function(){
-            self.inventory.from = self.id;
+            self.inventory.from = self.index;
         });
 
-        self.addEventListener('drop',function(){
-            self.inventory.to = self.id;
+        self.addEventListener('drop',function(e){
+            self.inventory.to = self.index;
             if(self.inventory.swap()){
                 root.Audio.play('fx','inventory',1);
             }
         });
 
-        itemContainer.addEventListener('dragend',function(){
+        itemContainer.addEventListener('dragend',function(e){
             self.removeClass('dragover');
         });
 
         self.addEventListener('dragenter',function(e){
             self.addClass('dragover');
-            e.preventDefault();
-        });
-
-        self.addEventListener('dragover',function(e){
-            e.preventDefault();
         });
 
         self.addEventListener('dragleave',function(){
@@ -111,17 +106,12 @@
                 if((i == null || i instanceof Item) && i != item){
                     item = i;
                     if(item != null){
-                        amountContainer.show();
-                        image.src = item.graphic.image.src;
-                        image.show();
-                        itemContainer.show();
+                        image.src = item.graphic.url;
+                        itemContainer.visible = true;
                         self.addClass('has-item');
                     }
                     else{
-                        amountContainer.hide();
-                        image.hide();
-                        itemContainer.hide();
-                        self.class = "inventory-slot";
+                        itemContainer.visible = false;
                         self.removeClass('has-item');
                     }
                 }

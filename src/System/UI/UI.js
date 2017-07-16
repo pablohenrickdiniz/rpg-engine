@@ -7,6 +7,7 @@
 
     var UI = {
         classes:[],
+        children:[],
         initialize:function(options){
             var self = this;
             options = options || {};
@@ -14,45 +15,51 @@
             self.width = options.width;
             self.height = options.height;
         },
-        set:function(name,config){
-            ui_config[name] = config;
-        },
-        get:function(id){
-            if(ui_elements[id]){
-                return ui_elements[id];
-            }
-            return null;
-        },
-        show:function(id){
-            if(ui_elements[id]){
-                ui_elements[id].show();
+        add:function(el){
+            var self = this;
+            if(self.children.indexOf(el) == -1){
+                self.children.push(el);
+                self.element.appendChild(el.element);
             }
         },
-        new:function(name,id){
-            if(ui_config[name]){
-                var config = ui_config[name];
-                var self = this;
-                config = Object.assign(config,{
-                    parent:self,
-                    id:id
-                });
-                if(self.classes[config.type]){
-                    ui_elements[id] = new self.classes[config.type](config);
-                    return  ui_elements[id];
+        remove:function(el){
+            var self = this;
+            var index = self.children.indexOf(el);
+            if(index != -1){
+                self.children.splice(index,1);
+                self.element.removeChild(el.element);
+            }
+        },
+        findById:function(id){
+            var self = this;
+            var result = null;
+            var length = self.children.length;
+            for(var i =0; i < length;i++){
+                var child = self.children[i];
+                if(child.id == id){
+                    result = child;
+                    break;
+                }
+
+                result = child.findById(id);
+                if(result != null){
+                    break;
                 }
             }
-            return null;
+            return result;
         },
-        hide:function(id){
-            if(ui_elements[id]){
-                ui_elements[id].hide();
+        findByClass:function(className,results){
+            var self = this;
+            results = results == undefined?[]:results;
+            var length = self.children.length;
+            for(var i =0; i < length;i++){
+                var child = self.children[i];
+                if(child.hasClass(className) && results.indexOf(child) == -1){
+                    results.push(child);
+                }
+                child.findByClass(className,results);
             }
-        },
-        destroy:function(id){
-            if(ui_elements[id]){
-                ui_elements[id].remove();
-                delete ui_elements[id];
-            }
+            return results;
         }
     };
 

@@ -23,6 +23,8 @@
         self.effects = options.effects || [];
         self.unique = options.unique || false;
         self.icon = options.icon;
+        self.type = options.type || 'generic';
+        self.id = options.id;
     };
 
     function initialize(self){

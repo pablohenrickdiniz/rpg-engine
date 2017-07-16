@@ -20,25 +20,26 @@
             var from = self.slots[slotA];
             var to = self.slots[slotB];
 
-            if(from.item == to.item && to.freeAmount > 0){
-                var qtd = Math.min(from.amount,to.freeAmount);
-                from.amount -= qtd;
-                to.amount += qtd;
-                if(from.amount == 0){
-                    from.item = null;
+            if(from.item.type == to.type){
+                if(from.item == to.item && to.freeAmount > 0){
+                    var qtd = Math.min(from.amount,to.freeAmount);
+                    from.amount -= qtd;
+                    to.amount += qtd;
+                    if(from.amount == 0){
+                        from.item = null;
+                    }
                 }
-            }
-            else{
-                var tmp_amount = to.amount;
-                to.amount = from.amount;
-                from.amount = tmp_amount;
-                var tmp_item = to.item;
-                to.item = from.item;
-                from.item = tmp_item;
-            }
+                else{
+                    var tmp_amount = to.amount;
+                    to.amount = from.amount;
+                    from.amount = tmp_amount;
+                    var tmp_item = to.item;
+                    to.item = from.item;
+                    from.item = tmp_item;
+                }
 
-
-            return true;
+                return true;
+            }
         }
         return false;
     };
@@ -88,7 +89,13 @@
 
             var slot = self.slots[keys[i]];
             var it = slot.item;
-            if(amount > 0 && (it == null || (it.id == item.id && slot.freeAmount > 0))){
+
+            if(it != null){
+                console.log(it.id,item.id);
+            }
+
+
+            if(item.type == slot.type && amount > 0 && (it == null || (it.id == item.id && slot.freeAmount > 0))){
                 var add = amount;
                 if(slot.freeAmount < amount){
                     add = slot.freeAmount;

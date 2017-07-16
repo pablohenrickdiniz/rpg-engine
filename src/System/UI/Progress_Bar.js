@@ -13,39 +13,16 @@
     var Progress_Bar = function(options){
         var self = this;
         options = options || {};
-        Element.call(self,options);
+        Element.call(self,options,'progress');
         initialize(self);
         self.progress = options.progress || 0;
         self.total = options.total || 100;
-        if(options.visible){
-            self.show();
-        }
     };
 
     Progress_Bar.prototype = Object.create(Element.prototype);
     Progress_Bar.prototype.constructor = Progress_Bar;
 
     function initialize(self){
-        var element = null;
-        var parent = null;
-
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement('progress');
-                    if(self.class){
-                        element.setAttribute("class",self.class);
-                    }
-                    if(self.id != null){
-                        element.id = self.id;
-                    }
-
-                    Element.bind(self,element);
-                }
-                return element;
-            }
-        });
-
         Object.defineProperty(self,'progress',{
             get:function(){
                 return self.element.value;

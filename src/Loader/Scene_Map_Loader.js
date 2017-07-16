@@ -179,6 +179,7 @@
                 for(i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.items[key];
+                    conf = Object.assign({id:key},conf);
                     Items.set(key,new Item(conf));
                 }
             }
@@ -187,7 +188,7 @@
                 var length = scene.objects.length;
                 for(i =0; i < length;i++){
                     var conf = scene.objects[i];
-                    switch(conf.type){
+                    switch(conf.class){
                         case 'Game_Item':
                             scene.add(new Game_Item(conf));
                             break;

@@ -13,28 +13,15 @@
     var Image = function(options){
         var self = this;
         options = options || {};
-        Element.call(self,options);
+        Element.call(self,options,'img');
         initialize(self);
-        self.draggable = options.draggable || false;
     };
 
     Image.prototype = Object.create(Element.prototype);
     Image.prototype.constructor = Image;
 
     function initialize(self){
-        var element = null;
         var src = '';
-
-        Object.defineProperty(self,'element',{
-            get:function(){
-                if(element == null){
-                    element = document.createElement('img');
-                    element.setAttribute("class",self.class);
-                    Element.bind(self,element);
-                }
-                return element;
-            }
-        });
 
         Object.defineProperty(self,'src',{
             get:function(){
@@ -45,7 +32,6 @@
                     src = s;
                     self.element.setAttribute("src",src);
                 }
-                return element;
             }
         });
     }
