@@ -40,6 +40,11 @@
     Slot.prototype.constructor = Slot;
 
 
+    Slot.prototype.hasItem = function(){
+       var self = this;
+        return self.item != null;
+    };
+
     function initialize(self){
         var amount = 0;
         var item = null;

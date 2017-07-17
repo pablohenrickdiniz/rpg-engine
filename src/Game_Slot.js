@@ -15,6 +15,11 @@
         self.item = options.item || null;
     };
 
+    Game_Slot.prototype.hasItem = function(){
+        var self = this;
+        return self.item != null;
+    };
+
     function initialize(self){
         var amount = 0;
         var max = 99;
@@ -65,6 +70,7 @@
             }
         });
     }
+
 
     root.Game_Slot= Game_Slot;
 })(RPG,window);

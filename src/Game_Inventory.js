@@ -14,31 +14,51 @@
         self.listeners = [];
     };
 
-    Game_Inventory.prototype.swap = function(slotA,slotB){
+    Game_Inventory.prototype.swap = function(slotA,slotB) {
         var self = this;
-        if(self.slots[slotA] && self.slots[slotB]){
+        if (self.slots[slotA] && self.slots[slotB]) {
             var from = self.slots[slotA];
             var to = self.slots[slotB];
 
-            if(from.item.type == to.type){
-                if(from.item == to.item && to.freeAmount > 0){
-                    var qtd = Math.min(from.amount,to.freeAmount);
-                    from.amount -= qtd;
-                    to.amount += qtd;
-                    if(from.amount == 0){
+            if (from.hasItem()) {
+                if (to.type == 'generic' || from.item.type == to.type) {
+                    if (to.hasItem()) {
+                        var swap = false;
+                        if(from.item == to.item){
+                            if (to.freeAmount > 0) {
+                                var qtd = Math.min(from.amount, to.freeAmount);
+                                from.amount -= qtd;
+                                to.amount += qtd;
+                                if (from.amount == 0) {
+                                    from.item = null;
+                                }
+                                return true;
+                            }
+                            else {
+                                swap = true;
+                            }
+                        }
+                        else if(from.type == 'generic' || to.item.type == from.type){
+                            swap = true;
+                        }
+
+                        if(swap){
+                            var tmp_amount = to.amount;
+                            to.amount = from.amount;
+                            from.amount = tmp_amount;
+                            var tmp_item = to.item;
+                            to.item = from.item;
+                            from.item = tmp_item;
+                            return true;
+                        }
+                    }
+                    else {
+                        to.item = from.item;
+                        to.amount = from.amount;
                         from.item = null;
+                        return true;
                     }
                 }
-                else{
-                    var tmp_amount = to.amount;
-                    to.amount = from.amount;
-                    from.amount = tmp_amount;
-                    var tmp_item = to.item;
-                    to.item = from.item;
-                    from.item = tmp_item;
-                }
-
-                return true;
             }
         }
         return false;
@@ -90,11 +110,6 @@
             var slot = self.slots[keys[i]];
             var it = slot.item;
 
-            if(it != null){
-                console.log(it.id,item.id);
-            }
-
-
             if(item.type == slot.type && amount > 0 && (it == null || (it.id == item.id && slot.freeAmount > 0))){
                 var add = amount;
                 if(slot.freeAmount < amount){
@@ -115,6 +130,7 @@
     };
 
     Game_Inventory.prototype.getSlot = function(id){
+        var self = this;
         var slots = self.slots;
         if(slots[id]){
             return slots[id];
