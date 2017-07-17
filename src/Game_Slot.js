@@ -40,6 +40,9 @@
                 if(!isNaN(a) && a >= 0){
                     a = Math.min(a,max);
                     amount = a;
+                    if(amount == 0){
+                        item = null;
+                    }
                 }
             }
         });

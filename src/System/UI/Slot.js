@@ -48,6 +48,7 @@
     function initialize(self){
         var amount = 0;
         var item = null;
+        var showAmount = true;
 
         var itemContainer = new Element({
             class:'item',
@@ -64,8 +65,10 @@
 
         var amountContainer = new Text({
             class:'item-amount',
-            parent:itemContainer
+            parent:itemContainer,
+            visible:showAmount
         },'span');
+
 
         itemContainer.addEventListener('dragstart',function(){
             self.inventory.from = self.index;
@@ -99,6 +102,7 @@
                 if(a >= 0 && a != amount){
                     amount = a;
                     amountContainer.value = a;
+                    amountContainer.visible = amount > 1;
                 }
             }
         });

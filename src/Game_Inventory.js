@@ -29,9 +29,6 @@
                                 var qtd = Math.min(from.amount, to.freeAmount);
                                 from.amount -= qtd;
                                 to.amount += qtd;
-                                if (from.amount == 0) {
-                                    from.item = null;
-                                }
                                 return true;
                             }
                             else {
@@ -53,9 +50,10 @@
                         }
                     }
                     else {
+                        var add = Math.min(to.freeAmount,from.amount);
                         to.item = from.item;
-                        to.amount = from.amount;
-                        from.item = null;
+                        to.amount +=add;
+                        from.amount -=add;
                         return true;
                     }
                 }
@@ -108,9 +106,8 @@
             }
 
             var slot = self.slots[keys[i]];
-            var it = slot.item;
 
-            if(item.type == slot.type && amount > 0 && (it == null || (it.id == item.id && slot.freeAmount > 0))){
+            if((item.type == slot.type || slot.type == 'generic') && (!slot.hasItem() || slot.item == item) && slot.freeAmount > 0){
                 var add = amount;
                 if(slot.freeAmount < amount){
                     add = slot.freeAmount;

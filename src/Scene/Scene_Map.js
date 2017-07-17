@@ -277,9 +277,9 @@
                 var h_width = frame.width / 2;
                 //   var h_height = frame.height / 2;
 
+                x = bx;
+                y = by;
 
-                x = bx + bounds.width / 2 - h_width;
-                y = by + - bounds.height;
 
                 Canvas.drawImage(image, {
                     dx: x,
