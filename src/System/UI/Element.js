@@ -89,6 +89,14 @@
         var visible = true;
         var draggable = false;
 
+
+        Object.defineProperty(self,'bounds',{
+            get:function(){
+                return self.element.getBoundingClientRect();
+            }
+        });
+
+
         Object.defineProperty(self,'parent',{
             get:function(){
                 return parent;
@@ -193,6 +201,56 @@
                 }
             }
         });
+
+
+
+        Object.defineProperty(self,'left',{
+            get:function(){
+                return parseInt(window.getComputedStyle(self.element).left);
+            },
+            set:function(l){
+                l = parseInt(l);
+                if(!isNaN(l)){
+                    self.element.style.left = l+'px';
+                }
+            }
+        });
+
+        Object.defineProperty(self,'top',{
+            get:function(){
+                return parseInt(window.getComputedStyle(self.element).top);
+            },
+            set:function(t){
+                t = parseInt(t);
+                if(!isNaN(t)){
+                    self.element.style.top = t+'px';
+                }
+            }
+        });
+
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return parseInt(w.getComputedStyle(self.element).width);
+            },
+            set:function(w){
+                w = parseInt(w);
+                if(!isNaN(w) && w >= 0){
+                    self.element.style.width = w+'px';
+                }
+            }
+        });
+
+        Object.defineProperty(self,'height',{
+            get:function(){
+                return parseInt(w.getComputedStyle(self.element).height);
+            },
+            set:function(h){
+                h = parseInt(h);
+                if(!isNaN(h) && h >= 0){
+                    self.element.style.height = h+'px';
+                }
+            }
+        });
     }
 
     Element.prototype.findByClass = function(className,results){
@@ -262,112 +320,37 @@
         }
     };
 
+    Element.prototype.overlap = function(el){
+        if(el instanceof Element && el != self){
+            var self = this;
+            var rect1 = self.bounds;
+            var rect2 = el.bounds;
+            return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
+        }
+        return false;
+    };
+
+    Element.prototype.findOverlaps = function(el){
+        var self = this;
+        var overlaps = [];
+        var length = self.children.length;
+        if(el != self){
+            for(var i  = 0; i < length;i++){
+                overlaps = overlaps.concat(self.children[i].findOverlaps(el));
+            }
+            if(self.overlap(el)){
+                overlaps.push(self);
+            }
+        }
+
+        return overlaps;
+    };
+
     function bind(self){
         var oldposition = null;
         var oldparent = null;
         var element = self.element;
 
-        function mousemove(e){
-            var left = e.clientX-(self.width/2);
-            var top = e.clientY- (self.height/2);
-            self.left = left;
-            self.top = top;
-            self.trigger('drag',[e]);
-        }
-
-        function mouseup(e){
-            if(e.which == 1){
-                w.removeEventListener('mousemove',mousemove,false);
-                w.removeEventListener('mouseup',mouseup,false);
-                self.element.style.position = oldposition;
-                root.UI.root.remove(self);
-                if(oldparent){
-                    oldparent.add(self);
-                }
-                self.trigger('dragend',[e]);
-            }
-        }
-
-        element.addEventListener('mouseup',function(e){
-            self.trigger('mouseup',[e]);
-        });
-
-        /*mouse events*/
-        element.addEventListener('mousedown',function(e){
-            switch(e.which) {
-                case 1:
-                    if(self.draggable){
-                        e.stopPropagation();
-                        w.addEventListener('mousemove',mousemove,false);
-                        w.addEventListener('mouseup',mouseup,false);
-                        oldposition = self.element.style.position;
-                        oldparent = self.parent;
-                        self.element.style.position = 'absolute';
-                        if(self.parent){
-                            self.parent.remove(self);
-                        }
-                        root.UI.root.add(self);
-                        mousemove(e);
-                        self.trigger('dragstart',[e]);
-                    }
-                    self.trigger('leftclick');
-                    break;
-                case 2:
-                    self.trigger('middleclick');
-                    break;
-                case 3:
-                    self.trigger('rightclick');
-                    break;
-            }
-        });
-
-        Object.defineProperty(self,'left',{
-            get:function(){
-                return parseInt(window.getComputedStyle(self.element).left);
-            },
-            set:function(l){
-                l = parseInt(l);
-                if(!isNaN(l)){
-                    self.element.style.left = l+'px';
-                }
-            }
-        });
-
-        Object.defineProperty(self,'top',{
-            get:function(){
-                return parseInt(window.getComputedStyle(self.element).top);
-            },
-            set:function(t){
-                t = parseInt(t);
-                if(!isNaN(t)){
-                    self.element.style.top = t+'px';
-                }
-            }
-        });
-
-        Object.defineProperty(self,'width',{
-            get:function(){
-                return parseInt(w.getComputedStyle(self.element).width);
-            },
-            set:function(w){
-                w = parseInt(w);
-                if(!isNaN(w) && w >= 0){
-                    self.element.style.width = w+'px';
-                }
-            }
-        });
-
-        Object.defineProperty(self,'height',{
-            get:function(){
-                return parseInt(w.getComputedStyle(self.element).height);
-            },
-            set:function(h){
-                h = parseInt(h);
-                if(!isNaN(h) && h >= 0){
-                    self.element.style.height = h+'px';
-                }
-            }
-        });
 
         //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
         element.addEventListener('ondblclick',function(e){
@@ -424,6 +407,65 @@
         element.addEventListener('oncopy',prevent);
         element.addEventListener('oncut',prevent);
         element.addEventListener('onpaste',prevent);
+
+
+        function mousemove(e){
+            var left = e.clientX-(self.width/2);
+            var top = e.clientY- (self.height/2);
+            self.left = left;
+            self.top = top;
+            self.trigger('drag',[e]);
+        }
+
+        function mouseup(e){
+            if(e.which == 1){
+                w.removeEventListener('mousemove',mousemove,false);
+                w.removeEventListener('mouseup',mouseup,false);
+                self.trigger('dragend',[e]);
+                var overlaps =  root.UI.root.findOverlaps(self);
+                self.element.style.position = oldposition;
+                root.UI.root.remove(self);
+                if(oldparent){
+                    oldparent.add(self);
+                }
+                for(var i = 0; i < overlaps.length;i++){
+                    overlaps[i].trigger('drop',[e]);
+                }
+            }
+        }
+
+        element.addEventListener('mouseup',function(e){
+            self.trigger('mouseup',[e]);
+        });
+
+        /*mouse events*/
+        element.addEventListener('mousedown',function(e){
+            switch(e.which) {
+                case 1:
+                    if(self.draggable){
+                        e.stopPropagation();
+                        w.addEventListener('mousemove',mousemove,false);
+                        w.addEventListener('mouseup',mouseup,false);
+                        oldposition = self.element.style.position;
+                        oldparent = self.parent;
+                        self.element.style.position = 'absolute';
+                        if(self.parent){
+                            self.parent.remove(self);
+                        }
+                        root.UI.root.add(self);
+                        mousemove(e);
+                        self.trigger('dragstart',[e]);
+                    }
+                    self.trigger('leftclick');
+                    break;
+                case 2:
+                    self.trigger('middleclick');
+                    break;
+                case 3:
+                    self.trigger('rightclick');
+                    break;
+            }
+        });
     }
 
     function prevent(e){
