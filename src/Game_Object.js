@@ -10,15 +10,14 @@
         ID++;
         self.animations = [];
         self.animationSpeed = options.animationSpeed || 4;
-        var x = options.x || 0;
-        var y = options.y || 0;
         self.bounds = {
-            x:x,
-            y:y,
-            width: 32,
-            height: 32,
+            x:options.x || 0,
+            y:options.y || 0,
+            width: options.width || 32,
+            height: options.height || 32,
             _ref: self,
-            groups: []
+            groups: [],
+            parents:[]
         };
         self.layer = options.layer || 2;
         self.hSpeed = options.hSpeed || 32;
@@ -80,9 +79,7 @@
                 var y = data.start_position.y + ((distance_y * diff) / data.moving_time);
                 bounds.x = x;
                 bounds.y = y;
-                if (bounds._full_inside) {
-                    QuadTree.reInsert(bounds);
-                }
+                QuadTree.reInsert(bounds);
             }
         }
     };
@@ -194,6 +191,30 @@
                 }
             }
         });
+
+
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return self.bounds.width;
+            },
+            set:function(w){
+                if(w != self.bounds.width){
+                    self.bounds.width = w;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'height',{
+            get:function(){
+                return self.bounds.height;
+            },
+            set:function(h){
+                if(h != self.bounds.height){
+                    self.bounds.height = h;
+                }
+            }
+        });
+
 
         Object.defineProperty(self,'speed',{
             get:function(){

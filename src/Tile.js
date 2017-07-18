@@ -48,25 +48,37 @@
     var initialize = function(self){
         Object.defineProperty(self,'sx',{
             get:function(){
-                return self.j*self.width;
+                return self.j*self.sWidth + (self.tileset?self.tileset.sx:0);
             }
         });
 
         Object.defineProperty(self,'sy',{
             get:function(){
-                return self.i*self.height;
+                return self.i*self.sHeight + (self.tileset?self.tileset.sy:0);
             }
         });
 
-        Object.defineProperty(self,'width',{
+        Object.defineProperty(self,'dWidth',{
             get:function(){
-                return self.tileset?self.tileset.tileWidth:0;
+                return self.tileset?self.tileset.tileDWidth:0;
             }
         });
 
-        Object.defineProperty(self,'height',{
+        Object.defineProperty(self,'dHeight',{
             get:function(){
-                return self.tileset?self.tileset.tileHeight:0;
+                return self.tileset?self.tileset.tileDHeight:0;
+            }
+        });
+
+        Object.defineProperty(self,'sHeight',{
+            get:function(){
+                return self.tileset?self.tileset.tileSHeight:0;
+            }
+        });
+
+        Object.defineProperty(self,'sWidth',{
+            get:function(){
+                return self.tileset?self.tileset.tileSWidth:0;
             }
         });
 

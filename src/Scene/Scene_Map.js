@@ -67,7 +67,7 @@
         self.map = options.map || {};
         self.action_button = false;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
-        self.listeners = [];
+        self.objs = [];
         self.charas = options.charas || {};
         self.actors = options.actors || {};
         self.faces = options.faces || {};
@@ -81,15 +81,15 @@
 
     Scene_Map.prototype.add= function(object){
         var self = this;
-        self.listeners.push(object);
+        self.objs.push(object);
         self.tree.insert(object.bounds);
     };
 
     Scene_Map.prototype.remove = function(object){
         var self = this;
-        var index = self.listeners.indexOf(object);
+        var index = self.objs.indexOf(object);
         if(index != -1){
-            self.listeners.splice(index,1);
+            self.objs.splice(index,1);
         }
         self.tree.remove(object.bounds);
     };
@@ -122,6 +122,17 @@
         refresh_BG(self);
         clear_graphics(self);
         draw_graphics(self);
+        if(root.debug){
+            drawquadtree(self.tree,true);
+            clear_queue.push({
+                layer_type:Consts.UI_LAYER,
+                layer:0,
+                x:0,
+                y:0,
+                width:Canvas.width,
+                height:Canvas.height
+            });
+        }
     };
 
     /**
@@ -213,7 +224,7 @@
                                 var dy = i * tileHeight - sy;
                                 dx = parseInt(dx);
                                 dy = parseInt(dy);
-                                context.drawImage(tile.image, tile.sx, tile.sy, tile.width, tile.height, dx, dy, tileWidth, tileHeight);
+                                context.drawImage(tile.image, tile.sx, tile.sy, tile.sWidth, tile.sHeight, dx, dy, tileWidth, tileHeight);
                             }
                         }
                     }
@@ -252,7 +263,7 @@
      * @param self
      */
     function draw_graphics(self) {
-        var objects = self.listeners;
+        var objects = self.objs;
         var bounds;
         var i;
         var image;
@@ -279,17 +290,15 @@
 
                 x = bx;
                 y = by;
-
-
                 Canvas.drawImage(image, {
                     dx: x,
                     dy: y,
-                    dWidth: frame.width,
-                    dHeight: frame.height,
+                    dWidth: frame.dWidth,
+                    dHeight: frame.dHeight,
                     sx: frame.sx,
                     sy: frame.sy,
-                    sWidth: frame.width,
-                    sHeight: frame.height,
+                    sWidth: frame.sWidth,
+                    sHeight: frame.sHeight,
                     layer: object.layer,
                     type: Consts.EVENT_LAYER
                 });
@@ -303,16 +312,16 @@
                     height:Math.max(frame.height, 32)
                 });
 
-                if (RPG.debug) {
-                    var layer = Canvas.getLayer(Consts.EVENT_LAYER, object.layer);
-                    layer.rect({
-                        x: bx,
-                        y: by,
-                        width: bounds.width,
-                        height: bounds.height,
-                        lineWidth: 2
-                    });
-                }
+                //if (RPG.debug) {
+                //    var layer = Canvas.getLayer(Consts.EVENT_LAYER, object.layer);
+                //    layer.rect({
+                //        x: bx,
+                //        y: by,
+                //        width: bounds.width,
+                //        height: bounds.height,
+                //        lineWidth: 1
+                //    });
+                //}
             }
         }
 
@@ -388,15 +397,15 @@
      * @param self
      */
     function step_events(self) {
-        var events = self.listeners;
-        var length = events.length;
+        var objs = self.objs;
+        var length = objs.length;
         var i;
         if(Main.currentPlayer){
             Main.currentPlayer.update();
         }
 
         for (i = 0; i < length; i++) {
-            events[i].update();
+            objs[i].update();
         }
     }
 
@@ -467,14 +476,46 @@
                 obj = collision._ref;
                 if (obj instanceof Game_Item) {
                     if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
-                        self.remove(obj);
                         player.inventory.addItem(obj.item,obj.amount);
+                        self.remove(obj);
                     }
                 }
             }
         }
 
         self.action_button = false;
+    }
+
+    function drawquadtree(tree,first){
+        first = first || false;
+        var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
+        layer.rect({
+            x:tree.bounds.x-Canvas.x,
+            y:tree.bounds.y-Canvas.y,
+            width:tree.bounds.width,
+            height:tree.bounds.height,
+            strokeStyle:'black',
+            lineWidth:1
+        });
+        if(first){
+            Object.keys(tree.objects).forEach(function(key){
+                var ob = tree.objects[key];
+                layer.rect({
+                    x:ob.x-Canvas.x,
+                    y:ob.y-Canvas.y,
+                    width:ob.width,
+                    height:ob.height,
+                    strokeStyle:'black',
+                    lineWidth:1
+                });
+            });
+        }
+
+
+
+        for(var i = 0; i < tree.nodes.length;i++){
+            drawquadtree(tree.nodes[i]);
+        }
     }
 
     function initialize(self){

@@ -16,11 +16,14 @@
         options = options || {};
         self.sx = options.sx || 0;
         self.sy = options.sy || 0;
+        self.dWidth = options.dWidth || null;
+        self.dHeight = options.dHeight || null;
         self.sWidth = options.sWidth || null;
         self.sHeight = options.sHeight || null;
         self.startFrame = 0;
         self.graphicID = options.graphicID;
         self.graphicType = options.graphicType || 'graphic';
+        self.scale = options.scale || 1;
     };
 
     function initialize(self){
@@ -30,6 +33,8 @@
         var sy = 0;
         var sWidth = null;
         var sHeight = null;
+        var dWidth = null;
+        var dHeight = null;
 
         Object.defineProperty(self,'graphicID',{
             get:function(){
@@ -70,6 +75,7 @@
         });
 
         Object.defineProperty(self,'sWidth',{
+            configurable:true,
             get:function(){
                 return sWidth;
             },
@@ -83,6 +89,7 @@
         });
 
         Object.defineProperty(self,'sHeight',{
+            configurable:true,
             get:function(){
                 return sHeight;
             },
@@ -138,6 +145,36 @@
                     return sHeight;
                 }
                 return self.image.height;
+            }
+        });
+
+        Object.defineProperty(self,'dWidth',{
+            set:function(dw){
+                dw = parseInt(dw);
+                if(!isNaN(dw) && dw > 0 && dw != dWidth){
+                    dWidth = dw;
+                }
+            },
+            get:function(){
+                if(dWidth != null){
+                    return dWidth;
+                }
+                return self.width;
+            }
+        });
+
+        Object.defineProperty(self,'dHeight',{
+            set:function(dh){
+                dh = parseInt(dh);
+                if(!isNaN(dh) && dh > 0 && dh != dHeight){
+                    dHeight = dh;
+                }
+            },
+            get:function(){
+                if(dHeight != null){
+                    return dHeight;
+                }
+                return self.height;
             }
         });
     }

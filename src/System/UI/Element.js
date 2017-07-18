@@ -394,6 +394,8 @@
             //return false;
         });
 
+
+
         /*disable drag and drop events*/
         element.addEventListener('drag',prevent);
         element.addEventListener('dragstart',prevent);
@@ -402,6 +404,7 @@
         element.addEventListener('dragenter',prevent);
         element.addEventListener('dragleave',prevent);
         element.addEventListener('dragover',prevent);
+        element.addEventListener('contextmenu',prevent);
 
         /*Disable clipboard*/
         element.addEventListener('oncopy',prevent);

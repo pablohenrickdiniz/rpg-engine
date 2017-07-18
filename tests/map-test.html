@@ -126,9 +126,9 @@
                 ui_root:ui_root
             });
 
+            RPG.debug = true;
 
-
-
+            
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
                     tilesets:{
@@ -172,50 +172,7 @@
                         data:[]
                     }
                 },
-                objects:[
-                    {
-                        class:'Game_Item',
-                        itemID:'2',
-                        x:0,
-                        y:300,
-                        amount:10
-                    },
-                    {
-                        class:'Game_Item',
-                        itemID:'3',
-                        x:100,
-                        y:300,
-                        amount:10
-                    },
-                    {
-                        class:'Game_Item',
-                        itemID:'4',
-                        x:100,
-                        y:120,
-                        amount:1
-                    },
-                    {
-                        class:'Game_Item',
-                        itemID:'5',
-                        x:250,
-                        y:120,
-                        amount:1
-                    },
-                    {
-                        class:'Game_Item',
-                        itemID:'5',
-                        x:300,
-                        y:120,
-                        amount:1
-                    },
-                    {
-                        class:'Game_Item',
-                        itemID:'6',
-                        x:380,
-                        y:120,
-                        amount:1
-                    }
-                ],
+                objects:[],
                 charas:{
                     char1:{
                         graphicID:'char01',
@@ -330,29 +287,29 @@
                     }
                 },
                 items:{
-                    1:{
+                    0:{
                         name:'sword1',
                         icon:'icon01'
                     },
-                    2:{
+                    1:{
                         name:'apple',
                         icon:'apple'
                     },
-                    3:{
+                    2:{
                         name:'grape',
                         icon:'grape'
                     },
-                    4:{
+                    3:{
                         name:'armor',
                         icon:'armor',
                         type:'armor'
                     },
-                    5:{
+                    4:{
                         name:'elm',
                         icon:'elm',
                         type:'elm'
                     },
-                    6:{
+                    5:{
                         name:'boots',
                         icon:'boots',
                         type:'boots'
@@ -403,6 +360,18 @@
                     });
 
                     root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
+
+
+                    setInterval(function(){
+                        var x = Math.random()*root.Main.currentScene.map.width;
+                        var y = Math.random()*root.Main.currentScene.map.height;
+                        root.Main.currentScene.add(new root.Game_Item({
+                            itemID:Math.floor(Math.random()*6),
+                            x:x,
+                            y:y,
+                            amount:Math.ceil(Math.random()*20)
+                        }));
+                    },10);
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.root.findById('loading-progress');

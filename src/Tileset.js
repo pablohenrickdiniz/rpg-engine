@@ -12,8 +12,13 @@
         throw "Tileset requires Tile"
     }
 
+    if(root.Game_Graphic == undefined){
+        throw "Tileset requires Game_Graphic"
+    }
+
     var Tile= root.Tile,
-        Graphics = root.Main.Graphics;
+        Graphics = root.Main.Graphics,
+        Game_Graphic = root.Game_Graphic;
 
     /**
      *
@@ -22,21 +27,23 @@
      */
     var Tileset = function (options) {
         var self = this;
+        Game_Graphic.call(self,options);
         initialize(self);
         options = options || {};
-        self.width = options.width || 0;
-        self.height = options.height || 0;
         self.rows = options.rows || null;
         self.cols = options.cols || null;
-        self.graphicID = options.graphicID || null;
         self.sprites = [];
         self.collision = [];
-        self.id = options.id || null;
+        self.graphicType = 'tilesets';
     };
+
+    Tileset.prototype = Object.create(Game_Graphic.prototype);
+    Tileset.prototype.constructor = Tileset;
+
 
     /**
      *
-     * @returns {{image: *, rows: (*|self.rows|tileset.rows|Character_Graphic.rows|Tileset.rows|Matrix.rows), cols: (*|self.cols|tileset.cols|Character_Graphic.cols|Tileset.cols|Matrix.cols), width: (options.width|*|number|Tileset.width), height: (options.height|*|number|Tileset.height), collision: Array}}
+     * @returns {{image: (self.src|*|src|Audio.src|Audio_File.src|Image.src), rows: (*|.map.tileset.rows|.charas.char1.rows|Chara.rows|Matrix.rows|null), cols: (*|.map.tileset.cols|.charas.char1.cols|Chara.cols|Matrix.cols|null), width: *, height: *, collision: Array}}
      */
     Tileset.prototype.toOBJ = function(){
         var self  =this;
@@ -131,17 +138,30 @@
         var rows = 1;
         var cols = 1;
 
-        Object.defineProperty(self,'tileWidth',{
+        Object.defineProperty(self,'tileDWidth',{
+            get:function(){
+              return self.tileSHeight*self.scale;
+            }
+        });
+
+        Object.defineProperty(self,'tileDHeight',{
+            get:function(){
+                return self.tileSHeight*self.scale;
+            }
+        });
+
+        Object.defineProperty(self,'tileSWidth',{
             get:function(){
                 return  self.width / self.cols;
             }
         });
 
-        Object.defineProperty(self,'tileHeight',{
+        Object.defineProperty(self,'tileSHeight',{
             get:function(){
                 return self.height / self.rows;
             }
         });
+
 
         Object.defineProperty(self,'rows',{
             get:function(){
@@ -166,12 +186,6 @@
                     self.sprites = [];
                     self.collision = [];
                 }
-            }
-        });
-
-        Object.defineProperty(self,'image',{
-            get:function(){
-                return Graphics.get('tilesets',self.graphicID);
             }
         });
     };

@@ -36,6 +36,7 @@
         self.sprites = [];
         self.startFrame = options.startFrame || 0;
         self.graphicType = 'charasets';
+        self.scale = options.scale || 1;
     };
 
 
@@ -69,7 +70,7 @@
     };
 
     function initialize(self){
-        Object.defineProperty(self,'tileWidth',{
+        Object.defineProperty(self,'tileSWidth',{
             get:function(){
                 var width = self.sWidth;
                 if(width == null){
@@ -85,7 +86,7 @@
             }
         });
 
-        Object.defineProperty(self,'tileHeight',{
+        Object.defineProperty(self,'tileSHeight',{
             get:function(){
                 var height = self.sHeight;
                 if(height == null){
@@ -97,6 +98,19 @@
                     return height/self.rows;
                 }
                 return 0;
+            }
+        });
+
+
+        Object.defineProperty(self,'tileWidth',{
+            get:function(){
+              return self.tileSWidth*self.scale;
+            }
+        });
+
+        Object.defineProperty(self,'tileHeight',{
+            get:function(){
+                return self.tileSHeight*self.scale;
             }
         });
     }
