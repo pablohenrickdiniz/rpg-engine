@@ -113,26 +113,25 @@
         Scene.prototype.step.apply(this);
         var self = this;
 
-
         if(Main.currentPlayer){
             action_events(self);
         }
         step_events(self);
         step_focus(self);
-        refresh_BG(self);
+        refresh_bg(self);
         clear_graphics(self);
         draw_graphics(self);
-        if(root.debug){
-            drawquadtree(self.tree,true);
-            clear_queue.push({
-                layer_type:Consts.UI_LAYER,
-                layer:0,
-                x:0,
-                y:0,
-                width:Canvas.width,
-                height:Canvas.height
-            });
-        }
+        //if(root.debug){
+        //    drawquadtree(self.tree,true);
+        //    clear_queue.push({
+        //        layer_type:Consts.UI_LAYER,
+        //        layer:0,
+        //        x:0,
+        //        y:0,
+        //        width:Canvas.width,
+        //        height:Canvas.height
+        //    });
+        //}
     };
 
     /**
@@ -142,28 +141,7 @@
      */
     function sort_objects(objects) {
         return objects.sort(function (a, b) {
-            var aby = parseInt(a.y - root.Canvas.y);
-            var bby = parseInt(b.y - root.Canvas.y);
-
-            var ah_height = 0;
-            var bh_height = 0;
-            var a_height = 0;
-            var b_height = 0;
-
-            if (a.graphic) {
-                a_height = a.graphic.height;
-                ah_height = a_height / 2;
-            }
-
-            if (b.graphic) {
-                b_height = b.graphic.height;
-                bh_height = b_height / 2;
-            }
-
-            var ya = aby + a.bounds.height / 2 - ah_height;
-            var yb = bby + b.bounds.height / 2 - bh_height;
-
-            return ya + a_height > yb + b_height;
+            return a.y-b.y;
         });
     }
 
@@ -237,7 +215,7 @@
      *
      * @param self
      */
-    function refresh_BG(self) {
+    function refresh_bg(self) {
         if (!bg_refreshed) {
             Canvas.clear(Consts.BACKGROUND_LAYER);
             Canvas.clear(Consts.FOREGROUND_LAYER);
@@ -263,13 +241,20 @@
      * @param self
      */
     function draw_graphics(self) {
-        var objects = self.objs;
+        var objects = self.tree.retrieve({
+            x:root.Canvas.x,
+            y:root.Canvas.y,
+            width:root.Canvas.width,
+            height:root.Canvas.height
+        }).map(function(obj){return obj._ref});
+
         var bounds;
         var i;
         var image;
         var frame;
         var x;
         var y;
+
 
         if(Main.currentPlayer){
             objects = objects.concat(Main.currentPlayer);

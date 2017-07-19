@@ -361,8 +361,7 @@
 
                     root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
 
-
-                    setInterval(function(){
+                    for(var i = 0; i < 100;i++){
                         var x = Math.random()*root.Main.currentScene.map.width;
                         var y = Math.random()*root.Main.currentScene.map.height;
                         root.Main.currentScene.add(new root.Game_Item({
@@ -371,7 +370,7 @@
                             y:y,
                             amount:Math.ceil(Math.random()*20)
                         }));
-                    },10);
+                    }
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.root.findById('loading-progress');
