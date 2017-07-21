@@ -90,39 +90,32 @@
      * @param self
      */
     function initialize(self){
-        var width = 0;
-        var height = 0;
-        Object.defineProperty(self,'width',{
-            get:function(){
-                return width;
-            },
-            set:function(w){
-                if(w != width){
-                    width = w;
-                    if(self.data){
-                        for(var i in self.data){
-                            if(self.data[i].length > width){
-                                self.data[i].length =width;
-                            }
-                        }
-                    }
-                }
-            }
-        });
+       var width = 0;
+       var height = 0;
+       Object.defineProperty(self,'width',{
+           get:function(){
+               return width;
+           },
+           set:function(w){
+               w = parseInt(w);
+               if(!isNaN(w) && w >= 0 && w != width){
+                   width = w;
+               }
+           }
+       });
 
         Object.defineProperty(self,'height',{
             get:function(){
                 return height;
             },
             set:function(h){
-                if(h != height){
+                h = parseInt(h);
+                if(!isNaN(h) && h >= 0 && h != height){
                     height = h;
-                    if(self.data && self.data.length > height){
-                        self.data.height = height;
-                    }
                 }
             }
         });
+
     }
 
     root.Spriteset_Map = Spriteset_Map;

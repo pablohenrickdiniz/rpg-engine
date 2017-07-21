@@ -89,6 +89,15 @@
             }
         });
 
+        Keyboard.addShortcutListener('P', function () {
+            if(Game_Timer.running){
+                Game_Timer.stop();
+            }
+            else{
+                Game_Timer.run();
+            }
+        });
+
         Keyboard.addShortcutListener('ENTER', function () {
             var current_scene = Main.currentScene;
             if(current_scene){

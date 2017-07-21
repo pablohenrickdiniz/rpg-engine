@@ -23,19 +23,13 @@
         self.hSpeed = options.hSpeed || 32;
         self.vSpeed = options.vSpeed || 32;
         self.moving = false;
-        self.refreshed = false;
-        self.obj_movement = null;
         self.currentAnimation = null;
         self.type = options.type || 'Object';
-        self.parent = options.parent || null;
-        self.clearX = null;
-        self.clearY = null;
-        self.clearWidth = null;
-        self.clearHeight = null;
         self.through = options.through || false;
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
+        self._movement = null;
     };
 
     Game_Object.prototype.clone = function(properties){
@@ -59,24 +53,58 @@
 
     Game_Object.prototype.update = function () {
         var self = this;
-        if (self.obj_movement != null) {
-            var data = self.obj_movement;
-            var diff = Game_Timer.currentTime - data.startmoving_time;
+        var scene = root.Main.currentScene;
+        var c_map = scene.map;
+        if (self._movement != null) {
+            var data = self._movement;
+            var diff = Game_Timer.currentTime - data.start;
             var bounds = self.bounds;
-            if (diff >= data.moving_time) {
-                bounds.x = data.end_position.x;
-                bounds.y = data.end_position.y;
-                var callback = data.oncomplete;
-                self.obj_movement = null;
+            var x;
+            var y;
+            if (diff >= data.time) {
+                x = data.epos.x;
+                y = data.epos.y;
+
+                if(c_map.loop_x){
+                    x = calcloop(x,c_map.width);
+                }
+                if(c_map.loop_y){
+                    y = calcloop(y,c_map.height);
+                }
+
+                bounds.x = x;
+                bounds.y = y;
+                var callback = data.complete;
+                self._movement = null;
                 if (typeof callback === 'function') {
                     callback();
                 }
             }
             else {
-                var distance_x = (data.end_position.x - data.start_position.x);
-                var distance_y = (data.end_position.y - data.start_position.y);
-                var x = data.start_position.x + ((distance_x * diff) / data.moving_time);
-                var y = data.start_position.y + ((distance_y * diff) / data.moving_time);
+                /**
+                 * Distância pecorrida baseada no tempo
+                 * @type {number}
+                 */
+                var distance_x = (data.epos.x - data.spos.x);
+                var distance_y = (data.epos.y - data.spos.y);
+                x = data.spos.x + ((distance_x * diff) / data.time);
+                y = data.spos.y + ((distance_y * diff) / data.time);
+
+
+                /**
+                 * Verificação de loop horizontal
+                 */
+                if(c_map.loop_x){
+                    x = calcloop(x,c_map.width);
+                }
+
+                /**
+                 * Verificação de loop vertical
+                 */
+                if(c_map.loop_y){
+                    y = calcloop(y,c_map.height);
+                }
+
                 bounds.x = x;
                 bounds.y = y;
                 QuadTree.reInsert(bounds);
@@ -86,13 +114,31 @@
 
     /**
      *
+     * @param c
+     * @param d
+     * @returns {*}
+     */
+    function calcloop(c,d){
+        if(c < 0){
+            while(c < -d){c = c%d;}
+            return d+c;
+        }
+        else if(c > d){
+            while(c > d){c = c%d;}
+            return c;
+        }
+        return c;
+    }
+
+    /**
+     *
      * @param bounds
      * @param ex
      * @param ey
      * @param time
      * @returns {{x: *, y: *, time: number}}
      */
-    var calculate_final_position = function (bounds, ex, ey, time) {
+    function calculate_final_position(bounds, ex, ey, time) {
         var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height, groups: ['STEP']};
         var vec = {x: ex - bounds.x, y: ey - bounds.y};
         var scene = root.Main.currentScene;
@@ -119,36 +165,40 @@
         }
 
 
-        if (final_bounds.x < 0) {
-            final_bounds.x = 0;
-        }
-        else if (final_bounds.x > c_map.width - 32) {
-            final_bounds.x = c_map.height - 32;
-        }
-        else if (vec.x > 0) {
-            final_bounds.x = Math.max(final_bounds.x, bounds.x);
-        }
-        else if (vec.x < 0) {
-            final_bounds.x = Math.min(final_bounds.x, bounds.x);
-        }
-        else {
-            final_bounds.x = bounds.x;
+        if(!c_map.loop_x){
+            if (final_bounds.x < 0) {
+                final_bounds.x = 0;
+            }
+            else if (final_bounds.x > c_map.width - bounds.width) {
+                final_bounds.x = c_map.height - bounds.height;
+            }
+            else if (vec.x > 0) {
+                final_bounds.x = Math.max(final_bounds.x, bounds.x);
+            }
+            else if (vec.x < 0) {
+                final_bounds.x = Math.min(final_bounds.x, bounds.x);
+            }
+            else {
+                final_bounds.x = bounds.x;
+            }
         }
 
-        if (final_bounds.y < 0) {
-            final_bounds.y = 0;
-        }
-        else if (final_bounds.y > c_map.width - 32) {
-            final_bounds.y = c_map.height - 32;
-        }
-        else if (vec.y > 0) {
-            final_bounds.y = Math.max(final_bounds.y, bounds.y);
-        }
-        else if (vec.y < 0) {
-            final_bounds.y = Math.min(final_bounds.y, bounds.y);
-        }
-        else {
-            final_bounds.y = bounds.y;
+        if(!c_map.loop_y){
+            if (final_bounds.y < 0) {
+                final_bounds.y = 0;
+            }
+            else if (final_bounds.y > c_map.width - bounds.width) {
+                final_bounds.y = c_map.height - bounds.height;
+            }
+            else if (vec.y > 0) {
+                final_bounds.y = Math.max(final_bounds.y, bounds.y);
+            }
+            else if (vec.y < 0) {
+                final_bounds.y = Math.min(final_bounds.y, bounds.y);
+            }
+            else {
+                final_bounds.y = bounds.y;
+            }
         }
 
         var distance_a = Math.distance({x: bounds.x, y: bounds.y}, {x: ex, y: ey});
@@ -160,12 +210,32 @@
             y: final_bounds.y,
             time: time
         };
+    }
+
+    /**
+     *
+     * @param x
+     * @param y
+     * @param time
+     * @param callback
+     */
+    Game_Object.prototype.move = function (x, y, time, callback) {
+        var self = this;
+        var final_bounds = calculate_final_position(self.bounds, x, y, time);
+        self._movement = {
+            start: Game_Timer.currentTime,
+            time: final_bounds.time,
+            spos: {x: self.bounds.x, y: self.bounds.y},
+            epos: {x: final_bounds.x, y: final_bounds.y},
+            complete: callback
+        };
     };
+
     /**
      *
      * @param self
      */
-    var initialize = function(self){
+    function initialize(self){
         var speed = 5;
         var currentAnimation = null;
         var through = null;
@@ -267,27 +337,7 @@
                 }
             }
         });
-    };
-
-    /**
-     *
-     * @param x
-     * @param y
-     * @param time
-     * @param callback
-     */
-    Game_Object.prototype.move = function (x, y, time, callback) {
-        var self = this;
-        var final_bounds = calculate_final_position(self.bounds, x, y, time);
-        self.obj_movement = {
-            startmoving_time: Game_Timer.currentTime,
-            moving_time: final_bounds.time,
-            start_position: {x: self.bounds.x, y: self.bounds.y},
-            end_position: {x: final_bounds.x, y: final_bounds.y},
-            oncomplete: callback
-        };
-    };
-
+    }
 
     root.Game_Object = Game_Object;
 })(RPG);

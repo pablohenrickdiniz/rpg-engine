@@ -350,6 +350,8 @@
         var oldposition = null;
         var oldparent = null;
         var element = self.element;
+        var downX = 0;
+        var downY = 0;
 
 
         //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
@@ -413,14 +415,16 @@
 
 
         function mousemove(e){
-            var left = e.clientX-(self.width/2);
-            var top = e.clientY- (self.height/2);
+            e.stopPropagation();
+            var left = e.clientX-downX;
+            var top = e.clientY-downY;
             self.left = left;
             self.top = top;
             self.trigger('drag',[e]);
         }
 
         function mouseup(e){
+            e.stopPropagation();
             if(e.which == 1){
                 w.removeEventListener('mousemove',mousemove,false);
                 w.removeEventListener('mouseup',mouseup,false);
@@ -443,6 +447,7 @@
 
         /*mouse events*/
         element.addEventListener('mousedown',function(e){
+            e.preventDefault();
             switch(e.which) {
                 case 1:
                     if(self.draggable){
@@ -451,6 +456,17 @@
                         w.addEventListener('mouseup',mouseup,false);
                         oldposition = self.element.style.position;
                         oldparent = self.parent;
+
+                        var el = e.target;
+                        downX = e.offsetX;
+                        downY = e.offsetY;
+
+                        while(el != self.element && el.parentNode != undefined){
+                            downX += el.offsetLeft;
+                            downY += el.offsetTop;
+                            el = el.parentNode;
+                        }
+
                         self.element.style.position = 'absolute';
                         if(self.parent){
                             self.parent.remove(self);

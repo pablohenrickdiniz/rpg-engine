@@ -46,10 +46,6 @@
         initialize(self);
         options = options || {};
         self.direction = Consts.CHARACTER_DIRECTION_DOWN;
-        self.moving = false;
-        self.refreshed = false;
-        self.obj_movement = null;
-        self.parent = options.parent || null;
         self.charaID = options.charaID;
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];

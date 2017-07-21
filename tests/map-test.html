@@ -126,7 +126,7 @@
                 ui_root:ui_root
             });
 
-            RPG.debug = true;
+           RPG.debug = true;
 
             
             RPG.Scene_Manager.new('map','intro',{
@@ -157,6 +157,8 @@
                 map:{
                     width:3200,
                     height:3200,
+                    loop_x:true,
+                    loop_y:true,
                     tileset:{
                         graphicID:'forest2',
                         cols:8,
@@ -339,11 +341,20 @@
                 afterload:function(root){
                     root.UI.root.findById('loading-progress').visible = false;
                     var spriteset = root.Main.currentScene.spriteset;
-                    for(var i =0; i < 300;i++){
-                        for(var j = 0; j < 300;j++){
+                    var i;
+                    var j;
+                    for(i =0; i < 300;i++){
+                        for(j = 0; j < 300;j++){
                             spriteset.set(i,j,0,['forest2',0,0]);
                         }
                     }
+
+                    for(var k  = 0; k < 1000;k++){
+                        i = Math.floor(Math.random()*300);
+                        j = Math.floor(Math.random()*300);
+                        spriteset.set(i,j,1,['forest2',6,6]);
+                    }
+
                 },
                 start:function(root){
                     console.log('cena inicializada');

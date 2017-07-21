@@ -13,7 +13,7 @@
         visible: true,
         engine: null,
         layers:[[], [], [], [], []],
-        eventsListeners:[],
+        listeners:[],
         /**
          *
          * @param options
@@ -45,11 +45,11 @@
          */
         addEventListener:function(event,callback){
             var self = this;
-            if(self.eventsListeners[event] == undefined){
-                self.eventsListeners[event] = [];
+            if(self.listeners[event] == undefined){
+                self.listeners[event] = [];
             }
-            if(self.eventsListeners[event].indexOf(callback) == -1){
-                self.eventsListeners[event].push(callback);
+            if(self.listeners[event].indexOf(callback) == -1){
+                self.listeners[event].push(callback);
             }
         },
         /**
@@ -59,10 +59,10 @@
          */
         removeEventListener:function(event,callback){
             var self = this;
-            if(self.eventsListeners[event] != undefined){
-                var index = self.eventsListeners[event].indexOf(callback);
+            if(self.listeners[event] != undefined){
+                var index = self.listeners[event].indexOf(callback);
                 if(index != -1){
-                    self.eventsListeners[event].splice(index,1);
+                    self.listeners[event].splice(index,1);
                 }
             }
         },
@@ -73,10 +73,10 @@
          */
         trigger:function(event,args){
             var self = this;
-            if(self.eventsListeners[event] != undefined){
-                var length = self.eventsListeners[event].length;
+            if(self.listeners[event] != undefined){
+                var length = self.listeners[event].length;
                 for(var i =0; i < length;i++){
-                    self.eventsListeners[event][i].apply(self,args);
+                    self.listeners[event][i].apply(self,args);
                 }
             }
         },

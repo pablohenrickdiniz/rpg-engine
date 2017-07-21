@@ -206,6 +206,7 @@
     width:100%;
     background-color: rgba(50,50,50,1);
     height:165px;
+    position: relative;
 }
 
 .inventory-slot{

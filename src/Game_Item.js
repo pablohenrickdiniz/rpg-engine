@@ -20,11 +20,11 @@
         var self = this;
         options = options || {};
         options.type = options.type || 'generic';
+        options.through = (options.through == undefined || options.through)?true:false;
         Game_Object.call(self,options);
         initialize(self);
         self.amount = options.amount || 1;
         self.graphic_type = 'icon';
-        self.through = options.through || true;
         self.capture = options.capture || Consts.TRIGGER_PLAYER_TOUCH;
         self.bounds.groups.push('ITEM');
         self.itemID = options.itemID;

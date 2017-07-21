@@ -30,24 +30,22 @@
 
     Game_Actor.prototype.update = function () {
         var self = this;
-        if(self.type == 'Player'){
+        if(!self.moving && self.type == 'Player'){
             var keyboard = root.Controls.Keyboard;
-            if(!self.moving){
-                if (keyboard.state[Keyboard.LEFT]) {
-                    self.moveTo(Consts.CHARACTER_DIRECTION_LEFT);
-                }
-                else if (keyboard.state[Keyboard.RIGHT]) {
-                    self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT);
-                }
-                else if (keyboard.state[Keyboard.DOWN]) {
-                    self.moveTo(Consts.CHARACTER_DIRECTION_DOWN);
-                }
-                else if (keyboard.state[Keyboard.UP]) {
-                    self.moveTo(Consts.CHARACTER_DIRECTION_UP);
-                }
-                else{
-                    self.stop();
-                }
+            if (keyboard.state[Keyboard.LEFT]) {
+                self.moveTo(Consts.CHARACTER_DIRECTION_LEFT);
+            }
+            else if (keyboard.state[Keyboard.RIGHT]) {
+                self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT);
+            }
+            else if (keyboard.state[Keyboard.DOWN]) {
+                self.moveTo(Consts.CHARACTER_DIRECTION_DOWN);
+            }
+            else if (keyboard.state[Keyboard.UP]) {
+                self.moveTo(Consts.CHARACTER_DIRECTION_UP);
+            }
+            else{
+                self.stop();
             }
         }
 

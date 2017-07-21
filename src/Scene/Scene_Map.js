@@ -121,17 +121,17 @@
         refresh_bg(self);
         clear_graphics(self);
         draw_graphics(self);
-        //if(root.debug){
-        //    drawquadtree(self.tree,true);
-        //    clear_queue.push({
-        //        layer_type:Consts.UI_LAYER,
-        //        layer:0,
-        //        x:0,
-        //        y:0,
-        //        width:Canvas.width,
-        //        height:Canvas.height
-        //    });
-        //}
+        if(root.debug){
+            drawquadtree(self.tree,true);
+            clear_queue.push({
+                layer_type:Consts.UI_LAYER,
+                layer:0,
+                x:0,
+                y:0,
+                width:Canvas.width,
+                height:Canvas.height
+            });
+        }
     };
 
     /**
@@ -160,7 +160,6 @@
         var height = options.height || 0;
         var tileWidth = options.tileWidth || 32;
         var tileHeight = options.tileHeight || 32;
-
         var si = parseInt(Math.floor(y / tileHeight));
         var sj = parseInt(Math.floor(x / tileWidth));
         var ei = parseInt(Math.floor((y + height) / tileHeight));
@@ -182,11 +181,43 @@
         var tileHeight = spriteset.tileHeight;
 
         var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
+        var maxi = spriteset.height-1;
+        var maxj = spriteset.width-1;
+
         for (var i = interval.si; i <= interval.ei; i++) {
+            var ti = i;
+            if(ti < 0){
+                while(ti < -maxi){
+                    ti = tj%maxi;
+                }
+                ti = maxi+ti+1;
+            }
+            else if(ti > maxi){
+                while(ti > maxi){
+                    ti = ti%maxi;
+                }
+                ti = ti-1;
+            }
+
             for (var j = interval.sj; j <= interval.ej; j++) {
-                if (spriteset.data[i] !== undefined && spriteset.data[i][j] !== undefined) {
-                    for (var k in  spriteset.data[i][j]) {
-                        var tile_data = spriteset.data[i][j][k];
+                var tj = j;
+                if(tj < 0){
+                    while(tj < -maxj){
+                        tj = tj%maxj;
+                    }
+                    tj = maxj+tj+1;
+                }
+                else if(tj > maxj){
+                    while(tj > maxj){
+                        tj = tj%maxj;
+                    }
+                    tj = tj-1;
+                }
+
+
+                if (spriteset.data[ti] !== undefined && spriteset.data[ti][tj] !== undefined) {
+                    for (var k in  spriteset.data[ti][tj]) {
+                        var tile_data = spriteset.data[ti][tj][k];
                         var tileset = Tilesets.get(tile_data[0]);
                         var tile = tileset.get(tile_data[1],tile_data[2]);
 
@@ -273,11 +304,9 @@
                 var h_width = frame.width / 2;
                 //   var h_height = frame.height / 2;
 
-                x = bx;
-                y = by;
                 Canvas.drawImage(image, {
-                    dx: x,
-                    dy: y,
+                    dx: bx,
+                    dy: by,
                     dWidth: frame.dWidth,
                     dHeight: frame.dHeight,
                     sx: frame.sx,
@@ -291,8 +320,8 @@
                 clear_queue.push({
                     layer_type:Consts.EVENT_LAYER,
                     layer:object.layer,
-                    x:Math.min(x, bx),
-                    y:Math.min(y, by),
+                    x:Math.min(bx, bx),
+                    y:Math.min(by, by),
                     width:Math.max(frame.width, 32),
                     height:Math.max(frame.height, 32)
                 });
@@ -353,19 +382,27 @@
                 var max_screen_x = m.width - viewport_width;
                 var max_screen_y = m.height - viewport_height;
 
-                if (viewport_x < 0) {
-                    viewport_x = 0;
-                }
-                else if (viewport_x > max_screen_x) {
-                    viewport_x = max_screen_x;
+                if(!self.map.loop_x){
+                    if (viewport_x < 0) {
+                        viewport_x = 0;
+                    }
+                    else if (viewport_x > max_screen_x) {
+                        viewport_x = max_screen_x;
+                    }
                 }
 
-                if (viewport_y < 0) {
-                    viewport_y = 0;
+                if(!self.map.loop_y){
+                    if (viewport_y < 0) {
+                        viewport_y = 0;
+                    }
+                    else if (viewport_y > max_screen_y) {
+                        viewport_y = max_screen_y;
+                    }
                 }
-                else if (viewport_y > max_screen_y) {
-                    viewport_y = max_screen_y;
-                }
+
+
+                viewport_x = parseInt(viewport_x);
+                viewport_y = parseInt(viewport_y);
 
                 if (Canvas.x != viewport_x || Canvas.y != viewport_y) {
                     bg_refreshed = false;
