@@ -308,7 +308,14 @@
             get:function(){
 
                 if(self.currentAnimation !=null && self.graphic != null){
-                    var index = self.currentAnimation.getIndexFrame();
+                    var animation = self.currentAnimation;
+                    var index = animation.getIndexFrame();
+                    //
+                    //index = self.graphic.startFrame+index;
+                    //while(index > self.graphic.cols){
+                    //    index = index % self.graphic.cols-1;
+                    //}
+
                     return self.graphic.get(self.direction, index);
                 }
                 return null;

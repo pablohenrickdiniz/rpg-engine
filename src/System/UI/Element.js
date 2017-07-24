@@ -78,6 +78,7 @@
         var self = this;
         if(self.parent){
             self.parent.remove(self);
+            delete self.element;
         }
     };
 
@@ -143,8 +144,9 @@
                             element.removeChild(element.firstChild);
                         }
                     }
+                    self.unbind();
                     element = el;
-                    bind(self);
+                    self.bind();
                 }
             },
             get:function(){
@@ -159,7 +161,7 @@
                     if(id != null){
                         element.id = id;
                     }
-                    bind(self);
+                    self.bind();
                 }
                 return element;
             }
@@ -346,7 +348,50 @@
         return overlaps;
     };
 
-    function bind(self){
+    Element.prototype.unbind = function(){
+        var self = this;
+        var element = self.element;
+
+        if(element != null){
+            //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
+            element.removeEventListener('ondblclick',self.ondblclick);
+            element.removeEventListener('onmouseover',self.onmouseover);
+            element.removeEventListener('onmouseout',self.onmouseout);
+
+            /*keyboard events*/
+            element.removeEventListener('onkeydown',self.onkeydown);
+            element.removeEventListener('onkeypress',self.onkeypress);
+            element.removeEventListener('onkeyup',self.onkeyup);
+            element.removeEventListener('onfocus',self.onfocus);
+            element.removeEventListener('onfocusout',self.onfocusout);
+
+            /*disable drag and drop events*/
+            element.removeEventListener('drag',prevent);
+            element.removeEventListener('dragstart',prevent);
+            element.removeEventListener('dragend',prevent);
+            element.removeEventListener('drop',prevent);
+            element.removeEventListener('dragenter',prevent);
+            element.removeEventListener('dragleave',prevent);
+            element.removeEventListener('dragover',prevent);
+            element.removeEventListener('contextmenu',prevent);
+
+            /*Disable clipboard*/
+            element.removeEventListener('oncopy',prevent);
+            element.removeEventListener('oncut',prevent);
+            element.removeEventListener('onpaste',prevent);
+            element.removeEventListener('mouseup',self.mouseup);
+
+            /*mouse events*/
+            element.removeEventListener('mousedown',self.mousedown);
+            w.removeEventListener('mousemove',self.mousemove,false);
+            w.removeEventListener('mouseup',self.mouseup,false);
+        }
+    };
+
+
+    Element.prototype.bind = function(){
+        var self = this;
+        self.unbind();
         var oldposition = null;
         var oldparent = null;
         var element = self.element;
@@ -354,80 +399,62 @@
         var downY = 0;
 
 
-        //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
-        element.addEventListener('ondblclick',function(e){
+        self.ondblclick = function(e){
             e.preventDefault();
             self.trigger('doubleclick');
             return false;
-        });
-        element.addEventListener('onmouseover',function(e){
+        };
+
+        self.onmouseover = function(e){
             //e.preventDefault();
             self.trigger('mouseover');
             //return false;
-        });
-        element.addEventListener('onmouseout',function(e){
+        };
+
+        self.onmouseout = function(e){
             //e.preventDefault();
             self.trigger('mouseout');
             //return false;
-        });
+        };
 
-        /*keyboard events*/
-        element.addEventListener('onkeydown',function(e){
+        self.onkeydown = function(e){
             self.trigger('keydown');
-        });
+        };
 
-        element.addEventListener('onkeypress',function(e){
+        self.onkeypress = function(e){
             self.trigger('keypress');
-        });
+        };
 
-        element.addEventListener('onkeyup',function(e){
+        self.onkeyup = function(e){
             self.trigger('keyup');
-        });
+        };
 
-        element.addEventListener('onfocus',function(e){
+        self.onfocus = function(e){
             //e.preventDefault();
             self.trigger('focus');
             //return false;
-        });
+        };
 
-        element.addEventListener('onfocusout',function(e){
+        self.onfocusout = function(e){
             //e.preventDefault();
             self.trigger('focusout');
             //return false;
-        });
+        };
 
-
-
-        /*disable drag and drop events*/
-        element.addEventListener('drag',prevent);
-        element.addEventListener('dragstart',prevent);
-        element.addEventListener('dragend',prevent);
-        element.addEventListener('drop',prevent);
-        element.addEventListener('dragenter',prevent);
-        element.addEventListener('dragleave',prevent);
-        element.addEventListener('dragover',prevent);
-        element.addEventListener('contextmenu',prevent);
-
-        /*Disable clipboard*/
-        element.addEventListener('oncopy',prevent);
-        element.addEventListener('oncut',prevent);
-        element.addEventListener('onpaste',prevent);
-
-
-        function mousemove(e){
+        self.mousemove =  function (e){
             e.stopPropagation();
             var left = e.clientX-downX;
             var top = e.clientY-downY;
             self.left = left;
             self.top = top;
             self.trigger('drag',[e]);
-        }
+        };
 
-        function mouseup(e){
+        self.mouseup = function(e){
             e.stopPropagation();
             if(e.which == 1){
-                w.removeEventListener('mousemove',mousemove,false);
-                w.removeEventListener('mouseup',mouseup,false);
+                w.removeEventListener('mousemove',self.mousemove,false);
+                w.removeEventListener('mouseup',self.mouseup,false);
                 self.trigger('dragend',[e]);
                 var overlaps =  root.UI.root.findOverlaps(self);
                 self.element.style.position = oldposition;
@@ -439,21 +466,17 @@
                     overlaps[i].trigger('drop',[e]);
                 }
             }
-        }
+            self.trigger('mouseup');
+        };
 
-        element.addEventListener('mouseup',function(e){
-            self.trigger('mouseup',[e]);
-        });
-
-        /*mouse events*/
-        element.addEventListener('mousedown',function(e){
+        self.mousedown = function(e){
             e.preventDefault();
             switch(e.which) {
                 case 1:
                     if(self.draggable){
                         e.stopPropagation();
-                        w.addEventListener('mousemove',mousemove,false);
-                        w.addEventListener('mouseup',mouseup,false);
+                        w.addEventListener('mousemove',self.mousemove,false);
+                        w.addEventListener('mouseup',self.mouseup,false);
                         oldposition = self.element.style.position;
                         oldparent = self.parent;
 
@@ -472,7 +495,7 @@
                             self.parent.remove(self);
                         }
                         root.UI.root.add(self);
-                        mousemove(e);
+                        self.mousemove(e);
                         self.trigger('dragstart',[e]);
                     }
                     self.trigger('leftclick');
@@ -484,8 +507,40 @@
                     self.trigger('rightclick');
                     break;
             }
-        });
-    }
+        };
+
+
+        //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
+        element.addEventListener('ondblclick',self.ondblclick);
+        element.addEventListener('onmouseover',self.onmouseover);
+        element.addEventListener('onmouseout',self.onmouseout);
+
+        /*keyboard events*/
+        element.addEventListener('onkeydown',self.onkeydown);
+        element.addEventListener('onkeypress',self.onkeypress);
+        element.addEventListener('onkeyup',self.onkeyup);
+        element.addEventListener('onfocus',self.onfocus);
+        element.addEventListener('onfocusout',self.onfocusout);
+
+        /*disable drag and drop events*/
+        element.addEventListener('drag',prevent);
+        element.addEventListener('dragstart',prevent);
+        element.addEventListener('dragend',prevent);
+        element.addEventListener('drop',prevent);
+        element.addEventListener('dragenter',prevent);
+        element.addEventListener('dragleave',prevent);
+        element.addEventListener('dragover',prevent);
+        element.addEventListener('contextmenu',prevent);
+
+        /*Disable clipboard*/
+        element.addEventListener('oncopy',prevent);
+        element.addEventListener('oncut',prevent);
+        element.addEventListener('onpaste',prevent);
+        element.addEventListener('onmouseup',self.mouseup);
+
+        /*mouse events*/
+        element.addEventListener('mousedown',self.mousedown);
+    };
 
     function prevent(e){
         e.preventDefault();

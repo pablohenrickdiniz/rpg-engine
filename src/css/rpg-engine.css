@@ -67,3 +67,10 @@ progress::after{
 #ui-root:focus{
     outline: none;
 }
+
+#ui-root{
+    position: absolute;
+    left:0;
+    top:0;
+    z-index: 2;
+}

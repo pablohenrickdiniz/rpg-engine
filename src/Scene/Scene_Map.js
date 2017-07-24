@@ -79,12 +79,20 @@
     Scene_Map.prototype = Object.create(Scene.prototype);
     Scene_Map.prototype.constructor = Scene_Map;
 
+    /**
+     * Adiciona um objeto na cena
+     * @param object
+     */
     Scene_Map.prototype.add= function(object){
         var self = this;
         self.objs.push(object);
         self.tree.insert(object.bounds);
     };
 
+    /**
+     * Remove um objeto da cena
+     * @param object
+     */
     Scene_Map.prototype.remove = function(object){
         var self = this;
         var index = self.objs.indexOf(object);
@@ -95,7 +103,7 @@
     };
 
     /**
-     *
+     * Mantêm a câmera focada em um obeto
      * @param object
      */
     Scene_Map.prototype.focus = function (object) {
@@ -109,6 +117,9 @@
         }
     };
 
+    /**
+     * Executa passo de tempo da cena
+     */
     Scene_Map.prototype.step = function () {
         Scene.prototype.step.apply(this);
         var self = this;
@@ -134,17 +145,6 @@
         }
     };
 
-    /**
-     *
-     * @param objects
-     * @returns {Array.<T>}
-     */
-    function sort_objects(objects) {
-        return objects.sort(function (a, b) {
-            return a.y-b.y;
-        });
-    }
-
 
     //Private Methods
 
@@ -152,6 +152,7 @@
      *
      * @param options
      * @returns {{si: Number, sj: Number, ei: Number, ej: Number}}
+     * Obtém a região do mapa de sprites a ser redenrizada
      */
     function get_area_interval(options) {
         var x = options.x || 0;
@@ -170,6 +171,7 @@
     /**
      *
      * @param self
+     * Renderiza o mapa de sprites
      */
     function refresh_spriteset_map(self) {
         var sx = Canvas.x;
@@ -245,6 +247,7 @@
     /**
      *
      * @param self
+     * Renderiza o ambiente, chão, casas,etc
      */
     function refresh_bg(self) {
         if (!bg_refreshed) {
@@ -259,6 +262,7 @@
     /**
      *
      * @param self
+     * Apaga o gráfico dos objetos
      */
     function clear_graphics(self) {
         while(clear_queue.length > 0){
@@ -270,104 +274,133 @@
     /**
      *
      * @param self
+     * Renderiza os objetos no mapa
      */
     function draw_graphics(self) {
-        var objects = self.tree.retrieve({
-            x:root.Canvas.x,
-            y:root.Canvas.y,
-            width:root.Canvas.width,
-            height:root.Canvas.height
-        }).map(function(obj){return obj._ref});
-
-        var bounds;
         var i;
-        var image;
-        var frame;
+        var sx = root.Canvas.x;
+        var sy = root.Canvas.y;
+        var cw = root.Canvas.width;
+        var ch = root.Canvas.height;
+        var object;
+        var collision;
+
+        var collisions = self.tree.retrieve({
+            x:sx,
+            y:sy,
+            width:cw,
+            height:ch
+        });
+
+        collisions = collisions.sort(function (a, b) {
+            return a.yb-b.yb;
+        });
+
+        var size = collisions.length;
+        var bounds;
+        var bx;
+        var by;
+        var mw = self.map.width;
+        var mh = self.map.height;
+        var xw = sx+cw;
+        var yh = sy+ch;
         var x;
         var y;
 
+        for (i = 0; i < size; i++) {
+            collision = collisions[i];
+            object = collision.object;
+            bounds = object.bounds;
+            x = collision.xb;
+            y = collision.yb;
+
+            if(y > yh){
+                y -= mh;
+            }
+            else if(y+bounds.height < sy){
+                y += mh;
+            }
+
+            if(x > xw){
+                x -= mw;
+            }
+            else if(x+bounds.width < sx){
+                x += mw;
+            }
+
+            x-=sx;
+            y-=sy;
+
+            draw_object(object,x,y);
+        }
 
         if(Main.currentPlayer){
-            objects = objects.concat(Main.currentPlayer);
-        }
-        objects = sort_objects(objects);
+            object = Main.currentPlayer;
+            bounds = object.bounds;
+            x = bounds.x;
+            y = bounds.y;
 
-        var size = objects.length;
-        for (i = 0; i < size; i++) {
-            var object = objects[i];
-            frame = object.currentFrame;
-            if (frame != null && frame.image) {
-                bounds = object.bounds;
-                image = frame.image;
-                var bx = parseInt(bounds.x - root.Canvas.x);
-                var by = parseInt(bounds.y - root.Canvas.y);
-                var h_width = frame.width / 2;
-                //   var h_height = frame.height / 2;
-
-                Canvas.drawImage(image, {
-                    dx: bx,
-                    dy: by,
-                    dWidth: frame.dWidth,
-                    dHeight: frame.dHeight,
-                    sx: frame.sx,
-                    sy: frame.sy,
-                    sWidth: frame.sWidth,
-                    sHeight: frame.sHeight,
-                    layer: object.layer,
-                    type: Consts.EVENT_LAYER
-                });
-
-                clear_queue.push({
-                    layer_type:Consts.EVENT_LAYER,
-                    layer:object.layer,
-                    x:Math.min(bx, bx),
-                    y:Math.min(by, by),
-                    width:Math.max(frame.width, 32),
-                    height:Math.max(frame.height, 32)
-                });
-
-                //if (RPG.debug) {
-                //    var layer = Canvas.getLayer(Consts.EVENT_LAYER, object.layer);
-                //    layer.rect({
-                //        x: bx,
-                //        y: by,
-                //        width: bounds.width,
-                //        height: bounds.height,
-                //        lineWidth: 1
-                //    });
-                //}
+            if(y > yh){
+                y -= mh;
             }
-        }
+            else if(y+bounds.height < sy){
+                y += mh;
+            }
 
-        //frame = player.getCurrentFrame();
-        //if (frame !== null) {
-        //    bounds = player.bounds;
-        //    x = parseInt(bounds.x - root.Canvas.x);
-        //    y = parseInt(bounds.y - root.Canvas.y);
-        //    bounds.lx = x;
-        //    bounds.ly = y;
-        //
-        //    image = Graphics.get('characters', frame.image);
-        //    Canvas.drawImage(image, {
-        //        dx: x,
-        //        dy: y,
-        //        dWidth: frame.width,
-        //        dHeight: frame.height,
-        //        sx: frame.sx,
-        //        sy: frame.sy,
-        //        sWidth: frame.width,
-        //        sHeight: frame.height,
-        //        layer: player.layer,
-        //        type: Consts.EVENT_LAYER
-        //    });
-        //
-        //    self.player_refreshed = true;
-        //}
+            if(x > xw){
+                x -= mw;
+            }
+            else if(x+bounds.width < sx){
+                x += mw;
+            }
+
+            x-=sx;
+            y-=sy;
+
+            draw_object(object,x,y);
+        }
+    }
+
+
+    /**
+     *
+     * @param object
+     * @param x
+     * @param y
+     */
+    function draw_object(object,x,y){
+        var frame = object.currentFrame;
+        if (frame != null && frame.image) {
+            var image = frame.image;
+
+            Canvas.drawImage(image, {
+                dx: x,
+                dy: y,
+                dWidth: frame.dWidth,
+                dHeight: frame.dHeight,
+                sx: frame.sx,
+                sy: frame.sy,
+                sWidth: frame.sWidth,
+                sHeight: frame.sHeight,
+                layer: object.layer,
+                type: Consts.EVENT_LAYER
+            });
+
+            clear_queue.push({
+                layer_type:Consts.EVENT_LAYER,
+                layer:object.layer,
+                x:x,
+                y:y,
+                width:Math.max(frame.width, 32),
+                height:Math.max(frame.height, 32)
+            });
+        }
     }
 
     /**
      *
      * @param self
+     * Foca a câmera em um objeto
      */
     function step_focus(self) {
         if (focused_object != null) {
@@ -476,17 +509,15 @@
         length = collisions.length;
         for (i = 0; i < length; i++) {
             collision = collisions[i];
-            if (collision._ref !== undefined) {
-                obj = collision._ref;
-                if (obj instanceof Game_Event && obj.currentPage) {
-                    var page = obj.currentPage;
-                    if (typeof page.script == 'function') {
-                        if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
-                            page.script.apply(obj);
-                        }
+            obj = collision.object;
+            if (obj instanceof Game_Event && obj.currentPage) {
+                var page = obj.currentPage;
+                if (typeof page.script == 'function') {
+                    if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
+                        page.script.apply(obj);
                     }
-
                 }
+
             }
         }
 
@@ -494,13 +525,11 @@
         length = collisions.length;
         for (i = 0; i < length; i++) {
             collision = collisions[i];
-            if (collision._ref !== undefined) {
-                obj = collision._ref;
-                if (obj instanceof Game_Item) {
-                    if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
-                        player.inventory.addItem(obj.item,obj.amount);
-                        self.remove(obj);
-                    }
+            obj = collision.object;
+            if (obj instanceof Game_Item) {
+                if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
+                    player.inventory.addItem(obj.item,obj.amount);
+                    self.remove(obj);
                 }
             }
         }
@@ -508,52 +537,64 @@
         self.action_button = false;
     }
 
+    /**
+     *
+     * @param tree
+     * @param first
+     */
     function drawquadtree(tree,first){
-        first = first || false;
-        var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
-        layer.rect({
-            x:tree.bounds.x-Canvas.x,
-            y:tree.bounds.y-Canvas.y,
-            width:tree.bounds.width,
-            height:tree.bounds.height,
-            strokeStyle:'black',
-            lineWidth:1
-        });
-        if(first){
-            Object.keys(tree.objects).forEach(function(key){
-                var ob = tree.objects[key];
-                layer.rect({
-                    x:ob.x-Canvas.x,
-                    y:ob.y-Canvas.y,
-                    width:ob.width,
-                    height:ob.height,
-                    strokeStyle:'black',
-                    lineWidth:1
-                });
-            });
-        }
-
-
-
-        for(var i = 0; i < tree.nodes.length;i++){
-            drawquadtree(tree.nodes[i]);
-        }
+        //first = first || false;
+        //var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
+        //layer.rect({
+        //    x:tree.bounds.x-Canvas.x,
+        //    y:tree.bounds.y-Canvas.y,
+        //    width:tree.bounds.width,
+        //    height:tree.bounds.height,
+        //    strokeStyle:'black',
+        //    lineWidth:1
+        //});
+        //if(first){
+        //    Object.keys(tree.objects).forEach(function(key){
+        //        var ob = tree.objects[key];
+        //        layer.rect({
+        //            x:ob.x-Canvas.x,
+        //            y:ob.y-Canvas.y,
+        //            width:ob.width,
+        //            height:ob.height,
+        //            strokeStyle:'black',
+        //            lineWidth:1
+        //        });
+        //    });
+        //}
+        //
+        //
+        //
+        //for(var i = 0; i < tree.nodes.length;i++){
+        //    drawquadtree(tree.nodes[i]);
+        //}
     }
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var tree = null;
         Object.defineProperty(self,'tree',{
-           get:function(){
-               if(tree == null){
+            get:function(){
+                if(tree == null){
                     tree = new QuadTree({
-                       x: 0,
-                       y: 0,
-                       width: self.map.width || 640,
-                       height: self.map.height || 640
-                   });
-               }
-               return tree;
-           }
+                        x: 0,
+                        y: 0,
+                        width: self.map.width || 640,
+                        height: self.map.height || 640
+                    },{
+                        loop_x:self.map.loop_x,
+                        loop_y:self.map.loop_y
+                    });
+                }
+                return tree;
+            }
         });
     }
 

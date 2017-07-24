@@ -136,7 +136,8 @@
                         forest2:'http://www.agenciaw3s.com.br/dev/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200091.png'
                     },
                     charasets:{
-                        char01:'http://www.agenciaw3s.com.br/dev/resources/Charasets/VARIOUS%204.200/0183.png'
+                        char01:'http://www.agenciaw3s.com.br/dev/resources/Charasets/VARIOUS%204.200/0183.png',
+                        male:'http://localhost/resources/White_Male_11_00_11_152_12_00_00_00_00_12_%2000_50_VX.png'
                     },
                     faces:{
                         face01:'http://agenciaw3s.com.br/dev/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
@@ -180,6 +181,12 @@
                         graphicID:'char01',
                         rows:4,
                         cols:4
+                    },
+                    male1:{
+                        graphicID:'male',
+                        rows:4,
+                        cols:3,
+                        startFrame:1
                     }
                 },
                 faces:{
@@ -189,8 +196,8 @@
                 },
                 actors:{
                     1:{
-                        x:450,
-                        y:300,
+                        x:0,
+                        y:0,
                         charaID:'char1',
                         faceID:'face01',
                         vSpeed:32,
@@ -372,7 +379,7 @@
 
                     root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
 
-                    for(var i = 0; i < 100;i++){
+                    for(var i = 0; i < 1000;i++){
                         var x = Math.random()*root.Main.currentScene.map.width;
                         var y = Math.random()*root.Main.currentScene.map.height;
                         root.Main.currentScene.add(new root.Game_Item({

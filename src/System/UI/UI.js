@@ -1,4 +1,7 @@
 (function(root){
+
+
+
     var ui_root = null;
     var UI = {
         classes:[]
@@ -10,16 +13,6 @@
 
     Object.defineProperty(UI,'root',{
         get:function(){
-            if(ui_root == null){
-                ui_root = new Element({
-                    id:'ui-root'
-                });
-                ui_root.element.style.position = 'absolute';
-                ui_root.element.style.zIndex = 2;
-                ui_root.element.setAttribute('tabindex','-1');
-                ui_root.element.style.left = '0';
-                ui_root.element.style.top = '0';
-            }
             return ui_root;
         },
         set:function(r){
@@ -30,11 +23,7 @@
                     }
                 }
                 ui_root = r;
-                ui_root.element.style.position = 'absolute';
-                ui_root.element.style.zIndex = 2;
                 ui_root.element.setAttribute('tabindex','-1');
-                ui_root.element.style.left = '0';
-                ui_root.element.style.top = '0';
             }
         }
     });
