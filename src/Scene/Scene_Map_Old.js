@@ -161,64 +161,66 @@
         var height = options.height || 0;
         var tileWidth = options.tileWidth || 32;
         var tileHeight = options.tileHeight || 32;
-        var si = parseInt(Math.floor(y / tileHeight));
-        var sj = parseInt(Math.floor(x / tileWidth));
-        var ei = parseInt(Math.floor((y + height) / tileHeight));
-        var ej = parseInt(Math.floor((x + width) / tileWidth));
-        return {si: si, sj: sj, ei: ei, ej: ej};
+        var si = Math.floor(y / tileHeight);
+        var sj = Math.floor(x / tileWidth);
+        var ei = Math.floor((y + height) / tileHeight);
+        var ej = Math.floor((x + width) / tileWidth);
+        return {si: si, sj: sj, ei: ei, ej: ej,width:width,height:height};
     }
 
     /**
      *
-     * @param self
-     * Renderiza o mapa de sprites
+     * @param options
+     * @returns {Array}
      */
-    function refresh_spriteset_map(self) {
-        var sx = Canvas.x;
-        var sy = Canvas.y;
-        var width = Math.min(Canvas.width,self.map.width);
-        var height = Math.min(Canvas.height,self.map.height);
+    function get_area_intervals(options){
+        var x = options.x || 0;
+        var y = options.y || 0;
+        var width = options.width || 0;
+        var height = options.height || 0;
+        var tileWidth = options.tileWidth || 32;
+        var tileHeight = options.tileHeight || 32;
+        var mapWidth = options.mapWidth || 32;
+        var mapHeight = options.mapHeight || 32;
+        var intervals = [];
+        var i;
+        var j;
+        var cols = Math.ceil(width/mapWidth);
+        var rows = Math.ceil(height/mapHeight);
+
+        for(i = 0; i < rows;i++){
+            for(j = 0;j < cols;j++){
+                var mw = j == 0?mapWidth-x:j == cols-1?width-x:mapWidth;
+                var mh = i == 0?mapHeight-y:i == rows-1?height-y:mapHeight;
+
+                if(intervals[i] == undefined){
+                    intervals[i] = [];
+                }
+                intervals[i][j] = get_area_interval({
+                    x:x,
+                    y:y,
+                    width:mw,
+                    height:mh,
+                    tileWidth:tileWidth,
+                    tileHeight:tileHeight
+                });
+            }
+        }
+
+        return intervals;
+    }
+
+
+    function draw_spriteset_interval(self,interval,x,y){
         var spriteset = self.spriteset;
         var tileWidth = spriteset.tileWidth;
         var tileHeight = spriteset.tileHeight;
 
-        var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
-        var maxi = spriteset.height-1;
-        var maxj = spriteset.width-1;
-
         for (var i = interval.si; i <= interval.ei; i++) {
-            var ti = i;
-            if(ti < 0){
-                while(ti < -maxi){
-                    ti = tj%maxi;
-                }
-                ti = maxi+ti+1;
-            }
-            else if(ti > maxi){
-                while(ti > maxi){
-                    ti = ti%maxi;
-                }
-                ti = ti-1;
-            }
-
             for (var j = interval.sj; j <= interval.ej; j++) {
-                var tj = j;
-                if(tj < 0){
-                    while(tj < -maxj){
-                        tj = tj%maxj;
-                    }
-                    tj = maxj+tj+1;
-                }
-                else if(tj > maxj){
-                    while(tj > maxj){
-                        tj = tj%maxj;
-                    }
-                    tj = tj-1;
-                }
-
-                if (spriteset.data[ti] !== undefined && spriteset.data[ti][tj] !== undefined) {
-                    for (var k in  spriteset.data[ti][tj]) {
-                        var tile_data = spriteset.data[ti][tj][k];
+                if (spriteset.data[i] !== undefined && spriteset.data[i][j] !== undefined) {
+                    for (var k in  spriteset.data[i][j]) {
+                        var tile_data = spriteset.data[i][j][k];
                         var tileset = Tilesets.get(tile_data[0]);
                         var tile = tileset.get(tile_data[1],tile_data[2]);
 
@@ -230,15 +232,14 @@
                             var layer = Canvas.getLayer(type, k);
                             if (layer != null) {
                                 var context = layer.context;
-                                var dx = j * tileWidth - sx;
-                                var dy = i * tileHeight - sy;
+                                var dx =  x + j * tileWidth;
+                                var dy =  y + i * tileHeight;
                                 dx = parseInt(dx);
                                 dy = parseInt(dy);
-                                var tw = Math.min(tileWidth,width-dx);
-                                var th = Math.min(tileHeight,height-dy);
-                                var tsw = Math.min(tile.sWidth,width-dx);
-                                var tsh = Math.min(tile.sHeight,height-dy);
-                                context.drawImage(tile.image, tile.sx, tile.sy, tsw,tsh, dx, dy, tw,th);
+                                context.drawImage(tile.image, tile.sx, tile.sy, tile.sWidth, tile.sHeight, dx, dy, tileWidth, tileHeight);
+                                context.strokeStyle = 'red';
+                                context.strokeText(i+','+j,dx,dy+10);
+                                context.strokeRect(dx,dy,tileWidth,tileHeight);
                             }
                         }
                     }
@@ -247,18 +248,41 @@
         }
     }
 
+
+    /**
+     *
+     * @param self
+     * Renderiza o mapa de sprites
+     */
+    function refresh_spriteset_map(self) {
+        var rows = Math.floor(Canvas.height/self.map.height);
+        var cols = Math.floor(Canvas.width/self.map.width);
+
+        var x = Canvas.x;
+        var y = Canvas.y;
+
+        var interval = get_area_interval({
+            x:x,
+            y:y,
+            width:Math.min(self.map.width,Canvas.width),
+            height:Math.min(self.map.height,Canvas.height)
+        });
+
+        draw_spriteset_interval(self,interval,-Canvas.x,-Canvas.y);
+    }
+
     /**
      *
      * @param self
      * Renderiza o ambiente, chão, casas,etc
      */
     function refresh_bg(self) {
-        if (!bg_refreshed) {
+        //if (!bg_refreshed) {
             Canvas.clear(Consts.BACKGROUND_LAYER);
             Canvas.clear(Consts.FOREGROUND_LAYER);
             refresh_spriteset_map(self);
-            bg_refreshed = true;
-        }
+        //    bg_refreshed = true;
+        //}
     }
 
 
@@ -283,16 +307,16 @@
         var i;
         var sx = root.Canvas.x;
         var sy = root.Canvas.y;
-        var vw = Math.min(root.Canvas.width,self.map.width);
-        var vh = Math.min(root.Canvas.height,self.map.height);
+        var cw = root.Canvas.width;
+        var ch = root.Canvas.height;
         var object;
         var collision;
 
         var collisions = self.tree.retrieve({
             x:sx,
             y:sy,
-            width:vw,
-            height:vh
+            width:cw,
+            height:ch
         });
 
         collisions = collisions.sort(function (a, b) {
@@ -305,36 +329,36 @@
         var by;
         var mw = self.map.width;
         var mh = self.map.height;
-        var xw = sx+vw;
-        var yh = sy+vh;
+        var xw = sx+cw;
+        var yh = sy+ch;
         var x;
         var y;
 
         for (i = 0; i < size; i++) {
             collision = collisions[i];
             object = collision.object;
-            bounds = object.currentFrame;
+            bounds = object.bounds;
             x = collision.xb;
             y = collision.yb;
 
             if(y > yh){
                 y -= mh;
             }
-            else if(y < sy){
+            else if(y+bounds.height < sy){
                 y += mh;
             }
 
             if(x > xw){
                 x -= mw;
             }
-            else if(x < sx){
+            else if(x+bounds.width < sx){
                 x += mw;
             }
 
             x-=sx;
             y-=sy;
 
-            draw_object(object,x,y,vw,vh);
+            draw_object(object,x,y);
         }
 
         if(Main.currentPlayer){
@@ -360,75 +384,25 @@
             x-=sx;
             y-=sy;
 
-            draw_object(object,x,y,vw,vh);
+            draw_object(object,x,y);
         }
     }
 
-
-    function split_horizontal(obj,x){
-        var dfx = x-obj.dx;
-
-        var dwa = dfx;
-        var dwb = obj.dWidth-dfx;
-        var sxb = obj.sx+dfx;
-        var swb = dwb;
-
-
-        var a = Object.assign(obj,{
-            dWidth:dwa,
-            sWidth:dfx
-        });
-
-        var b = Object.assign(obj,{
-            dx:0,
-            dWidth:dwb,
-            sx:sxb,
-            sWidth:swb
-        });
-
-        return [a,b];
-    }
-
-    function split_vertical(obj,y){
-        var dfy = y-obj.dy;
-        var a = Object.assign(obj,{
-            dHeight:dfy,
-            sHeight:dfy
-        });
-
-        var b = Object.assign(obj,{
-            dy:0,
-            dHeight:obj.dHeight-dfy,
-            sy:obj.sy+dfy,
-            sHeight:obj.sHeight-dfy
-        });
-
-        return [a,b];
-    }
 
     /**
      *
      * @param object
      * @param x
      * @param y
-     * @param vw
-     * @param vh
      */
-    function draw_object(object,x,y,vw,vh){
+    function draw_object(object,x,y){
         var frame = object.currentFrame;
         if (frame != null && frame.image) {
             var image = frame.image;
 
-            var dfx = vw-x;
-            var dfy = vh-y;
-            var i;
-            var j;
-            var t;
-            var tmp;
-
-            var draws = [{
-                dx:x,
-                dy:y,
+            Canvas.drawImage(image, {
+                dx: x,
+                dy: y,
                 dWidth: frame.dWidth,
                 dHeight: frame.dHeight,
                 sx: frame.sx,
@@ -437,39 +411,16 @@
                 sHeight: frame.sHeight,
                 layer: object.layer,
                 type: Consts.EVENT_LAYER
-            }];
+            });
 
-
-            if(draws[0].dx + draws[0].dWidth > vw){
-                var oldd = draws[0].dWidth;
-                var p =  draws[0].sWidth*100/oldd;
-                draws[0].dWidth = vw-draws[0].dx;
-                draws[0].sWidth = (draws[0].dWidth*(p/100));
-            }
-
-
-            if(draws[0].dy + draws[0].dHeight > vh){
-                var oldh = draws[0].dHeight;
-                var p =  draws[0].sHeight*100/oldh;
-                draws[0].dHeight = vh-draws[0].dy;
-                draws[0].sHeight = (draws[0].dHeight*(p/100));
-            }
-
-
-
-            for(i =0; i < draws.length;i++){
-                Canvas.drawImage(image,draws[i]);
-                clear_queue.push({
-                    layer_type:draws[i].type,
-                    layer:draws[i].layer,
-                    x:draws[i].x,
-                    y:draws[i].y,
-                    width:Math.max(draws[i].dWidth, 32),
-                    height:Math.max(draws[i].dHeight, 32)
-                });
-            }
-
-
+            clear_queue.push({
+                layer_type:Consts.EVENT_LAYER,
+                layer:object.layer,
+                x:x,
+                y:y,
+                width:Math.max(frame.width, 32),
+                height:Math.max(frame.height, 32)
+            });
         }
     }
 
@@ -482,43 +433,11 @@
         if (focused_object != null) {
             var obj = focused_object;
             var graphic = obj.graphic;
-            if(graphic != null){
-                var m = self.map;
-                var viewport_width = Math.min(Canvas.width, m.width);
-                var viewport_height = Math.min(Canvas.height, m.height);
-                var viewport_x = obj.bounds.x - (viewport_width / 2) + (obj.graphic.tileWidth / 2);
-                var viewport_y = obj.bounds.y - (viewport_height / 2) + (obj.graphic.tileHeight / 2);
-                var max_screen_x = m.width - viewport_width;
-                var max_screen_y = m.height - viewport_height;
-
-                if(!self.map.loop_x){
-                    if (viewport_x < 0) {
-                        viewport_x = 0;
-                    }
-                    else if (viewport_x > max_screen_x) {
-                        viewport_x = max_screen_x;
-                    }
-                }
-
-                if(!self.map.loop_y){
-                    if (viewport_y < 0) {
-                        viewport_y = 0;
-                    }
-                    else if (viewport_y > max_screen_y) {
-                        viewport_y = max_screen_y;
-                    }
-                }
-
-
-                viewport_x = parseInt(viewport_x);
-                viewport_y = parseInt(viewport_y);
-
-                if (Canvas.x != viewport_x || Canvas.y != viewport_y) {
-                    bg_refreshed = false;
-                }
-
-                Canvas.x = viewport_x;
-                Canvas.y = viewport_y;
+            if(graphic != null) {
+                var width = root.Canvas.width > self.map.width ? root.Canvas.width : self.map.width;
+                var height = root.Canvas.height > self.map.height ? root.Canvas.height : self.map.height;
+                Canvas.x = -(width / 2) + obj.x + (obj.width);
+                Canvas.y = -(height / 2) + obj.y + (obj.height);
             }
         }
     }
@@ -619,35 +538,34 @@
      * @param first
      */
     function drawquadtree(tree,first){
-        //first = first || false;
-        //var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
-        //layer.rect({
-        //    x:tree.bounds.x-Canvas.x,
-        //    y:tree.bounds.y-Canvas.y,
-        //    width:tree.bounds.width,
-        //    height:tree.bounds.height,
-        //    strokeStyle:'black',
-        //    lineWidth:1
-        //});
-        //if(first){
-        //    Object.keys(tree.objects).forEach(function(key){
-        //        var ob = tree.objects[key];
-        //        layer.rect({
-        //            x:ob.x-Canvas.x,
-        //            y:ob.y-Canvas.y,
-        //            width:ob.width,
-        //            height:ob.height,
-        //            strokeStyle:'black',
-        //            lineWidth:1
-        //        });
-        //    });
-        //}
-        //
-        //
-        //
-        //for(var i = 0; i < tree.nodes.length;i++){
-        //    drawquadtree(tree.nodes[i]);
-        //}
+        first = first || false;
+        var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
+        layer.rect({
+            x:tree.bounds.x-Canvas.x,
+            y:tree.bounds.y-Canvas.y,
+            width:tree.bounds.width,
+            height:tree.bounds.height,
+            strokeStyle:'black',
+            lineWidth:1
+        });
+
+        if(first){
+            Object.keys(tree.objects).forEach(function(key){
+                var ob = tree.objects[key];
+                layer.rect({
+                    x:ob.x-Canvas.x,
+                    y:ob.y-Canvas.y,
+                    width:ob.width,
+                    height:ob.height,
+                    strokeStyle:'black',
+                    lineWidth:1
+                });
+            });
+        }
+
+        for(var i = 0; i < tree.nodes.length;i++){
+            drawquadtree(tree.nodes[i]);
+        }
     }
 
     /**

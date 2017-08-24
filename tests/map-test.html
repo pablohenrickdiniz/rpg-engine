@@ -17,23 +17,20 @@
     </div>
 </div>
 <footer>
-    <!-- canvas engine-->
+    <!-- Canvas Engine-->
     <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
     <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
 
-    <!-- rpg engine-->
+    <!-- Rpg Engine-->
     <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
     <script type="text/javascript" src="../plugins/Mouse/src/mouse.js"></script>
     <script type="text/javascript" src="../plugins/Keyboard/src/keyboard.js"></script>
     <script type="text/javascript" src="../plugins/quadtree/src/quad-tree.js"></script>
     <script type="text/javascript" src="../src/AudioCompat.js"></script>
 
-
     <!--Main-->
     <script type="text/javascript" src="../src/System/Time/Timer_Ticker.js"></script>
     <script type="text/javascript" src="../src/RPG.js"></script>
-
-
 
     <!--Imports-->
     <script type="text/javascript" src="../src/Animation.js"></script>
@@ -76,10 +73,6 @@
     <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
     <script type="text/javascript" src="../src/Item_Graphic.js"></script>
-
-
-
-
     <script type="text/javascript" src="../src/Actors.js"></script>
     <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Variables.js"></script>
@@ -87,8 +80,6 @@
     <script type="text/javascript" src="../src/Maps.js"></script>
     <script type="text/javascript" src="../src/Animations.js"></script>
     <script type="text/javascript" src="../src/Skills.js"></script>
-
-
 
     <!-- Loader-->
     <script type="text/javascript" src="../src/Loader/Global_Progress.js"></script>
@@ -101,7 +92,6 @@
     <!-- Scene-->
     <script type="text/javascript" src="../src/Scene/Scene_Manager.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
-
 
     <!-- UI-->
     <script type="text/javascript" src="../src/System/UI/UI.js"></script>
@@ -126,9 +116,9 @@
                 ui_root:ui_root
             });
 
-           RPG.debug = true;
+            RPG.debug = true;
 
-            
+
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
                     tilesets:{
@@ -156,8 +146,8 @@
                     }
                 },
                 map:{
-                    width:3200,
-                    height:3200,
+                    width:640,
+                    height:640,
                     loop_x:true,
                     loop_y:true,
                     tileset:{
@@ -168,8 +158,8 @@
                         height:4768
                     },
                     spriteset:{
-                        width:100,
-                        height:100,
+                        width:20,
+                        height:20,
                         tileWidth:32,
                         tileHeight:32,
                         data:[]
@@ -350,21 +340,20 @@
                     var spriteset = root.Main.currentScene.spriteset;
                     var i;
                     var j;
-                    for(i =0; i < 300;i++){
-                        for(j = 0; j < 300;j++){
+                    for(i =0; i < spriteset.height;i++){
+                        for(j = 0; j < spriteset.width;j++){
                             spriteset.set(i,j,0,['forest2',0,0]);
                         }
                     }
 
-                    for(var k  = 0; k < 1000;k++){
-                        i = Math.floor(Math.random()*300);
-                        j = Math.floor(Math.random()*300);
+                    for(var k  = 0; k < spriteset.width;k++){
+                        i = Math.floor(Math.random()*spriteset.width);
+                        j = Math.floor(Math.random()*spriteset.height);
                         spriteset.set(i,j,1,['forest2',6,6]);
                     }
 
                 },
                 start:function(root){
-                    console.log('cena inicializada');
                     root.Main.currentScene.focus(root.Main.currentPlayer);
                     root.UI.root.findById('player-info').face = root.Main.currentPlayer.face;
                     root.UI.root.findById('player-info').totalMP = 500;
@@ -379,7 +368,7 @@
 
                     root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
 
-                    for(var i = 0; i < 1000;i++){
+                    for(var i = 0; i < 10;i++){
                         var x = Math.random()*root.Main.currentScene.map.width;
                         var y = Math.random()*root.Main.currentScene.map.height;
                         root.Main.currentScene.add(new root.Game_Item({
