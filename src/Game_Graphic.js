@@ -77,6 +77,9 @@
         Object.defineProperty(self,'sWidth',{
             configurable:true,
             get:function(){
+                if(sWidth == null){
+                    return self.image.width;
+                }
                 return sWidth;
             },
             set:function(sw){
@@ -91,6 +94,9 @@
         Object.defineProperty(self,'sHeight',{
             configurable:true,
             get:function(){
+                if(sHeight == null){
+                    return self.image.height;
+                }
                 return sHeight;
             },
             set:function(sh){

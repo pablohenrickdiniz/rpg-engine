@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <title>Audio Loader</title>
     <script type="text/javascript" src="../src/AudioCompat.js"></script>
+    <script type="text/javascript" src="../src/Loader/Global_Progress.js"></script>
     <script type="text/javascript" src="../src/Loader/Audio_Loader.js"></script>
     <script type="text/javascript">
-        AudioLoader.load('./audio/7batldun.mp3',0,{
-            onsuccess:function(audio){
+        Audio_Loader.load('./audio/7batldun.mp3',0,{
+            onsuccess:function(id,src){
+                var audio = document.createElement('audio');
+                audio.src = src;
                 audio.play();
             }
         });

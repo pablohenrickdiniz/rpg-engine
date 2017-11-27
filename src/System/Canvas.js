@@ -24,9 +24,11 @@
             var container = options.container;
             var width = options.width;
             var height = options.height;
+            var scale = options.scale | 1;
             self.engine = CE.create(container, {
                 width: width,
                 height: height,
+                scale:scale,
                 style: {
                     backgroundColor: 'black',
                     zIndex:1
@@ -37,6 +39,14 @@
             self.engine.addEventListener('resize',function(){
                 self.trigger('resize');
             });
+        },
+        zoomIn:function(){
+            var self = this;
+            self.engine.scale += 0.1;
+        },
+        zoomOut:function(){
+            var self = this;
+            self.engine.scale -= 0.1;
         },
         /**
          *
@@ -252,6 +262,15 @@
         },
         set:function(h){
             canvas.engine.height = h;
+        }
+    });
+
+    Object.defineProperty(canvas,'scale',{
+        get:function(){
+            return canvas.engine.scale;
+        },
+        set:function(scale){
+            canvas.engine.scale = scale;
         }
     });
 })(RPG);

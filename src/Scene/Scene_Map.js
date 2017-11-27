@@ -1,6 +1,6 @@
 (function (root) {
     if (window.QuadTree == undefined) {
-        throw "Scane_Map requires QuadTree"
+        throw "Scene_Map requires QuadTree"
     }
 
     if (root.Scene == undefined) {
@@ -108,7 +108,6 @@
      */
     Scene_Map.prototype.focus = function (object) {
         if(object instanceof Game_Object){
-            var self = this;
             if (focused_object !== null) {
                 focused_object.focused = false;
             }
@@ -179,6 +178,7 @@
         var width = Math.min(Canvas.width,self.map.width);
         var height = Math.min(Canvas.height,self.map.height);
         var spriteset = self.spriteset;
+
         var tileWidth = spriteset.tileWidth;
         var tileHeight = spriteset.tileHeight;
 
@@ -188,40 +188,29 @@
 
         for (var i = interval.si; i <= interval.ei; i++) {
             var ti = i;
+
             if(ti < 0){
-                while(ti < -maxi){
-                    ti = tj%maxi;
-                }
-                ti = maxi+ti+1;
+                ti = maxi + 1 + ti;
             }
             else if(ti > maxi){
-                while(ti > maxi){
-                    ti = ti%maxi;
-                }
-                ti = ti-1;
+                ti = (ti % (maxi+1));
             }
 
-            for (var j = interval.sj; j <= interval.ej; j++) {
+
+            for(var j = interval.sj; j <= interval.ej;j++){
                 var tj = j;
+
                 if(tj < 0){
-                    while(tj < -maxj){
-                        tj = tj%maxj;
-                    }
-                    tj = maxj+tj+1;
+                    tj = maxj + 1 + tj;
                 }
                 else if(tj > maxj){
-                    while(tj > maxj){
-                        tj = tj%maxj;
-                    }
-                    tj = tj-1;
+                    tj = (tj % (maxj+1));
                 }
-
                 if (spriteset.data[ti] !== undefined && spriteset.data[ti][tj] !== undefined) {
                     for (var k in  spriteset.data[ti][tj]) {
                         var tile_data = spriteset.data[ti][tj][k];
                         var tileset = Tilesets.get(tile_data[0]);
                         var tile = tileset.get(tile_data[1],tile_data[2]);
-
                         if(tile != null){
                             var type = Consts.BACKGROUND_LAYER;
                             if(k > 1){
@@ -301,8 +290,6 @@
 
         var size = collisions.length;
         var bounds;
-        var bx;
-        var by;
         var mw = self.map.width;
         var mh = self.map.height;
         var xw = sx+vw;
@@ -317,24 +304,7 @@
             x = collision.xb;
             y = collision.yb;
 
-            if(y > yh){
-                y -= mh;
-            }
-            else if(y < sy){
-                y += mh;
-            }
-
-            if(x > xw){
-                x -= mw;
-            }
-            else if(x < sx){
-                x += mw;
-            }
-
-            x-=sx;
-            y-=sy;
-
-            draw_object(object,x,y,vw,vh);
+            draw_object(x,y,object,sx,sy,mw,mh);
         }
 
         if(Main.currentPlayer){
@@ -342,93 +312,135 @@
             bounds = object.bounds;
             x = bounds.x;
             y = bounds.y;
-
-            if(y > yh){
-                y -= mh;
-            }
-            else if(y+bounds.height < sy){
-                y += mh;
-            }
-
-            if(x > xw){
-                x -= mw;
-            }
-            else if(x+bounds.width < sx){
-                x += mw;
-            }
-
-            x-=sx;
-            y-=sy;
-
-            draw_object(object,x,y,vw,vh);
+            draw_object(x,y,object,sx,sy,vw,vh);
         }
     }
 
+    function splith(obj,vw){
+        var frames = [];
+        var dx = obj.dx;
+        var sx = obj.sx;
+        var dw = obj.dWidth;
+        var sw = obj.sWidth;
+        var dxw = dx+dw;
 
-    function split_horizontal(obj,x){
-        var dfx = x-obj.dx;
+        if(dx > vw){
+            frames[0] = clone(obj);
+            Object.assign(frames[0],{dx:dx-vw});
+        }
+        else if(dxw > vw){
+            frames[0] = clone(obj);
+            frames[1] = clone(obj);
+            var d = vw-dx;
+            var ds = d*(sw/dw);
 
-        var dwa = dfx;
-        var dwb = obj.dWidth-dfx;
-        var sxb = obj.sx+dfx;
-        var swb = dwb;
+            Object.assign(frames[0],{dWidth:d,sWidth:ds});
+            Object.assign(frames[1],{dx:0,sx:sx+ds,sWidth:sw-ds,dWidth:dw-d});
+        }
+        else if(dx < 0){
+            if(dxw > 0){
+                frames[0] = clone(obj);
+                frames[1] = clone(obj);
+                var d = Math.abs(dx);
+                var ds = d*(sw/dw);
 
+                Object.assign(frames[0],{dWidth:d,sWidth:ds,dx:vw-d});
+                Object.assign(frames[1],{dx:0,sx:sx+ds,sWidth:sw-ds,dWidth:dw-d});
+            }
+            else{
+                frames[0] = clone(obj);
+                Object.assign(frames[0],{dx:vw+dx});
+            }
+        }
+        else{
+            frames[0] = clone(obj);
+        }
 
-        var a = Object.assign(obj,{
-            dWidth:dwa,
-            sWidth:dfx
-        });
-
-        var b = Object.assign(obj,{
-            dx:0,
-            dWidth:dwb,
-            sx:sxb,
-            sWidth:swb
-        });
-
-        return [a,b];
+        return frames;
     }
 
-    function split_vertical(obj,y){
-        var dfy = y-obj.dy;
-        var a = Object.assign(obj,{
-            dHeight:dfy,
-            sHeight:dfy
-        });
+    function splitv(obj,vh){
+        var frames = [];
+        var dy = obj.dy;
+        var sy = obj.sy;
+        var dh = obj.dHeight;
+        var sh = obj.sHeight;
+        var dxh = dy+dh;
 
-        var b = Object.assign(obj,{
-            dy:0,
-            dHeight:obj.dHeight-dfy,
-            sy:obj.sy+dfy,
-            sHeight:obj.sHeight-dfy
-        });
+        if(dy > vh){
+            frames[0] = clone(obj);
+            Object.assign(frames[0],{dy:dy-vh});
+        }
+        else if(dxh > vh){
+            frames[0] = clone(obj);
+            frames[1] = clone(obj);
+            var d = vh-dy;
+            var ds = d*(sh/dh);
 
-        return [a,b];
+            Object.assign(frames[0],{dHeight:d,sHeight:ds});
+            Object.assign(frames[1],{dy:0,sy:sy+ds,sHeight:sh-ds,dHeight:dh-d});
+        }
+        else if(dy < 0){
+            if(dxh > 0){
+                frames[0] = clone(obj);
+                frames[1] = clone(obj);
+                var d = Math.abs(dy);
+                var ds = d*(sh/dh);
+
+                Object.assign(frames[0],{dHeight:d,sHeight:ds,dy:vh-d});
+                Object.assign(frames[1],{dy:0,sy:sy+ds,sHeight:sh-ds,dHeight:dh-d});
+            }
+            else{
+                frames[0] = clone(obj);
+                Object.assign(frames[0],{dy:vh+dy});
+            }
+        }
+        else{
+            frames[0] = clone(obj);
+        }
+
+        return frames;
     }
+
+
+    function split(obj,vx,vy,vw,vh){
+        var frames = [];
+
+        var tmp = splith(obj,vw);
+
+        var length = tmp.length;
+
+        for(var i =0; i < length;i++){
+            var tmp2 = splitv(tmp[i],vh);
+            var length2 = tmp2.length;
+            for(var j = 0; j < length2;j++){
+                frames.push(tmp2[j]);
+            }
+        }
+
+        return frames;
+    }
+
 
     /**
      *
-     * @param object
      * @param x
      * @param y
+     * @param object
+     * @param vx
+     * @param vy
      * @param vw
      * @param vh
      */
-    function draw_object(object,x,y,vw,vh){
+    function draw_object(x,y,object,vx,vy,vw,vh){
         var frame = object.currentFrame;
         if (frame != null && frame.image) {
             var image = frame.image;
-
-            var dfx = vw-x;
-            var dfy = vh-y;
             var i;
-            var j;
-            var t;
-            var tmp;
 
-            var draws = [{
-                dx:x,
-                dy:y,
+            var draws = split({
+                dx:x-vx,
+                dy:y-vy,
                 dWidth: frame.dWidth,
                 dHeight: frame.dHeight,
                 sx: frame.sx,
@@ -437,25 +449,7 @@
                 sHeight: frame.sHeight,
                 layer: object.layer,
                 type: Consts.EVENT_LAYER
-            }];
-
-
-            if(draws[0].dx + draws[0].dWidth > vw){
-                var oldd = draws[0].dWidth;
-                var p =  draws[0].sWidth*100/oldd;
-                draws[0].dWidth = vw-draws[0].dx;
-                draws[0].sWidth = (draws[0].dWidth*(p/100));
-            }
-
-
-            if(draws[0].dy + draws[0].dHeight > vh){
-                var oldh = draws[0].dHeight;
-                var p =  draws[0].sHeight*100/oldh;
-                draws[0].dHeight = vh-draws[0].dy;
-                draws[0].sHeight = (draws[0].dHeight*(p/100));
-            }
-
-
+            },vx,vy,vw,vh);
 
             for(i =0; i < draws.length;i++){
                 Canvas.drawImage(image,draws[i]);
@@ -468,8 +462,6 @@
                     height:Math.max(draws[i].dHeight, 32)
                 });
             }
-
-
         }
     }
 
@@ -674,6 +666,9 @@
         });
     }
 
+    function clone(obj){
+        return Object.assign({},obj);
+    }
 
     root.Scene_Map = Scene_Map;
 })(RPG);

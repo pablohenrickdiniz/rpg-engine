@@ -106,7 +106,19 @@
         Game_Timer.addEventListener('tick', tick);
         Keyboard.addShortcutListener('P', pausegame);
         Keyboard.addShortcutListener('ENTER', actionbutton);
+        Keyboard.addShortcutListener('+',zoomin);
+        Keyboard.addShortcutListener('-',zoomout);
         Canvas.addEventListener('resize',canvasresize);
+    }
+
+    function zoomin(){
+        var Canvas = RPG.Canvas;
+        Canvas.zoomIn();
+    }
+
+    function zoomout(){
+        var Canvas = RPG.Canvas;
+        Canvas.zoomOut();
     }
 
     function actionbutton(){
