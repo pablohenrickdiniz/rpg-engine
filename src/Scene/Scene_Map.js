@@ -120,9 +120,8 @@
      * Executa passo de tempo da cena
      */
     Scene_Map.prototype.step = function () {
-        Scene.prototype.step.apply(this);
         var self = this;
-
+        Scene.prototype.step.apply(this);
         if(Main.currentPlayer){
             action_events(self);
         }
@@ -175,9 +174,12 @@
     function refresh_spriteset_map(self) {
         var sx = Canvas.x;
         var sy = Canvas.y;
-        var width = Math.min(Canvas.width,self.map.width);
-        var height = Math.min(Canvas.height,self.map.height);
         var spriteset = self.spriteset;
+
+
+        var width = Math.min(Canvas.width,self.spriteset.realWidth);
+        var height = Math.min(Canvas.height,self.spriteset.realHeight);
+
 
         var tileWidth = spriteset.tileWidth;
         var tileHeight = spriteset.tileHeight;
@@ -221,12 +223,14 @@
                                 var context = layer.context;
                                 var dx = j * tileWidth - sx;
                                 var dy = i * tileHeight - sy;
+                                var wdx = width-dx;
+                                var hdy = height-dy;
                                 dx = parseInt(dx);
                                 dy = parseInt(dy);
-                                var tw = Math.min(tileWidth,width-dx);
-                                var th = Math.min(tileHeight,height-dy);
-                                var tsw = Math.min(tile.sWidth,width-dx);
-                                var tsh = Math.min(tile.sHeight,height-dy);
+                                var tw = Math.min(tileWidth,wdx);
+                                var th = Math.min(tileHeight,hdy);
+                                var tsw = Math.min(tile.sWidth,wdx);
+                                var tsh = Math.min(tile.sHeight,hdy);
                                 context.drawImage(tile.image, tile.sx, tile.sy, tsw,tsh, dx, dy, tw,th);
                             }
                         }
@@ -272,10 +276,12 @@
         var i;
         var sx = root.Canvas.x;
         var sy = root.Canvas.y;
-        var vw = Math.min(root.Canvas.width,self.map.width);
-        var vh = Math.min(root.Canvas.height,self.map.height);
+        var spriteset = self.spriteset;
+        var vw = Math.min(root.Canvas.width,spriteset.realWidth);
+        var vh = Math.min(root.Canvas.height,spriteset.realHeight);
         var object;
         var collision;
+
 
         var collisions = self.tree.retrieve({
             x:sx,
@@ -284,16 +290,15 @@
             height:vh
         });
 
+
         collisions = collisions.sort(function (a, b) {
             return a.yb-b.yb;
         });
 
         var size = collisions.length;
         var bounds;
-        var mw = self.map.width;
-        var mh = self.map.height;
-        var xw = sx+vw;
-        var yh = sy+vh;
+        var mw = spriteset.realWidth;
+        var mh = spriteset.realHeight;
         var x;
         var y;
 
@@ -307,103 +312,89 @@
             draw_object(x,y,object,sx,sy,mw,mh);
         }
 
-        if(Main.currentPlayer){
-            object = Main.currentPlayer;
-            bounds = object.bounds;
-            x = bounds.x;
-            y = bounds.y;
-            draw_object(x,y,object,sx,sy,vw,vh);
-        }
+
     }
 
-    function splith(obj,vw){
+    function splith(o,vw){
         var frames = [];
-        var dx = obj.dx;
-        var sx = obj.sx;
-        var dw = obj.dWidth;
-        var sw = obj.sWidth;
-        var dxw = dx+dw;
 
-        if(dx > vw){
-            frames[0] = clone(obj);
-            Object.assign(frames[0],{dx:dx-vw});
+        var dxw = o.dx+o.dWidth;
+
+        if(o.dx > vw){
+            frames[0] = clone(o);
+            Object.assign(frames[0],{dx:o.dx-vw});
         }
         else if(dxw > vw){
-            frames[0] = clone(obj);
-            frames[1] = clone(obj);
-            var d = vw-dx;
-            var ds = d*(sw/dw);
+            frames[0] = clone(o);
+            frames[1] = clone(o);
+            var d = vw-o.dx;
+            var ds = d*(o.sWidth/o.dWidth);
 
             Object.assign(frames[0],{dWidth:d,sWidth:ds});
-            Object.assign(frames[1],{dx:0,sx:sx+ds,sWidth:sw-ds,dWidth:dw-d});
+            Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
         }
-        else if(dx < 0){
+        else if(o.dx < 0){
             if(dxw > 0){
-                frames[0] = clone(obj);
-                frames[1] = clone(obj);
-                var d = Math.abs(dx);
-                var ds = d*(sw/dw);
+                frames[0] = clone(o);
+                frames[1] = clone(o);
+                var d = Math.abs(o.dx);
+                var ds = d*(o.sWidth/o.dWidth);
 
                 Object.assign(frames[0],{dWidth:d,sWidth:ds,dx:vw-d});
-                Object.assign(frames[1],{dx:0,sx:sx+ds,sWidth:sw-ds,dWidth:dw-d});
+                Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
             }
             else{
-                frames[0] = clone(obj);
-                Object.assign(frames[0],{dx:vw+dx});
+                frames[0] = clone(o);
+                Object.assign(frames[0],{dx:vw+o.dx});
             }
         }
         else{
-            frames[0] = clone(obj);
+            frames[0] = clone(o);
         }
 
         return frames;
     }
 
-    function splitv(obj,vh){
+    function splitv(o,vh){
         var frames = [];
-        var dy = obj.dy;
-        var sy = obj.sy;
-        var dh = obj.dHeight;
-        var sh = obj.sHeight;
-        var dxh = dy+dh;
-
-        if(dy > vh){
-            frames[0] = clone(obj);
-            Object.assign(frames[0],{dy:dy-vh});
+        var dxh = o.dy+o.dHeight;
+        if(o.dy > vh){
+            frames[0] = clone(o);
+            Object.assign(frames[0],{dy:o.dy-vh});
         }
         else if(dxh > vh){
-            frames[0] = clone(obj);
-            frames[1] = clone(obj);
-            var d = vh-dy;
-            var ds = d*(sh/dh);
+            frames[0] = clone(o);
+            frames[1] = clone(o);
+            var d = vh-o.dy;
+            var ds = d*(o.sHeight/o.dHeight);
 
             Object.assign(frames[0],{dHeight:d,sHeight:ds});
-            Object.assign(frames[1],{dy:0,sy:sy+ds,sHeight:sh-ds,dHeight:dh-d});
+            Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
         }
-        else if(dy < 0){
+        else if(o.dy < 0){
             if(dxh > 0){
-                frames[0] = clone(obj);
-                frames[1] = clone(obj);
-                var d = Math.abs(dy);
-                var ds = d*(sh/dh);
+                frames[0] = clone(o);
+                frames[1] = clone(o);
+                var d = Math.abs(o.dy);
+                var ds = d*(o.sHeight/o.dHeight);
 
                 Object.assign(frames[0],{dHeight:d,sHeight:ds,dy:vh-d});
-                Object.assign(frames[1],{dy:0,sy:sy+ds,sHeight:sh-ds,dHeight:dh-d});
+                Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
             }
             else{
-                frames[0] = clone(obj);
-                Object.assign(frames[0],{dy:vh+dy});
+                frames[0] = clone(o);
+                Object.assign(frames[0],{dy:vh+o.dy});
             }
         }
         else{
-            frames[0] = clone(obj);
+            frames[0] = clone(o);
         }
 
         return frames;
     }
 
 
-    function split(obj,vx,vy,vw,vh){
+    function split(obj,vw,vh){
         var frames = [];
 
         var tmp = splith(obj,vw);
@@ -449,17 +440,17 @@
                 sHeight: frame.sHeight,
                 layer: object.layer,
                 type: Consts.EVENT_LAYER
-            },vx,vy,vw,vh);
+            },vw,vh);
 
             for(i =0; i < draws.length;i++){
                 Canvas.drawImage(image,draws[i]);
                 clear_queue.push({
                     layer_type:draws[i].type,
                     layer:draws[i].layer,
-                    x:draws[i].x,
-                    y:draws[i].y,
-                    width:Math.max(draws[i].dWidth, 32),
-                    height:Math.max(draws[i].dHeight, 32)
+                    x:draws[i].dx,
+                    y:draws[i].dy,
+                    width:draws[i].dWidth,
+                    height:draws[i].dHeight
                 });
             }
         }
@@ -475,13 +466,13 @@
             var obj = focused_object;
             var graphic = obj.graphic;
             if(graphic != null){
-                var m = self.map;
-                var viewport_width = Math.min(Canvas.width, m.width);
-                var viewport_height = Math.min(Canvas.height, m.height);
-                var viewport_x = obj.bounds.x - (viewport_width / 2) + (obj.graphic.tileWidth / 2);
-                var viewport_y = obj.bounds.y - (viewport_height / 2) + (obj.graphic.tileHeight / 2);
-                var max_screen_x = m.width - viewport_width;
-                var max_screen_y = m.height - viewport_height;
+                var spriteset = self.spriteset;
+                var viewport_width = Math.min(Canvas.width, spriteset.realWidth);
+                var viewport_height = Math.min(Canvas.height, spriteset.realHeight);
+                var viewport_x = obj.bounds.x - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
+                var viewport_y = obj.bounds.y - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
+                var max_screen_x = spriteset.realWidth - viewport_width;
+                var max_screen_y = spriteset.realHeight - viewport_height;
 
                 if(!self.map.loop_x){
                     if (viewport_x < 0) {
@@ -523,9 +514,6 @@
         var objs = self.objs;
         var length = objs.length;
         var i;
-        if(Main.currentPlayer){
-            Main.currentPlayer.update();
-        }
 
         for (i = 0; i < length; i++) {
             objs[i].update();
@@ -589,7 +577,15 @@
             }
         }
 
-        collisions = tree.retrieve(player.bounds, 'ITEM');
+        bounds_tmp = {
+            x: player.bounds.x,
+            y: player.bounds.y,
+            width: player.bounds.width,
+            height: player.bounds.height,
+            groups: ['ITEM']
+        };
+
+        collisions = tree.retrieve(bounds_tmp, 'ITEM');
         length = collisions.length;
         for (i = 0; i < length; i++) {
             collision = collisions[i];
@@ -654,14 +650,23 @@
                     tree = new QuadTree({
                         x: 0,
                         y: 0,
-                        width: self.map.width || 640,
-                        height: self.map.height || 640
+                        width: self.spriteset.realWidth || 640,
+                        height: self.spriteset.realHeight || 640
                     },{
                         loop_x:self.map.loop_x,
                         loop_y:self.map.loop_y
                     });
                 }
                 return tree;
+            }
+        });
+
+        Object.defineProperty(self,'bg_refreshed',{
+            get:function(){
+                return bg_refreshed;
+            },
+            set:function(bgr){
+                bg_refreshed = bgr?ture:false;
             }
         });
     }

@@ -185,9 +185,9 @@
             }
 
             if(scene.objects){
-                var length = scene.objects.length;
+                length = scene.objects.length;
                 for(i =0; i < length;i++){
-                    var conf = scene.objects[i];
+                    conf = scene.objects[i];
                     switch(conf.class){
                         case 'Game_Item':
                             scene.add(new Game_Item(conf));

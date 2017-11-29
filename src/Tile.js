@@ -70,17 +70,18 @@
             }
         });
 
+        Object.defineProperty(self,'sWidth',{
+            get:function(){
+                return self.tileset?self.tileset.tileSWidth:0;
+            }
+        });
+
         Object.defineProperty(self,'sHeight',{
             get:function(){
                 return self.tileset?self.tileset.tileSHeight:0;
             }
         });
 
-        Object.defineProperty(self,'sWidth',{
-            get:function(){
-                return self.tileset?self.tileset.tileSWidth:0;
-            }
-        });
 
         Object.defineProperty(self,'image',{
             get:function(){

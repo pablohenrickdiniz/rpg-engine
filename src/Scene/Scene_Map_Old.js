@@ -255,17 +255,14 @@
      * Renderiza o mapa de sprites
      */
     function refresh_spriteset_map(self) {
-        var rows = Math.floor(Canvas.height/self.map.height);
-        var cols = Math.floor(Canvas.width/self.map.width);
-
         var x = Canvas.x;
         var y = Canvas.y;
 
         var interval = get_area_interval({
             x:x,
             y:y,
-            width:Math.min(self.map.width,Canvas.width),
-            height:Math.min(self.map.height,Canvas.height)
+            width:Math.min(self.spriteset.width*self.spriteset.tileWidth,Canvas.width),
+            height:Math.min(self.spriteset.height*self.spriteset.tileHeight,Canvas.height)
         });
 
         draw_spriteset_interval(self,interval,-Canvas.x,-Canvas.y);

@@ -55,6 +55,8 @@
         var self = this;
         var scene = root.Main.currentScene;
         var c_map = scene.map;
+        var spriteset = scene.spriteset;
+
         if (self._movement != null) {
             var data = self._movement;
             var diff = Game_Timer.currentTime - data.start;
@@ -66,10 +68,10 @@
                 y = data.epos.y;
 
                 if(c_map.loop_x){
-                    x = calcloop(x,c_map.width);
+                    x = calcloop(x,spriteset.realWidth);
                 }
                 if(c_map.loop_y){
-                    y = calcloop(y,c_map.height);
+                    y = calcloop(y,spriteset.realHeight);
                 }
 
                 bounds.x = x;
@@ -95,14 +97,14 @@
                  * Verificação de loop horizontal
                  */
                 if(c_map.loop_x){
-                    x = calcloop(x,c_map.width);
+                    x = calcloop(x,spriteset.realWidth);
                 }
 
                 /**
                  * Verificação de loop vertical
                  */
                 if(c_map.loop_y){
-                    y = calcloop(y,c_map.height);
+                    y = calcloop(y,spriteset.realHeight);
                 }
 
                 bounds.x = x;
@@ -143,6 +145,7 @@
         var vec = {x: ex - bounds.x, y: ey - bounds.y};
         var scene = root.Main.currentScene;
         var c_map = scene.map;
+        var spriteset = scene.spriteset;
         var tree = scene.tree;
         var collisions = tree.retrieve(final_bounds, 'STEP');
         var length = collisions.length;
@@ -169,8 +172,8 @@
             if (final_bounds.x < 0) {
                 final_bounds.x = 0;
             }
-            else if (final_bounds.x > c_map.width - bounds.width) {
-                final_bounds.x = c_map.height - bounds.height;
+            else if (final_bounds.x > spriteset.realWidth - bounds.width) {
+                final_bounds.x = spriteset.realHeight - bounds.height;
             }
             else if (vec.x > 0) {
                 final_bounds.x = Math.max(final_bounds.x, bounds.x);
@@ -187,8 +190,8 @@
             if (final_bounds.y < 0) {
                 final_bounds.y = 0;
             }
-            else if (final_bounds.y > c_map.width - bounds.width) {
-                final_bounds.y = c_map.height - bounds.height;
+            else if (final_bounds.y > spriteset.realWidth - bounds.width) {
+                final_bounds.y = spriteset.realHeight - bounds.height;
             }
             else if (vec.y > 0) {
                 final_bounds.y = Math.max(final_bounds.y, bounds.y);

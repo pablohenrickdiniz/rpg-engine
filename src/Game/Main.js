@@ -65,12 +65,13 @@
                         QuadTree.remove(tmp.bounds);
                     }
                 }
+
                 current_player_id = player_id;
                 var scene = self.currentScene;
-                var p = self.Actors.get(player_id);
-                if(scene != null && p != null){
-                    p.type = 'Player';
-                    scene.tree.insert(p.bounds);
+                var actor = self.Actors.get(player_id);
+                if(scene != null && actor != null){
+                    actor.type = 'Player';
+                    scene.add(actor);
                 }
             }
         }

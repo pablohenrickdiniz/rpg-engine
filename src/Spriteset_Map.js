@@ -90,19 +90,19 @@
      * @param self
      */
     function initialize(self){
-       var width = 0;
-       var height = 0;
-       Object.defineProperty(self,'width',{
-           get:function(){
-               return width;
-           },
-           set:function(w){
-               w = parseInt(w);
-               if(!isNaN(w) && w >= 0 && w != width){
-                   width = w;
-               }
-           }
-       });
+        var width = 0;
+        var height = 0;
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return width;
+            },
+            set:function(w){
+                w = parseInt(w);
+                if(!isNaN(w) && w >= 0 && w != width){
+                    width = w;
+                }
+            }
+        });
 
         Object.defineProperty(self,'height',{
             get:function(){
@@ -113,6 +113,18 @@
                 if(!isNaN(h) && h >= 0 && h != height){
                     height = h;
                 }
+            }
+        });
+
+        Object.defineProperty(self,'realWidth',{
+            get:function(){
+                return width * self.tileWidth;
+            }
+        });
+
+        Object.defineProperty(self,'realHeight',{
+            get:function(){
+                return height * self.tileHeight;
             }
         });
 

@@ -82,7 +82,7 @@
     function unbind(root){
         var Game_Timer = root.Game_Timer,
             Keyboard = root.Controls.Keyboard,
-            Canvas = root.Canvas;
+            Canvas  = root.Canvas;
 
         /*unbind*/
         w.removeEventListener('blur',windowblur);
@@ -91,13 +91,16 @@
         Game_Timer.removeEventListener('tick',tick);
         Keyboard.removeShortcutListener('P',pausegame);
         Keyboard.removeShortcutListener('ENTER', actionbutton);
+        Keyboard.removeShortcutListener('PLUS',zoomin);
+        Keyboard.removeShortcutListener('MINUS',zoomout);
         Canvas.removeEventListener('resize',canvasresize);
+
     }
 
     function bind(root){
         var Game_Timer = root.Game_Timer,
             Keyboard = root.Controls.Keyboard,
-            Canvas = root.Canvas;
+            Canvas  = root.Canvas;
 
         /*bind*/
         w.addEventListener('blur', windowblur);
@@ -106,8 +109,8 @@
         Game_Timer.addEventListener('tick', tick);
         Keyboard.addShortcutListener('P', pausegame);
         Keyboard.addShortcutListener('ENTER', actionbutton);
-        Keyboard.addShortcutListener('+',zoomin);
-        Keyboard.addShortcutListener('-',zoomout);
+        Keyboard.addShortcutListener('PLUS',zoomin);
+        Keyboard.addShortcutListener('MINUS',zoomout);
         Canvas.addEventListener('resize',canvasresize);
     }
 

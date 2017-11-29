@@ -9,14 +9,13 @@
         options = options  || {};
         self.tileset = options.tileset || null;
         self.name = options.name || '';
-        self.width = options.width;
-        self.height = options.height;
         self.listeners = options.listeners || [];
         self.autoplay_bgs = options.autoplay_bgs || false;
         self.autoplay_bgm = options.autoplay_bgm || false;
         self.bgm = options.bgm || null;
         self.bgs = options.bgs || null;
         self.spriteset = options.spriteset || {};
+        initialize(self);
     };
 
 
@@ -40,6 +39,21 @@
             delete obj.parent;
         }
     };
+
+
+    function initialize(self){
+        Object.defineProperty(self,'width',{
+            get:function(){
+                return self.spriteset.width*self.spriteset.tileWidth;
+            }
+        });
+
+        Object.defineProperty(self,'height',{
+            get:function(){
+                return self.spriteset.height*self.spriteset.tileHeight;
+            }
+        });
+    }
 
     root.Game_Map = Game_Map;
 })(RPG,window);

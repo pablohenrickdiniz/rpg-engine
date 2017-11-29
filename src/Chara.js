@@ -72,47 +72,28 @@
     function initialize(self){
         Object.defineProperty(self,'tileSWidth',{
             get:function(){
-                var width = self.sWidth;
-                if(width == null){
-                    if(self.image != null){
-                        width = self.image.width;
-                    }
-                }
-                if(width != null){
-                    return width/self.cols;
-                }
-
-                return 0;
+                return self.sWidth/self.cols;
             }
         });
 
         Object.defineProperty(self,'tileSHeight',{
             get:function(){
-                var height = self.sHeight;
-                if(height == null){
-                    if(self.image != null){
-                        height = self.image.height;
-                    }
-                }
-                if(height != null){
-                    return height/self.rows;
-                }
-                return 0;
+                return self.sHeight/self.rows;
             }
         });
 
-
-        Object.defineProperty(self,'tileWidth',{
+        Object.defineProperty(self,'tileDWidth',{
             get:function(){
-              return self.tileSWidth*self.scale;
+                return self.tileSWidth;
             }
         });
 
-        Object.defineProperty(self,'tileHeight',{
+        Object.defineProperty(self,'tileDHeight',{
             get:function(){
-                return self.tileSHeight*self.scale;
+                return self.tileSHeight;
             }
         });
+
     }
 
     root.Chara = Chara;

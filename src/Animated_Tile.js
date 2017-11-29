@@ -41,8 +41,8 @@
 
     Animated_Tile.prototype.getGraphic = function () {
         var self = this;
-        var tile_width = self.parent.tileWidth;
-        var tile_height = self.parent.tileHeight;
+        var tile_width = self.parent.tileDWidth;
+        var tile_height = self.parent.tileDHeight;
         var frame = self.animation.getIndexFrame();
 
         var cols = Math.floor(width / (self.ex - self.sx));

@@ -146,8 +146,6 @@
                     }
                 },
                 map:{
-                    width:640,
-                    height:640,
                     loop_x:true,
                     loop_y:true,
                     tileset:{
@@ -158,14 +156,16 @@
                         height:4768
                     },
                     spriteset:{
-                        width:20,
-                        height:20,
+                        width:30,
+                        height:30,
                         tileWidth:32,
                         tileHeight:32,
                         data:[]
                     }
                 },
-                objects:[],
+                objects:[
+
+                ],
                 charas:{
                     char1:{
                         graphicID:'char01',
@@ -333,7 +333,7 @@
                         left:300,
                         top:300
                     }));
-                    root.Main.currentPlayerID = 1;
+
                 },
                 afterload:function(root){
                     root.UI.root.findById('loading-progress').visible = false;
@@ -351,26 +351,31 @@
                         j = Math.floor(Math.random()*spriteset.height);
                         spriteset.set(i,j,1,['forest2',6,6]);
                     }
-
+                    root.Main.currentPlayerID = 1;
                 },
                 start:function(root){
-                    root.Main.currentScene.focus(root.Main.currentPlayer);
-                    root.UI.root.findById('player-info').face = root.Main.currentPlayer.face;
-                    root.UI.root.findById('player-info').totalMP = 500;
-                    root.UI.root.findById('player-info').MP = 400;
-                    root.UI.root.findById('player-info').name = root.Main.currentPlayer.name;
-                    root.UI.root.findById('player-info').visible = true;
+                    if(root.Main.currentPlayer){
+                        root.UI.root.findById('player-info').face = root.Main.currentPlayer.face;
+                        root.UI.root.findById('player-info').totalMP = 500;
+                        root.UI.root.findById('player-info').MP = 400;
+                        root.UI.root.findById('player-info').name = root.Main.currentPlayer.name;
+                        root.UI.root.findById('player-info').visible = true;
+                        root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
+                    }
+
 
                     root.Controls.Keyboard.addShortcutListener('i', function () {
                         var inventory_ui = root.UI.root.findById('inventory');
                         inventory_ui.visible = !inventory_ui.visible;
                     });
 
-                    root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
 
-                    for(var i = 0; i < 100;i++){
-                        var x = Math.random()*root.Main.currentScene.map.width;
-                        var y = Math.random()*root.Main.currentScene.map.height;
+                    var maxi = (root.Main.currentScene.spriteset.width*root.Main.currentScene.spriteset.height)/50;
+                    maxi = Math.floor(maxi);
+
+                    for(var i = 0; i < maxi;i++){
+                        var x = Math.random()*root.Main.currentScene.spriteset.realWidth;
+                        var y = Math.random()*root.Main.currentScene.spriteset.realHeight;
                         root.Main.currentScene.add(new root.Game_Item({
                             itemID:Math.floor(Math.random()*6),
                             x:x,
@@ -378,6 +383,19 @@
                             amount:Math.ceil(Math.random()*20)
                         }));
                     }
+
+
+                    var npc = new root.Game_Character({
+                        x:100,
+                        y:480,
+                        charaID:'char1',
+                        vSpeed:10,
+                        hSpeed:10,
+                        animationSpeed:6
+                    });
+                    root.Main.currentScene.add(npc);
+                   // root.Main.currentScene.focus(root.Main.currentPlayer);
+                    npc.stepForward(Infinity);
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.root.findById('loading-progress');
