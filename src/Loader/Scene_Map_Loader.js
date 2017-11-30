@@ -132,26 +132,16 @@
                 Tilesets.set(id,tileset);
             }
 
-            if(scene.charas && scene.charas.constructor == {}.constructor){
-                keys = Object.keys(scene.charas);
+            if(scene.icons && scene.icons.constructor == {}.constructor){
+                keys = Object.keys(scene.icons);
                 length = keys.length;
                 for(i =0; i < length;i++){
                     key = keys[i];
-                    conf = scene.charas[key];
-                    var chara = new Chara(conf);
-                    Charas.set(key,chara);
+                    conf = scene.icons[key];
+                    Icons.set(key,new Game_Icon(conf));
                 }
             }
 
-            if(scene.actors && scene.actors.constructor == {}.constructor){
-                keys = Object.keys(scene.actors);
-                length = keys.length;
-                for(i =0; i < length;i++){
-                    key = keys[i];
-                    conf = scene.actors[key];
-                    Actors.set(key,new Game_Actor(conf));
-                }
-            }
 
             if(scene.faces && scene.faces.constructor == {}.constructor){
                 keys = Object.keys(scene.faces);
@@ -163,13 +153,15 @@
                 }
             }
 
-            if(scene.icons && scene.icons.constructor == {}.constructor){
-                keys = Object.keys(scene.icons);
+
+            if(scene.charas && scene.charas.constructor == {}.constructor){
+                keys = Object.keys(scene.charas);
                 length = keys.length;
                 for(i =0; i < length;i++){
                     key = keys[i];
-                    conf = scene.icons[key];
-                    Icons.set(key,new Game_Icon(conf));
+                    conf = scene.charas[key];
+                    var chara = new Chara(conf);
+                    Charas.set(key,chara);
                 }
             }
 
@@ -183,6 +175,17 @@
                     Items.set(key,new Item(conf));
                 }
             }
+
+            if(scene.actors && scene.actors.constructor == {}.constructor){
+                keys = Object.keys(scene.actors);
+                length = keys.length;
+                for(i =0; i < length;i++){
+                    key = keys[i];
+                    conf = scene.actors[key];
+                    Actors.set(key,new Game_Actor(conf));
+                }
+            }
+
 
             if(scene.objects){
                 length = scene.objects.length;

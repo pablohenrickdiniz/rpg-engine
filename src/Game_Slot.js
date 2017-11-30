@@ -3,16 +3,28 @@
         throw "Game_Slot requires Item"
     }
 
-    var Item = root.Item;
+    if(root.Main.Items == undefined){
+        throw "Game_Slot requires Items"
+    }
+
+    var Item = root.Item,
+        Items = root.Main.Items;
 
     var Game_Slot = function(options){
         var self = this;
         initialize(self);
+
         self.type = options.type || 'generic';
         self.disabled = options.disabled || false;
         self.max = options.max || 99;
         self.amount = options.amount || 0;
-        self.item = options.item || null;
+
+        if(options.item == 0){
+            self.item = options.item
+        }
+        else{
+            self.item = options.item || null;
+        }
     };
 
     Game_Slot.prototype.hasItem = function(){
@@ -64,7 +76,12 @@
                 return item;
             },
             set:function(i){
-                if((i == null || i instanceof Item) && i != item){
+                if(item == null || (item instanceof Item && i != item) || (/^[0-9]+$/.test(i) && i != item.id)){
+
+                    if(/^[0-9]+$/.test(i)){
+                        i = Items.get(i);
+                    }
+
                     item = i;
                     if(i == null){
                         amount = 0;

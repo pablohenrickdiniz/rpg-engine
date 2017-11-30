@@ -41,34 +41,46 @@
     <script type="text/javascript" src="../src/Game_Object.js"></script>
     <script type="text/javascript" src="../src/Game_Map.js"></script>
     <script type="text/javascript" src="../src/Consts.js"></script>
-    <script type="text/javascript" src="../src/Event_Page.js"></script>
 
-    <script type="text/javascript" src="../src/Game_Skill.js"></script>
 
-    <!-- System-->
     <script type="text/javascript" src="../src/System/Canvas.js"></script>
-    <script type="text/javascript" src="../src/System/Audio/Audio_File.js"></script>
-    <script type="text/javascript" src="../src/System/Audio/Audio.js"></script>
 
     <!--Scene-->
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
     <script type="text/javascript" src="../src/Game/Main.js"></script>
     <script type="text/javascript" src="../src/Graphics.js"></script>
     <script type="text/javascript" src="../src/Game_Graphic.js"></script>
-    <script type="text/javascript" src="../src/Game_Icon.js"></script>
-    <script type="text/javascript" src="../src/Icons.js"></script>
-    <script type="text/javascript" src="../src/Item.js"></script>
-    <script type="text/javascript" src="../src/Game_Slot.js"></script>
-    <script type="text/javascript" src="../src/Game_Inventory.js"></script>
-    <script type="text/javascript" src="../src/Items.js"></script>
-    <script type="text/javascript" src="../src/Game_Item.js"></script>
-    <script type="text/javascript" src="../src/Tileset.js"></script>
-    <script type="text/javascript" src="../src/Tilesets.js"></script>
     <script type="text/javascript" src="../src/Chara.js"></script>
     <script type="text/javascript" src="../src/Charas.js"></script>
     <script type="text/javascript" src="../src/Game_Face.js"></script>
     <script type="text/javascript" src="../src/Faces.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
+    <script type="text/javascript" src="../src/Event_Page.js"></script>
+
+    <script type="text/javascript" src="../src/Game_Skill.js"></script>
+
+    <!-- System-->
+
+    <script type="text/javascript" src="../src/System/Audio/Audio_File.js"></script>
+    <script type="text/javascript" src="../src/System/Audio/Audio.js"></script>
+
+
+
+
+    <script type="text/javascript" src="../src/Game_Icon.js"></script>
+    <script type="text/javascript" src="../src/Icons.js"></script>
+    <script type="text/javascript" src="../src/Item.js"></script>
+    <script type="text/javascript" src="../src/Items.js"></script>
+    <script type="text/javascript" src="../src/Game_Slot.js"></script>
+    <script type="text/javascript" src="../src/Game_Inventory.js"></script>
+    <script type="text/javascript" src="../src/Game_Item.js"></script>
+    <script type="text/javascript" src="../src/Tileset.js"></script>
+    <script type="text/javascript" src="../src/Tilesets.js"></script>
+
+
+
+
+
     <script type="text/javascript" src="../src/Game_Event.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
@@ -220,7 +232,7 @@
                                 20: {max:99},
                                 21: {max:99},
                                 22: {max:99},
-                                23: {max:99},
+                                23: {max:99,item:0,amount:10},
                                 armor:{
                                     max:1,
                                     type:'armor'
@@ -346,12 +358,21 @@
                         }
                     }
 
-                    for(var k  = 0; k < spriteset.width;k++){
-                        i = Math.floor(Math.random()*spriteset.width);
-                        j = Math.floor(Math.random()*spriteset.height);
-                        spriteset.set(i,j,1,['forest2',6,6]);
-                    }
                     root.Main.currentPlayerID = 1;
+
+
+                    var event = new root.Game_Event({
+                        x:100,
+                        y:100,
+                        pages:[
+                           new root.Event_Page({
+                               charaID:'char1'
+                           })
+                        ]
+                    });
+
+                    event.currentPage.stepForward(Infinity);
+                    root.Main.currentScene.add(event);
                 },
                 start:function(root){
                     if(root.Main.currentPlayer){
@@ -369,33 +390,7 @@
                         inventory_ui.visible = !inventory_ui.visible;
                     });
 
-
-                    var maxi = (root.Main.currentScene.spriteset.width*root.Main.currentScene.spriteset.height)/50;
-                    maxi = Math.floor(maxi);
-
-                    for(var i = 0; i < maxi;i++){
-                        var x = Math.random()*root.Main.currentScene.spriteset.realWidth;
-                        var y = Math.random()*root.Main.currentScene.spriteset.realHeight;
-                        root.Main.currentScene.add(new root.Game_Item({
-                            itemID:Math.floor(Math.random()*6),
-                            x:x,
-                            y:y,
-                            amount:Math.ceil(Math.random()*20)
-                        }));
-                    }
-
-
-                    var npc = new root.Game_Character({
-                        x:100,
-                        y:480,
-                        charaID:'char1',
-                        vSpeed:10,
-                        hSpeed:10,
-                        animationSpeed:6
-                    });
-                    root.Main.currentScene.add(npc);
-                   // root.Main.currentScene.focus(root.Main.currentPlayer);
-                    npc.stepForward(Infinity);
+                    root.Main.currentScene.focus(root.Main.currentPlayer);
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.root.findById('loading-progress');

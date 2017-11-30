@@ -80,7 +80,7 @@
     };
 
     function propagate_switch_changes(){
-        var scene = Main.get_current_scene();
+        var scene = Main.currentScene;
         if(scene){
             var objects = scene.listeners;
             var length = objects.length;

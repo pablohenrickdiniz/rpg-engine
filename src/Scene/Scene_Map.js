@@ -86,7 +86,9 @@
     Scene_Map.prototype.add= function(object){
         var self = this;
         self.objs.push(object);
-        self.tree.insert(object.bounds);
+        if(object.bounds){
+            self.tree.insert(object.bounds);
+        }
     };
 
     /**
@@ -99,7 +101,9 @@
         if(index != -1){
             self.objs.splice(index,1);
         }
-        self.tree.remove(object.bounds);
+        if(object.bounds){
+            self.tree.remove(object.bounds);
+        }
     };
 
     /**
@@ -282,14 +286,12 @@
         var object;
         var collision;
 
-
         var collisions = self.tree.retrieve({
             x:sx,
             y:sy,
             width:vw,
             height:vh
         });
-
 
         collisions = collisions.sort(function (a, b) {
             return a.yb-b.yb;
@@ -306,10 +308,10 @@
             collision = collisions[i];
             object = collision.object;
             bounds = object.currentFrame;
-            x = collision.xb;
-            y = collision.yb;
+            x = collision.xb-sx;
+            y = collision.yb-sy;
 
-            draw_object(x,y,object,sx,sy,mw,mh);
+            draw_object(x,y,object,mw,mh);
         }
 
 
@@ -418,20 +420,19 @@
      * @param x
      * @param y
      * @param object
-     * @param vx
-     * @param vy
      * @param vw
      * @param vh
      */
-    function draw_object(x,y,object,vx,vy,vw,vh){
+    function draw_object(x,y,object,vw,vh){
         var frame = object.currentFrame;
+
         if (frame != null && frame.image) {
             var image = frame.image;
             var i;
 
             var draws = split({
-                dx:x-vx,
-                dy:y-vy,
+                dx:x,
+                dy:y,
                 dWidth: frame.dWidth,
                 dHeight: frame.dHeight,
                 sx: frame.sx,
@@ -653,8 +654,8 @@
                         width: self.spriteset.realWidth || 640,
                         height: self.spriteset.realHeight || 640
                     },{
-                        loop_x:self.map.loop_x,
-                        loop_y:self.map.loop_y
+                        loop_x:true,
+                        loop_y:true
                     });
                 }
                 return tree;

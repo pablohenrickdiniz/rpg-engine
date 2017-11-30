@@ -291,6 +291,7 @@
         });
 
         Object.defineProperty(self,'graphic',{
+            configurable:true,
             get:function(){
                 return Charas.get(self.charaID);
             }

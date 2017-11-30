@@ -36,7 +36,7 @@
                 options.id = id;
                 options.graphic = graphic;
                 var opt = {x:0, y:0, graphic:graphic};
-                opt = Object.assign(opt,options);
+                Object.assign(opt,options);
                 return new Game_Character(opt);
             }
             return null;

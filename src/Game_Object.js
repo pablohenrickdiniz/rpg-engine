@@ -150,22 +150,27 @@
         var collisions = tree.retrieve(final_bounds, 'STEP');
         var length = collisions.length;
 
+        var movx = vec.x;
+        var movy = vec.y;
+
+
         for(var i =0; i < length;i++){
             var collision = collisions[i];
-            if (vec.x > 0 && collision.x < (final_bounds.x + bounds.width)) {
-                final_bounds.x = collision.x - bounds.width;
-            }
-            else if (vec.x < 0 && ((collision.x + collision.width) > final_bounds.x)) {
-                final_bounds.x = collision.x + collision.width;
-            }
+            if(collision.object != bounds._ref){
+                if ((vec.x > 0 && collision.xb < (collision.xa + collision.wa)) || (vec.x < 0 && ((collision.xb + collision.wb) > collision.xa))) {
+                    movx = collision.xb - collision.xa;
+                }
 
-            if (vec.y > 0 && collision.y < (final_bounds.y + bounds.height)) {
-                final_bounds.y = collision.y - bounds.height;
-            }
-            else if (vec.y < 0 && ((collision.y + collision.height) > final_bounds.y)) {
-                final_bounds.y = collision.y + collision.height;
+                if ((vec.y > 0 && collision.yb < (collision.ya + collision.ha)) || (vec.y < 0 && ((collision.yb + collision.hb) > collision.ya))) {
+                    movy = collision.yb - collision.ya;
+                }
             }
         }
+
+
+        final_bounds.x = bounds.x + movx;
+        final_bounds.y = bounds.y + movy;
+
 
 
         if(!c_map.loop_x){

@@ -4,7 +4,7 @@
     }
 
     if(root.Canvas == undefined){
-        throw "Scene requires Viewport"
+        throw "Scene requires Canvas"
     }
 
     if(root.Consts == undefined){

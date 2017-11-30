@@ -1,17 +1,9 @@
 (function (root) {
-    if (root.Game_Character == undefined) {
-        throw "Game_Event requires Game_Character"
-    }
-
     if(root.Event_Page == undefined){
         throw "Game_Event requires Event_Page"
     }
 
     var Event_Page = root.Event_Page;
-
-
-    var Game_Character = root.Game_Character,
-        Consts = root.Consts;
 
     /**
      *
@@ -20,18 +12,14 @@
      */
     var Game_Event = function (options) {
         var self = this;
-        Game_Character.call(self, options);
         self.switches = [];
         self.currentPage = null;
         self.pages = options.pages || [];
-        self.bounds.groups.push('ACTION_BUTTON');
-        self.through = true;
         initialize(self);
+        self.x = options.x || 0;
+        self.y = options.y || 0;
         self.updateCurrentPage();
     };
-
-    Game_Event.prototype = Object.create(Game_Character.prototype);
-    Game_Event.prototype.constructor = Game_Event;
 
 
     Game_Event.prototype.newPage = function(options) {
@@ -101,57 +89,29 @@
 
     Game_Event.prototype.update = function(){
         var self =this;
-        if (!self.moving && self.currentPage !== null) {
-            var page = self.currentPage;
-            switch(page.movement_type){
-                case Consts.MOVE_ROUTE:
-                    if(page.route.length > 0 && page.currentMove != -1){
-                        if(page.route[page.currentMove] == undefined){
-                             page.currentMove = page.repeatRoute?0:-1;
-                        }
-                        if(page.currentMove != -1){
-                            var move = page.route[page.currentMove];
-                            page.currentMove++;
-
-                            switch(move){
-                                case 'MOVE_UP':
-                                    self.moveUp();
-                                    break;
-                                case 'MOVE_DOWN':
-                                    self.moveDown();
-                                    break;
-                                case 'MOVE_LEFT':
-                                    self.moveLeft();
-                                    break;
-                                case 'MOVE_RIGHT':
-                                    self.moveRight();
-                                    break;
-                            }
-                        }
-                    }
-            }
+        if(self.currentPage != null){
+            self.currentPage.update();
         }
-
-        Game_Character.prototype.update.call(self);
     };
 
     /**
      *
      * @param self
      */
-    var initialize = function(self){
+    function initialize(self){
         var length = self.pages.length;
         for(var i =0; i < length;i++){
             self.pages[i].event = self;
         }
 
         var currentPage = null;
-        var currentAnimation = self.currentAnimation;
+        var x = 0;
+        var y = 0;
 
-        Object.defineProperty(self, 'graphic', {
-            get: function () {
-                if (currentPage !== null && currentPage.graphic !== null) {
-                    return currentPage.graphic;
+        Object.defineProperty(self,'currentFrame',{
+            get:function(){
+                if(currentPage){
+                    return currentPage.currentFrame;
                 }
                 return null;
             }
@@ -164,66 +124,60 @@
             },
             set:function(cp){
                 if(cp != currentPage){
+                    if(cp){
+                        cp.x = self.x;
+                        cp.y = self.y;
+                    }
                     currentPage = cp;
-                    if(currentPage != null){
-                        if(currentPage.through){
-                            self.removeCollisionGroup('STEP');
-                        }
-                        else{
-                            self.addCollisionGroup('STEP');
-                        }
 
-                        if(self.currentAnimation.running && !currentPage.walkingAnimation){
-                            self.currentAnimation.stop();
-                        }
-                        else if(!self.currentAnimation.running && currentPage.walkingAnimation){
-                            self.currentAnimation.start();
-                        }
-                    }
-                    else{
-                        self.removeCollisionGroup('STEP');
-                    }
                 }
             }
         });
 
         Object.defineProperty(self,'through',{
             get:function(){
-                return currentPage || true;
-            },
-            set:function(t){
                 if(currentPage){
-                    currentPage.through = t;
+                    return currentPage.through;
+                }
+                return true;
+            }
+        });
+
+        Object.defineProperty(self,'bounds',{
+            get:function(){
+                if(currentPage){
+                    return currentPage.bounds;
+                }
+                return null;
+            }
+        });
+
+        Object.defineProperty(self,'x',{
+            get:function(){
+                if(currentPage){
+                    return currentPage.x;
+                }
+                return x;
+            },
+            set:function(p){
+                x = p;
+                if(currentPage){
+                    currentPage.x = x;
                 }
             }
         });
 
-
-
-        Object.defineProperty(self,'currentAnimation',{
+        Object.defineProperty(self,'y',{
             get:function(){
-                return currentAnimation;
-            },
-            set:function(ca){
-                if(currentAnimation != ca){
-                    if(currentAnimation != null){
-                        currentAnimation.stop(self.graphic.startFrame);
-                    }
-                    currentAnimation = ca;
-                    if(self.walkingAnimation){
-                        self.currentAnimation.start();
-                    }
-                }
-            }
-        });
-
-        Object.defineProperty(self,'walkingAnimation',{
-            get:function(){
-                return currentPage.walkingAnimation || false;
-            },
-            set:function(wa){
                 if(currentPage){
-                    currentPage.walkingAnimation = wa;
+                    return currentPage.y;
+                }
+                return y;
+            },
+            set:function(p){
+                y = p;
+                if(currentPage){
+                    currentPage.y = y;
                 }
             }
         });
@@ -259,6 +213,7 @@
                             return false;
                         }
                     }
+                    break;
                 case 'GLOBAL':
                     var GlobalSwitches = root.GlobalSwitches;
                     for(var id in conditions[scope]){
@@ -267,6 +222,7 @@
                             return false;
                         }
                     }
+                    break;
             }
         }
 
