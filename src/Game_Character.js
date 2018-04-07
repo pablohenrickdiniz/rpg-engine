@@ -1,29 +1,29 @@
 (function (root) {
-    if (root.Animation_Time == undefined) {
+    if (root.Animation_Time === undefined) {
         throw "Game_Character requires Animation_Time"
     }
 
-    if (root.Consts == undefined) {
+    if (root.Consts === undefined) {
         throw "Game_Character requires Consts"
     }
 
-    if(root.Chara == undefined){
+    if(root.Chara === undefined){
         throw "Game_Character requires Chara"
     }
 
-    if(root.Game_Timer == undefined){
+    if(root.Game_Timer === undefined){
         throw "Game_Character requires Game_Timer"
     }
 
-    if(root.Game_Object == undefined){
+    if(root.Game_Object === undefined){
         throw "Game_Character requires Game_Object"
     }
 
-    if(root.Main.Charas == undefined){
+    if(root.Main.Charas === undefined){
         throw "Game_Character requires Charas"
     }
 
-    if(root.Main.Faces == undefined){
+    if(root.Main.Faces === undefined){
         throw "Game_Character requires Faces"
     }
 
@@ -54,63 +54,34 @@
     Game_Character.prototype = Object.create(Game_Object.prototype);
     Game_Character.prototype.constructor = Game_Character;
 
-    /**
-     *
-     * @param direction
-     * @param times
-     * @param complete
-     * @param allow
-     */
-    Game_Character.prototype.moveTo = function (direction, times, complete, allow) {
-        allow = allow === undefined ? false : allow;
+    Game_Character.prototype.moveTo = function (direction) {
         var self = this;
-        if (!self.moving || allow) {
-            self.moving = true;
-            var x = self.bounds.x;
-            var y = self.bounds.y;
-            var time = 1000 / self.animationSpeed;
-            times = times == undefined?1:times;
-            var dir = direction;
-            if(dir == Consts.CHARACTER_DIRECTION_RANDOM){
-                dir = Math.floor(Math.random()*4);
-            }
-            switch (dir) {
-                case Consts.CHARACTER_DIRECTION_UP:
-                    y -= self.vSpeed;
-                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_UP];
-                    break;
-                case Consts.CHARACTER_DIRECTION_RIGHT:
-                    x += self.hSpeed;
-                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_RIGHT];
-                    break;
-                case Consts.CHARACTER_DIRECTION_LEFT:
-                    x -= self.hSpeed;
-                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_LEFT];
-                    break;
-                case Consts.CHARACTER_DIRECTION_DOWN:
-                    y += self.vSpeed;
-                    self.currentAnimation = self.animations[Consts.CHARACTER_STEP_DOWN];
-                    break;
-            }
-
-            if (times < 1) {
-                self.moving = false;
-                if(self.type != 'Player'){
-                    self.stop();
-                }
-                if (typeof complete === 'function') {
-                    complete();
-                }
-            }
-            else {
-                self.direction = dir;
-                self.move(x, y, time, function () {
-                    self.moveTo(direction, times-1, complete, true);
-                });
-            }
+        if (direction === Consts.CHARACTER_DIRECTION_RANDOM) {
+            direction = Math.floor(Math.random() * 4);
         }
+        var x = 0;
+        var y = 0;
+        self.direction = direction;
+        switch (direction) {
+            case Consts.CHARACTER_DIRECTION_UP:
+                y = -self.vSpeed;
+                self.currentAnimation = self.animations[Consts.CHARACTER_STEP_UP];
+                break;
+            case Consts.CHARACTER_DIRECTION_RIGHT:
+                x = self.hSpeed;
+                self.currentAnimation = self.animations[Consts.CHARACTER_STEP_RIGHT];
+                break;
+            case Consts.CHARACTER_DIRECTION_LEFT:
+                x = -self.hSpeed;
+                self.currentAnimation = self.animations[Consts.CHARACTER_STEP_LEFT];
+                break;
+            case Consts.CHARACTER_DIRECTION_DOWN:
+                y = self.vSpeed;
+                self.currentAnimation = self.animations[Consts.CHARACTER_STEP_DOWN];
+                break;
+        }
+        self.move(x, y);
     };
-
 
     Game_Character.prototype.stop = function(){
         var self = this;
@@ -198,8 +169,8 @@
                 break;
             default:
                 if (direction instanceof Game_Character) {
-                    var d_x = self.bounds.x - direction.bounds.x;
-                    var d_y = self.bounds.y - direction.bounds.y;
+                    var d_x = self.body.x - direction.body.x;
+                    var d_y = self.body.y - direction.body.y;
 
                     if(Math.abs(d_x) > Math.abs(d_y)){
                         if(d_x > 0){
@@ -256,7 +227,7 @@
         var faceID = null;
         Object.defineProperty(self, 'charaID', {
             set: function (id) {
-                if (id != charaID) {
+                if (id !== charaID) {
                     charaID = id;
                     var graphic = Charas.get(id);
                     if (graphic != null) {
@@ -281,7 +252,7 @@
 
         Object.defineProperty(self, 'faceID', {
             set: function (id) {
-                if (id != faceID) {
+                if (id !== faceID) {
                     faceID = id;
                 }
             },

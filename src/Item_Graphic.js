@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Game_Graphic == undefined){
+    if(root.Game_Graphic === undefined){
         throw "Item_Graphic requires Game_Graphic"
     }
 
-    if(root.Tile == undefined){
+    if(root.Tile === undefined){
         throw "Item_Graphic requires Tile"
     }
 

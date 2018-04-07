@@ -1,5 +1,5 @@
 (function (w) {
-    if (w.Audio == undefined) {
+    if (w.Audio === undefined) {
         throw "AudioLoader requires Audio support"
     }
 
@@ -56,7 +56,7 @@
                 function q(audio, id) {
                     loaded[id] = audio;
                     length--;
-                    if (length == 0 && onsuccess) {
+                    if (length === 0 && onsuccess) {
                         onsuccess(loaded);
                     }
                 }
@@ -90,7 +90,7 @@
             var onglobalprogress = options.onglobalprogress || null;
             var globalprogress = options.globalprogress || new GlobalProgress();
 
-            if (audios[url] == undefined) {
+            if (audios[url] === undefined) {
                 var audio = new Audio();
                 //img.crossOrigin = "Anonymous";
                 audio.src = url;
@@ -124,7 +124,7 @@
                 function timeupdate_callback () {
                     var loaded = loaded_audio(audio);
 
-                    if(loaded == audio.duration){
+                    if(loaded === audio.duration){
                         audio.pause();
                         audio.volume = 1;
                         audio.playbackRate = audio.defaultPlaybackRate;
@@ -133,7 +133,7 @@
                     }
                     else {
                         var progress = current_progress(audio);
-                        if(progress != old_progress){
+                        if(progress !== old_progress){
                             old_progress = progress;
                             if(globalprogress){
                                 if(media == null){

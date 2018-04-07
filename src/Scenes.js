@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Scenes requires RPG Main";
     }
 
-    if(root.Scene == undefined){
+    if(root.Scene === undefined){
         throw "Scenes requires Scene";
     }
 
@@ -20,7 +20,7 @@
             }
         },
         get:function(id){
-            if(scenes[id] != undefined){
+            if(scenes[id] !== undefined){
                 return scenes[id];
             }
             return null;

@@ -1,15 +1,15 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Tilesets requires Main"
     }
     else{
-        if(root.Main.Graphics == undefined){
+        if(root.Main.Graphics === undefined){
             throw "Tilesets requires Graphics"
         }
     }
 
 
-    if(root.Tileset == undefined){
+    if(root.Tileset === undefined){
         throw "Tilesets requires Tileset";
     }
 
@@ -21,7 +21,7 @@
 
     Main.Tilesets = {
         get:function(id){
-            if(tilesets[id] != undefined){
+            if(tilesets[id] !== undefined){
                 return tilesets[id];
             }
             return tilesets[id];

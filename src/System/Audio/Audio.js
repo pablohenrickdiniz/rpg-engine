@@ -1,9 +1,9 @@
 (function (root) {
-    if(root.Game_Timer == undefined){
+    if(root.Game_Timer === undefined){
         throw "Audio requires Game_Timer"
     }
 
-    if(root.Audio_File == undefined){
+    if(root.Audio_File === undefined){
         throw "Audio requires AudioInstance"
     }
 
@@ -33,7 +33,7 @@
         play: function (type, name, id,loop) {
             if (audios[type] && audios[type][name]) {
                 var src =audios[type][name];
-                if(playing[type] == undefined){
+                if(playing[type] === undefined){
                     playing[type] = {};
                 }
 
@@ -66,7 +66,7 @@
         },
         fade:function(type,id,time,finish){
             if(playing[type] && playing[type][id]){
-                if(fade[type] == undefined){
+                if(fade[type] === undefined){
                     fade[type] = {};
                 }
 
@@ -111,17 +111,17 @@
             }
         },
         set: function (type, name, src) {
-            if (audios[type] == undefined) {
+            if (audios[type] === undefined) {
                 audios[type] = {};
             }
 
-            if (audios[type][name] != src) {
+            if (audios[type][name] !== src) {
                 audios[type][name] = src;
             }
         },
         unset: function (type, name) {
-            if (audios[type] != undefined) {
-                if (audios[type][name] != undefined) {
+            if (audios[type] !== undefined) {
+                if (audios[type][name] !== undefined) {
                     delete audios[type][name];
                 }
             }

@@ -20,7 +20,7 @@
     <!-- Canvas Engine-->
     <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasEngine.js"></script>
     <script type="text/javascript" src="../plugins/canvas-engine/src/dist/js/CanvasLayer.js"></script>
-
+    <script type="text/javascript" src="../plugins/Matter/build/matter.min.js"></script>
     <!-- Rpg Engine-->
     <script type="text/javascript" src="../plugins/math-lib/src/Math.js"></script>
     <script type="text/javascript" src="../plugins/Mouse/src/mouse.js"></script>
@@ -38,16 +38,14 @@
     <script type="text/javascript" src="../src/Tile.js"></script>
     <script type="text/javascript" src="../src/Animated_Tile.js"></script>
     <script type="text/javascript" src="../src/Spriteset_Map.js"></script>
-    <script type="text/javascript" src="../src/Game_Object.js"></script>
-    <script type="text/javascript" src="../src/Game_Map.js"></script>
-    <script type="text/javascript" src="../src/Consts.js"></script>
-
-
-    <script type="text/javascript" src="../src/System/Canvas.js"></script>
-
     <!--Scene-->
+    <script type="text/javascript" src="../src/Consts.js"></script>
+    <script type="text/javascript" src="../src/System/Canvas.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
+    <script type="text/javascript" src="../src/Game_Map.js"></script>
     <script type="text/javascript" src="../src/Game/Main.js"></script>
+    <script type="text/javascript" src="../src/Game_Object.js"></script>
+
     <script type="text/javascript" src="../src/Graphics.js"></script>
     <script type="text/javascript" src="../src/Game_Graphic.js"></script>
     <script type="text/javascript" src="../src/Chara.js"></script>
@@ -134,15 +132,15 @@
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
                     tilesets:{
-                        forest1:'http://www.agenciaw3s.com.br/dev/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200001.png',
-                        forest2:'http://www.agenciaw3s.com.br/dev/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200091.png'
+                        forest1:'http://localhost/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200001.png',
+                        forest2:'http://localhost/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200091.png'
                     },
                     charasets:{
-                        char01:'http://www.agenciaw3s.com.br/dev/resources/Charasets/VARIOUS%204.200/0183.png',
+                        char01:'http://localhost/resources/Charasets/VARIOUS%204.200/0183.png',
                         male:'http://localhost/resources/White_Male_11_00_11_152_12_00_00_00_00_12_%2000_50_VX.png'
                     },
                     faces:{
-                        face01:'http://agenciaw3s.com.br/dev/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
+                        face01:'http://localhost/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
                     },
                     icons:{
                         icon01:'http://localhost/resources/Icons/Misc%2001%20(1.970)/Misc01%20-%200005.png',
@@ -151,7 +149,7 @@
                 },
                 audios:{
                     music:{
-                        music1:'http://www.agenciaw3s.com.br/dev/resources/Audio/Music%20OGG/Final%20Fantasy%20IX%20-%20Awakened%20Forest.ogg'
+                        music1:'http://localhost/resources/Audio/Music%20OGG/Final%20Fantasy%20IX%20-%20Awakened%20Forest.ogg'
                     },
                     fx:{
                         inventory:'http://localhost/resources/Audio/Sound%20FX/Pack%20-%20Big%20Category%20Pack/COMMUN~1/SW46DE~1.ogg'
@@ -202,8 +200,8 @@
                         y:0,
                         charaID:'char1',
                         faceID:'face01',
-                        vSpeed:32,
-                        hSpeed:32,
+                        vSpeed:0.001,
+                        hSpeed:0.001,
                         animationSpeed:6,
                         type:'Player',
                         name:'Pablo Henrick Diniz',
@@ -360,19 +358,6 @@
 
                     root.Main.currentPlayerID = 1;
 
-
-                    var event = new root.Game_Event({
-                        x:100,
-                        y:100,
-                        pages:[
-                           new root.Event_Page({
-                               charaID:'char1'
-                           })
-                        ]
-                    });
-
-                    event.currentPage.stepForward(Infinity);
-                    root.Main.currentScene.add(event);
                 },
                 start:function(root){
                     if(root.Main.currentPlayer){
@@ -391,6 +376,26 @@
                     });
 
                     root.Main.currentScene.focus(root.Main.currentPlayer);
+                    var spriteset =root.Main.currentScene.spriteset;
+
+
+
+                    for(var i =0; i < 2;i++){
+                        var event = new root.Game_Event({
+                            x:Math.floor(Math.random()*spriteset.realWidth),
+                            y:Math.floor(Math.random()*spriteset.realHeight),
+                            pages:[
+                                new root.Event_Page({
+                                    charaID:'char1'
+                                })
+                            ]
+                        });
+
+                        root.Main.currentScene.add(event);
+                      //  event.currentPage.stepRandom(100);
+                    }
+
+
                 },
                 onprogress:function(progress){
                     var progress_bar = RPG.UI.root.findById('loading-progress');

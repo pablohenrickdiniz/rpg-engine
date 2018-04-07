@@ -1,22 +1,22 @@
 (function (root, w) {
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Scene_Loader requires Main"
     }
     else{
-        if(root.Main.Graphics == undefined){
+        if(root.Main.Graphics === undefined){
             throw "Scene_Loader requires Graphics"
         }
     }
 
-    if (w.Graphic_Loader == undefined) {
+    if (w.Graphic_Loader === undefined) {
         throw "SceneLoader requires Graphic_Loader"
     }
 
-    if (w.Audio_Loader == undefined) {
+    if (w.Audio_Loader === undefined) {
         throw "SceneLoader requires Audio_Loader"
     }
 
-    if (root.Audio == undefined) {
+    if (root.Audio === undefined) {
         throw "SceneLoader requires Audio"
     }
 
@@ -60,7 +60,7 @@
             }
         }
 
-        if(total == 0){
+        if(total === 0){
             onsuccess();
         }
 

@@ -1,33 +1,41 @@
 (function (w) {
     /*Canvas Engine*/
-    if (w.CE == undefined) {
+    if (w.CE === undefined) {
         throw 'RPG requires Canvas Engine'
     }
 
     /*Keyboard*/
-    if (w.Keyboard == undefined) {
+    if (w.Keyboard === undefined) {
         throw "RPG requires Keyboard"
     }
 
     /*Mouse*/
-    if (w.Mouse == undefined) {
+    if (w.Mouse === undefined) {
         throw "RPG requires Mouse"
     }
 
     /*TimeTicker*/
-    if (w.TimerTicker == undefined) {
+    if (w.TimerTicker === undefined) {
         throw "RPG requires TimeTicker"
     }
 
+    if(w.Matter === undefined){
+        throw "RPG requires Matter"
+    }
 
     var Keyboard = w.Keyboard,
         Mouse = w.Mouse,
-        TimerTicker = w.TimerTicker;
+        TimerTicker = w.TimerTicker,
+        Matter = w.Matter,
+        Engine = Matter.Engine,
+        Render = Matter.Render;
 
 
     w.RPG = {
         Game_Timer: new TimerTicker(),
         Canvas: null,
+        Render: null,
+        engine: Engine.create(),
         Controls: {
             Keyboard: null,
             Mouse: null
@@ -71,9 +79,16 @@
                 height: w.innerHeight
             });
 
+            self.engine.world.gravity = {x:0,y:0};
+
+            // self.Render = Render.create({
+            //     element:container,
+            //     engine:self.engine
+            // });
+
             self.UI.width = w.innerWidth;
             self.UI.height = w.innerHeight;
-            self.Game_Timer.stop();
+        //    self.Game_Timer.stop();
             unbind(self);
             bind(self);
         }
@@ -93,7 +108,7 @@
         Keyboard.removeShortcutListener('ENTER', actionbutton);
         Keyboard.removeShortcutListener('PLUS',zoomin);
         Keyboard.removeShortcutListener('MINUS',zoomout);
-        Canvas.removeEventListener('resize',canvasresize);
+       Canvas.removeEventListener('resize',canvasresize);
 
     }
 
@@ -151,10 +166,10 @@
     }
 
     function windowresize(){
-        var Canvas = RPG.Canvas;
-        var UI = RPG.UI;
-        Canvas.height = w.innerHeight;
-        Canvas.width = w.innerWidth;
+       var Canvas = RPG.Canvas;
+       var UI = RPG.UI;
+       Canvas.height = w.innerHeight;
+       Canvas.width = w.innerWidth;
         UI.height = w.innerHeight;
         UI.width = w.innerWidth;
     }

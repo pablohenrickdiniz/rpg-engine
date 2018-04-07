@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Game_Actor == undefined){
+    if(root.Game_Actor === undefined){
         throw "Actors requires Game_Actor"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Actors requires RPG Main";
     }
 
@@ -18,7 +18,7 @@
             }
         },
         get:function(id){
-            if(actors[id] != undefined){
+            if(actors[id] !== undefined){
                return actors[id];
             }
             return null;

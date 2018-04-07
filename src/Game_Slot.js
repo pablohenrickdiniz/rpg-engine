@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Item == undefined){
+    if(root.Item === undefined){
         throw "Game_Slot requires Item"
     }
 
-    if(root.Main.Items == undefined){
+    if(root.Main.Items === undefined){
         throw "Game_Slot requires Items"
     }
 
@@ -19,7 +19,7 @@
         self.max = options.max || 99;
         self.amount = options.amount || 0;
 
-        if(options.item == 0){
+        if(options.item === 0){
             self.item = options.item
         }
         else{
@@ -52,7 +52,7 @@
                 if(!isNaN(a) && a >= 0){
                     a = Math.min(a,max);
                     amount = a;
-                    if(amount == 0){
+                    if(amount === 0){
                         item = null;
                     }
                 }
@@ -76,8 +76,7 @@
                 return item;
             },
             set:function(i){
-                if(item == null || (item instanceof Item && i != item) || (/^[0-9]+$/.test(i) && i != item.id)){
-
+                if(item == null || (item instanceof Item && i !== item) || (/^[0-9]+$/.test(i) && i !== item.id)){
                     if(/^[0-9]+$/.test(i)){
                         i = Items.get(i);
                     }

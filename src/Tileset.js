@@ -1,18 +1,18 @@
 (function (root) {
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Tileset requires Main"
     }
     else{
-        if(root.Main.Graphics == undefined){
+        if(root.Main.Graphics === undefined){
             throw "Tileset requires Graphics"
         }
     }
 
-    if (root.Tile == undefined) {
+    if (root.Tile === undefined) {
         throw "Tileset requires Tile"
     }
 
-    if(root.Game_Graphic == undefined){
+    if(root.Game_Graphic === undefined){
         throw "Tileset requires Game_Graphic"
     }
 
@@ -79,11 +79,11 @@
     Tileset.prototype.get = function (i, j) {
         var self = this;
         if (i >= 0 && i < self.rows && j >= 0 && j < self.cols) {
-            if (self.sprites[i] == undefined) {
+            if (self.sprites[i] === undefined) {
                 self.sprites[i] = [];
             }
 
-            if (self.sprites[i][j] == undefined) {
+            if (self.sprites[i][j] === undefined) {
                 self.sprites[i][j] = new Tile({
                     tileset:self,
                     i:i,
@@ -106,7 +106,7 @@
         var self = this;
         if(i >= 0 && i < self.rows && j >= 0 && j < self.cols){
             if(val){
-                if(self.collision[i] == undefined){
+                if(self.collision[i] === undefined){
                     self.collision[i] = [];
                 }
                 self.collision[i][j] = 1;
@@ -168,7 +168,7 @@
                 return rows;
             },
             set:function(r){
-                if(r != rows){
+                if(r !== rows){
                     rows = r;
                     self.sprites = [];
                     self.collision = [];
@@ -181,7 +181,7 @@
                 return cols;
             },
             set:function(c){
-                if(c != cols){
+                if(c !== cols){
                     cols = c;
                     self.sprites = [];
                     self.collision = [];

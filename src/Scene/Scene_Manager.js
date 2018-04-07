@@ -1,24 +1,24 @@
 (function (root) {
-    if (root.Scene_Loader == undefined) {
+    if (root.Scene_Loader === undefined) {
         throw "Scene_Manager requires Scene_Loader"
     }
 
-    if(root.Scene_Map_Loader == undefined){
+    if(root.Scene_Map_Loader === undefined){
         throw "Scene_Manager requires Scene_Map_Loader"
     }
 
-    if (root.Main == undefined) {
+    if (root.Main === undefined) {
         throw "Scene_Manager requires Main"
     }
-    else if(root.Main.Scenes == undefined){
+    else if(root.Main.Scenes === undefined){
         throw "Scene_Manager requires Main.Scenes"
     }
 
-    if(root.Game_Timer == undefined){
+    if(root.Game_Timer === undefined){
         throw "Scene_Manager requires Game_Timer"
     }
 
-    if(root.Scene_Map == undefined){
+    if(root.Scene_Map === undefined){
         throw "Scene_Manager requires Scene_Map"
     }
 

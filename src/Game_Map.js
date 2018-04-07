@@ -35,7 +35,7 @@
     Game_Map.prototype.remove = function (obj) {
         var self = this;
         var index = self.listeners.indexOf(obj);
-        if (index != -1) {
+        if (index !== -1) {
             delete obj.parent;
         }
     };

@@ -1,5 +1,5 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Variables requires RPG Main"
     }
 
@@ -11,7 +11,7 @@
             variables[id] = value;
         },
         get:function(id){
-            if(variables[id] != undefined){
+            if(variables[id] !== undefined){
                 return variables[id];
             }
             return null;

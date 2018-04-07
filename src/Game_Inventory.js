@@ -21,10 +21,10 @@
             var to = self.slots[slotB];
 
             if (from.hasItem()) {
-                if (to.type == 'generic' || from.item.type == to.type) {
+                if (to.type === 'generic' || from.item.type === to.type) {
                     if (to.hasItem()) {
                         var swap = false;
-                        if(from.item == to.item){
+                        if(from.item === to.item){
                             if (to.freeAmount > 0) {
                                 var qtd = Math.min(from.amount, to.freeAmount);
                                 from.amount -= qtd;
@@ -35,7 +35,7 @@
                                 swap = true;
                             }
                         }
-                        else if(from.type == 'generic' || to.item.type == from.type){
+                        else if(from.type === 'generic' || to.item.type === from.type){
                             swap = true;
                         }
 
@@ -67,7 +67,7 @@
         if(!self.listeners[event]){
             self.listeners[event] = [];
         }
-        if(self.listeners[event].indexOf(callback) == -1){
+        if(self.listeners[event].indexOf(callback) === -1){
             self.listeners[event].push(callback);
         }
     };
@@ -77,7 +77,7 @@
         var self = this;
         if(self.listeners[event]){
             var index = self.listeners[event].indexOf(callback);
-            if(index != -1){
+            if(index !== -1){
                 self.listeners[event].splice(index,1);
             }
         }
@@ -101,13 +101,13 @@
         var length = keys.length;
 
         for(var i =0; i < length;i++){
-            if(amount == 0){
+            if(amount === 0){
                 break;
             }
 
             var slot = self.slots[keys[i]];
 
-            if((item.type == slot.type || slot.type == 'generic') && (!slot.hasItem() || slot.item == item) && slot.freeAmount > 0){
+            if((item.type === slot.type || slot.type === 'generic') && (!slot.hasItem() || slot.item === item) && slot.freeAmount > 0){
                 var add = amount;
                 if(slot.freeAmount < amount){
                     add = slot.freeAmount;
@@ -143,7 +143,7 @@
                 return slots;
             },
             set:function(sls){
-                if(sls.constructor == {}.constructor){
+                if(sls.constructor === {}.constructor){
                     var keys = Object.keys(sls);
                     var length = keys.length;
                     for(var i = 0; i < length;i++){

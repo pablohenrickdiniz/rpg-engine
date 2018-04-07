@@ -1,43 +1,51 @@
-(function (root) {
-    if (window.QuadTree == undefined) {
+(function (root,w) {
+    if (w.QuadTree === undefined) {
         throw "Scene_Map requires QuadTree"
     }
 
-    if (root.Scene == undefined) {
+    if (root.Scene === undefined) {
         throw "Scene_Map requires Scene"
     }
 
-    if (root.Canvas == undefined) {
+    if (root.Canvas === undefined) {
         throw "Scene_Map requires Canvas"
     }
 
-    if (root.Game_Item == undefined) {
+    if (root.Game_Item === undefined) {
         throw "Scene_Map requires Game_Item"
     }
 
-    if (root.Game_Event == undefined) {
+    if (root.Game_Event === undefined) {
         throw "Scene_Map requires Game_Event"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Scene_Map requires Main"
     }
     else{
-        if (root.Main.Graphics == undefined) {
+        if (root.Main.Graphics === undefined) {
             throw "Scene_Map requires Graphics"
         }
 
-        if(root.Main.Tilesets == undefined){
+        if(root.Main.Tilesets === undefined){
             throw "Scene_Map requires Tilesets"
         }
     }
 
-    if(root.Spriteset_Map == undefined){
+    if(root.Spriteset_Map === undefined){
         throw "Scene_Map requires Spriteset_Map"
     }
 
-    if(root.Game_Object == undefined){
+    if(root.Game_Object === undefined){
         throw "Scene_Map requires Game_Object"
+    }
+
+    if(w.Matter === undefined){
+        throw "Scene_Map requires Matter"
+    }
+
+    if(root.Canvas === undefined){
+        throw "Scene_Map requires Canvas"
     }
 
     var Scene = root.Scene,
@@ -49,7 +57,10 @@
         Spriteset_Map = root.Spriteset_Map,
         Game_Object = root.Game_Object,
         Tilesets = Main.Tilesets,
-        Graphics =  Main.Graphics;
+        Graphics =  Main.Graphics,
+        Matter = w.Matter,
+        Engine = Matter.Engine,
+        World = Matter.World;
 
     var clear_queue = [];
     var bg_refreshed = false;
@@ -86,8 +97,8 @@
     Scene_Map.prototype.add= function(object){
         var self = this;
         self.objs.push(object);
-        if(object.bounds){
-            self.tree.insert(object.bounds);
+        if(object.body){
+            World.add(root.engine.world,object.body);
         }
     };
 
@@ -98,11 +109,11 @@
     Scene_Map.prototype.remove = function(object){
         var self = this;
         var index = self.objs.indexOf(object);
-        if(index != -1){
+        if(index !== -1){
             self.objs.splice(index,1);
         }
-        if(object.bounds){
-            self.tree.remove(object.bounds);
+        if(object.body){
+            World.remove(root.engine.world,object.body);
         }
     };
 
@@ -126,25 +137,15 @@
     Scene_Map.prototype.step = function () {
         var self = this;
         Scene.prototype.step.apply(this);
-        if(Main.currentPlayer){
-            action_events(self);
-        }
+        step_collisions(self);
+        // if(Main.currentPlayer){
+        //     action_events(self);
+        // }
         step_events(self);
         step_focus(self);
         refresh_bg(self);
         clear_graphics(self);
         draw_graphics(self);
-        if(root.debug){
-            drawquadtree(self.tree,true);
-            clear_queue.push({
-                layer_type:Consts.UI_LAYER,
-                layer:0,
-                x:0,
-                y:0,
-                width:Canvas.width,
-                height:Canvas.height
-            });
-        }
     };
 
 
@@ -183,7 +184,6 @@
 
         var width = Math.min(Canvas.width,self.spriteset.realWidth);
         var height = Math.min(Canvas.height,self.spriteset.realHeight);
-
 
         var tileWidth = spriteset.tileWidth;
         var tileHeight = spriteset.tileHeight;
@@ -235,7 +235,9 @@
                                 var th = Math.min(tileHeight,hdy);
                                 var tsw = Math.min(tile.sWidth,wdx);
                                 var tsh = Math.min(tile.sHeight,hdy);
-                                context.drawImage(tile.image, tile.sx, tile.sy, tsw,tsh, dx, dy, tw,th);
+
+
+                                context.drawImage(tile.image, tile.sx, tile.sy, 32,32, dx, dy, tw,th);
                             }
                         }
                     }
@@ -277,44 +279,18 @@
      * Renderiza os objetos no mapa
      */
     function draw_graphics(self) {
-        var i;
         var sx = root.Canvas.x;
         var sy = root.Canvas.y;
         var spriteset = self.spriteset;
-        var vw = Math.min(root.Canvas.width,spriteset.realWidth);
-        var vh = Math.min(root.Canvas.height,spriteset.realHeight);
-        var object;
-        var collision;
 
-        var collisions = self.tree.retrieve({
-            x:sx,
-            y:sy,
-            width:vw,
-            height:vh
-        });
-
-        collisions = collisions.sort(function (a, b) {
-            return a.yb-b.yb;
-        });
-
-        var size = collisions.length;
-        var bounds;
         var mw = spriteset.realWidth;
         var mh = spriteset.realHeight;
-        var x;
-        var y;
 
-        for (i = 0; i < size; i++) {
-            collision = collisions[i];
-            object = collision.object;
-            bounds = object.currentFrame;
-            x = collision.xb-sx;
-            y = collision.yb-sy;
-
-            draw_object(x,y,object,mw,mh);
+        for(var i =0; i < self.objs.length;i++){
+            var x = self.objs[i].x-sx;
+            var y = self.objs[i].y-sy;
+            draw_object(x,y,self.objs[i],mw,mh);
         }
-
-
     }
 
     function splith(o,vw){
@@ -322,7 +298,7 @@
 
         var dxw = o.dx+o.dWidth;
 
-        if(o.dx > vw){
+        if(o.dx >= vw){
             frames[0] = clone(o);
             Object.assign(frames[0],{dx:o.dx-vw});
         }
@@ -360,7 +336,7 @@
     function splitv(o,vh){
         var frames = [];
         var dxh = o.dy+o.dHeight;
-        if(o.dy > vh){
+        if(o.dy >= vh){
             frames[0] = clone(o);
             Object.assign(frames[0],{dy:o.dy-vh});
         }
@@ -445,6 +421,23 @@
 
             for(i =0; i < draws.length;i++){
                 Canvas.drawImage(image,draws[i]);
+                if(RPG.debug){
+                    Canvas.drawRect({
+                        x:Math.round(draws[i].dx),
+                        y:Math.round(draws[i].dy),
+                        width:draws[i].dWidth,
+                        height:draws[i].dHeight,
+                        lineWidth:1
+                    });
+                    clear_queue.push({
+                        layer_type:Consts.EFFECT_LAYER,
+                        layer:0,
+                        x:Math.round(draws[i].dx-1),
+                        y:Math.round(draws[i].dy-1),
+                        width:draws[i].dWidth+2,
+                        height:draws[i].dHeight+2
+                    });
+                }
                 clear_queue.push({
                     layer_type:draws[i].type,
                     layer:draws[i].layer,
@@ -470,8 +463,8 @@
                 var spriteset = self.spriteset;
                 var viewport_width = Math.min(Canvas.width, spriteset.realWidth);
                 var viewport_height = Math.min(Canvas.height, spriteset.realHeight);
-                var viewport_x = obj.bounds.x - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
-                var viewport_y = obj.bounds.y - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
+                var viewport_x = obj.body.x - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
+                var viewport_y = obj.body.y - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
                 var max_screen_x = spriteset.realWidth - viewport_width;
                 var max_screen_y = spriteset.realHeight - viewport_height;
 
@@ -519,6 +512,14 @@
         for (i = 0; i < length; i++) {
             objs[i].update();
         }
+
+    }
+
+    /**
+     *
+     */
+    function step_collisions(self){
+        Engine.update(root.engine);
     }
 
     /**
@@ -530,10 +531,10 @@
         var tree = self.tree;
 
         var bounds_tmp = {
-            x: player.bounds.x,
-            y: player.bounds.y,
-            width: player.bounds.width,
-            height: player.bounds.height,
+            x: player.body.x,
+            y: player.body.y,
+            width: player.body.width,
+            height: player.body.height,
             groups: ['ACTION_BUTTON']
         };
 
@@ -579,10 +580,10 @@
         }
 
         bounds_tmp = {
-            x: player.bounds.x,
-            y: player.bounds.y,
-            width: player.bounds.width,
-            height: player.bounds.height,
+            x: player.body.x,
+            y: player.body.y,
+            width: player.body.width,
+            height: player.body.height,
             groups: ['ITEM']
         };
 
@@ -677,4 +678,4 @@
     }
 
     root.Scene_Map = Scene_Map;
-})(RPG);
+})(RPG,window);

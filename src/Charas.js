@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Chara == undefined){
+    if(root.Chara === undefined){
         throw "Charas requires Chara"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Charas requires Main"
     }
 
@@ -13,7 +13,7 @@
 
     Main.Charas = {
         get:function(id){
-            if(charas[id] != undefined){
+            if(charas[id] !== undefined){
                 return charas[id];
             }
             return null;

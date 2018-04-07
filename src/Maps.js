@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Maps requires Main"
     }
 
-    if(root.Game_Map == undefined){
+    if(root.Game_Map === undefined){
         throw "Maps requires Game_Map"
     }
 
@@ -20,7 +20,7 @@
             }
         },
         get:function(id){
-            if(maps[id] != undefined){
+            if(maps[id] !== undefined){
                 return maps[id];
             }
             return null;

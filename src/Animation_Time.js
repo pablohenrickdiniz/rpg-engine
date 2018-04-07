@@ -26,21 +26,21 @@
         var self = this;
         var frames = self.getFrames();
         if (frames < self.frame_count) {
-            if (self.direction == 'negative') {
+            if (self.direction === 'negative') {
                 return self.frame_count - 1 - frames;
             }
             return frames;
         }
         else {
             if (self.stop_on_end) {
-                if (self.direction == 'negative') {
+                if (self.direction === 'negative') {
                     return 0;
                 }
                 return self.frame_count - 1;
             }
 
             var mod = frames % self.frame_count;
-            if (self.direction == 'negative') {
+            if (self.direction === 'negative') {
                 return self.frame_count - 1 - mod;
             }
 
@@ -62,7 +62,7 @@
             diff = self.end_time - self.start_time;
         }
 
-        if (diff == 0) {
+        if (diff === 0) {
             return 0;
         }
 
@@ -92,8 +92,8 @@
         if (!self.running) {
             self.running = true;
             self.start_time = Game_Timer.currentTime;
-            self.stop_on_end = stop_on_end == undefined ? false : stop_on_end;
-            self.direction = direction == undefined ? 'positive' : direction;
+            self.stop_on_end = stop_on_end === undefined ? false : stop_on_end;
+            self.direction = direction === undefined ? 'positive' : direction;
         }
     };
 

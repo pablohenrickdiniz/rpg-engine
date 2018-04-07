@@ -1,6 +1,19 @@
-(function(root){
+(function(root,w){
     var ID = 0;
     var Game_Timer = root.Game_Timer;
+
+    if(root.Main === undefined){
+        throw "Game Object requires Main"
+    }
+
+    if(w.Matter === undefined){
+        throw "Game Object requires Matter"
+    }
+
+    var Main = root.Main,
+        Matter = w.Matter,
+        Bodies = Matter.Bodies,
+        Body = Matter.Body;
 
     var Game_Object = function(options){
         var self = this;
@@ -10,26 +23,22 @@
         ID++;
         self.animations = [];
         self.animationSpeed = options.animationSpeed || 4;
-        self.bounds = {
-            x:options.x || 0,
-            y:options.y || 0,
-            width: options.width || 32,
-            height: options.height || 32,
-            _ref: self,
-            groups: [],
-            parents:[]
-        };
+        self.body = Bodies.rectangle(
+            options.x || 0,
+            options.y || 0,
+            options.width || 32,
+            options.height || 32,{
+                frictionAir:0.09
+            });
         self.layer = options.layer || 2;
-        self.hSpeed = options.hSpeed || 32;
-        self.vSpeed = options.vSpeed || 32;
-        self.moving = false;
+        self.hSpeed = options.hSpeed || 0.02;
+        self.vSpeed = options.vSpeed || 0.02;
         self.currentAnimation = null;
         self.type = options.type || 'Object';
         self.through = options.through || false;
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
-        self._movement = null;
     };
 
     Game_Object.prototype.clone = function(properties){
@@ -42,76 +51,26 @@
 
     Game_Object.prototype.addCollisionGroup = function(group){
         var self = this;
-        QuadTree.addGroup(self.bounds,group);
+       // QuadTree.addGroup(self.bounds,group);
     };
 
     Game_Object.prototype.removeCollisionGroup = function(name){
         var self = this;
-        QuadTree.removeGroup(self.bounds,name);
+        //QuadTree.removeGroup(self.bounds,name);
     };
 
 
     Game_Object.prototype.update = function () {
         var self = this;
-        var scene = root.Main.currentScene;
-        var c_map = scene.map;
-        var spriteset = scene.spriteset;
-
-        if (self._movement != null) {
-            var data = self._movement;
-            var diff = Game_Timer.currentTime - data.start;
-            var bounds = self.bounds;
-            var x;
-            var y;
-            if (diff >= data.time) {
-                x = data.epos.x;
-                y = data.epos.y;
-
-                if(c_map.loop_x){
-                    x = calcloop(x,spriteset.realWidth);
-                }
-                if(c_map.loop_y){
-                    y = calcloop(y,spriteset.realHeight);
-                }
-
-                bounds.x = x;
-                bounds.y = y;
-                var callback = data.complete;
-                self._movement = null;
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            }
-            else {
-                /**
-                 * Distância pecorrida baseada no tempo
-                 * @type {number}
-                 */
-                var distance_x = (data.epos.x - data.spos.x);
-                var distance_y = (data.epos.y - data.spos.y);
-                x = data.spos.x + ((distance_x * diff) / data.time);
-                y = data.spos.y + ((distance_y * diff) / data.time);
-
-
-                /**
-                 * Verificação de loop horizontal
-                 */
-                if(c_map.loop_x){
-                    x = calcloop(x,spriteset.realWidth);
-                }
-
-                /**
-                 * Verificação de loop vertical
-                 */
-                if(c_map.loop_y){
-                    y = calcloop(y,spriteset.realHeight);
-                }
-
-                bounds.x = x;
-                bounds.y = y;
-                QuadTree.reInsert(bounds);
-            }
+        var x = self.x;
+        var y = self.y;
+        if(Main.currentScene && Main.currentScene.spriteset){
+            var spriteset = Main.currentScene.spriteset;
+            x = calcloop(x,spriteset.realWidth);
+            y = calcloop(y,spriteset.realHeight);
         }
+        self.x = x;
+        self.y = y;
     };
 
     /**
@@ -134,109 +93,13 @@
 
     /**
      *
-     * @param bounds
-     * @param ex
-     * @param ey
-     * @param time
-     * @returns {{x: *, y: *, time: number}}
-     */
-    function calculate_final_position(bounds, ex, ey, time) {
-        var final_bounds = {x: ex, y: ey, width: bounds.width, height: bounds.height, groups: ['STEP']};
-        var vec = {x: ex - bounds.x, y: ey - bounds.y};
-        var scene = root.Main.currentScene;
-        var c_map = scene.map;
-        var spriteset = scene.spriteset;
-        var tree = scene.tree;
-        var collisions = tree.retrieve(final_bounds, 'STEP');
-        var length = collisions.length;
-
-        var movx = vec.x;
-        var movy = vec.y;
-
-
-        for(var i =0; i < length;i++){
-            var collision = collisions[i];
-            if(collision.object != bounds._ref){
-                if ((vec.x > 0 && collision.xb < (collision.xa + collision.wa)) || (vec.x < 0 && ((collision.xb + collision.wb) > collision.xa))) {
-                    movx = collision.xb - collision.xa;
-                }
-
-                if ((vec.y > 0 && collision.yb < (collision.ya + collision.ha)) || (vec.y < 0 && ((collision.yb + collision.hb) > collision.ya))) {
-                    movy = collision.yb - collision.ya;
-                }
-            }
-        }
-
-
-        final_bounds.x = bounds.x + movx;
-        final_bounds.y = bounds.y + movy;
-
-
-
-        if(!c_map.loop_x){
-            if (final_bounds.x < 0) {
-                final_bounds.x = 0;
-            }
-            else if (final_bounds.x > spriteset.realWidth - bounds.width) {
-                final_bounds.x = spriteset.realHeight - bounds.height;
-            }
-            else if (vec.x > 0) {
-                final_bounds.x = Math.max(final_bounds.x, bounds.x);
-            }
-            else if (vec.x < 0) {
-                final_bounds.x = Math.min(final_bounds.x, bounds.x);
-            }
-            else {
-                final_bounds.x = bounds.x;
-            }
-        }
-
-        if(!c_map.loop_y){
-            if (final_bounds.y < 0) {
-                final_bounds.y = 0;
-            }
-            else if (final_bounds.y > spriteset.realWidth - bounds.width) {
-                final_bounds.y = spriteset.realHeight - bounds.height;
-            }
-            else if (vec.y > 0) {
-                final_bounds.y = Math.max(final_bounds.y, bounds.y);
-            }
-            else if (vec.y < 0) {
-                final_bounds.y = Math.min(final_bounds.y, bounds.y);
-            }
-            else {
-                final_bounds.y = bounds.y;
-            }
-        }
-
-        var distance_a = Math.distance({x: bounds.x, y: bounds.y}, {x: ex, y: ey});
-        var distance_b = Math.distance({x: bounds.x, y: bounds.y}, {x: final_bounds.x, y: final_bounds.y});
-        time = (time * distance_b) / distance_a;
-
-        return {
-            x: final_bounds.x,
-            y: final_bounds.y,
-            time: time
-        };
-    }
-
-    /**
-     *
      * @param x
      * @param y
-     * @param time
-     * @param callback
      */
-    Game_Object.prototype.move = function (x, y, time, callback) {
+    Game_Object.prototype.move = function (x, y) {
         var self = this;
-        var final_bounds = calculate_final_position(self.bounds, x, y, time);
-        self._movement = {
-            start: Game_Timer.currentTime,
-            time: final_bounds.time,
-            spos: {x: self.bounds.x, y: self.bounds.y},
-            epos: {x: final_bounds.x, y: final_bounds.y},
-            complete: callback
-        };
+        var body = self.body;
+        Body.applyForce(body,{x:body.position.x,y:body.position.y},{x:x,y:y});
     };
 
     /**
@@ -250,22 +113,28 @@
 
         Object.defineProperty(self,'x',{
             get:function(){
-                return self.bounds.x;
+                return self.body.position.x;
             },
             set:function(x){
-                if(x != self.bounds.x){
-                    self.bounds.x = x;
+                if(x !== self.body.position.x){
+                    Body.setPosition(self.body,{
+                        x:x,
+                        y:self.y
+                    });
                 }
             }
         });
 
         Object.defineProperty(self,'y',{
             get:function(){
-                return self.bounds.y;
+                return self.body.position.y;
             },
             set:function(y){
-                if(y != self.bounds.y){
-                    self.bounds.y = y;
+                if(y !== self.body.position.y){
+                    Body.setPosition(self.body,{
+                        x:self.x,
+                        y:y
+                    });
                 }
             }
         });
@@ -273,22 +142,22 @@
 
         Object.defineProperty(self,'width',{
             get:function(){
-                return self.bounds.width;
+                return self.body.width;
             },
             set:function(w){
-                if(w != self.bounds.width){
-                    self.bounds.width = w;
+                if(w !== self.body.width){
+                    Body.set(self.body,'width',w);
                 }
             }
         });
 
         Object.defineProperty(self,'height',{
             get:function(){
-                return self.bounds.height;
+                return self.body.height;
             },
             set:function(h){
-                if(h != self.bounds.height){
-                    self.bounds.height = h;
+                if(h !== self.body.height){
+                    Body.set(self.body,'height',h);
                 }
             }
         });
@@ -299,7 +168,7 @@
                 return speed;
             },
             set:function(s){
-                if(s != speed){
+                if(s !== speed){
                     speed = s;
                     var keys = Object.keys(self.animations);
                     var length = keys.length;
@@ -318,7 +187,7 @@
                 return currentAnimation;
             },
             set:function(ca){
-                if(currentAnimation != ca){
+                if(currentAnimation !== ca){
                     if(currentAnimation != null){
                         currentAnimation.stop(self.graphic.startFrame);
                     }
@@ -334,7 +203,7 @@
                 return through;
             },
             set:function(t){
-                if(t != through){
+                if(t !== through){
                     through = t;
                     if(through){
                         self.removeCollisionGroup('STEP');
@@ -348,4 +217,4 @@
     }
 
     root.Game_Object = Game_Object;
-})(RPG);
+})(RPG,window);

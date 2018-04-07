@@ -1,5 +1,5 @@
 (function (root) {
-    if (root.Tile == undefined) {
+    if (root.Tile === undefined) {
         throw "Animated_Tile requires Tile"
     }
 

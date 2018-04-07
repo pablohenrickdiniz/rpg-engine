@@ -1,5 +1,5 @@
 (function (w) {
-    if (w.Audio == undefined) {
+    if (w.Audio === undefined) {
         (function (w) {
             var context = new (w.AudioContext || w.webkitAudioContext)();
             var load_audio = function (url) {
@@ -31,7 +31,7 @@
 
                 Object.defineProperty(self, 'src', {
                     set: function (newSrc) {
-                        if (src != newSrc) {
+                        if (src !== newSrc) {
                             src = newSrc;
                             load_audio.apply(self, [src]);
                         }
@@ -81,7 +81,7 @@
 
             Audio.prototype.addEventListener = function (event, callback) {
                 var self = this;
-                if (self.listeners[event] == undefined) {
+                if (self.listeners[event] === undefined) {
                     self.listeners[event] = [];
                 }
                 self.listeners[event].push(callback);
@@ -89,9 +89,9 @@
 
             Audio.prototype.removeEventListener = function (event, callback) {
                 var self = this;
-                if (self.listeners[event] != undefined) {
+                if (self.listeners[event] !== undefined) {
                     var index = self.listeners[event].indexOf(callback);
-                    if (index != -1) {
+                    if (index !== -1) {
                         self.listeners[event].splice(index, 1);
                     }
                 }
@@ -99,7 +99,7 @@
 
             Audio.prototype.trigger = function (event) {
                 var self = this;
-                if (self.listeners[event] != undefined) {
+                if (self.listeners[event] !== undefined) {
                     var i;
                     for (i = 0; i < self.listeners[event].length; i++) {
                         self.listeners[event][i].apply(self);
@@ -111,7 +111,7 @@
         })(w);
     }
     else {
-        if (w.Audio.prototype.stop == undefined) {
+        if (w.Audio.prototype.stop === undefined) {
             w.Audio.prototype.stop = function () {
                 var self = this;
                 self.pause();

@@ -325,8 +325,8 @@
     Element.prototype.overlap = function(el){
         if(el instanceof Element && el != self){
             var self = this;
-            var rect1 = self.bounds;
-            var rect2 = el.bounds;
+            var rect1 = self.body;
+            var rect2 = el.body;
             return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
         }
         return false;

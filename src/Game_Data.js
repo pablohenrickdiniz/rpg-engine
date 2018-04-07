@@ -1,13 +1,13 @@
 (function (root) {
-    if(root.Game_Item == undefined){
+    if(root.Game_Item === undefined){
         throw "Game_Data requires Game_Item"
     }
 
-    if(root.Game_Character == undefined){
+    if(root.Game_Character === undefined){
         throw "Game_Data requires Game_Character"
     }
 
-    if(root.Game_Actor == undefined){
+    if(root.Game_Actor === undefined){
         throw "Game_Data requires Game_Actor"
     }
 

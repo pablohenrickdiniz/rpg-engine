@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Game_Face == undefined){
+    if(root.Game_Face === undefined){
         throw "Faces requires Game_Face"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Faces requires Main"
     }
 
@@ -17,7 +17,7 @@
             }
         },
         get:function(id){
-            if(faces[id] != undefined){
+            if(faces[id] !== undefined){
                return faces[id];
             }
             return null;

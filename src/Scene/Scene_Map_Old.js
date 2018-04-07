@@ -1,42 +1,42 @@
 (function (root) {
-    if (window.QuadTree == undefined) {
+    if (window.QuadTree === undefined) {
         throw "Scane_Map requires QuadTree"
     }
 
-    if (root.Scene == undefined) {
+    if (root.Scene === undefined) {
         throw "Scene_Map requires Scene"
     }
 
-    if (root.Canvas == undefined) {
+    if (root.Canvas === undefined) {
         throw "Scene_Map requires Canvas"
     }
 
-    if (root.Game_Item == undefined) {
+    if (root.Game_Item === undefined) {
         throw "Scene_Map requires Game_Item"
     }
 
-    if (root.Game_Event == undefined) {
+    if (root.Game_Event === undefined) {
         throw "Scene_Map requires Game_Event"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Scene_Map requires Main"
     }
     else{
-        if (root.Main.Graphics == undefined) {
+        if (root.Main.Graphics === undefined) {
             throw "Scene_Map requires Graphics"
         }
 
-        if(root.Main.Tilesets == undefined){
+        if(root.Main.Tilesets === undefined){
             throw "Scene_Map requires Tilesets"
         }
     }
 
-    if(root.Spriteset_Map == undefined){
+    if(root.Spriteset_Map === undefined){
         throw "Scene_Map requires Spriteset_Map"
     }
 
-    if(root.Game_Object == undefined){
+    if(root.Game_Object === undefined){
         throw "Scene_Map requires Game_Object"
     }
 
@@ -86,7 +86,7 @@
     Scene_Map.prototype.add= function(object){
         var self = this;
         self.objs.push(object);
-        self.tree.insert(object.bounds);
+        self.tree.insert(object.body);
     };
 
     /**
@@ -96,10 +96,10 @@
     Scene_Map.prototype.remove = function(object){
         var self = this;
         var index = self.objs.indexOf(object);
-        if(index != -1){
+        if(index !== -1){
             self.objs.splice(index,1);
         }
-        self.tree.remove(object.bounds);
+        self.tree.remove(object.body);
     };
 
     /**
@@ -190,10 +190,10 @@
 
         for(i = 0; i < rows;i++){
             for(j = 0;j < cols;j++){
-                var mw = j == 0?mapWidth-x:j == cols-1?width-x:mapWidth;
-                var mh = i == 0?mapHeight-y:i == rows-1?height-y:mapHeight;
+                var mw = j === 0?mapWidth-x:j === cols-1?width-x:mapWidth;
+                var mh = i === 0?mapHeight-y:i === rows-1?height-y:mapHeight;
 
-                if(intervals[i] == undefined){
+                if(intervals[i] === undefined){
                     intervals[i] = [];
                 }
                 intervals[i][j] = get_area_interval({
@@ -334,21 +334,21 @@
         for (i = 0; i < size; i++) {
             collision = collisions[i];
             object = collision.object;
-            bounds = object.bounds;
+            bounds = object.body;
             x = collision.xb;
             y = collision.yb;
 
             if(y > yh){
                 y -= mh;
             }
-            else if(y+bounds.height < sy){
+            else if(y+body.height < sy){
                 y += mh;
             }
 
             if(x > xw){
                 x -= mw;
             }
-            else if(x+bounds.width < sx){
+            else if(x+body.width < sx){
                 x += mw;
             }
 
@@ -360,21 +360,21 @@
 
         if(Main.currentPlayer){
             object = Main.currentPlayer;
-            bounds = object.bounds;
-            x = bounds.x;
-            y = bounds.y;
+            bounds = object.body;
+            x = body.x;
+            y = body.y;
 
             if(y > yh){
                 y -= mh;
             }
-            else if(y+bounds.height < sy){
+            else if(y+body.height < sy){
                 y += mh;
             }
 
             if(x > xw){
                 x -= mw;
             }
-            else if(x+bounds.width < sx){
+            else if(x+body.width < sx){
                 x += mw;
             }
 
@@ -465,10 +465,10 @@
         var tree = self.tree;
 
         var bounds_tmp = {
-            x: player.bounds.x,
-            y: player.bounds.y,
-            width: player.bounds.width,
-            height: player.bounds.height,
+            x: player.body.x,
+            y: player.body.y,
+            width: player.body.width,
+            height: player.body.height,
             groups: ['ACTION_BUTTON']
         };
 
@@ -504,7 +504,7 @@
             obj = collision.object;
             if (obj instanceof Game_Event && obj.currentPage) {
                 var page = obj.currentPage;
-                if (typeof page.script == 'function') {
+                if (typeof page.script === 'function') {
                     if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
                         page.script.apply(obj);
                     }
@@ -513,7 +513,7 @@
             }
         }
 
-        collisions = tree.retrieve(player.bounds, 'ITEM');
+        collisions = tree.retrieve(player.body, 'ITEM');
         length = collisions.length;
         for (i = 0; i < length; i++) {
             collision = collisions[i];
@@ -538,10 +538,10 @@
         first = first || false;
         var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
         layer.rect({
-            x:tree.bounds.x-Canvas.x,
-            y:tree.bounds.y-Canvas.y,
-            width:tree.bounds.width,
-            height:tree.bounds.height,
+            x:tree.body.x-Canvas.x,
+            y:tree.body.y-Canvas.y,
+            width:tree.body.width,
+            height:tree.body.height,
             strokeStyle:'black',
             lineWidth:1
         });

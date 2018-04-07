@@ -31,7 +31,7 @@
                 self.data[i] = [];
             }
 
-            if(self.data[i][j] == undefined){
+            if(self.data[i][j] === undefined){
                 self.data[i][j] = [];
             }
 
@@ -98,7 +98,7 @@
             },
             set:function(w){
                 w = parseInt(w);
-                if(!isNaN(w) && w >= 0 && w != width){
+                if(!isNaN(w) && w >= 0 && w !== width){
                     width = w;
                 }
             }
@@ -110,7 +110,7 @@
             },
             set:function(h){
                 h = parseInt(h);
-                if(!isNaN(h) && h >= 0 && h != height){
+                if(!isNaN(h) && h >= 0 && h !== height){
                     height = h;
                 }
             }

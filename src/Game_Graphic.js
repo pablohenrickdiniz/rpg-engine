@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Game_Graphic requires Main"
     }
     else{
-        if(root.Main.Graphics == undefined){
+        if(root.Main.Graphics === undefined){
             throw "Game_Graphic requires Graphics"
         }
     }
@@ -41,7 +41,7 @@
                 return graphicID;
             },
             set:function(gid){
-                if(gid != graphicID){
+                if(gid !== graphicID){
                     graphicID = gid;
                     url = null;
                 }
@@ -54,7 +54,7 @@
             },
             set:function(sxn){
                 sxn = parseInt(sxn);
-                if(!isNaN(sxn) && sxn != sx){
+                if(!isNaN(sxn) && sxn !== sx){
                     sx = sxn;
                     url = null;
                 }
@@ -84,7 +84,7 @@
             },
             set:function(sw){
                 sw = parseInt(sw);
-                if(!isNaN(sw) && sw >= 0 && sw != sWidth){
+                if(!isNaN(sw) && sw >= 0 && sw !== sWidth){
                     sWidth = sw;
                     url = null;
                 }
@@ -101,7 +101,7 @@
             },
             set:function(sh){
                 sh = parseInt(sh);
-                if(!isNaN(sh) && sh >= 0 && sh != sHeight){
+                if(!isNaN(sh) && sh >= 0 && sh !== sHeight){
                     sHeight = sh;
                     url = null;
                 }
@@ -157,7 +157,7 @@
         Object.defineProperty(self,'dWidth',{
             set:function(dw){
                 dw = parseInt(dw);
-                if(!isNaN(dw) && dw > 0 && dw != dWidth){
+                if(!isNaN(dw) && dw > 0 && dw !== dWidth){
                     dWidth = dw;
                 }
             },
@@ -172,7 +172,7 @@
         Object.defineProperty(self,'dHeight',{
             set:function(dh){
                 dh = parseInt(dh);
-                if(!isNaN(dh) && dh > 0 && dh != dHeight){
+                if(!isNaN(dh) && dh > 0 && dh !== dHeight){
                     dHeight = dh;
                 }
             },

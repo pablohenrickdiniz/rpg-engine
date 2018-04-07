@@ -1,9 +1,9 @@
 (function (root) {
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Item requires Main"
     }
     else{
-        if(root.Main.Icons == undefined){
+        if(root.Main.Icons === undefined){
             throw "Item requires Icons"
         }
     }

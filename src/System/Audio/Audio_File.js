@@ -1,5 +1,5 @@
 (function(root){
-    if(root.Game_Timer == undefined){
+    if(root.Game_Timer === undefined){
         throw "Audio_File requires Game_Timer"
     }
 

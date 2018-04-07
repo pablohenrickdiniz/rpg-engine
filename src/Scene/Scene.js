@@ -1,13 +1,13 @@
 (function (root) {
-    if(root.Animation == undefined){
+    if(root.Animation === undefined){
         throw "Scene requires Animation"
     }
 
-    if(root.Canvas == undefined){
+    if(root.Canvas === undefined){
         throw "Scene requires Canvas"
     }
 
-    if(root.Consts == undefined){
+    if(root.Consts === undefined){
         throw "Scene requires Consts"
     }
 
@@ -82,7 +82,7 @@
      */
     Scene.prototype.trigger = function(event,args){
         var self = this;
-        if(self.eventListeners[event] != undefined){
+        if(self.eventListeners[event] !== undefined){
             var length = self.eventListeners[event].length;
             for(var i = 0; i < length;i++){
                 self.eventListeners[event][i].apply(self,args);
@@ -97,19 +97,19 @@
      */
     Scene.prototype.addEventListener = function(event,callback){
         var self = this;
-        if(self.eventListeners[event] == undefined){
+        if(self.eventListeners[event] === undefined){
             self.eventListeners[event] = [];
         }
-        if(self.eventListeners[event].indexOf(callback) == -1){
+        if(self.eventListeners[event].indexOf(callback) === -1){
             self.eventListeners[event].push(callback);
         }
     };
 
     Scene.prototype.removeEventListener = function(event,callback){
         var self = this;
-        if(self.eventListeners[event] != undefined){
+        if(self.eventListeners[event] !== undefined){
             var index =self.eventListeners[event].indexOf(callback);
-            if(index != -1){
+            if(index !== -1){
                 self.eventListeners[event].splice(index,1);
             }
         }
@@ -191,7 +191,7 @@
 
         var animation = new Animation(self.fps, self.fps * (time / 1000));
         var type = '';
-        if (direction == 'positive') {
+        if (direction === 'positive') {
             type = 'fade_in_graphic'
         }
         else {
@@ -243,7 +243,7 @@
                     running = animation.isRunning();
                     index = animation.getIndexFrame();
                     if (!running) {
-                        if (animation.direction == 'negative') {
+                        if (animation.direction === 'negative') {
                             opacity = 0;
                         }
                         else {
@@ -329,7 +329,7 @@
         time = parseInt(time);
         time = isNaN(time) || time < 0 ? 2000 : time;
         var type = '';
-        if (direction == 'negative') {
+        if (direction === 'negative') {
             type = 'fade_out_screen';
         }
         else {

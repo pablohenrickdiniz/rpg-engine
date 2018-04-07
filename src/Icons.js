@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Icons requires Main";
     }
 
-    if(root.Game_Icon == undefined){
+    if(root.Game_Icon === undefined){
         throw "Icons requires Game_Icon"
     }
 
@@ -18,7 +18,7 @@
             }
         },
         get:function(id){
-            if(icons[id] != undefined){
+            if(icons[id] !== undefined){
                return icons[id];
             }
             return null;

@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Item  == undefined){
+    if(root.Item === undefined){
         throw "Items requires Item"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Items requires Main"
     }
 
@@ -14,7 +14,7 @@
 
     Main.Items = {
         get:function(id){
-            if(items[id] != undefined){
+            if(items[id] !== undefined){
                 return items[id];
             }
             return null;

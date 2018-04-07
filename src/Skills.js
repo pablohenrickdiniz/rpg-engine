@@ -1,9 +1,9 @@
 (function(root){
-	if(root.Main == undefined){
+	if(root.Main === undefined){
 		throw "Skills requires Main"
 	}
 
-	if(root.Game_Skill == undefined){
+	if(root.Game_Skill === undefined){
 		throw "Skills requires Game_Skill"
 	}
 
@@ -13,7 +13,7 @@
 
 	Main.Skills = {	
 		get:function(id){
-			if(skills[id] != undefined){
+			if(skills[id] !== undefined){
 				return skills[id];
 			}	
 			return null;

@@ -1,13 +1,13 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Characters requires Main"
     }
 
-    if(root.Game_Character == undefined){
+    if(root.Game_Character === undefined){
         throw "Characters requires Game_Character"
     }
 
-    if(root.Character_Graphic == undefined){
+    if(root.Character_Graphic === undefined){
         throw "Characters requires Character_Graphic"
     }
 
@@ -23,14 +23,14 @@
         },
         get:function(id){
             var self = this;
-            if(self.characters[id] != undefined){
+            if(self.characters[id] !== undefined){
                 return self.characters[id];
             }
             return null;
         },
         createInstance:function(id,options){
             var self = this;
-            if(self.characters[id] != undefined){
+            if(self.characters[id] !== undefined){
                 var graphic = new Character_Graphic(self.characters[id].graphic);
                 options = options || {};
                 options.id = id;

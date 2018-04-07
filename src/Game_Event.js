@@ -146,7 +146,7 @@
         Object.defineProperty(self,'bounds',{
             get:function(){
                 if(currentPage){
-                    return currentPage.bounds;
+                    return currentPage.body;
                 }
                 return null;
             }
@@ -178,6 +178,62 @@
                 y = p;
                 if(currentPage){
                     currentPage.y = y;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'restitution',{
+            get:function(){
+                if(currentPage){
+                    return currentPage.restitution;
+                }
+                return 0;
+            },
+            set:function(r){
+                if(currentPage){
+                    currentPage.restitution = r;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'inv_mass',{
+            get:function(){
+                if(currentPage){
+                    return currentPage.inv_mass;
+                }
+                return 0;
+            },
+            set:function(inv_mass){
+                if(currentPage){
+                    currentPage.inv_mass = inv_mass;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'mass',{
+            get:function(){
+                if(currentPage){
+                    return currentPage.mass;
+                }
+                return 0;
+            },
+            set:function(mass){
+                if(currentPage){
+                    currentPage.mass = mass;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'velocity',{
+            get:function(){
+                if(currentPage){
+                    return currentPage.velocity;
+                }
+                return {x:0,y:0};
+            },
+            set:function(v){
+                if(currentPage){
+                    currentPage.velocity = v;
                 }
             }
         });

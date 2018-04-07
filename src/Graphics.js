@@ -1,5 +1,5 @@
 (function (root) {
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Graphics requires Main"
     }
 
@@ -27,7 +27,7 @@
          * @param graphic
          */
         set: function (type, name, graphic) {
-            if (graphics[type] == undefined) {
+            if (graphics[type] === undefined) {
                 graphics[type] = {};
             }
             graphics[type][name] = graphic;
@@ -38,8 +38,8 @@
          * @param name
          */
         unset: function (type, name) {
-            if (graphics[type] != undefined) {
-                if (graphics[type][name] != undefined) {
+            if (graphics[type] !== undefined) {
+                if (graphics[type][name] !== undefined) {
                     delete graphics[type][name];
                 }
             }

@@ -1238,10 +1238,10 @@
             var backgroundOpacity = self.backgroundOpacity;
 
             var bounds = self.visibleBounds;
-            var x = bounds.x;
-            var y = bounds.y;
-            var width = bounds.width;
-            var height = bounds.height;
+            var x = body.x;
+            var y = body.y;
+            var width = body.width;
+            var height = body.height;
 
             layer.rect({
                 x:x,
@@ -1434,8 +1434,8 @@
     UI_Element.prototype.clear = function (layer) {
         var self = this;
         var bounds = self.visibleBounds;
-        if (bounds.width != 0 && bounds.height != 0) {
-            layer.clear(bounds.x, bounds.y, bounds.width, bounds.height);
+        if (body.width != 0 && body.height != 0) {
+            layer.clear(body.x, body.y, body.width, body.height);
         }
     };
     /**

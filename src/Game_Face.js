@@ -1,5 +1,5 @@
 (function(root){
-    if(root.Game_Graphic == undefined){
+    if(root.Game_Graphic === undefined){
         throw "Game_Face requires Game_Graphic"
     }
 

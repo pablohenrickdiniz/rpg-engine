@@ -11,7 +11,7 @@
 
     GlobalProgress.prototype.exists = function (obj) {
         var self = this;
-        return self.media.indexOf(obj) != -1;
+        return self.media.indexOf(obj) !== -1;
     };
 
 

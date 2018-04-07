@@ -3,15 +3,15 @@
     var current_map = null;
     var current_player_id = null;
 
-    if(root.Scene == undefined){
+    if(root.Scene === undefined){
         throw "Main requires Scene"
     }
 
-    if(root.Game_Map == undefined){
+    if(root.Game_Map === undefined){
         throw "Main requires Game_Map"
     }
 
-    if(w.QuadTree == undefined){
+    if(w.QuadTree === undefined){
         throw "Main requires QuadTree"
     }
 
@@ -34,7 +34,7 @@
             return current_scene;
         },
         set:function(c){
-            if(c instanceof Scene && c != current_scene){
+            if(c instanceof Scene && c !== current_scene){
                 current_scene = c;
             }
         }
@@ -57,12 +57,12 @@
         },
         set:function(player_id){
             var self = this;
-            if(player_id != current_player_id){
+            if(player_id !== current_player_id){
                 if(current_player_id != null){
                     var tmp = self.Actors.get(current_player_id);
                     if(tmp != null){
                         tmp.type = 'Actor';
-                        QuadTree.remove(tmp.bounds);
+                        QuadTree.remove(tmp.body);
                     }
                 }
 

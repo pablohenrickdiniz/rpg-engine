@@ -1,9 +1,9 @@
 (function (root) {
-    if (CE == undefined) {
+    if (CE === undefined) {
         throw "Viewport requires Canvas Engine"
     }
 
-    if(root.Consts == undefined){
+    if(root.Consts === undefined){
         throw "Canvas requires Consts"
     }
 
@@ -55,10 +55,10 @@
          */
         addEventListener:function(event,callback){
             var self = this;
-            if(self.listeners[event] == undefined){
+            if(self.listeners[event] === undefined){
                 self.listeners[event] = [];
             }
-            if(self.listeners[event].indexOf(callback) == -1){
+            if(self.listeners[event].indexOf(callback) === -1){
                 self.listeners[event].push(callback);
             }
         },
@@ -69,9 +69,9 @@
          */
         removeEventListener:function(event,callback){
             var self = this;
-            if(self.listeners[event] != undefined){
+            if(self.listeners[event] !== undefined){
                 var index = self.listeners[event].indexOf(callback);
-                if(index != -1){
+                if(index !== -1){
                     self.listeners[event].splice(index,1);
                 }
             }
@@ -83,7 +83,7 @@
          */
         trigger:function(event,args){
             var self = this;
-            if(self.listeners[event] != undefined){
+            if(self.listeners[event] !== undefined){
                 var length = self.listeners[event].length;
                 for(var i =0; i < length;i++){
                     self.listeners[event][i].apply(self,args);
@@ -104,10 +104,10 @@
             var s_index = 0;
             var key;
 
-            if(index != undefined){
+            if(index !== undefined){
                 for(i =0; i < length;i++){
                     key = keys[i];
-                    if(type != key){
+                    if(type !== key){
                         s_index+=self.layers[key].length;
                     }
                     else{
@@ -121,11 +121,18 @@
                     }
                 }
             }
-            else if(self.layers[type] != undefined){
+            else if(self.layers[type] !== undefined){
                 return self.layers[type];
             }
 
             return null;
+        },
+        drawRect: function(rect){
+            var self = this;
+            var type = rect.type || Consts.EFFECT_LAYER;
+            var index = rect.layer || 0;
+            var layer = self.getLayer(type,index);
+            layer.rect(rect);
         },
         /**
          *
@@ -229,7 +236,7 @@
         },
         set:function(nx){
             nx = parseFloat(nx);
-            if(!isNaN(nx) && nx != x){
+            if(!isNaN(nx) && nx !== x){
                 x = nx;
             }
         }
@@ -241,7 +248,7 @@
         },
         set:function(ny){
             ny = parseFloat(ny);
-            if(!isNaN(ny) && ny != y){
+            if(!isNaN(ny) && ny !== y){
                 y = ny;
             }
         }

@@ -1,9 +1,9 @@
 (function(root,w){
-    if(root.Game_Character == undefined){
+    if(root.Game_Character === undefined){
         throw "Game_Actor requires Game_Character"
     }
 
-    if(root.Game_Inventory == undefined){
+    if(root.Game_Inventory === undefined){
         throw "Game_Actor requires Game_Inventory"
     }
 
@@ -30,7 +30,7 @@
 
     Game_Actor.prototype.update = function () {
         var self = this;
-        if(!self.moving && self.type == 'Player'){
+        if(self.type === 'Player'){
             var keyboard = root.Controls.Keyboard;
             if (keyboard.state[Keyboard.LEFT]) {
                 self.moveTo(Consts.CHARACTER_DIRECTION_LEFT);
@@ -64,7 +64,7 @@
                 if(inv instanceof Game_Inventory){
                     inventory = inv;
                 }
-                else if(inv.constructor == {}.constructor){
+                else if(inv.constructor === {}.constructor){
                     inventory = new Game_Inventory(inv);
                 }
             }

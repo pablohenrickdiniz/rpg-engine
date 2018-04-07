@@ -1,5 +1,5 @@
 (function (w) {
-    if(w.GlobalProgress == undefined){
+    if(w.GlobalProgress === undefined){
         throw "ImageLoader requires GlobalProgress"
     }
 
@@ -28,7 +28,7 @@
                 function q(image, id) {
                     loaded[id] = image;
                     length--;
-                    if (length == 0 && onsuccess) {
+                    if (length === 0 && onsuccess) {
                         onsuccess(loaded);
                     }
                 }

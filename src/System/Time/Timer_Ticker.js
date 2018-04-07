@@ -29,19 +29,19 @@
 
     Timer_Ticker.prototype.addEventListener = function (eventName, callback) {
         var self = this;
-        if(self.listeners[eventName] == undefined){
+        if(self.listeners[eventName] === undefined){
             self.listeners[eventName] = [];
         }
-        if(self.listeners[eventName].indexOf(callback) == -1){
+        if(self.listeners[eventName].indexOf(callback) === -1){
             self.listeners[eventName].push(callback);
         }
     };
 
     Timer_Ticker.prototype.removeEventListener = function (event, callback) {
         var self = this;
-        if(self.listeners[event] != undefined){
+        if(self.listeners[event] !==undefined){
             var index = self.listeners[event].indexOf(callback);
-            if(index != -1){
+            if(index !== -1){
                 self.listeners[event].splice(index,1);
             }
         }
@@ -50,7 +50,7 @@
     Timer_Ticker.prototype.trigger = function (eventName,args) {
         var self = this;
 
-        if(self.listeners[eventName] != undefined){
+        if(self.listeners[eventName] !== undefined){
             var length = self.listeners[eventName].length;
             args = args || [];
             for(var i =0; i < length;i++){
@@ -71,7 +71,7 @@
                 passed = current_time - timer.last_tick;
             }
             timer.currentTime += passed;
-            timer.trigger('tick');
+            timer.trigger('tick',[current_time,passed]);
             timer.last_tick = current_time;
         }
     }

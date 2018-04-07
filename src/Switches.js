@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Game_Event == undefined){
+    if(root.Game_Event === undefined){
         throw "Switches requires Game_Event"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Switches requires RPG Main"
     }
 
@@ -21,11 +21,11 @@
             var changed = false;
             if(map_id != null){
                 if(event_id != null){
-                    if(switches.local[map_id] == undefined){
+                    if(switches.local[map_id] === undefined){
                         switches.local[map_id] = {};
                     }
 
-                    if(switches.local[map_id][event_id] == undefined){
+                    if(switches.local[map_id][event_id] === undefined){
                         switches.local[map_id][event_id] = {};
                     }
                     if(!switches.local[map_id][event_id][switch_id]){
@@ -34,7 +34,7 @@
                     }
                 }
                 else{
-                    if(switches.map[map_id] == undefined){
+                    if(switches.map[map_id] === undefined){
                         switches.map[map_id] = {};
                     }
                     if(! switches.map[map_id][switch_id]){

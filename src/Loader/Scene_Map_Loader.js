@@ -1,75 +1,75 @@
 (function (root) {
-    if (root.Scene_Loader == undefined) {
+    if (root.Scene_Loader === undefined) {
         throw "Scene_Map_Loader requires Scene_Loader"
     }
 
-    if (root.Spriteset_Map == undefined) {
+    if (root.Spriteset_Map === undefined) {
         throw "Scene_Map_Loader requires Spriteset_Map"
     }
 
-    if (root.Game_Map == undefined) {
+    if (root.Game_Map === undefined) {
         throw "Scene_Map_Loader requires Game_Map"
     }
 
-    if (root.Tile == undefined) {
+    if (root.Tile === undefined) {
         throw "Scene_Map_Loader requires Tile"
     }
 
-    if(root.Tileset == undefined){
+    if(root.Tileset === undefined){
         throw "Scene_Map_Loader requires Tileset"
     }
 
-    if(root.Game_Icon == undefined){
+    if(root.Game_Icon === undefined){
         throw "Scene_Map_Loader requires Game_Icon"
     }
 
-    if(root.Game_Item == undefined){
+    if(root.Game_Item === undefined){
         throw "Scehe_Map_Loader requires Game_Item"
     }
 
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Scene_Map_Loader requires Main"
     }
     else{
-        if(root.Main.Tilesets == undefined){
+        if(root.Main.Tilesets === undefined){
             throw "Scene_Map_Loader requires Tilesets"
         }
 
-        if(root.Main.Charas == undefined){
+        if(root.Main.Charas === undefined){
             throw "Scene_Map_Loader requires Charas"
         }
 
-        if(root.Main.Faces == undefined){
+        if(root.Main.Faces === undefined){
             throw "Scene_Map_Loader requires Faces"
         }
 
-        if(root.Main.Items == undefined){
+        if(root.Main.Items === undefined){
             throw "Scene_Map_Loader requires Items"
         }
 
-        if(root.Main.Icons == undefined){
+        if(root.Main.Icons === undefined){
             throw "Scene_Map_Loader requires Icons"
         }
 
-        if(root.Main.Actors == undefined){
+        if(root.Main.Actors === undefined){
             throw "Scene_Map_Loader requires Actors"
         }
     }
 
 
-    if(root.Chara == undefined){
+    if(root.Chara === undefined){
         throw "Scene_Map_Loader requires Chara"
     }
 
-    if(root.Game_Actor == undefined){
+    if(root.Game_Actor === undefined){
         throw "Scene_Map_Loader requires Game_Actor"
     }
 
-    if(root.Game_Face == undefined){
+    if(root.Game_Face === undefined){
         throw "Scene_Map_Loader requires Game_Face"
     }
 
-    if(root.Item == undefined){
+    if(root.Item === undefined){
         throw "Scene_Map_Loader requires Item"
     }
 
@@ -132,7 +132,7 @@
                 Tilesets.set(id,tileset);
             }
 
-            if(scene.icons && scene.icons.constructor == {}.constructor){
+            if(scene.icons && scene.icons.constructor === {}.constructor){
                 keys = Object.keys(scene.icons);
                 length = keys.length;
                 for(i =0; i < length;i++){
@@ -143,7 +143,7 @@
             }
 
 
-            if(scene.faces && scene.faces.constructor == {}.constructor){
+            if(scene.faces && scene.faces.constructor === {}.constructor){
                 keys = Object.keys(scene.faces);
                 length = keys.length;
                 for(i =0; i < length;i++){
@@ -154,7 +154,7 @@
             }
 
 
-            if(scene.charas && scene.charas.constructor == {}.constructor){
+            if(scene.charas && scene.charas.constructor === {}.constructor){
                 keys = Object.keys(scene.charas);
                 length = keys.length;
                 for(i =0; i < length;i++){
@@ -165,7 +165,7 @@
                 }
             }
 
-            if(scene.items && scene.items.constructor == {}.constructor){
+            if(scene.items && scene.items.constructor === {}.constructor){
                 keys = Object.keys(scene.items);
                 length = keys.length;
                 for(i =0; i < length;i++){
@@ -176,7 +176,7 @@
                 }
             }
 
-            if(scene.actors && scene.actors.constructor == {}.constructor){
+            if(scene.actors && scene.actors.constructor === {}.constructor){
                 keys = Object.keys(scene.actors);
                 length = keys.length;
                 for(i =0; i < length;i++){

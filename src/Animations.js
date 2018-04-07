@@ -1,9 +1,9 @@
 (function(root){
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Animations requires Main"
     }
 
-    if(root.Animation == undefined){
+    if(root.Animation === undefined){
         throw "Animations requires Animation"
     }
 
@@ -15,7 +15,7 @@
 
     Main.Animations = {
     	get:function(id){
-    		if(animations[id] == undefined){
+    		if(animations[id] === undefined){
     			return animations[id];
     		}
     		return null;

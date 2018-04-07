@@ -1,9 +1,9 @@
 (function (root) {
-    if(root.Consts == undefined){
+    if(root.Consts === undefined){
         throw "Event_Page requires Consts"
     }
 
-    if(root.Game_Character == undefined){
+    if(root.Game_Character === undefined){
         throw "Event_Page requires Game_Character"
     }
 
@@ -36,11 +36,11 @@
         var self =this;
         switch(self.movement_type){
             case Consts.MOVE_ROUTE:
-                if(self.route.length > 0 && self.currentMove != -1){
-                    if(self.route[self.currentMove] == undefined){
+                if(self.route.length > 0 && self.currentMove !== -1){
+                    if(self.route[self.currentMove] === undefined){
                         self.currentMove = self.repeatRoute?0:-1;
                     }
-                    if(self.currentMove != -1){
+                    if(self.currentMove !== -1){
                         var move = self.route[self.currentMove];
                         self.currentMove++;
 
@@ -72,9 +72,9 @@
             condition = condition.split(':');
             var scope = condition[0];
             var id = condition[1];
-            var status = condition[2]=='ON';
+            var status = condition[2]==='ON';
             var self = this;
-            if(self.conditions[scope] == undefined){
+            if(self.conditions[scope] === undefined){
                 self.conditions[scope] = [];
             }
             self.conditions[scope][id] = status;
@@ -105,7 +105,7 @@
                 return through;
             },
             set:function(t){
-                if(t != through){
+                if(t !== through){
                     through = t;
                     if(through){
                         self.removeCollisionGroup('STEP');
@@ -122,7 +122,7 @@
                 return walkingAnimation;
             },
             set:function(wa){
-                if(wa != walkingAnimation){
+                if(wa !== walkingAnimation){
                     walkingAnimation = wa;
                     if(self.event){
                         var event = self.event;

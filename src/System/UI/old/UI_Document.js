@@ -261,7 +261,7 @@
                 id = keysB[kB];
                 el = levels[level][id];
                 var bounds = el.visibleBounds;
-                if (inside_bounds(x, y, bounds.x, bounds.y, bounds.width, bounds.height)) {
+                if (inside_bounds(x, y, body.x, body.y, body.width, body.height)) {
                     return el;
                 }
 

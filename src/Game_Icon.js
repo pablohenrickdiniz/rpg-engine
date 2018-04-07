@@ -1,5 +1,5 @@
 (function (root) {
-    if(root.Game_Graphic == undefined){
+    if(root.Game_Graphic === undefined){
         throw "Game_Icon requires Game_Graphic"
     }
 

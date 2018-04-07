@@ -1,14 +1,14 @@
 (function (root) {
-    if(root.Main == undefined){
+    if(root.Main === undefined){
         throw "Game_Item requires Main"
     }
     else{
-        if(root.Main.Items == undefined){
+        if(root.Main.Items === undefined){
             throw "Game_Item requires Items"
         }
     }
 
-    if(root.Game_Object == undefined){
+    if(root.Game_Object === undefined){
         throw "Game_Item requires Game_Object"
     }
 
@@ -20,13 +20,13 @@
         var self = this;
         options = options || {};
         options.type = options.type || 'generic';
-        options.through = (options.through == undefined || options.through)?true:false;
+        options.through = (options.through === undefined || options.through)?true:false;
         Game_Object.call(self,options);
         initialize(self);
         self.amount = options.amount || 1;
         self.graphic_type = 'icon';
         self.capture = options.capture || Consts.TRIGGER_PLAYER_TOUCH;
-        self.bounds.groups.push('ITEM');
+        self.body.groups.push('ITEM');
         self.itemID = options.itemID;
     };
 
