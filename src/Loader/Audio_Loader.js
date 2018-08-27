@@ -168,7 +168,7 @@
                 }
 
                 function can_play_callback() {
-                    audio.playbackRate = audio.duration;
+                    audio.playbackRate = Math.min(audio.duration,16);
                     audio.play();
                 }
 
