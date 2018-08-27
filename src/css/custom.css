@@ -61,6 +61,8 @@
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     font-family: Verdana;
+    padding:1px;
+    font-weight: bolder;
     margin:0;
 }
 
