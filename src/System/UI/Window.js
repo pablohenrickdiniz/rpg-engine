@@ -1,18 +1,19 @@
+'use strict';
 (function(root,w){
-    if(root.UI == undefined){
-        throw "Window requires UI"
+    if(root.UI === undefined){
+        throw "Window requires UI";
     }
 
-    if(root.UI.classes.Element == undefined){
+    if(root.UI.classes.Element === undefined){
         throw "Window requires Element";
     }
 
-    if(root.UI.classes.Button == undefined){
+    if(root.UI.classes.Button === undefined){
         throw "Window requires Button";
     }
 
-    if(root.UI.classes.Text == undefined){
-        throw "Window requires Text"
+    if(root.UI.classes.Text === undefined){
+        throw "Window requires Text";
     }
 
     var UI = root.UI,
@@ -20,6 +21,11 @@
         Button = UI.classes.Button,
         Text = UI.classes.Text;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Window = function(options){
         var self = this;
         options = options || {};
@@ -33,23 +39,32 @@
     Window.prototype = Object.create(Element.prototype);
     Window.prototype.constructor = Window;
 
+    /**
+     *
+     * @param el
+     */
     Window.prototype.add = function(el){
         var self = this;
         self.body.add(el);
     };
 
+    /**
+     *
+     * @param el
+     */
     Window.prototype.remove = function(el){
         var self = this;
         self.body.remove(el);
     };
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var title = '';
         var width = 0;
         var height = 0;
-
-
-
         var header = new Element({
             class:'window-header'
         });
@@ -65,32 +80,41 @@
             class:'window-body'
         });
 
-
         var headerTitle = new Text({
             class:'window-header-title'
         },'h1');
 
         header.add(headerTitle);
         header.add(close);
-
-
         self.children.push(header);
         self.children.push(body);
         self.element.appendChild(header.element);
         self.element.appendChild(body.element);
 
         Object.defineProperty(self,'body',{
+            /**
+             *
+             * @returns {*|Element}
+             */
             get:function(){
                 return body;
             }
         });
 
         Object.defineProperty(self,'title',{
+            /**
+             *
+             * @returns {string}
+             */
             get:function(){
                 return title;
             },
+            /**
+             *
+             * @param t
+             */
             set:function(t){
-                if(t != title){
+                if(t !== title){
                     title = t;
                     headerTitle.value = title;
                 }

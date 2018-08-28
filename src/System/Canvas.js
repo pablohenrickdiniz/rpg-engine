@@ -1,10 +1,11 @@
+'use strict';
 (function (root) {
     if (CE === undefined) {
-        throw "Viewport requires Canvas Engine"
+        throw "Viewport requires Canvas Engine";
     }
 
     if(root.Consts === undefined){
-        throw "Canvas requires Consts"
+        throw "Canvas requires Consts";
     }
 
     var Consts= root.Consts;
@@ -106,7 +107,7 @@
 
             if(index !== undefined){
                 for(i =0; i < length;i++){
-                    key = keys[i];
+                    key = parseInt(keys[i]);
                     if(type !== key){
                         s_index+=self.layers[key].length;
                     }
@@ -127,6 +128,10 @@
 
             return null;
         },
+        /**
+         *
+         * @param rect
+         */
         drawRect: function(rect){
             var self = this;
             var type = rect.type || Consts.EFFECT_LAYER;
@@ -166,7 +171,6 @@
 
             var dWidth = options.dWidth || sWidth;
             var dHeight = options.dHeight || sHeight;
-
 
             if (vAlign != null) {
                 switch (vAlign) {
@@ -229,11 +233,18 @@
     var y = 0;
     var canvas = root.Canvas;
 
-
     Object.defineProperty(canvas,'x',{
+        /**
+         *
+         * @returns {number}
+         */
         get:function(){
             return x;
         },
+        /**
+         *
+         * @param nx
+         */
         set:function(nx){
             nx = parseFloat(nx);
             if(!isNaN(nx) && nx !== x){
@@ -243,9 +254,17 @@
     });
 
     Object.defineProperty(canvas,'y',{
+        /**
+         *
+         * @returns {number}
+         */
         get:function(){
             return y;
         },
+        /**
+         *
+         * @param ny
+         */
         set:function(ny){
             ny = parseFloat(ny);
             if(!isNaN(ny) && ny !== y){
@@ -255,27 +274,51 @@
     });
 
     Object.defineProperty(canvas,'width',{
+        /**
+         *
+         * @returns {*}
+         */
         get:function(){
             return canvas.engine.width;
         },
+        /**
+         *
+         * @param w
+         */
         set:function(w){
             canvas.engine.width = w;
         }
     });
 
     Object.defineProperty(canvas,'height',{
+        /**
+         *
+         * @returns {*}
+         */
         get:function(){
             return canvas.engine.height;
         },
+        /**
+         *
+         * @param h
+         */
         set:function(h){
             canvas.engine.height = h;
         }
     });
 
     Object.defineProperty(canvas,'scale',{
+        /**
+         *
+         * @returns {*}
+         */
         get:function(){
             return canvas.engine.scale;
         },
+        /**
+         *
+         * @param scale
+         */
         set:function(scale){
             canvas.engine.scale = scale;
         }

@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     if (window.QuadTree === undefined) {
         throw "Scane_Map requires QuadTree"
@@ -96,7 +97,7 @@
     Scene_Map.prototype.remove = function(object){
         var self = this;
         var index = self.objs.indexOf(object);
-        if(index !== -1){
+        if(index !=  -1){
             self.objs.splice(index,1);
         }
         self.tree.remove(object.body);
@@ -109,7 +110,7 @@
     Scene_Map.prototype.focus = function (object) {
         if(object instanceof Game_Object){
             var self = this;
-            if (focused_object !== null) {
+            if (focused_object !=  null) {
                 focused_object.focused = false;
             }
             object.focused = true;
@@ -190,10 +191,10 @@
 
         for(i = 0; i < rows;i++){
             for(j = 0;j < cols;j++){
-                var mw = j === 0?mapWidth-x:j === cols-1?width-x:mapWidth;
-                var mh = i === 0?mapHeight-y:i === rows-1?height-y:mapHeight;
+                var mw = j ==0?mapWidth-x:j ==cols-1?width-x:mapWidth;
+                var mh = i ==0?mapHeight-y:i ==rows-1?height-y:mapHeight;
 
-                if(intervals[i] === undefined){
+                if(intervals[i] ==undefined){
                     intervals[i] = [];
                 }
                 intervals[i][j] = get_area_interval({
@@ -218,7 +219,7 @@
 
         for (var i = interval.si; i <= interval.ei; i++) {
             for (var j = interval.sj; j <= interval.ej; j++) {
-                if (spriteset.data[i] !== undefined && spriteset.data[i][j] !== undefined) {
+                if (spriteset.data[i] !=  undefined && spriteset.data[i][j] !=  undefined) {
                     for (var k in  spriteset.data[i][j]) {
                         var tile_data = spriteset.data[i][j][k];
                         var tileset = Tilesets.get(tile_data[0]);
@@ -504,8 +505,8 @@
             obj = collision.object;
             if (obj instanceof Game_Event && obj.currentPage) {
                 var page = obj.currentPage;
-                if (typeof page.script === 'function') {
-                    if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
+                if (typeof page.script =='function') {
+                    if (page.trigger ==Consts.TRIGGER_PLAYER_TOUCH || (page.trigger ==Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
                         page.script.apply(obj);
                     }
                 }
@@ -519,7 +520,7 @@
             collision = collisions[i];
             obj = collision.object;
             if (obj instanceof Game_Item) {
-                if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
+                if(obj.capture ==Consts.TRIGGER_PLAYER_TOUCH || (obj.capture ==Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
                     player.inventory.addItem(obj.item,obj.amount);
                     self.remove(obj);
                 }

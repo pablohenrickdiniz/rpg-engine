@@ -1,3 +1,4 @@
+'use strict';
 (function(root){
     if(root.Main === undefined){
         throw "Scenes requires RPG Main";
@@ -14,11 +15,21 @@
     var scenes = [];
 
     Main.Scenes = {
+        /**
+         *
+         * @param id
+         * @param scene
+         */
         set:function(id,scene){
             if(scene instanceof Scene){
                 scenes[id] = scene;
             }
         },
+        /**
+         *
+         * @param id
+         * @returns {*}
+         */
         get:function(id){
             if(scenes[id] !== undefined){
                 return scenes[id];

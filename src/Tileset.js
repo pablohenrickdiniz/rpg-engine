@@ -1,19 +1,20 @@
+'use strict';
 (function (root) {
     if(root.Main === undefined){
-        throw "Tileset requires Main"
+        throw "Tileset requires Main";
     }
     else{
         if(root.Main.Graphics === undefined){
-            throw "Tileset requires Graphics"
+            throw "Tileset requires Graphics";
         }
     }
 
     if (root.Tile === undefined) {
-        throw "Tileset requires Tile"
+        throw "Tileset requires Tile";
     }
 
     if(root.Game_Graphic === undefined){
-        throw "Tileset requires Game_Graphic"
+        throw "Tileset requires Game_Graphic";
     }
 
     var Tile= root.Tile,
@@ -57,6 +58,10 @@
         };
     };
 
+    /**
+     *
+     * @returns {*[]}
+     */
     Tileset.prototype.toJSON = function(){
         var self  =this;
         return [
@@ -139,24 +144,40 @@
         var cols = 1;
 
         Object.defineProperty(self,'tileDWidth',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
               return self.tileSHeight*self.scale;
             }
         });
 
         Object.defineProperty(self,'tileDHeight',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.tileSHeight*self.scale;
             }
         });
 
         Object.defineProperty(self,'tileSWidth',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return  self.width / self.cols;
             }
         });
 
         Object.defineProperty(self,'tileSHeight',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.height / self.rows;
             }
@@ -164,9 +185,17 @@
 
 
         Object.defineProperty(self,'rows',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return rows;
             },
+            /**
+             *
+             * @param r
+             */
             set:function(r){
                 if(r !== rows){
                     rows = r;
@@ -177,9 +206,17 @@
         });
 
         Object.defineProperty(self,'cols',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return cols;
             },
+            /**
+             *
+             * @param c
+             */
             set:function(c){
                 if(c !== cols){
                     cols = c;
@@ -190,6 +227,11 @@
         });
     };
 
+    /**
+     *
+     * @param json
+     * @returns {Tileset}
+     */
     Tileset.fromJSON = function(json){
         var image_data = json[0];
         var rows = parseInt(json[1]);
@@ -218,7 +260,11 @@
         return tileset;
     };
 
-
+    /**
+     *
+     * @param collision
+     * @returns {Array}
+     */
     function collisiontoJSON(collision){
         var c = [];
         for(var i in collision){

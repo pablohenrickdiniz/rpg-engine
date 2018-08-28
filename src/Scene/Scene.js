@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     if(root.Animation === undefined){
         throw "Scene requires Animation"
@@ -15,7 +16,11 @@
         Canvas = root.Canvas,
         Consts = root.Consts;
 
-
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Scene =  function (options) {
         var self = this;
         options = options || {};
@@ -348,7 +353,6 @@
 
         self.animation_queue.push(animation_set);
     }
-
 
     root.Scene = Scene;
 })(RPG);

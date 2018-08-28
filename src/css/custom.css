@@ -50,7 +50,7 @@
     bottom:0;
     background-color: rgba(25,25,25,1);
     color:white;
-    font-size: 10px;
+    font-size: 8px;
     z-index: 2;
     width:70px;
     height:10px;
@@ -61,7 +61,8 @@
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     font-family: Verdana;
-    padding:1px;
+    padding-top:2px;
+    padding-bottom:2px;
     font-weight: bolder;
     margin:0;
 }

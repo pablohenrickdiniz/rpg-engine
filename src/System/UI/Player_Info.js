@@ -1,28 +1,28 @@
+'use strict';
 (function(root){
-    if(root.UI == undefined){
-        throw "Player_Info requires UI"
+    if(root.UI === undefined){
+        throw "Player_Info requires UI";
     }
 
-    if(root.Game_Face == undefined){
-        throw "Player_Info requires Game_Face"
+    if(root.Game_Face === undefined){
+        throw "Player_Info requires Game_Face";
     }
 
-    if(root.UI.classes.Progress_Bar == undefined){
-        throw  "Player_Info requires Progress_Bar"
+    if(root.UI.classes.Progress_Bar === undefined){
+        throw  "Player_Info requires Progress_Bar";
     }
 
-    if(root.UI.classes.Element == undefined){
-        throw "Player_Info requires Element"
+    if(root.UI.classes.Element === undefined){
+        throw "Player_Info requires Element";
     }
 
-    if(root.UI.classes.Image == undefined){
-        throw "Player_Info requires Image"
+    if(root.UI.classes.Image === undefined){
+        throw "Player_Info requires Image";
     }
 
-    if(root.UI.classes.Text == undefined){
-        throw "Player_Info requires Text"
+    if(root.UI.classes.Text === undefined){
+        throw "Player_Info requires Text";
     }
-
 
     var UI = root.UI,
         Game_Face = root.Game_Face,
@@ -31,6 +31,11 @@
         Image = UI.classes.Image,
         Text = UI.classes.Text;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Player_Info = function(options){
         var self = this;
         options = options || {};
@@ -48,6 +53,10 @@
     Player_Info.prototype = Object.create(Element.prototype);
     Player_Info.prototype.constructor = Player_Info;
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var element = null;
         var face = null;
@@ -81,32 +90,28 @@
             class:"bar-container"
         });
 
-
         var stBar = new Progress_Bar({parent:barContainer,class:'stamina-bar'});
         var mpBar = new Progress_Bar({parent:barContainer,class:'mp-bar'});
         var hpBar = new Progress_Bar({parent:barContainer,class:'hp-bar'});
-
 
         Object.defineProperty(self,'face',{
             get:function(){
                 return face;
             },
             set:function(f){
-                if(f != face && f instanceof Game_Face){
+                if(f !== face && f instanceof Game_Face){
                     face = f;
                     faceImage.src = face.image.src;
                 }
             }
         });
 
-
-
         Object.defineProperty(self,'totalMP',{
             get:function(){
                 return totalMP;
             },
             set:function(tmp){
-                if(tmp != totalMP){
+                if(tmp !== totalMP){
                     totalMP = tmp;
                     mpBar.progress = MP*100/totalMP;
                     mpBar.text = MP+'/'+totalMP;
@@ -119,7 +124,7 @@
                 return totalHP;
             },
             set:function(thp){
-                if(thp != totalHP){
+                if(thp !== totalHP){
                     totalHP = thp;
                     hpBar.progress = HP*100/totalHP;
                     hpBar.text = HP+'/'+totalHP;
@@ -132,7 +137,7 @@
                 return totalST;
             },
             set:function(tst){
-                if(tst != totalST){
+                if(tst !== totalST){
                     totalST = tst;
                     stBar.progress = ST*100/totalST;
                     stBar.text = ST+'/'+totalST;
@@ -145,7 +150,7 @@
                 return MP;
             },
             set:function(mp){
-                if(mp != MP){
+                if(mp !== MP){
                     MP = mp;
                     mpBar.progress = MP*100/totalMP;
                     mpBar.text = MP+'/'+totalMP;
@@ -158,7 +163,7 @@
                 return HP;
             },
             set:function(hp){
-                if(hp != HP){
+                if(hp !== HP){
                     HP = hp;
                     hpBar.progress = HP*100/totalHP;
                     hpBar.text = HP+"/"+totalHP;
@@ -171,7 +176,7 @@
                 return ST;
             },
             set:function(st){
-                if(st != ST){
+                if(st !== ST){
                     ST = st;
                     stBar.progress = ST*100/totalST;
                     stBar.text = ST+"/"+totalST;
@@ -184,7 +189,7 @@
                 return name;
             },
             set:function(n){
-                if(n != name){
+                if(n !== name){
                     name = n;
                     nameContainer.value = name;
                 }

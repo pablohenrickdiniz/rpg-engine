@@ -1,3 +1,4 @@
+'use strict';
 (function(root){
 	var Game_Skill = function(options){
 		options = options || {};

@@ -1,6 +1,7 @@
+'use strict';
 (function (root) {
     if(root.Main === undefined){
-        throw "Graphics requires Main"
+        throw "Graphics requires Main";
     }
 
     var Main = root.Main;

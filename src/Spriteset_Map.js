@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     /**
      *
@@ -93,9 +94,17 @@
         var width = 0;
         var height = 0;
         Object.defineProperty(self,'width',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return width;
             },
+            /**
+             *
+             * @param w
+             */
             set:function(w){
                 w = parseInt(w);
                 if(!isNaN(w) && w >= 0 && w !== width){
@@ -105,9 +114,17 @@
         });
 
         Object.defineProperty(self,'height',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return height;
             },
+            /**
+             *
+             * @param h
+             */
             set:function(h){
                 h = parseInt(h);
                 if(!isNaN(h) && h >= 0 && h !== height){
@@ -117,12 +134,20 @@
         });
 
         Object.defineProperty(self,'realWidth',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return width * self.tileWidth;
             }
         });
 
         Object.defineProperty(self,'realHeight',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return height * self.tileHeight;
             }

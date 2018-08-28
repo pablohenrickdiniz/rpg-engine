@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     if (root.Scene_Loader === undefined) {
         throw "Scene_Manager requires Scene_Loader"
@@ -22,7 +23,6 @@
         throw "Scene_Manager requires Scene_Map"
     }
 
-
     var Scene_Loader = new root.Scene_Loader(),
         Scene_Map_Loader = new root.Scene_Map_Loader(),
         Scene_Map = root.Scene_Map,
@@ -33,7 +33,6 @@
     var Scenes = Main.Scenes;
     var current_scene = null;
     var queue = [];
-
 
     function load_callback(scene){
         current_scene = scene;
@@ -46,6 +45,13 @@
     }
 
     root.Scene_Manager = {
+        /**
+         *
+         * @param type
+         * @param name
+         * @param options
+         * @returns {*}
+         */
         new: function (type,name, options) {
             var scene = null;
             options = options || {};
@@ -59,6 +65,10 @@
             Scenes.set(name,scene);
             return scene;
         },
+        /**
+         *
+         * @param name
+         */
         call: function (name) {
             var scene = Scenes.get(name);
             if(scene == null){

@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     if (root.Scene_Loader === undefined) {
         throw "Scene_Map_Loader requires Scene_Loader"

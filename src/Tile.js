@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     /**
      *
@@ -47,36 +48,60 @@
      */
     var initialize = function(self){
         Object.defineProperty(self,'sx',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.j*self.sWidth + (self.tileset?self.tileset.sx:0);
             }
         });
 
         Object.defineProperty(self,'sy',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.i*self.sHeight + (self.tileset?self.tileset.sy:0);
             }
         });
 
         Object.defineProperty(self,'dWidth',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.tileset?self.tileset.tileDWidth:0;
             }
         });
 
         Object.defineProperty(self,'dHeight',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.tileset?self.tileset.tileDHeight:0;
             }
         });
 
         Object.defineProperty(self,'sWidth',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.tileset?self.tileset.tileSWidth:0;
             }
         });
 
         Object.defineProperty(self,'sHeight',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.tileset?self.tileset.tileSHeight:0;
             }
@@ -84,12 +109,20 @@
 
 
         Object.defineProperty(self,'image',{
+            /**
+             *
+             * @returns {null}
+             */
             get:function(){
                 return self.tileset?self.tileset.image:null;
             }
         });
 
         Object.defineProperty(self,'passable',{
+            /**
+             *
+             * @returns {boolean}
+             */
             get:function(){
                 return self.tileset?self.tileset.isPassable(self.i,self.j):true;
             }

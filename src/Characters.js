@@ -1,14 +1,15 @@
+'use strict';
 (function(root){
     if(root.Main === undefined){
-        throw "Characters requires Main"
+        throw "Characters requires Main";
     }
 
     if(root.Game_Character === undefined){
-        throw "Characters requires Game_Character"
+        throw "Characters requires Game_Character";
     }
 
     if(root.Character_Graphic === undefined){
-        throw "Characters requires Character_Graphic"
+        throw "Characters requires Character_Graphic";
     }
 
     var Game_Character = root.Game_Character,
@@ -17,10 +18,20 @@
 
     Main.Characters = {
         characters:{},
+        /**
+         *
+         * @param id
+         * @param character
+         */
         set:function(id,character){
             var self = this;
             self.characters[id] = character;
         },
+        /**
+         *
+         * @param id
+         * @returns {*}
+         */
         get:function(id){
             var self = this;
             if(self.characters[id] !== undefined){
@@ -28,6 +39,12 @@
             }
             return null;
         },
+        /**
+         *
+         * @param id
+         * @param options
+         * @returns {*}
+         */
         createInstance:function(id,options){
             var self = this;
             if(self.characters[id] !== undefined){

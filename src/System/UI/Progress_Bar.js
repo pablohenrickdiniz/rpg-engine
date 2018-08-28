@@ -1,15 +1,21 @@
+'use strict';
 (function(root){
-    if(root.UI == undefined){
-        throw "Progress_Bar requires UI"
+    if(root.UI === undefined){
+        throw "Progress_Bar requires UI";
     }
 
-    if(root.UI.classes.Element == undefined){
+    if(root.UI.classes.Element === undefined){
         throw "Progress_Bar requires Element";
     }
 
     var UI = root.UI,
         Element = UI.classes.Element;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Progress_Bar = function(options){
         var self = this;
         options = options || {};

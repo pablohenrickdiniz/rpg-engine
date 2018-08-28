@@ -1,26 +1,32 @@
+'use strict';
 (function (root) {
     if(root.Main === undefined){
-        throw "Game_Item requires Main"
+        throw "Game_Item requires Main";
     }
     else{
         if(root.Main.Items === undefined){
-            throw "Game_Item requires Items"
+            throw "Game_Item requires Items";
         }
     }
 
     if(root.Game_Object === undefined){
-        throw "Game_Item requires Game_Object"
+        throw "Game_Item requires Game_Object";
     }
 
     var Game_Object = root.Game_Object,
         Consts = root.Consts,
         Items = root.Main.Items;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Game_Item = function (options) {
         var self = this;
         options = options || {};
         options.type = options.type || 'generic';
-        options.through = (options.through === undefined || options.through)?true:false;
+        options.through = options.through === true;
         Game_Object.call(self,options);
         initialize(self);
         self.amount = options.amount || 1;
@@ -33,7 +39,10 @@
     Game_Item.prototype = Object.create(Game_Object.prototype);
     Game_Item.prototype.constructor = Game_Item;
 
-
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         Object.defineProperty(self,'item',{
             get:function(){

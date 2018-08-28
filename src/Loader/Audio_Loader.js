@@ -1,3 +1,4 @@
+'use strict';
 (function (w) {
     if (w.Audio === undefined) {
         throw "AudioLoader requires Audio support"
@@ -53,13 +54,13 @@
             var globalprogress = options.globalprogress || new GlobalProgress();
 
             if (length > 0) {
-                function q(audio, id) {
+                var q = function(audio, id) {
                     loaded[id] = audio;
                     length--;
                     if (length === 0 && onsuccess) {
                         onsuccess(loaded);
                     }
-                }
+                };
 
                 for (var k = 0; k < keys.length; k++) {
                     var key = keys[k];
@@ -98,30 +99,30 @@
                 audio.currentTime = loaded_audio(audio);
                 audios[url] = audio;
 
-                function unbind() {
+                var unbind = function() {
                     audio.removeEventListener('error', onerror_callback);
                     audio.removeEventListener('timeupdate', timeupdate_callback);
                     audio.removeEventListener('canplaythrough', can_play_callback);
-                }
+                };
 
-                function onsuccess_callback() {
+                var onsuccess_callback = function() {
                     unbind();
                     if (onsuccess) {
                         onsuccess(id,url);
                     }
-                }
+                };
 
-                function onerror_callback () {
+                var onerror_callback = function() {
                     unbind();
                     if (onerror) {
                         onerror(id);
                     }
-                }
+                };
 
                 var old_progress = 0;
                 var media = null;
 
-                function timeupdate_callback () {
+                var timeupdate_callback = function() {
                     var loaded = loaded_audio(audio);
 
                     if(loaded === audio.duration){
@@ -165,12 +166,12 @@
                             }
                         }
                     }
-                }
+                };
 
-                function can_play_callback() {
+                var can_play_callback = function() {
                     audio.playbackRate = Math.min(audio.duration,16);
                     audio.play();
-                }
+                };
 
                 audio.addEventListener('error', onerror_callback);
                 audio.addEventListener('timeupdate', timeupdate_callback);

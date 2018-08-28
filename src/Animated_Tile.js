@@ -1,10 +1,21 @@
+'use strict';
 (function (root) {
     if (root.Tile === undefined) {
-        throw "Animated_Tile requires Tile"
+        throw "Animated_Tile requires Tile";
     }
 
     var Tile = root.Tile;
 
+    /**
+     *
+     * @param parent
+     * @param sx
+     * @param sy
+     * @param ex
+     * @param ey
+     * @param speed
+     * @constructor
+     */
     var Animated_Tile = function (parent, sx, sy, ex, ey, speed) {
         var self = this;
         Tile.call(self, [parent, sx, sy]);
@@ -17,7 +28,6 @@
 
     Animated_Tile.prototype = Object.create(Tile.prototype);
     Animated_Tile.prototype.constructor = Animated_Tile;
-
 
     Animated_Tile.prototype.initialize = function () {
         var self = this;
@@ -39,6 +49,10 @@
         self.animation.stop();
     };
 
+    /**
+     *
+     * @returns {{image: *, sx: *, sy: *, sWidth, sHeight, dWidth, dHeight}}
+     */
     Animated_Tile.prototype.getGraphic = function () {
         var self = this;
         var tile_width = self.parent.tileDWidth;

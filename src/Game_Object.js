@@ -1,13 +1,14 @@
+'use strict';
 (function(root,w){
     var ID = 0;
     var Game_Timer = root.Game_Timer;
 
     if(root.Main === undefined){
-        throw "Game Object requires Main"
+        throw "Game Object requires Main";
     }
 
     if(w.Matter === undefined){
-        throw "Game Object requires Matter"
+        throw "Game Object requires Matter";
     }
 
     var Main = root.Main,
@@ -15,6 +16,11 @@
         Bodies = Matter.Bodies,
         Body = Matter.Body;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Game_Object = function(options){
         var self = this;
         initialize(self);
@@ -28,8 +34,12 @@
             options.y || 0,
             options.width || 32,
             options.height || 32,{
-                frictionAir:0.09
+                frictionAir:0.09,
+                inertia:Infinity,
+                friction:0.5
             });
+        self.width = options.width || 32;
+        self.height = options.height || 32;
         self.layer = options.layer || 2;
         self.hSpeed = options.hSpeed || 0.02;
         self.vSpeed = options.vSpeed || 0.02;
@@ -41,6 +51,11 @@
         self.listeners = [];
     };
 
+    /**
+     *
+     * @param properties
+     * @returns {*}
+     */
     Game_Object.prototype.clone = function(properties){
         properties = properties || {};
         var id = ID;
@@ -48,48 +63,25 @@
         return Object.assign({object_id:id},properties,this);
     };
 
-
+    /**
+     *
+     * @param group
+     */
     Game_Object.prototype.addCollisionGroup = function(group){
         var self = this;
        // QuadTree.addGroup(self.bounds,group);
     };
 
+    /**
+     *
+     * @param name
+     */
     Game_Object.prototype.removeCollisionGroup = function(name){
         var self = this;
         //QuadTree.removeGroup(self.bounds,name);
     };
 
-
-    Game_Object.prototype.update = function () {
-        var self = this;
-        var x = self.x;
-        var y = self.y;
-        if(Main.currentScene && Main.currentScene.spriteset){
-            var spriteset = Main.currentScene.spriteset;
-            x = calcloop(x,spriteset.realWidth);
-            y = calcloop(y,spriteset.realHeight);
-        }
-        self.x = x;
-        self.y = y;
-    };
-
-    /**
-     *
-     * @param c
-     * @param d
-     * @returns {*}
-     */
-    function calcloop(c,d){
-        if(c < 0){
-            while(c < -d){c = c%d;}
-            return d+c;
-        }
-        else if(c > d){
-            while(c > d){c = c%d;}
-            return c;
-        }
-        return c;
-    }
+    Game_Object.prototype.update = function () {};
 
     /**
      *
@@ -110,11 +102,41 @@
         var speed = 5;
         var currentAnimation = null;
         var through = null;
+        var body = null;
+        var width = null;
+        var height = null;
+
+        Object.defineProperty(self,'body',{
+            /**
+             *
+             * @param b
+             */
+            set:function(b){
+                if(body !==  b){
+                    body = b;
+                }
+            },
+            /**
+             *
+             * @returns {*}
+             */
+            get:function(){
+                return body;
+            }
+        });
 
         Object.defineProperty(self,'x',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return self.body.position.x;
             },
+            /**
+             *
+             * @param x
+             */
             set:function(x){
                 if(x !== self.body.position.x){
                     Body.setPosition(self.body,{
@@ -126,9 +148,17 @@
         });
 
         Object.defineProperty(self,'y',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return self.body.position.y;
             },
+            /**
+             *
+             * @param y
+             */
             set:function(y){
                 if(y !== self.body.position.y){
                     Body.setPosition(self.body,{
@@ -139,34 +169,58 @@
             }
         });
 
-
         Object.defineProperty(self,'width',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
-                return self.body.width;
+                return width;
             },
+            /**
+             *
+             * @param w
+             */
             set:function(w){
-                if(w !== self.body.width){
+                if(w !== width){
+                    width = w;
                     Body.set(self.body,'width',w);
                 }
             }
         });
 
         Object.defineProperty(self,'height',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
-                return self.body.height;
+                return height;
             },
+            /**
+             *
+             * @param h
+             */
             set:function(h){
-                if(h !== self.body.height){
+                if(h !== height){
+                    height = h;
                     Body.set(self.body,'height',h);
                 }
             }
         });
 
-
         Object.defineProperty(self,'speed',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return speed;
             },
+            /**
+             *
+             * @param s
+             */
             set:function(s){
                 if(s !== speed){
                     speed = s;
@@ -183,9 +237,17 @@
 
         Object.defineProperty(self,'currentAnimation',{
             configurable:true,
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return currentAnimation;
             },
+            /**
+             *
+             * @param ca
+             */
             set:function(ca){
                 if(currentAnimation !== ca){
                     if(currentAnimation != null){
@@ -199,9 +261,17 @@
 
         Object.defineProperty(self,'through',{
             configurable:true,
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return through;
             },
+            /**
+             *
+             * @param t
+             */
             set:function(t){
                 if(t !== through){
                     through = t;

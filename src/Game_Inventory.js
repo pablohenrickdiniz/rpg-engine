@@ -1,10 +1,15 @@
+'use strict';
 (function(root){
-    if(root.Game_Slot == undefined){
+    if(root.Game_Slot === undefined){
         throw "Game_Inventory requires Game_Slot";
     }
 
     var Game_Slot = root.Game_Slot;
-
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Game_Inventory = function(options){
         var self = this;
         initialize(self);
@@ -14,6 +19,12 @@
         self.listeners = [];
     };
 
+    /**
+     *
+     * @param slotA
+     * @param slotB
+     * @returns {boolean}
+     */
     Game_Inventory.prototype.swap = function(slotA,slotB) {
         var self = this;
         if (self.slots[slotA] && self.slots[slotB]) {
@@ -62,6 +73,11 @@
         return false;
     };
 
+    /**
+     *
+     * @param event
+     * @param callback
+     */
     Game_Inventory.prototype.on = function(event,callback){
         var self = this;
         if(!self.listeners[event]){
@@ -72,7 +88,11 @@
         }
     };
 
-
+    /**
+     *
+     * @param event
+     * @param callback
+     */
     Game_Inventory.prototype.off = function(event,callback){
         var self = this;
         if(self.listeners[event]){
@@ -83,7 +103,11 @@
         }
     };
 
-
+    /**
+     *
+     * @param event
+     * @param args
+     */
     Game_Inventory.prototype.trigger = function(event,args){
         var self = this;
         if(self.listeners[event]){
@@ -94,7 +118,12 @@
         }
     };
 
-
+    /**
+     *
+     * @param item
+     * @param amount
+     * @returns {*}
+     */
     Game_Inventory.prototype.addItem = function(item,amount){
         var self = this;
         var keys = Object.keys(self.slots);
@@ -121,11 +150,21 @@
         return amount;
     };
 
+    /**
+     *
+     * @param id
+     * @param options
+     */
     Game_Inventory.prototype.addSlot = function(id,options){
         var self = this;
         self.slots[id] = new Game_Slot(options);
     };
 
+    /**
+     *
+     * @param id
+     * @returns {*}
+     */
     Game_Inventory.prototype.getSlot = function(id){
         var self = this;
         var slots = self.slots;
@@ -135,6 +174,10 @@
         return null;
     };
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var slots = {};
 

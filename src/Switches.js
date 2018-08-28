@@ -1,10 +1,11 @@
+'use strict';
 (function(root){
     if(root.Game_Event === undefined){
-        throw "Switches requires Game_Event"
+        throw "Switches requires Game_Event";
     }
 
     if(root.Main === undefined){
-        throw "Switches requires RPG Main"
+        throw "Switches requires RPG Main";
     }
 
     var Main = root.Main,
@@ -17,6 +18,12 @@
     };
 
     Main.Switches = {
+        /**
+         *
+         * @param map_id
+         * @param event_id
+         * @param switch_id
+         */
         enable:function(map_id,event_id,switch_id){
             var changed = false;
             if(map_id != null){
@@ -54,6 +61,12 @@
                 propagate_switch_changes();
             }
         },
+        /**
+         *
+         * @param map_id
+         * @param event_id
+         * @param name
+         */
         disable:function(map_id,event_id,name){
             var changed = false;
             if(map_id != null){

@@ -1,10 +1,11 @@
+'use strict';
 (function (root) {
     if(root.Consts === undefined){
-        throw "Event_Page requires Consts"
+        throw "Event_Page requires Consts";
     }
 
     if(root.Game_Character === undefined){
-        throw "Event_Page requires Game_Character"
+        throw "Event_Page requires Game_Character";
     }
 
     var Consts = root.Consts,
@@ -12,6 +13,11 @@
 
     var SWITCH_CONDITION_REGEX = /^(LOCAL|GLOBAL):([A-Za-z0-9]+):(ON|OFF)$/;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Event_Page = function (options) {
         var self = this;
         Game_Character.call(self, options);
@@ -65,7 +71,10 @@
         Game_Character.prototype.update.call(self);
     };
 
-
+    /**
+     *
+     * @param condition
+     */
     Event_Page.prototype.addCondition = function(condition){
         condition = condition.toUpperCase();
         if(SWITCH_CONDITION_REGEX.test(condition)){
@@ -81,13 +90,20 @@
         }
     };
 
-
+    /**
+     *
+     * @param self
+     */
     var initialize = function(self){
         var conditions = [];
         var through = null;
         var walkingAnimation =false;
 
         Object.defineProperty(self,'conditions',{
+            /**
+             *
+             * @param cond
+             */
             set:function(cond){
                 conditions = [];
                 var length = cond.length;
@@ -95,15 +111,27 @@
                     self.addCondition(cond[i]);
                 }
             },
+            /**
+             *
+             * @returns {Array}
+             */
             get:function(){
                 return conditions;
             }
         });
 
         Object.defineProperty(self,'through',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return through;
             },
+            /**
+             *
+             * @param t
+             */
             set:function(t){
                 if(t !== through){
                     through = t;
@@ -118,9 +146,17 @@
         });
 
         Object.defineProperty(self,'walkingAnimation',{
+            /**
+             *
+             * @returns {boolean}
+             */
             get:function(){
                 return walkingAnimation;
             },
+            /**
+             *
+             * @param wa
+             */
             set:function(wa){
                 if(wa !== walkingAnimation){
                     walkingAnimation = wa;

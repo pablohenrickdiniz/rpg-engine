@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     /**
      *
@@ -40,15 +41,26 @@
         }
     };
 
-
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         Object.defineProperty(self,'width',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.spriteset.width*self.spriteset.tileWidth;
             }
         });
 
         Object.defineProperty(self,'height',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.spriteset.height*self.spriteset.tileHeight;
             }

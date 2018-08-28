@@ -1,9 +1,16 @@
+'use strict';
 (function(root){
     if(root.Game_Timer === undefined){
         throw "Audio_File requires Game_Timer"
     }
 
     var Game_Timer = root.Game_Timer;
+
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Audio_File = function(options){
         options = options || {};
         var self  =this;
@@ -94,7 +101,7 @@
                 return loop;
             },
             set:function(l){
-               loop = l?true:false;
+               loop = !!l;
             }
         });
 

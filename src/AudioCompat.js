@@ -1,7 +1,12 @@
+'use strict';
 (function (w) {
     if (w.Audio === undefined) {
         (function (w) {
             var context = new (w.AudioContext || w.webkitAudioContext)();
+            /**
+             *
+             * @param url
+             */
             var load_audio = function (url) {
                 var self = this;
                 var request = new XMLHttpRequest();
@@ -18,7 +23,10 @@
                 request.send();
             };
 
-
+            /**
+             *
+             * @constructor
+             */
             var Audio = function () {
                 var self = this;
                 var src = '';
@@ -30,21 +38,37 @@
                 var currentTime = 0;
 
                 Object.defineProperty(self, 'src', {
+                    /**
+                     *
+                     * @param newSrc
+                     */
                     set: function (newSrc) {
                         if (src !== newSrc) {
                             src = newSrc;
                             load_audio.apply(self, [src]);
                         }
                     },
+                    /**
+                     *
+                     * @returns {string}
+                     */
                     get: function () {
                         return src;
                     }
                 });
 
                 Object.defineProperty(self, 'currentTime', {
+                    /**
+                     *
+                     * @param newTime
+                     */
                     set: function (newTime) {
                         currentTime = newTime;
                     },
+                    /**
+                     *
+                     * @returns {number}
+                     */
                     get: function () {
                         return self.paused ? currentTime : (new Date()).getTime() - self.time_start;
                     }
@@ -78,7 +102,11 @@
                     self.currentTime = (new Date()).getTime() - self.time_start;
                 }
             };
-
+            /**
+             *
+             * @param event
+             * @param callback
+             */
             Audio.prototype.addEventListener = function (event, callback) {
                 var self = this;
                 if (self.listeners[event] === undefined) {
@@ -86,7 +114,11 @@
                 }
                 self.listeners[event].push(callback);
             };
-
+            /**
+             *
+             * @param event
+             * @param callback
+             */
             Audio.prototype.removeEventListener = function (event, callback) {
                 var self = this;
                 if (self.listeners[event] !== undefined) {
@@ -96,7 +128,10 @@
                     }
                 }
             };
-
+            /**
+             *
+             * @param event
+             */
             Audio.prototype.trigger = function (event) {
                 var self = this;
                 if (self.listeners[event] !== undefined) {

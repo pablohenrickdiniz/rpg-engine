@@ -1,3 +1,4 @@
+'use strict';
 (function (root,w) {
     if (w.Graphic_Loader === undefined) {
         throw "TilesetLoader requires Graphic_Loader"

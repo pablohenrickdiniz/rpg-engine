@@ -1,3 +1,4 @@
+'use strict';
 (function(root){
     var Consts = {
         UP:38,

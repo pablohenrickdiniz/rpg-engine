@@ -1,10 +1,11 @@
+'use strict';
 (function(root,w){
     if(root.Game_Character === undefined){
-        throw "Game_Actor requires Game_Character"
+        throw "Game_Actor requires Game_Character";
     }
 
     if(root.Game_Inventory === undefined){
-        throw "Game_Actor requires Game_Inventory"
+        throw "Game_Actor requires Game_Inventory";
     }
 
     var Game_Character = root.Game_Character,
@@ -12,6 +13,11 @@
         Keyboard = w.Keyboard,
         Game_Inventory = root.Game_Inventory;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Game_Actor = function(options){
         var self = this;
         Game_Character.call(self, options);
@@ -52,14 +58,26 @@
         Game_Character.prototype.update.call(self);
     };
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var inventory = new Game_Inventory();
         var level = 1;
 
         Object.defineProperty(self,'inventory',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return inventory;
             },
+            /**
+             *
+             * @param inv
+             */
             set:function(inv){
                 if(inv instanceof Game_Inventory){
                     inventory = inv;
@@ -71,9 +89,17 @@
         });
 
         Object.defineProperty(self,'level',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return level;
             },
+            /**
+             *
+             * @param l
+             */
             set:function(l){
                 l = parseInt(l);
                 if(!isNaN(l) && l > 0){

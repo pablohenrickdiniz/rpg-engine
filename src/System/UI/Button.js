@@ -1,15 +1,21 @@
+'use strict';
 (function(root){
-    if(root.UI == undefined){
+    if(root.UI === undefined){
         throw "Menu requires UI"
     }
 
-    if(root.UI.classes.Element == undefined){
+    if(root.UI.classes.Element === undefined){
         throw "Button requires Element";
     }
 
     var UI = root.UI,
         Element = UI.classes.Element;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Button = function(options){
         var self = this;
         options = options || {};
@@ -21,6 +27,10 @@
     Button.prototype = Object.create(Element.prototype);
     Button.prototype.constructor = Button;
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var text = '';
         Object.defineProperty(self,'text',{
@@ -28,7 +38,7 @@
                 return text;
             },
             set:function(t){
-                if(t != text){
+                if(t !== text){
                     text = t;
                     self.element.innerHTML = text;
                 }

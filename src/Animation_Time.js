@@ -1,6 +1,6 @@
+'use strict';
 (function (root) {
     var Game_Timer = root.Game_Timer;
-
     /**
      *
      * @param fps
@@ -20,31 +20,20 @@
 
     /**
      *
-     * @returns {*}
+     * @returns {number}
      */
     Animation_Time.prototype.getIndexFrame = function () {
         var self = this;
         var frames = self.getFrames();
         if (frames < self.frame_count) {
-            if (self.direction === 'negative') {
-                return self.frame_count - 1 - frames;
-            }
-            return frames;
+            return self.direction === 'negative'?self.frame_count - 1 - frames:frames;
         }
         else {
             if (self.stop_on_end) {
-                if (self.direction === 'negative') {
-                    return 0;
-                }
-                return self.frame_count - 1;
+               return self.direction === 'negative'?0:self.frame_count - 1;
             }
-
             var mod = frames % self.frame_count;
-            if (self.direction === 'negative') {
-                return self.frame_count - 1 - mod;
-            }
-
-            return mod;
+            return self.direction === 'negative'?self.frame_count - 1 - mod:mod;
         }
     };
 
@@ -53,25 +42,14 @@
      * @returns {number}
      */
     Animation_Time.prototype.getFrames = function () {
-        var diff = null;
         var self = this;
-        if (self.running) {
-            diff = Game_Timer.currentTime - self.start_time;
-        }
-        else {
-            diff = self.end_time - self.start_time;
-        }
-
-        if (diff === 0) {
-            return 0;
-        }
-
-        var sec = diff / 1000;
-        return Math.ceil(sec * self.fps);
+        var diff = self.running?Game_Timer.currentTime - self.start_time:self.end_time - self.start_time;
+        return diff === 0?0:Math.ceil((diff / 1000) * self.fps);
     };
+
     /**
      *
-     * @returns {boolean|*}
+     * @returns {boolean}
      */
     Animation_Time.prototype.isRunning = function () {
         var self = this;
@@ -97,10 +75,9 @@
         }
     };
 
-
     /**
      *
-      * @param index
+     * @param index
      */
     Animation_Time.prototype.pauseToFrame = function (index) {
         var self = this;

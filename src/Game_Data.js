@@ -1,16 +1,16 @@
+'use strict';
 (function (root) {
     if(root.Game_Item === undefined){
-        throw "Game_Data requires Game_Item"
+        throw "Game_Data requires Game_Item";
     }
 
     if(root.Game_Character === undefined){
-        throw "Game_Data requires Game_Character"
+        throw "Game_Data requires Game_Character";
     }
 
     if(root.Game_Actor === undefined){
-        throw "Game_Data requires Game_Actor"
+        throw "Game_Data requires Game_Actor";
     }
-
 
     var database = {
         actors: {},
@@ -19,6 +19,11 @@
     };
 
     root.Game_Data = {
+        /**
+         *
+         * @param url
+         * @param callback
+         */
         load: function (url, callback) {
             var req = new XMLHttpRequest();
             req.onload = function () {

@@ -1,6 +1,7 @@
+'use strict';
 (function (root) {
-    if(root.Event_Page == undefined){
-        throw "Game_Event requires Event_Page"
+    if(root.Event_Page === undefined){
+        throw "Game_Event requires Event_Page";
     }
 
     var Event_Page = root.Event_Page;
@@ -21,7 +22,11 @@
         self.updateCurrentPage();
     };
 
-
+    /**
+     *
+     * @param options
+     * @returns {*}
+     */
     Game_Event.prototype.newPage = function(options) {
         options = options || {};
         var self = this;
@@ -38,7 +43,7 @@
      */
     Game_Event.prototype.isEnabled = function(name){
         var self = this;
-        return self.switches[name] == true;
+        return !!self.switches[name];
     };
 
     /**
@@ -65,23 +70,26 @@
         }
     };
 
-
     /**
      *
      * @param page
      */
     Game_Event.prototype.add = function (page) {
         var self = this;
-        if(page instanceof Event_Page && self.pages.indexOf(page) == -1){
+        if(page instanceof Event_Page && self.pages.indexOf(page) === -1){
             self.pages.push(page);
             self.updateCurrentPage();
         }
     };
 
+    /**
+     *
+     * @param page
+     */
     Game_Event.prototype.remove = function(page){
         var self = this;
         var index = self.pages.indexOf(page);
-        if(index != -1){
+        if(index !== -1){
             self.pages.splice(index,1);
             self.updateCurrentPage();
         }
@@ -109,6 +117,10 @@
         var y = 0;
 
         Object.defineProperty(self,'currentFrame',{
+            /**
+             *
+             * @returns {null}
+             */
             get:function(){
                 if(currentPage){
                     return currentPage.currentFrame;
@@ -117,24 +129,37 @@
             }
         });
 
-
         Object.defineProperty(self,'currentPage',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return currentPage;
             },
+            /**
+             *
+             * @param cp
+             */
             set:function(cp){
-                if(cp != currentPage){
+                if(cp !== currentPage){
                     if(cp){
                         cp.x = self.x;
                         cp.y = self.y;
+                        if(currentPage && currentPage.body){
+                            cp.body = currentPage.body;
+                        }
                     }
                     currentPage = cp;
-
                 }
             }
         });
 
         Object.defineProperty(self,'through',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(currentPage){
                     return currentPage.through;
@@ -143,7 +168,11 @@
             }
         });
 
-        Object.defineProperty(self,'bounds',{
+        Object.defineProperty(self,'body',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(currentPage){
                     return currentPage.body;
@@ -153,12 +182,20 @@
         });
 
         Object.defineProperty(self,'x',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(currentPage){
                     return currentPage.x;
                 }
                 return x;
             },
+            /**
+             *
+             * @param p
+             */
             set:function(p){
                 x = p;
                 if(currentPage){
@@ -168,72 +205,24 @@
         });
 
         Object.defineProperty(self,'y',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(currentPage){
                     return currentPage.y;
                 }
                 return y;
             },
+            /**
+             *
+             * @param p
+             */
             set:function(p){
                 y = p;
                 if(currentPage){
                     currentPage.y = y;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'restitution',{
-            get:function(){
-                if(currentPage){
-                    return currentPage.restitution;
-                }
-                return 0;
-            },
-            set:function(r){
-                if(currentPage){
-                    currentPage.restitution = r;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'inv_mass',{
-            get:function(){
-                if(currentPage){
-                    return currentPage.inv_mass;
-                }
-                return 0;
-            },
-            set:function(inv_mass){
-                if(currentPage){
-                    currentPage.inv_mass = inv_mass;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'mass',{
-            get:function(){
-                if(currentPage){
-                    return currentPage.mass;
-                }
-                return 0;
-            },
-            set:function(mass){
-                if(currentPage){
-                    currentPage.mass = mass;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'velocity',{
-            get:function(){
-                if(currentPage){
-                    return currentPage.velocity;
-                }
-                return {x:0,y:0};
-            },
-            set:function(v){
-                if(currentPage){
-                    currentPage.velocity = v;
                 }
             }
         });
@@ -259,13 +248,12 @@
      */
     function validateConditions(page){
         var conditions = page.conditions;
-        var event = page.event;
         for(var scope in conditions){
             switch(scope){
                 case 'LOCAL':
                     for(var id in conditions[scope]){
-                        var status = event.switches[id]?true:false;
-                        if(conditions[scope][id] != status){
+                        var status = !!event.switches[id];
+                        if(conditions[scope][id] !== status){
                             return false;
                         }
                     }
@@ -273,8 +261,8 @@
                 case 'GLOBAL':
                     var GlobalSwitches = root.GlobalSwitches;
                     for(var id in conditions[scope]){
-                        var status = GlobalSwitches.switches[id]?true:false;
-                        if(conditions[scope][id] != status){
+                        var status = !!GlobalSwitches.switches[id];
+                        if(conditions[scope][id] !== status){
                             return false;
                         }
                     }

@@ -1,26 +1,27 @@
+'use strict';
 (function (w) {
     /*Canvas Engine*/
     if (w.CE === undefined) {
-        throw 'RPG requires Canvas Engine'
+        throw 'RPG requires Canvas Engine';
     }
 
     /*Keyboard*/
     if (w.Keyboard === undefined) {
-        throw "RPG requires Keyboard"
+        throw "RPG requires Keyboard";
     }
 
     /*Mouse*/
     if (w.Mouse === undefined) {
-        throw "RPG requires Mouse"
+        throw "RPG requires Mouse";
     }
 
     /*TimeTicker*/
     if (w.TimerTicker === undefined) {
-        throw "RPG requires TimeTicker"
+        throw "RPG requires TimeTicker";
     }
 
     if(w.Matter === undefined){
-        throw "RPG requires Matter"
+        throw "RPG requires Matter";
     }
 
     var Keyboard = w.Keyboard,
@@ -72,14 +73,11 @@
                 propagate: [Keyboard.F5, Keyboard.F11,Keyboard.F12]
             });
 
-
             self.Canvas.initialize({
                 container: container,
                 width: w.innerWidth,
                 height: w.innerHeight
             });
-
-            self.engine.world.gravity = {x:0,y:0};
 
             // self.Render = Render.create({
             //     element:container,
@@ -94,6 +92,10 @@
         }
     };
 
+    /**
+     *
+     * @param root
+     */
     function unbind(root){
         var Game_Timer = root.Game_Timer,
             Keyboard = root.Controls.Keyboard,
@@ -112,6 +114,10 @@
 
     }
 
+    /**
+     *
+     * @param root
+     */
     function bind(root){
         var Game_Timer = root.Game_Timer,
             Keyboard = root.Controls.Keyboard,

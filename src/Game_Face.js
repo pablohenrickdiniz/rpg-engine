@@ -1,9 +1,16 @@
+'use strict';
 (function(root){
     if(root.Game_Graphic === undefined){
-        throw "Game_Face requires Game_Graphic"
+        throw "Game_Face requires Game_Graphic";
     }
 
     var Game_Graphic = root.Game_Graphic;
+
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Game_Face = function(options){
         var self = this;
         options = options || {};

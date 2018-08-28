@@ -1,6 +1,7 @@
+'use strict';
 (function(root){
     if(root.Game_Actor === undefined){
-        throw "Actors requires Game_Actor"
+        throw "Actors requires Game_Actor";
     }
 
     if(root.Main === undefined){
@@ -12,11 +13,21 @@
     var actors = [];
 
     Main.Actors = {
+        /**
+         *
+         * @param id
+         * @param actor
+         */
         set:function(id,actor){
             if(actor instanceof Game_Actor){
                 actors[id] = actor;
             }
         },
+        /**
+         *
+         * @param id
+         * @returns {*}
+         */
         get:function(id){
             if(actors[id] !== undefined){
                return actors[id];

@@ -1,4 +1,10 @@
+'use strict';
 (function (w) {
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Timer_Ticker = function (options) {
         var self = this;
         options = options || {};
@@ -26,7 +32,11 @@
         self.running = false;
         self.trigger('stop');
     };
-
+    /**
+     *
+     * @param eventName
+     * @param callback
+     */
     Timer_Ticker.prototype.addEventListener = function (eventName, callback) {
         var self = this;
         if(self.listeners[eventName] === undefined){
@@ -36,7 +46,11 @@
             self.listeners[eventName].push(callback);
         }
     };
-
+    /**
+     *
+     * @param event
+     * @param callback
+     */
     Timer_Ticker.prototype.removeEventListener = function (event, callback) {
         var self = this;
         if(self.listeners[event] !==undefined){
@@ -46,7 +60,11 @@
             }
         }
     };
-
+    /**
+     *
+     * @param eventName
+     * @param args
+     */
     Timer_Ticker.prototype.trigger = function (eventName,args) {
         var self = this;
 
@@ -59,6 +77,10 @@
         }
     };
 
+    /**
+     *
+     * @param timer
+     */
     function tick(timer) {
         if(timer.running){
             timer.interval = w.requestAnimationFrame(function () {

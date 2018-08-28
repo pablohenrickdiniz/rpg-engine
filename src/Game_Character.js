@@ -1,30 +1,31 @@
+'use strict';
 (function (root) {
     if (root.Animation_Time === undefined) {
-        throw "Game_Character requires Animation_Time"
+        throw "Game_Character requires Animation_Time";
     }
 
     if (root.Consts === undefined) {
-        throw "Game_Character requires Consts"
+        throw "Game_Character requires Consts";
     }
 
     if(root.Chara === undefined){
-        throw "Game_Character requires Chara"
+        throw "Game_Character requires Chara";
     }
 
     if(root.Game_Timer === undefined){
-        throw "Game_Character requires Game_Timer"
+        throw "Game_Character requires Game_Timer";
     }
 
     if(root.Game_Object === undefined){
-        throw "Game_Character requires Game_Object"
+        throw "Game_Character requires Game_Object";
     }
 
     if(root.Main.Charas === undefined){
-        throw "Game_Character requires Charas"
+        throw "Game_Character requires Charas";
     }
 
     if(root.Main.Faces === undefined){
-        throw "Game_Character requires Faces"
+        throw "Game_Character requires Faces";
     }
 
     var Animation_Time = root.Animation_Time,
@@ -35,6 +36,7 @@
         Game_Object = root.Game_Object,
         Charas = Main.Charas,
         Faces = Main.Faces;
+
     /**
      *
      * @param options
@@ -54,6 +56,10 @@
     Game_Character.prototype = Object.create(Game_Object.prototype);
     Game_Character.prototype.constructor = Game_Character;
 
+    /**
+     *
+     * @param direction
+     */
     Game_Character.prototype.moveTo = function (direction) {
         var self = this;
         if (direction === Consts.CHARACTER_DIRECTION_RANDOM) {
@@ -226,6 +232,10 @@
         var charaID = null;
         var faceID = null;
         Object.defineProperty(self, 'charaID', {
+            /**
+             *
+             * @param id
+             */
             set: function (id) {
                 if (id !== charaID) {
                     charaID = id;
@@ -245,17 +255,29 @@
                     }
                 }
             },
+            /**
+             *
+             * @returns {*}
+             */
             get: function () {
                 return charaID;
             }
         });
 
         Object.defineProperty(self, 'faceID', {
+            /**
+             *
+             * @param id
+             */
             set: function (id) {
                 if (id !== faceID) {
                     faceID = id;
                 }
             },
+            /**
+             *
+             * @returns {*}
+             */
             get: function () {
                 return faceID;
             }
@@ -263,22 +285,32 @@
 
         Object.defineProperty(self,'graphic',{
             configurable:true,
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return Charas.get(self.charaID);
             }
         });
 
         Object.defineProperty(self,'face',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return Faces.get(self.faceID);
             }
         });
 
-
         Object.defineProperty(self,'currentFrame',{
             configurable:false,
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
-
                 if(self.currentAnimation !=null && self.graphic != null){
                     var animation = self.currentAnimation;
                     var index = animation.getIndexFrame();
@@ -294,7 +326,6 @@
             }
         });
     }
-
 
     root.Game_Character = Game_Character;
 })(RPG);

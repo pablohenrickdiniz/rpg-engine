@@ -1,9 +1,16 @@
+'use strict';
 (function(root,w){
-    if(root.UI == undefined){
-        throw "Element requires UI"
+    if(root.UI === undefined){
+        throw "Element requires UI";
     }
 
     var UI = root.UI;
+    /**
+     *
+     * @param options
+     * @param tag
+     * @constructor
+     */
     var Element = function(options,tag){
         var self = this;
         options = options || {};
@@ -17,32 +24,46 @@
         self.draggable = options.draggable || false;
         self.children = [];
         self.display = options.display || 'block';
-        self.visible = options.visible != false;
+        self.visible = false !== options.visible;
         self.width = options.width;
         self.height = options.height;
     };
 
-
+    /**
+     *
+     * @param event
+     * @param callback
+     */
     Element.prototype.addEventListener = function(event,callback){
         var self = this;
         if(!self.listeners[event]){
             self.listeners[event] = [];
         }
-        if(self.listeners[event].indexOf(callback) == -1){
+        if(self.listeners[event].indexOf(callback) === -1){
             self.listeners[event].push(callback);
         }
     };
 
+    /**
+     *
+     * @param event
+     * @param callback
+     */
     Element.prototype.removeEventListener = function(event,callback){
         var self = this;
         if(self.listeners[event]){
             var index = self.listeners[event].indexOf(callback);
-            if(index != -1){
+            if(index !== -1){
                 self.listeners[event].splice(index,1);
             }
         }
     };
 
+    /**
+     *
+     * @param event
+     * @param args
+     */
     Element.prototype.trigger = function(event,args){
         var self = this;
         if(self.listeners[event]){
@@ -53,21 +74,29 @@
         }
     };
 
+    /**
+     *
+     * @param el
+     */
     Element.prototype.add = function(el){
         var self = this;
-        if(el instanceof Element && el != self && self.children.indexOf(el) == -1){
+        if(el instanceof Element && el !== self && self.children.indexOf(el) === -1){
             self.children.push(el);
             el.parent = self;
             self.element.appendChild(el.element);
         }
     };
 
+    /**
+     *
+     * @param el
+     */
     Element.prototype.remove = function(el){
         var self = this;
         var index = self.children.indexOf(el);
-        if(index != -1){
+        if(index !== -1){
             self.children.splice(index,1);
-            if(self.element == el.element.parent){
+            if(self.element === el.element.parent){
                 self.element.removeChild(el.element);
                 el.parent = null;
             }
@@ -82,6 +111,10 @@
         }
     };
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var parent = null;
         var element = null;
@@ -90,20 +123,30 @@
         var visible = true;
         var draggable = false;
 
-
         Object.defineProperty(self,'bounds',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return self.element.getBoundingClientRect();
             }
         });
 
-
         Object.defineProperty(self,'parent',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return parent;
             },
+            /**
+             *
+             * @param p
+             */
             set:function(p){
-                if((p == UI || p instanceof Element || p == null) && p != parent){
+                if((p === UI || p instanceof Element || p == null) && p !== parent){
                     if(parent != null){
                         parent.remove(self);
                     }
@@ -116,12 +159,20 @@
         });
 
         Object.defineProperty(self,'visible',{
+            /**
+             *
+             * @returns {boolean}
+             */
             get:function(){
                 return visible;
             },
+            /**
+             *
+             * @param v
+             */
             set:function(v){
-                v = v?true:false;
-                if(v != visible){
+                v = !!v;
+                if(v !== visible){
                     visible = v;
                     if(visible){
                         self.element.style.display = self.display;
@@ -134,8 +185,12 @@
         });
 
         Object.defineProperty(self,'element',{
+            /**
+             *
+             * @param el
+             */
             set:function(el){
-                if(el instanceof Node && el != element){
+                if(el instanceof Node && el !== element){
                     while(el.firstChild){
                         el.removeChild(el.firstChild);
                     }
@@ -149,6 +204,10 @@
                     self.bind();
                 }
             },
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(element == null){
                     element = document.createElement(self.tag);
@@ -168,23 +227,39 @@
         });
 
         Object.defineProperty(self,'draggable',{
+            /**
+             *
+             * @returns {boolean}
+             */
             get:function(){
                 return draggable;
             },
+            /**
+             *
+             * @param d
+             */
             set:function(d){
-                d = d?true:false;
-                if(d != draggable){
+                d = !!d;
+                if(d !== draggable){
                     draggable = d;
                 }
             }
         });
 
         Object.defineProperty(self,'class',{
+            /**
+             *
+             * @returns {string}
+             */
             get:function(){
                 return className;
             },
+            /**
+             *
+             * @param c
+             */
             set:function(c){
-                if(c != className){
+                if(c !== className){
                     className = c;
                     self.element.setAttribute("class",className);
                 }
@@ -193,23 +268,37 @@
 
 
         Object.defineProperty(self,'id',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return id;
             },
+            /**
+             *
+             * @param i
+             */
             set:function(i){
-                if(typeof i == 'string' && i != id){
+                if(typeof i === 'string' && i != id){
                     id = i;
                     self.element.id = i;
                 }
             }
         });
 
-
-
         Object.defineProperty(self,'left',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return parseInt(window.getComputedStyle(self.element).left);
             },
+            /**
+             *
+             * @param l
+             */
             set:function(l){
                 l = parseInt(l);
                 if(!isNaN(l)){
@@ -219,9 +308,17 @@
         });
 
         Object.defineProperty(self,'top',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return parseInt(window.getComputedStyle(self.element).top);
             },
+            /**
+             *
+             * @param t
+             */
             set:function(t){
                 t = parseInt(t);
                 if(!isNaN(t)){
@@ -231,9 +328,17 @@
         });
 
         Object.defineProperty(self,'width',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return parseInt(w.getComputedStyle(self.element).width);
             },
+            /**
+             *
+             * @param w
+             */
             set:function(w){
                 w = parseInt(w);
                 if(!isNaN(w) && w >= 0){
@@ -243,9 +348,17 @@
         });
 
         Object.defineProperty(self,'height',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return parseInt(w.getComputedStyle(self.element).height);
             },
+            /**
+             *
+             * @param h
+             */
             set:function(h){
                 h = parseInt(h);
                 if(!isNaN(h) && h >= 0){
@@ -255,13 +368,19 @@
         });
     }
 
+    /**
+     *
+     * @param className
+     * @param results
+     * @returns {*|Array}
+     */
     Element.prototype.findByClass = function(className,results){
         var self = this;
-        results = results == undefined?[]:results;
+        results = results || [];
         var length = self.children.length;
         for(var i =0; i < length;i++){
             var child = self.children[i];
-            if(child.hasClass(className) && results.indexOf(child) == -1){
+            if(child.hasClass(className) && results.indexOf(child) === -1){
                 results.push(child);
             }
             child.findByClass(className,results);
@@ -269,13 +388,18 @@
         return results;
     };
 
+    /**
+     *
+     * @param id
+     * @returns {*}
+     */
     Element.prototype.findById = function(id){
         var self = this;
         var result = null;
         var length = self.children.length;
         for(var i =0; i < length;i++){
             var child = self.children[i];
-            if(child.id == id){
+            if(child.id === id){
                 result = child;
                 break;
             }
@@ -288,28 +412,41 @@
         return result;
     };
 
+    /**
+     *
+     * @param className
+     * @returns {boolean}
+     */
     Element.prototype.hasClass = function(className){
         var self = this;
         var tmp = self.class.split(' ');
-        return tmp.indexOf(className) != -1;
+        return tmp.indexOf(className) !== -1;
     };
 
+    /**
+     *
+     * @param className
+     */
     Element.prototype.addClass = function(className){
         var self =this;
         var old = self.class;
         old = old.split(' ');
-        if(old.indexOf(className) == -1){
+        if(old.indexOf(className) === -1){
             old.push(className);
             self.class = old.join(' ');
         }
     };
 
+    /**
+     *
+     * @param className
+     */
     Element.prototype.removeClass = function(className){
         var self = this;
         var old = self.class;
         old = old.split(' ');
         var index = old.indexOf(className);
-        if(index != -1){
+        if(index !== -1){
             old.splice(index,1);
             self.class = old.join(' ');
         }
@@ -322,9 +459,14 @@
         }
     };
 
+    /**
+     *
+     * @param el
+     * @returns {boolean}
+     */
     Element.prototype.overlap = function(el){
-        if(el instanceof Element && el != self){
-            var self = this;
+        var self = this;
+        if(el instanceof Element && el !== self){
             var rect1 = self.body;
             var rect2 = el.body;
             return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
@@ -332,11 +474,16 @@
         return false;
     };
 
+    /**
+     *
+     * @param el
+     * @returns {Array}
+     */
     Element.prototype.findOverlaps = function(el){
         var self = this;
         var overlaps = [];
         var length = self.children.length;
-        if(el != self){
+        if(el !== self){
             for(var i  = 0; i < length;i++){
                 overlaps = overlaps.concat(self.children[i].findOverlaps(el));
             }
@@ -388,7 +535,6 @@
         }
     };
 
-
     Element.prototype.bind = function(){
         var self = this;
         self.unbind();
@@ -397,7 +543,6 @@
         var element = self.element;
         var downX = 0;
         var downY = 0;
-
 
         self.ondblclick = function(e){
             e.preventDefault();
@@ -452,7 +597,7 @@
 
         self.mouseup = function(e){
             e.stopPropagation();
-            if(e.which == 1){
+            if(e.which === 1){
                 w.removeEventListener('mousemove',self.mousemove,false);
                 w.removeEventListener('mouseup',self.mouseup,false);
                 self.trigger('dragend',[e]);
@@ -484,7 +629,7 @@
                         downX = e.offsetX;
                         downY = e.offsetY;
 
-                        while(el != self.element && el.parentNode != undefined){
+                        while(el !== self.element && el.parentNode !== undefined){
                             downX += el.offsetLeft;
                             downY += el.offsetTop;
                             el = el.parentNode;
@@ -508,7 +653,6 @@
                     break;
             }
         };
-
 
         //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
         element.addEventListener('ondblclick',self.ondblclick);

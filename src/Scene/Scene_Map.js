@@ -1,3 +1,4 @@
+'use strict';
 (function (root,w) {
     if (w.QuadTree === undefined) {
         throw "Scene_Map requires QuadTree"
@@ -85,6 +86,10 @@
         self.items = options.items || {};
         self.icons = options.icons || {};
         self.objects = options.objects || [];
+        root.engine.world.gravity = {
+            x:0,
+            y:0
+        };
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
@@ -235,8 +240,6 @@
                                 var th = Math.min(tileHeight,hdy);
                                 var tsw = Math.min(tile.sWidth,wdx);
                                 var tsh = Math.min(tile.sHeight,hdy);
-
-
                                 context.drawImage(tile.image, tile.sx, tile.sy, 32,32, dx, dy, tw,th);
                             }
                         }
@@ -286,10 +289,12 @@
         var mw = spriteset.realWidth;
         var mh = spriteset.realHeight;
 
-        for(var i =0; i < self.objs.length;i++){
-            var x = self.objs[i].x-sx;
-            var y = self.objs[i].y-sy;
-            draw_object(x,y,self.objs[i],mw,mh);
+        var objs = self.objs.sort(function(a,b){
+            return a.y-b.y;
+        });
+
+        for(var i =0; i < objs.length;i++){
+            draw_object(objs[i].x,objs[i].y,objs[i],mw,mh);
         }
     }
 
@@ -404,7 +409,7 @@
 
         if (frame != null && frame.image) {
             var image = frame.image;
-            var i;
+          /*  var i;
 
             var draws = split({
                 dx:x,
@@ -417,36 +422,30 @@
                 sHeight: frame.sHeight,
                 layer: object.layer,
                 type: Consts.EVENT_LAYER
-            },vw,vh);
+            },vw,vh);*/
 
-            for(i =0; i < draws.length;i++){
-                Canvas.drawImage(image,draws[i]);
-                if(RPG.debug){
-                    Canvas.drawRect({
-                        x:Math.round(draws[i].dx),
-                        y:Math.round(draws[i].dy),
-                        width:draws[i].dWidth,
-                        height:draws[i].dHeight,
-                        lineWidth:1
-                    });
-                    clear_queue.push({
-                        layer_type:Consts.EFFECT_LAYER,
-                        layer:0,
-                        x:Math.round(draws[i].dx-1),
-                        y:Math.round(draws[i].dy-1),
-                        width:draws[i].dWidth+2,
-                        height:draws[i].dHeight+2
-                    });
-                }
-                clear_queue.push({
-                    layer_type:draws[i].type,
-                    layer:draws[i].layer,
-                    x:draws[i].dx,
-                    y:draws[i].dy,
-                    width:draws[i].dWidth,
-                    height:draws[i].dHeight
+            // for(i =0; i < draws.length;i++){
+                Canvas.drawImage(image,{
+                    dx:x,
+                    dy:y,
+                    dWidth: frame.dWidth,
+                    dHeight: frame.dHeight,
+                    sx: frame.sx,
+                    sy: frame.sy,
+                    sWidth: frame.sWidth,
+                    sHeight: frame.sHeight,
+                    layer: object.layer,
+                    type: Consts.EVENT_LAYER
                 });
-            }
+                clear_queue.push({
+                    layer_type:Consts.EVENT_LAYER,
+                    layer:frame.layer,
+                    x:x,
+                    y:y,
+                    width:frame.dWidth,
+                    height:frame.dHeight
+                });
+           // }
         }
     }
 
@@ -490,7 +489,7 @@
                 viewport_x = parseInt(viewport_x);
                 viewport_y = parseInt(viewport_y);
 
-                if (Canvas.x != viewport_x || Canvas.y != viewport_y) {
+                if (Canvas.x !== viewport_x || Canvas.y !== viewport_y) {
                     bg_refreshed = false;
                 }
 
@@ -570,7 +569,7 @@
             obj = collision.object;
             if (obj instanceof Game_Event && obj.currentPage) {
                 var page = obj.currentPage;
-                if (typeof page.script == 'function') {
+                if (typeof page.script === 'function') {
                     if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
                         page.script.apply(obj);
                     }
@@ -605,43 +604,6 @@
 
     /**
      *
-     * @param tree
-     * @param first
-     */
-    function drawquadtree(tree,first){
-        //first = first || false;
-        //var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
-        //layer.rect({
-        //    x:tree.bounds.x-Canvas.x,
-        //    y:tree.bounds.y-Canvas.y,
-        //    width:tree.bounds.width,
-        //    height:tree.bounds.height,
-        //    strokeStyle:'black',
-        //    lineWidth:1
-        //});
-        //if(first){
-        //    Object.keys(tree.objects).forEach(function(key){
-        //        var ob = tree.objects[key];
-        //        layer.rect({
-        //            x:ob.x-Canvas.x,
-        //            y:ob.y-Canvas.y,
-        //            width:ob.width,
-        //            height:ob.height,
-        //            strokeStyle:'black',
-        //            lineWidth:1
-        //        });
-        //    });
-        //}
-        //
-        //
-        //
-        //for(var i = 0; i < tree.nodes.length;i++){
-        //    drawquadtree(tree.nodes[i]);
-        //}
-    }
-
-    /**
-     *
      * @param self
      */
     function initialize(self){
@@ -668,7 +630,7 @@
                 return bg_refreshed;
             },
             set:function(bgr){
-                bg_refreshed = bgr?ture:false;
+                bg_refreshed = !!bgr;
             }
         });
     }

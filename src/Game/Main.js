@@ -1,18 +1,19 @@
+'use strict';
 (function (root,w) {
     var current_scene = null;
     var current_map = null;
     var current_player_id = null;
 
     if(root.Scene === undefined){
-        throw "Main requires Scene"
+        throw "Main requires Scene";
     }
 
     if(root.Game_Map === undefined){
-        throw "Main requires Game_Map"
+        throw "Main requires Game_Map";
     }
 
     if(w.QuadTree === undefined){
-        throw "Main requires QuadTree"
+        throw "Main requires QuadTree";
     }
 
     var Scene = root.Scene,

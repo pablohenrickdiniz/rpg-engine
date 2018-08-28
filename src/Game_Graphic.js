@@ -1,15 +1,21 @@
+'use strict';
 (function(root){
     if(root.Main === undefined){
-        throw "Game_Graphic requires Main"
+        throw "Game_Graphic requires Main";
     }
     else{
         if(root.Main.Graphics === undefined){
-            throw "Game_Graphic requires Graphics"
+            throw "Game_Graphic requires Graphics";
         }
     }
 
     var Graphics = root.Main.Graphics;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     root.Game_Graphic = function(options){
         var self = this;
         initialize(self);
@@ -26,6 +32,10 @@
         self.scale = options.scale || 1;
     };
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var graphicID = null;
         var url = null;
@@ -37,9 +47,17 @@
         var dHeight = null;
 
         Object.defineProperty(self,'graphicID',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return graphicID;
             },
+            /**
+             *
+             * @param gid
+             */
             set:function(gid){
                 if(gid !== graphicID){
                     graphicID = gid;
@@ -49,9 +67,17 @@
         });
 
         Object.defineProperty(self,'sx',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return sx;
             },
+            /**
+             *
+             * @param sxn
+             */
             set:function(sxn){
                 sxn = parseInt(sxn);
                 if(!isNaN(sxn) && sxn !== sx){
@@ -62,12 +88,20 @@
         });
 
         Object.defineProperty(self,'sy',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return  sy;
             },
+            /**
+             *
+             * @param syn
+             */
             set:function(syn){
                 syn = parseInt(syn);
-                if(!isNaN(syn) && syn != sy){
+                if(!isNaN(syn) && syn !== sy){
                     sy = syn;
                     url = null;
                 }
@@ -76,12 +110,20 @@
 
         Object.defineProperty(self,'sWidth',{
             configurable:true,
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(sWidth == null){
                     return self.image.width;
                 }
                 return sWidth;
             },
+            /**
+             *
+             * @param sw
+             */
             set:function(sw){
                 sw = parseInt(sw);
                 if(!isNaN(sw) && sw >= 0 && sw !== sWidth){
@@ -93,12 +135,20 @@
 
         Object.defineProperty(self,'sHeight',{
             configurable:true,
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(sHeight == null){
                     return self.image.height;
                 }
                 return sHeight;
             },
+            /**
+             *
+             * @param sh
+             */
             set:function(sh){
                 sh = parseInt(sh);
                 if(!isNaN(sh) && sh >= 0 && sh !== sHeight){
@@ -108,15 +158,21 @@
             }
         });
 
-
-
         Object.defineProperty(self,'image',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return Graphics.get(self.graphicType,self.graphicID);
             }
         });
 
         Object.defineProperty(self,'url',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(url == null){
                     var sx = self.sx;
@@ -135,8 +191,11 @@
             }
         });
 
-
         Object.defineProperty(self,'width',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(sWidth != null){
                     return sWidth;
@@ -146,6 +205,10 @@
         });
 
         Object.defineProperty(self,'height',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(sHeight != null){
                     return sHeight;
@@ -155,12 +218,20 @@
         });
 
         Object.defineProperty(self,'dWidth',{
+            /**
+             *
+             * @param dw
+             */
             set:function(dw){
                 dw = parseInt(dw);
                 if(!isNaN(dw) && dw > 0 && dw !== dWidth){
                     dWidth = dw;
                 }
             },
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(dWidth != null){
                     return dWidth;
@@ -170,12 +241,20 @@
         });
 
         Object.defineProperty(self,'dHeight',{
+            /**
+             *
+             * @param dh
+             */
             set:function(dh){
                 dh = parseInt(dh);
                 if(!isNaN(dh) && dh > 0 && dh !== dHeight){
                     dHeight = dh;
                 }
             },
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(dHeight != null){
                     return dHeight;

@@ -1,10 +1,11 @@
+'use strict';
 (function (root) {
     if(root.Main === undefined){
-        throw "Item requires Main"
+        throw "Item requires Main";
     }
     else{
         if(root.Main.Icons === undefined){
-            throw "Item requires Icons"
+            throw "Item requires Icons";
         }
     }
 
@@ -29,6 +30,10 @@
 
     function initialize(self){
         Object.defineProperty(self,'graphic',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return Icons.get(self.icon);
             }

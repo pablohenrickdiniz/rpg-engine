@@ -1,22 +1,23 @@
+'use strict';
 (function(root){
-    if(root.UI == undefined){
-        throw "Inveontory requires UI"
+    if(root.UI === undefined){
+        throw "Inveontory requires UI";
     }
 
-    if(root.UI.classes.Window == undefined){
-        throw "Inventory requires Window"
+    if(root.UI.classes.Window === undefined){
+        throw "Inventory requires Window";
     }
 
-    if(root.UI.classes.Element == undefined){
-        throw "Inventory requires Element"
+    if(root.UI.classes.Element === undefined){
+        throw "Inventory requires Element";
     }
 
-    if(root.Game_Inventory == undefined){
-        throw "Inventory requires Game_Inventory"
+    if(root.Game_Inventory === undefined){
+        throw "Inventory requires Game_Inventory";
     }
 
-    if(root.UI.classes.Slot == undefined){
-        throw "Inventory requires Slot"
+    if(root.UI.classes.Slot === undefined){
+        throw "Inventory requires Slot";
     }
 
     var UI = root.UI,
@@ -25,6 +26,11 @@
         Element = UI.classes.Element,
         Slot = root.UI.classes.Slot;
 
+    /**
+     *
+     * @param options
+     * @constructor
+     */
     var Inventory = function(options){
         var self = this;
         options = options || {};
@@ -40,10 +46,13 @@
     Inventory.prototype = Object.create(Window.prototype);
     Inventory.prototype.constructor = Inventory;
 
-
+    /**
+     *
+     * @returns {boolean}
+     */
     Inventory.prototype.swap = function(){
         var self = this;
-        if(self.inventory != null && self.from != null && self.to != null && self.from != self.to){
+        if(self.inventory != null && self.from != null && self.to != null && self.from !== self.to){
             var from = self.from, to = self.to;
             self.from = null;
             self.top = null;
@@ -55,6 +64,10 @@
         return false;
     };
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var slots = {};
 
@@ -69,25 +82,40 @@
         });
 
         Object.defineProperty(self,'inventoryA',{
+            /**
+             *
+             * @returns {Element|*}
+             */
             get:function(){
                 return inventoryA;
             }
         });
 
         Object.defineProperty(self,'inventoryB',{
+            /**
+             *
+             * @returns {Element|*}
+             */
             get:function(){
                 return inventoryB;
             }
         });
 
-
         var inventory = null;
         Object.defineProperty(self,'inventory',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return inventory;
             },
+            /**
+             *
+             * @param i
+             */
             set:function(i){
-                if((i == null || i instanceof Game_Inventory) && i != inventory){
+                if((i == null || i instanceof Game_Inventory) && i !== inventory){
                     var callback = function(){self.render(slots)};
                     if(inventory != null){
                         inventory.off('addItem',callback);
@@ -122,9 +150,9 @@
         ];
         for(i = 0; i < length;i++){
             id = new_keys[i];
-            if(slots[id] == undefined){
+            if(slots[id] === undefined){
                 var index = equip.indexOf(id);
-                var is_equip = index != -1;
+                var is_equip = index !== -1;
                 var className = 'inventory-slot';
                 if(is_equip){
                     className += ' '+equip[index];
@@ -147,7 +175,7 @@
         length = old_keys.length;
         for(i =0 ; i < length;i++){
             id = old_keys[i];
-            if(inventory.slots[id] == undefined && slots[id]){
+            if(inventory.slots[id] === undefined && slots[id]){
                 slots[id].destroy();
                 delete slots[id];
             }

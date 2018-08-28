@@ -1,3 +1,4 @@
+'use strict';
 (function(w){
     var GlobalProgress = function () {
         var self = this;

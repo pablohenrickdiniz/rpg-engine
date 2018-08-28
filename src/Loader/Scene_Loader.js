@@ -1,3 +1,4 @@
+'use strict';
 (function (root, w) {
     if(root.Main === undefined){
         throw "Scene_Loader requires Main"
@@ -41,7 +42,6 @@
         var total = 0;
         var i;
 
-
         for(i =0; i < audio_types.length;i++){
             total += Object.keys(audios[audio_types[i]]).length;
         }
@@ -49,7 +49,6 @@
         for(i =0; i < graphic_types.length;i++){
             total += Object.keys(graphics[graphic_types[i]]).length;
         }
-
 
         function onsuccess() {
             count++;

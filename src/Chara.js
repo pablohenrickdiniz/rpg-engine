@@ -1,20 +1,20 @@
+'use strict';
 (function (root) {
     if (root.Tile === undefined) {
-        throw "Chara requires Tile"
+        throw "Chara requires Tile";
     }
 
     if(root.Main === undefined){
-        throw "Chara requires Main"
+        throw "Chara requires Main";
     }
     else{
         if(root.Main.Graphics === undefined){
-            throw "Chara requires Graphics"
+            throw "Chara requires Graphics";
         }
     }
 
-
     if(root.Game_Graphic === undefined){
-        throw "Chara requires Game_Graphic"
+        throw "Chara requires Game_Graphic";
     }
 
     var Tile = root.Tile,
@@ -39,10 +39,8 @@
         self.scale = options.scale || 1;
     };
 
-
     Chara.prototype = Object.create(Game_Graphic.prototype);
     Chara.prototype.constructor = Chara;
-
     /**
      *
      * @param i
@@ -53,11 +51,11 @@
         var self = this;
         if (i >= 0 && i < self.rows && j >= 0 && j < self.cols) {
 
-            if (self.sprites[i] == undefined) {
+            if (self.sprites[i] === undefined) {
                 self.sprites[i] = [];
             }
 
-            if (self.sprites[i][j] == undefined) {
+            if (self.sprites[i][j] === undefined) {
                 self.sprites[i][j] = new Tile({
                     i:i,
                     j:j,
@@ -68,7 +66,10 @@
             return self.sprites[i][j];
         }
     };
-
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         Object.defineProperty(self,'tileSWidth',{
             get:function(){
@@ -93,7 +94,6 @@
                 return self.tileSHeight;
             }
         });
-
     }
 
     root.Chara = Chara;

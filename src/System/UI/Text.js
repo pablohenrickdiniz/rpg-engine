@@ -1,15 +1,22 @@
+'use strict';
 (function(root){
-    if(root.UI == undefined){
-        throw "Text requires UI"
+    if(root.UI === undefined){
+        throw "Text requires UI";
     }
 
-    if(root.UI.classes.Element == undefined){
+    if(root.UI.classes.Element === undefined){
         throw "Text requires Element";
     }
 
     var UI = root.UI,
         Element = UI.classes.Element;
 
+    /**
+     *
+     * @param options
+     * @param tag
+     * @constructor
+     */
     var Text = function(options,tag){
         var self = this;
         tag = tag || 'p';
@@ -25,11 +32,18 @@
         var value = '';
 
         Object.defineProperty(self,'value',{
+            /**
+             *
+             * @returns {string}
+             */
             get:function(){
                 return value;
             },
+            /*8
+
+             */
             set:function(v){
-                if(v != value){
+                if(v !== value){
                     value = v;
                     self.element.innerHTML = value;
                 }

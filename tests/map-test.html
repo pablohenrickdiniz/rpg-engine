@@ -196,8 +196,8 @@
                 },
                 actors:{
                     1:{
-                        x:0,
-                        y:0,
+                        x:300,
+                        y:200,
                         charaID:'char1',
                         faceID:'face01',
                         vSpeed:0.001,
@@ -376,24 +376,23 @@
                     });
 
                     root.Main.currentScene.focus(root.Main.currentPlayer);
-                    var spriteset =root.Main.currentScene.spriteset;
-
-
-
-                    for(var i =0; i < 2;i++){
-                        var event = new root.Game_Event({
-                            x:Math.floor(Math.random()*spriteset.realWidth),
-                            y:Math.floor(Math.random()*spriteset.realHeight),
-                            pages:[
-                                new root.Event_Page({
-                                    charaID:'char1'
-                                })
-                            ]
-                        });
-
-                        root.Main.currentScene.add(event);
-                      //  event.currentPage.stepRandom(100);
-                    }
+                    // var spriteset =root.Main.currentScene.spriteset;
+                    //
+                    //
+                    //
+                    // for(var i =0; i < 2;i++){
+                    //     var event = new root.Game_Event({
+                    //         x:Math.floor(Math.random()*spriteset.realWidth),
+                    //         y:Math.floor(Math.random()*spriteset.realHeight),
+                    //         pages:[
+                    //             new root.Event_Page({
+                    //                 charaID:'char1'
+                    //             })
+                    //         ]
+                    //     });
+                    //
+                    //     root.Main.currentScene.add(event);
+                    // }
 
 
                 },

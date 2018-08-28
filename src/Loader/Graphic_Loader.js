@@ -1,3 +1,4 @@
+'use strict';
 (function (w) {
     if(w.GlobalProgress === undefined){
         throw "ImageLoader requires GlobalProgress"
@@ -25,13 +26,13 @@
             var onerror = options.onerror || null;
 
             if (length > 0) {
-                function q(image, id) {
+                var q = function(image, id) {
                     loaded[id] = image;
                     length--;
                     if (length === 0 && onsuccess) {
                         onsuccess(loaded);
                     }
-                }
+                };
 
                 for (var k = 0; k < keys.length; k++) {
                     var key = keys[k];

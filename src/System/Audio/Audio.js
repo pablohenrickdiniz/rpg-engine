@@ -1,3 +1,4 @@
+'use strict';
 (function (root) {
     if(root.Game_Timer === undefined){
         throw "Audio requires Game_Timer"
@@ -30,6 +31,14 @@
                 playing[keys[i]].play();
             }
         },
+        /**
+         *
+         * @param type
+         * @param name
+         * @param id
+         * @param loop
+         * @returns {*}
+         */
         play: function (type, name, id,loop) {
             if (audios[type] && audios[type][name]) {
                 var src =audios[type][name];
@@ -54,6 +63,11 @@
             }
             return null;
         },
+        /**
+         *
+         * @param type
+         * @param id
+         */
         stop: function (type,id) {
             if(playing[type] && playing[type][id]){
                 playing[type][id].stop();
@@ -64,6 +78,13 @@
                 delete playing[type][id];
             }
         },
+        /**
+         *
+         * @param type
+         * @param id
+         * @param time
+         * @param finish
+         */
         fade:function(type,id,time,finish){
             if(playing[type] && playing[type][id]){
                 if(fade[type] === undefined){
@@ -100,6 +121,11 @@
                 }
             }
         },
+        /**
+         *
+         * @param type
+         * @param id
+         */
         pause: function (type,id) {
             if(playing[type] && playing[type][id]){
                 playing[type][id].pause();
@@ -110,6 +136,12 @@
                 delete playing[type][id];
             }
         },
+        /**
+         *
+         * @param type
+         * @param name
+         * @param src
+         */
         set: function (type, name, src) {
             if (audios[type] === undefined) {
                 audios[type] = {};
@@ -119,6 +151,11 @@
                 audios[type][name] = src;
             }
         },
+        /**
+         *
+         * @param type
+         * @param name
+         */
         unset: function (type, name) {
             if (audios[type] !== undefined) {
                 if (audios[type][name] !== undefined) {
