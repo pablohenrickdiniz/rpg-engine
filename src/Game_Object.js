@@ -36,7 +36,7 @@
             options.height || 32,{
                 frictionAir:0.09,
                 inertia:Infinity,
-                friction:0.5
+                friction:0.0001
             });
         self.width = options.width || 32;
         self.height = options.height || 32;

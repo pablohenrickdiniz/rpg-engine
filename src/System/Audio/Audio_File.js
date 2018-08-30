@@ -42,6 +42,10 @@
         self.audio.currentTime = 0;
     };
 
+    /**
+     *
+     * @param self
+     */
     function initialize(self){
         var audio = null;
         var aux_aud = new Audio();
@@ -64,9 +68,17 @@
         };
 
         Object.defineProperty(self,'src',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return self.audio.src;
             },
+            /**
+             *
+             * @param src
+             */
             set:function(src){
                 self.audio.src = src;
                 aux_aud.src = src;
@@ -74,9 +86,17 @@
         });
 
         Object.defineProperty(self,'volume',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return self.audio.volume;
             },
+            /**
+             *
+             * @param volume
+             */
             set:function(volume){
                 volume  = parseFloat(volume);
                 if(!isNaN(volume) && volume <= 1 && volume >= 0){
@@ -87,6 +107,10 @@
         });
 
         Object.defineProperty(self,'audio',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 if(audio == null){
                     audio = new Audio();
@@ -97,11 +121,19 @@
         });
 
         Object.defineProperty(self,'loop',{
+            /**
+             *
+             * @returns {boolean}
+             */
             get:function(){
                 return loop;
             },
+            /**
+             *
+             * @param l
+             */
             set:function(l){
-               loop = !!l;
+                loop = !!l;
             }
         });
 

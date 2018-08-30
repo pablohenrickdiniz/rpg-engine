@@ -30,32 +30,30 @@
         self.fps = options.fps || 60;
         self.eventListeners = {};
 
-
-        if(options.start){
+        if(typeof options.start === 'function'){
             self.addEventListener('start',options.start);
         }
 
-        if(options.beforeload){
+        if(typeof options.beforeload === 'function'){
             self.addEventListener('beforeload',options.beforeload);
         }
 
-        if(options.afterload){
+        if(typeof options.afterload === 'function'){
             self.addEventListener('afterload',options.afterload);
         }
 
-        if(options.onaudioprogress){
+        if(typeof options.onaudioprogress === 'function'){
             self.addEventListener('onaudioprogress',options.onaudioprogress);
         }
 
-        if(options.ongraphicprogress){
+        if(typeof options.ongraphicprogress === 'function'){
             self.addEventListener('ongraphicprogress',options.ongraphicprogress);
         }
 
-        if(options.onprogress){
+        if(typeof options.onprogress === 'function'){
             self.addEventListener('onprogress',options.onprogress);
         }
     };
-
 
     /**
      *
@@ -110,6 +108,11 @@
         }
     };
 
+    /**
+     *
+     * @param event
+     * @param callback
+     */
     Scene.prototype.removeEventListener = function(event,callback){
         var self = this;
         if(self.eventListeners[event] !== undefined){

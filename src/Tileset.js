@@ -41,7 +41,6 @@
     Tileset.prototype = Object.create(Game_Graphic.prototype);
     Tileset.prototype.constructor = Tileset;
 
-
     /**
      *
      * @returns {{image: (self.src|*|src|Audio.src|Audio_File.src|Image.src), rows: (*|.map.tileset.rows|.charas.char1.rows|Chara.rows|Matrix.rows|null), cols: (*|.map.tileset.cols|.charas.char1.cols|Chara.cols|Matrix.cols|null), width: *, height: *, collision: Array}}
@@ -139,7 +138,7 @@
      *
      * @param self
      */
-    var initialize = function(self){
+    function initialize(self){
         var rows = 1;
         var cols = 1;
 

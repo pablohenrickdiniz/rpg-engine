@@ -13,6 +13,13 @@
 
     var TilesetLoader = {
         tilesets: {},
+        /**
+         *
+         * @param urls
+         * @param onsuccess
+         * @param onprogress
+         * @param onerror
+         */
         loadAll: function (urls, onsuccess, onprogress, onerror) {
             var keys = Object.keys(urls);
             var tilesets = [];
@@ -36,6 +43,14 @@
                 onsuccess(tilesets);
             }
         },
+        /**
+         *
+         * @param url
+         * @param id
+         * @param onsuccess
+         * @param onprogress
+         * @param onerror
+         */
         load: function (url, id, onsuccess, onprogress, onerror) {
             var self = this;
             if (self.tilesets[url] === undefined) {

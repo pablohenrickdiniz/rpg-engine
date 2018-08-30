@@ -145,6 +145,11 @@
             callback(dataUrl, id);
             canvas = null;
         },
+        /**
+         *
+         * @param urls
+         * @param callback
+         */
         toDataURLS: function (urls, callback) {
             Graphic_Loader.loadAll(urls, function (loaded) {
                 var keys = Object.keys(loaded);
@@ -163,6 +168,11 @@
                 }
             });
         },
+        /**
+         *
+         * @param data
+         * @param callback
+         */
         fromDataURL: function (data, callback) {
             if (data != null) {
                 var img = new Image();

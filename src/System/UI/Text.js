@@ -23,6 +23,7 @@
         options = options || {};
         Element.call(self,options,tag);
         initialize(self);
+        self.value = options.value || '';
     };
 
     Text.prototype = Object.create(Element.prototype);
@@ -39,8 +40,9 @@
             get:function(){
                 return value;
             },
-            /*8
-
+            /**
+             *
+             * @param v
              */
             set:function(v){
                 if(v !== value){

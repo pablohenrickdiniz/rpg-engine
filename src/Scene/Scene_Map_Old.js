@@ -431,6 +431,7 @@
         if (focused_object != null) {
             var obj = focused_object;
             var graphic = obj.graphic;
+            console.log('stepfocus');
             if(graphic != null) {
                 var width = root.Canvas.width > self.map.width ? root.Canvas.width : self.map.width;
                 var height = root.Canvas.height > self.map.height ? root.Canvas.height : self.map.height;

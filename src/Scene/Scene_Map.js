@@ -61,7 +61,9 @@
         Graphics =  Main.Graphics,
         Matter = w.Matter,
         Engine = Matter.Engine,
-        World = Matter.World;
+        World = Matter.World,
+        Body = Matter.Body,
+        Bodies = Matter.Bodies;
 
     var clear_queue = [];
     var bg_refreshed = false;
@@ -86,10 +88,18 @@
         self.items = options.items || {};
         self.icons = options.icons || {};
         self.objects = options.objects || [];
-        root.engine.world.gravity = {
+        self.engine = Engine.create();
+        self.engine.world.gravity = {
             x:0,
             y:0
         };
+
+        World.add(self.engine.world,[
+            Bodies.rectangle(self.spriteset.realWidth/2, -20, self.spriteset.realWidth, 20, { isStatic: true,friction: 0 }),
+            Bodies.rectangle(self.spriteset.realWidth, self.spriteset.realHeight/2, 20, self.spriteset.realHeight, { isStatic: true,friction:0 }),
+            Bodies.rectangle(self.spriteset.realWidth/2, self.spriteset.realHeight, self.spriteset.realWidth, 20, { isStatic: true,friction:0}),
+            Bodies.rectangle(-20, self.spriteset.realHeight/2, 20, self.spriteset.realHeight, { isStatic: true, friction:0})
+        ]);
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
@@ -103,7 +113,7 @@
         var self = this;
         self.objs.push(object);
         if(object.body){
-            World.add(root.engine.world,object.body);
+            World.add(self.engine.world,object.body);
         }
     };
 
@@ -118,7 +128,7 @@
             self.objs.splice(index,1);
         }
         if(object.body){
-            World.remove(root.engine.world,object.body);
+            World.remove(self.engine.world,object.body);
         }
     };
 
@@ -142,7 +152,7 @@
     Scene_Map.prototype.step = function () {
         var self = this;
         Scene.prototype.step.apply(this);
-        step_collisions(self);
+        Engine.update(self.engine);
         // if(Main.currentPlayer){
         //     action_events(self);
         // }
@@ -186,12 +196,19 @@
         var sy = Canvas.y;
         var spriteset = self.spriteset;
 
-
         var width = Math.min(Canvas.width,self.spriteset.realWidth);
         var height = Math.min(Canvas.height,self.spriteset.realHeight);
 
         var tileWidth = spriteset.tileWidth;
         var tileHeight = spriteset.tileHeight;
+
+        if(!self.map.loop_x){
+            sx = Math.max(sx,0);
+        }
+
+        if(!self.map.loop_y){
+            sy = Math.max(sy,0);
+        }
 
         var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
         var maxi = spriteset.height-1;
@@ -199,14 +216,12 @@
 
         for (var i = interval.si; i <= interval.ei; i++) {
             var ti = i;
-
             if(ti < 0){
                 ti = maxi + 1 + ti;
             }
             else if(ti > maxi){
                 ti = (ti % (maxi+1));
             }
-
 
             for(var j = interval.sj; j <= interval.ej;j++){
                 var tj = j;
@@ -240,7 +255,7 @@
                                 var th = Math.min(tileHeight,hdy);
                                 var tsw = Math.min(tile.sWidth,wdx);
                                 var tsh = Math.min(tile.sHeight,hdy);
-                                context.drawImage(tile.image, tile.sx, tile.sy, 32,32, dx, dy, tw,th);
+                                context.drawImage(tile.image, tile.sx, tile.sy, 32,32, dx, dy, 32,32);
                             }
                         }
                     }
@@ -406,12 +421,27 @@
      */
     function draw_object(x,y,object,vw,vh){
         var frame = object.currentFrame;
-
         if (frame != null && frame.image) {
             var image = frame.image;
-          /*  var i;
+            /*  var i;
+              var draws = split({
+                  dx:x,
+                  dy:y,
+                  dWidth: frame.dWidth,
+                  dHeight: frame.dHeight,
+                  sx: frame.sx,
+                  sy: frame.sy,
+                  sWidth: frame.sWidth,
+                  sHeight: frame.sHeight,
+                  layer: object.layer,
+                  type: Consts.EVENT_LAYER
+              },vw,vh);*/
+            // for(i =0; i < draws.length;i++){
 
-            var draws = split({
+            x = Math.round(x-Canvas.x);
+            y = Math.round(y-Canvas.y);
+
+            Canvas.drawImage(image,{
                 dx:x,
                 dy:y,
                 dWidth: frame.dWidth,
@@ -422,30 +452,16 @@
                 sHeight: frame.sHeight,
                 layer: object.layer,
                 type: Consts.EVENT_LAYER
-            },vw,vh);*/
-
-            // for(i =0; i < draws.length;i++){
-                Canvas.drawImage(image,{
-                    dx:x,
-                    dy:y,
-                    dWidth: frame.dWidth,
-                    dHeight: frame.dHeight,
-                    sx: frame.sx,
-                    sy: frame.sy,
-                    sWidth: frame.sWidth,
-                    sHeight: frame.sHeight,
-                    layer: object.layer,
-                    type: Consts.EVENT_LAYER
-                });
-                clear_queue.push({
-                    layer_type:Consts.EVENT_LAYER,
-                    layer:frame.layer,
-                    x:x,
-                    y:y,
-                    width:frame.dWidth,
-                    height:frame.dHeight
-                });
-           // }
+            });
+            clear_queue.push({
+                layer_type:Consts.EVENT_LAYER,
+                layer:frame.layer,
+                x:x,
+                y:y,
+                width:frame.dWidth,
+                height:frame.dHeight
+            });
+            // }
         }
     }
 
@@ -458,12 +474,15 @@
         if (focused_object != null) {
             var obj = focused_object;
             var graphic = obj.graphic;
+
             if(graphic != null){
                 var spriteset = self.spriteset;
                 var viewport_width = Math.min(Canvas.width, spriteset.realWidth);
                 var viewport_height = Math.min(Canvas.height, spriteset.realHeight);
-                var viewport_x = obj.body.x - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
-                var viewport_y = obj.body.y - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
+                var viewport_x = (obj.x) - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
+                var viewport_y = (obj.y) - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
+
+
                 var max_screen_x = spriteset.realWidth - viewport_width;
                 var max_screen_y = spriteset.realHeight - viewport_height;
 
@@ -484,7 +503,6 @@
                         viewport_y = max_screen_y;
                     }
                 }
-
 
                 viewport_x = parseInt(viewport_x);
                 viewport_y = parseInt(viewport_y);
@@ -512,13 +530,6 @@
             objs[i].update();
         }
 
-    }
-
-    /**
-     *
-     */
-    function step_collisions(self){
-        Engine.update(root.engine);
     }
 
     /**

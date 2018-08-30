@@ -28,7 +28,7 @@
         Mouse = w.Mouse,
         TimerTicker = w.TimerTicker,
         Matter = w.Matter,
-        Engine = Matter.Engine,
+       
         Render = Matter.Render;
 
 
@@ -36,7 +36,6 @@
         Game_Timer: new TimerTicker(),
         Canvas: null,
         Render: null,
-        engine: Engine.create(),
         Controls: {
             Keyboard: null,
             Mouse: null

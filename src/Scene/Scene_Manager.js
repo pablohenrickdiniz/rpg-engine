@@ -34,6 +34,10 @@
     var current_scene = null;
     var queue = [];
 
+    /**
+     *
+     * @param scene
+     */
     function load_callback(scene){
         current_scene = scene;
         Main.currentScene = scene;

@@ -292,6 +292,13 @@
     margin-left:-48px;
 }
 
+.fps{
+    position: absolute;
+    bottom:0;
+    left:10px;
+    font-weight:600;
+}
+
 
 
 
