@@ -94,11 +94,13 @@
             y:0
         };
 
+        var size = 20;
+
         World.add(self.engine.world,[
-            Bodies.rectangle(self.spriteset.realWidth/2, -20, self.spriteset.realWidth, 20, { isStatic: true,friction: 0 }),
-            Bodies.rectangle(self.spriteset.realWidth, self.spriteset.realHeight/2, 20, self.spriteset.realHeight, { isStatic: true,friction:0 }),
-            Bodies.rectangle(self.spriteset.realWidth/2, self.spriteset.realHeight, self.spriteset.realWidth, 20, { isStatic: true,friction:0}),
-            Bodies.rectangle(-20, self.spriteset.realHeight/2, 20, self.spriteset.realHeight, { isStatic: true, friction:0})
+            Bodies.rectangle(self.spriteset.realWidth/2, -size/2, self.spriteset.realWidth, size, { isStatic: true,friction: 0 }),
+            Bodies.rectangle(self.spriteset.realWidth+size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true,friction:0 }),
+            Bodies.rectangle(self.spriteset.realWidth/2, self.spriteset.realHeight+(size/2), self.spriteset.realWidth, size, { isStatic: true,friction:0}),
+            Bodies.rectangle(-size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true, friction:0})
         ]);
     };
 
@@ -164,6 +166,11 @@
     };
 
 
+
+
+
+
+
     //Private Methods
 
     /**
@@ -201,12 +208,14 @@
 
         var tileWidth = spriteset.tileWidth;
         var tileHeight = spriteset.tileHeight;
+        var loop_x = self.map.loop_x;
+        var loop_y = self.map.loop_y;
 
-        if(!self.map.loop_x){
+        if(!loop_x){
             sx = Math.max(sx,0);
         }
 
-        if(!self.map.loop_y){
+        if(!loop_y){
             sy = Math.max(sy,0);
         }
 
@@ -214,7 +223,7 @@
         var maxi = spriteset.height-1;
         var maxj = spriteset.width-1;
 
-        for (var i = interval.si; i <= interval.ei; i++) {
+        for (var i = interval.si; i < interval.ei || (loop_y && i === interval.ei); i++) {
             var ti = i;
             if(ti < 0){
                 ti = maxi + 1 + ti;
@@ -223,7 +232,7 @@
                 ti = (ti % (maxi+1));
             }
 
-            for(var j = interval.sj; j <= interval.ej;j++){
+            for(var j = interval.sj; j < interval.ej || (loop_x && j === interval.ej);j++){
                 var tj = j;
 
                 if(tj < 0){
@@ -247,6 +256,7 @@
                                 var context = layer.context;
                                 var dx = j * tileWidth - sx;
                                 var dy = i * tileHeight - sy;
+                                debugger;
                                 var wdx = width-dx;
                                 var hdy = height-dy;
                                 dx = parseInt(dx);
@@ -255,7 +265,7 @@
                                 var th = Math.min(tileHeight,hdy);
                                 var tsw = Math.min(tile.sWidth,wdx);
                                 var tsh = Math.min(tile.sHeight,hdy);
-                                context.drawImage(tile.image, tile.sx, tile.sy, 32,32, dx, dy, 32,32);
+                                context.drawImage(tile.image, tile.sx, tile.sy, tileWidth,tileHeight, dx, dy, tileWidth,tileHeight);
                             }
                         }
                     }
@@ -310,6 +320,36 @@
 
         for(var i =0; i < objs.length;i++){
             draw_object(objs[i].x,objs[i].y,objs[i],mw,mh);
+        }
+
+        if(RPG.debug){
+            var length = self.engine.world.bodies.length;
+            for(var i =0; i < length;i++){
+                var body = self.engine.world.bodies[i];
+                var x = body.body.min.x;
+                var y = body.body.min.y;
+                var width = body.body.max.x-x;
+                var height = body.body.max.y-y;
+                x = Math.round(x-Canvas.x);
+                y = Math.round(y-Canvas.y);
+                Canvas.drawRect({
+                    x:x,
+                    y:y,
+                    width:width,
+                    height:height,
+                    type: Consts.UI_LAYER,
+                    layer:0,
+                    lineWidth:1
+                });
+                clear_queue.push({
+                    layer_type:Consts.UI_LAYER,
+                    layer:0,
+                    x:x-1,
+                    y:y-1,
+                    width:width+2,
+                    height:height+2
+                });
+            }
         }
     }
 
@@ -438,8 +478,8 @@
               },vw,vh);*/
             // for(i =0; i < draws.length;i++){
 
-            x = Math.round(x-Canvas.x);
-            y = Math.round(y-Canvas.y);
+            x = Math.round(x-Canvas.x-object.width/2);
+            y = Math.round(y-Canvas.y-object.height/2);
 
             Canvas.drawImage(image,{
                 dx:x,
