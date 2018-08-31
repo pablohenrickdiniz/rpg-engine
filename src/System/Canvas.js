@@ -8,7 +8,7 @@
         throw "Canvas requires Consts";
     }
 
-    var Consts= root.Consts;
+    let Consts= root.Consts;
 
     root.Canvas = {
         visible: true,
@@ -20,12 +20,12 @@
          * @param options
          */
         initialize: function (options) {
-            var self = this;
+            let self = this;
             options = options || {};
-            var container = options.container;
-            var width = options.width;
-            var height = options.height;
-            var scale = options.scale | 1;
+            let container = options.container;
+            let width = options.width;
+            let height = options.height;
+            let scale = options.scale | 1;
             self.engine = CE.create(container, {
                 width: width,
                 height: height,
@@ -42,11 +42,11 @@
             });
         },
         zoomIn:function(){
-            var self = this;
+            let self = this;
             self.engine.scale += 0.1;
         },
         zoomOut:function(){
-            var self = this;
+            let self = this;
             self.engine.scale -= 0.1;
         },
         /**
@@ -55,7 +55,7 @@
          * @param callback
          */
         addEventListener:function(event,callback){
-            var self = this;
+            let self = this;
             if(self.listeners[event] === undefined){
                 self.listeners[event] = [];
             }
@@ -69,9 +69,9 @@
          * @param callback
          */
         removeEventListener:function(event,callback){
-            var self = this;
+            let self = this;
             if(self.listeners[event] !== undefined){
-                var index = self.listeners[event].indexOf(callback);
+                let index = self.listeners[event].indexOf(callback);
                 if(index !== -1){
                     self.listeners[event].splice(index,1);
                 }
@@ -83,9 +83,9 @@
          * @param args
          */
         trigger:function(event,args){
-            var self = this;
+            let self = this;
             if(self.listeners[event] !== undefined){
-                var length = self.listeners[event].length;
+                let length = self.listeners[event].length;
                 for(var i =0; i < length;i++){
                     self.listeners[event][i].apply(self,args);
                 }
@@ -98,12 +98,12 @@
          * @returns {*}
          */
         getLayer: function (type, index) {
-            var self = this;
-            var keys = Object.keys(self.layers);
-            var i;
-            var length = keys.length;
-            var s_index = 0;
-            var key;
+            let self = this;
+            let keys = Object.keys(self.layers);
+            let i;
+            let length = keys.length;
+            let s_index = 0;
+            let key;
 
             if(index !== undefined){
                 for(i =0; i < length;i++){
@@ -113,7 +113,7 @@
                     }
                     else{
                         while(index > self.layers[key].length-1){
-                            var layer = self.engine.createLayer({
+                            let layer = self.engine.createLayer({
                                 zIndex:s_index+self.layers[key].length
                             });
                             self.layers[key].push(layer);
@@ -133,10 +133,10 @@
          * @param rect
          */
         drawRect: function(rect){
-            var self = this;
-            var type = rect.type || Consts.EFFECT_LAYER;
-            var index = rect.layer || 0;
-            var layer = self.getLayer(type,index);
+            let self = this;
+            let type = rect.type || Consts.EFFECT_LAYER;
+            let index = rect.layer || 0;
+            let layer = self.getLayer(type,index);
             layer.rect(rect);
         },
         /**
@@ -145,22 +145,22 @@
          * @param options
          */
         drawImage: function (image, options) {
-            var self = this;
-            var type = options.type || Consts.EFFECT_LAYER;
-            var index = options.layer || 0;
-            var layer = self.getLayer(type,index);
-            var context = layer.context;
-            var sx = options.sx || 0;
-            var sy = options.sy || 0;
-            var dx = options.dx || 0;
-            var dy = options.dy || 0;
-            var vAlign = options.vAlign || null;
-            var hAlign = options.hAlign || null;
+            let self = this;
+            let type = options.type || Consts.EFFECT_LAYER;
+            let index = options.layer || 0;
+            let layer = self.getLayer(type,index);
+            let context = layer.context;
+            let sx = options.sx || 0;
+            let sy = options.sy || 0;
+            let dx = options.dx || 0;
+            let dy = options.dy || 0;
+            let vAlign = options.vAlign || null;
+            let hAlign = options.hAlign || null;
 
-            var sWidth = options.sWidth || image.width;
-            var sHeight = options.sHeight || image.height;
+            let sWidth = options.sWidth || image.width;
+            let sHeight = options.sHeight || image.height;
 
-            var per = /^[0-9]+(\.[0-9]+)?%$/;
+            let per = /^[0-9]+(\.[0-9]+)?%$/;
             if (per.test(sWidth)) {
                 sWidth = (image.width * parseFloat(sWidth)) / 100;
             }
@@ -169,8 +169,8 @@
                 sHeight = (image.height * parseFloat(sHeight)) / 100;
             }
 
-            var dWidth = options.dWidth || sWidth;
-            var dHeight = options.dHeight || sHeight;
+            let dWidth = options.dWidth || sWidth;
+            let dHeight = options.dHeight || sHeight;
 
             if (vAlign != null) {
                 switch (vAlign) {
@@ -211,11 +211,11 @@
          * @param height
          */
         clear: function (type, index, x, y, width, height) {
-            var self = this;
-            var layer = self.getLayer(type,index);
+            let self = this;
+            let layer = self.getLayer(type,index);
             if(layer != null){
                 if(layer instanceof Array){
-                    var length = layer.length;
+                    let length = layer.length;
                     for(var i =0; i < length;i++){
                         layer[i].clear(x, y, width, height);
                     }
@@ -227,9 +227,9 @@
         }
     };
 
-    var x = 0;
-    var y = 0;
-    var canvas = root.Canvas;
+    let x = 0;
+    let y = 0;
+    let canvas = root.Canvas;
 
     Object.defineProperty(canvas,'x',{
         /**

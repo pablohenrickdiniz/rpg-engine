@@ -8,10 +8,10 @@
         throw "TilesetLoader requires Tileset"
     }
 
-    var Tileset = root.Tileset,
+    let Tileset = root.Tileset,
         Graphic_Loader = w.Graphic_Loader;
 
-    var TilesetLoader = {
+    let TilesetLoader = {
         tilesets: {},
         /**
          *
@@ -21,12 +21,12 @@
          * @param onerror
          */
         loadAll: function (urls, onsuccess, onprogress, onerror) {
-            var keys = Object.keys(urls);
-            var tilesets = [];
-            var length = keys.length;
+            let keys = Object.keys(urls);
+            let tilesets = [];
+            let length = keys.length;
 
             if (length > 0) {
-                var q = function (tileset, id) {
+                let q = function (tileset, id) {
                     tilesets[id] = tileset;
                     length--;
                     if (length === 0) {
@@ -35,7 +35,7 @@
                 };
 
                 for (var k = 0; k < keys.length; k++) {
-                    var key = keys[k];
+                    let key = keys[k];
                     TilesetLoader.load(urls[key], key, q, onprogress, onerror);
                 }
             }
@@ -52,7 +52,7 @@
          * @param onerror
          */
         load: function (url, id, onsuccess, onprogress, onerror) {
-            var self = this;
+            let self = this;
             if (self.tilesets[url] === undefined) {
                 Graphic_Loader.load(url, id, function (image, id) {
                     self.tilesets[url] = new Tileset(image);

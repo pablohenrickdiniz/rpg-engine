@@ -1,14 +1,14 @@
 'use strict';
 (function (root) {
-    var Game_Timer = root.Game_Timer;
+    let Game_Timer = root.Game_Timer;
     /**
      *
      * @param fps
      * @param frame_count
      * @constructor
      */
-    var Animation_Time = function (fps, frame_count) {
-        var self = this;
+    let Animation_Time = function (fps, frame_count) {
+        let self = this;
         self.fps = fps;
         self.frame_count = frame_count;
         self.start_time = Game_Timer.currentTime;
@@ -23,8 +23,8 @@
      * @returns {number}
      */
     Animation_Time.prototype.getIndexFrame = function () {
-        var self = this;
-        var frames = self.getFrames();
+        let self = this;
+        let frames = self.getFrames();
         if (frames < self.frame_count) {
             return self.direction === 'negative'?self.frame_count - 1 - frames:frames;
         }
@@ -32,7 +32,7 @@
             if (self.stop_on_end) {
                return self.direction === 'negative'?0:self.frame_count - 1;
             }
-            var mod = frames % self.frame_count;
+            let mod = frames % self.frame_count;
             return self.direction === 'negative'?self.frame_count - 1 - mod:mod;
         }
     };
@@ -42,8 +42,8 @@
      * @returns {number}
      */
     Animation_Time.prototype.getFrames = function () {
-        var self = this;
-        var diff = self.running?Game_Timer.currentTime - self.start_time:self.end_time - self.start_time;
+        let self = this;
+        let diff = self.running?Game_Timer.currentTime - self.start_time:self.end_time - self.start_time;
         return diff === 0?0:Math.ceil((diff / 1000) * self.fps);
     };
 
@@ -52,7 +52,7 @@
      * @returns {boolean}
      */
     Animation_Time.prototype.isRunning = function () {
-        var self = this;
+        let self = this;
         if (self.stop_on_end && self.running && self.getFrames() >= self.frame_count) {
             self.running = false;
         }
@@ -66,7 +66,7 @@
      * @param direction
      */
     Animation_Time.prototype.start = function (stop_on_end, direction) {
-        var self = this;
+        let self = this;
         if (!self.running) {
             self.running = true;
             self.start_time = Game_Timer.currentTime;
@@ -80,10 +80,10 @@
      * @param index
      */
     Animation_Time.prototype.pauseToFrame = function (index) {
-        var self = this;
+        let self = this;
         self.running = false;
         if (self.frame_count > index) {
-            var diff = (index / self.fps) * 1000;
+            let diff = (index / self.fps) * 1000;
             self.end_time = self.start_time + diff;
         }
     };
@@ -94,7 +94,7 @@
      */
     Animation_Time.prototype.stop = function (index) {
         index = index || 0;
-        var self = this;
+        let self = this;
         self.pauseToFrame(index);
     };
 

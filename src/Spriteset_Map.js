@@ -5,8 +5,8 @@
      * @param options
      * @constructor
      */
-    var Spriteset_Map = function (options) {
-        var self = this;
+    let Spriteset_Map = function (options) {
+        let self = this;
         initialize(self);
         options = options || {};
         self.width = options.width || 20;
@@ -25,7 +25,7 @@
      * @returns {Spriteset_Map}
      */
     Spriteset_Map.prototype.set = function (i, j, k, tile) {
-        var self = this;
+        let self = this;
 
         if (i < self.height && j < self.width) {
             if (self.data[i] === undefined) {
@@ -50,7 +50,7 @@
      * @returns {*}
      */
     Spriteset_Map.prototype.get = function (i, j, k) {
-        var self = this;
+        let self = this;
         if (self.data[i] !== undefined && self.data[i][j] !== undefined && self.data[i][j][k] !== undefined) {
             return self.data[i][j][k];
         }
@@ -65,7 +65,7 @@
      * @param k
      */
     Spriteset_Map.prototype.unset = function (i, j, k) {
-        var self = this;
+        let self = this;
         if (self.data[i] !== undefined && self.data[i][j] !== undefined && self.data[i][j][k] !== undefined) {
             delete self.data[i][j][k];
         }
@@ -76,7 +76,7 @@
      * @returns {*[]}
      */
     Spriteset_Map.prototype.toJSON = function(){
-        var self = this;
+        let self = this;
         return [ //tilesets
             self.data,  //sprites
             self.width,    //width
@@ -91,8 +91,8 @@
      * @param self
      */
     function initialize(self){
-        var width = 0;
-        var height = 0;
+        let width = 0;
+        let height = 0;
         Object.defineProperty(self,'width',{
             /**
              *

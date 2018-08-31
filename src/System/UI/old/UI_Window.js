@@ -3,15 +3,15 @@
         throw "UI_Window requires UI_Element"
     }
 
-    var UI_Element = root.UI_Element;
+    let UI_Element = root.UI_Element;
     /**
      *
      * @param parent
      * @param options
      * @constructor
      */
-    var UI_Window = function (parent, options) {
-        var self = this;
+    let UI_Window = function (parent, options) {
+        let self = this;
         options = options || {};
         options.backgroundOpacity = options.backgroundOpacity || 90;
         options.borderColor = options.borderColor || 'white';

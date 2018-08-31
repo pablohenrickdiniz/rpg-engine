@@ -10,10 +10,10 @@
      * @returns {number}
      */
     function current_progress(aud) {
-        var loaded = loaded_audio(aud);
+        let loaded = loaded_audio(aud);
         if (loaded >= 0) {
-            var total = aud.duration;
-            var progress = parseFloat(loaded * 100 / total);
+            let total = aud.duration;
+            let progress = parseFloat(loaded * 100 / total);
             return isNaN(progress) ? 0 : progress;
         }
         return 0;
@@ -25,7 +25,7 @@
      * @returns {*}
      */
     function loaded_audio(aud){
-        var pos = aud.buffered.length - 1;
+        let pos = aud.buffered.length - 1;
         if(pos >= 0){
             return aud.buffered.end(pos);
         }
@@ -33,10 +33,10 @@
     }
 
 
-    var audios = {};
+    let audios = {};
 
 
-    var Audio_Loader = {
+    let Audio_Loader = {
         /**
          *
          * @param urls
@@ -44,17 +44,17 @@
          */
         loadAll: function (urls,options) {
             options = options ||{};
-            var keys = Object.keys(urls);
-            var loaded = [];
-            var length = keys.length;
-            var onsuccess = options.onsuccess || null;
-            var onprogress = options.onprogress || null;
-            var onerror = options.onerror || null;
-            var onglobalprogress = options.onglobalprogress || null;
-            var globalprogress = options.globalprogress || new GlobalProgress();
+            let keys = Object.keys(urls);
+            let loaded = [];
+            let length = keys.length;
+            let onsuccess = options.onsuccess || null;
+            let onprogress = options.onprogress || null;
+            let onerror = options.onerror || null;
+            let onglobalprogress = options.onglobalprogress || null;
+            let globalprogress = options.globalprogress || new GlobalProgress();
 
             if (length > 0) {
-                var q = function(audio, id) {
+                let q = function(audio, id) {
                     loaded[id] = audio;
                     length--;
                     if (length === 0 && onsuccess) {
@@ -63,7 +63,7 @@
                 };
 
                 for (var k = 0; k < keys.length; k++) {
-                    var key = keys[k];
+                    let key = keys[k];
                     Audio_Loader.load(urls[key], key, {
                         onsuccess:q,
                         onprogress:onprogress,
@@ -85,45 +85,45 @@
          */
         load: function (url, id, options) {
             options = options || {};
-            var onsuccess = options.onsuccess || null;
-            var onprogress = options.onprogress || null;
-            var onerror = options.onerror || null;
-            var onglobalprogress = options.onglobalprogress || null;
-            var globalprogress = options.globalprogress || new GlobalProgress();
+            let onsuccess = options.onsuccess || null;
+            let onprogress = options.onprogress || null;
+            let onerror = options.onerror || null;
+            let onglobalprogress = options.onglobalprogress || null;
+            let globalprogress = options.globalprogress || new GlobalProgress();
 
             if (audios[url] === undefined) {
-                var audio = new Audio();
+                let audio = new Audio();
                 //img.crossOrigin = "Anonymous";
                 audio.src = url;
                 audio.volume = 0;
                 audio.currentTime = loaded_audio(audio);
                 audios[url] = audio;
 
-                var unbind = function() {
+                let unbind = function() {
                     audio.removeEventListener('error', onerror_callback);
                     audio.removeEventListener('timeupdate', timeupdate_callback);
                     audio.removeEventListener('canplaythrough', can_play_callback);
                 };
 
-                var onsuccess_callback = function() {
+                let onsuccess_callback = function() {
                     unbind();
                     if (onsuccess) {
                         onsuccess(id,url);
                     }
                 };
 
-                var onerror_callback = function() {
+                let onerror_callback = function() {
                     unbind();
                     if (onerror) {
                         onerror(id);
                     }
                 };
 
-                var old_progress = 0;
-                var media = null;
+                let old_progress = 0;
+                let media = null;
 
-                var timeupdate_callback = function() {
-                    var loaded = loaded_audio(audio);
+                let timeupdate_callback = function() {
+                    let loaded = loaded_audio(audio);
 
                     if(loaded === audio.duration){
                         audio.pause();
@@ -133,7 +133,7 @@
                         onsuccess_callback();
                     }
                     else {
-                        var progress = current_progress(audio);
+                        let progress = current_progress(audio);
                         if(progress !== old_progress){
                             old_progress = progress;
                             if(globalprogress){
@@ -158,7 +158,7 @@
                             }
                         }
                         else{
-                            var diff = audio.duration - loaded;
+                            let diff = audio.duration - loaded;
                             if(diff > 0){
                                 audio.currentTime = loaded;
                                 audio.playbackRate = diff;
@@ -168,7 +168,7 @@
                     }
                 };
 
-                var can_play_callback = function() {
+                let can_play_callback = function() {
                     audio.playbackRate = Math.min(audio.duration,16);
                     audio.play();
                 };

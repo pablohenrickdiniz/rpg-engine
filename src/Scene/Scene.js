@@ -12,7 +12,7 @@
         throw "Scene requires Consts"
     }
 
-    var Animation = root.Animation,
+    let Animation = root.Animation,
         Canvas = root.Canvas,
         Consts = root.Consts;
 
@@ -21,8 +21,8 @@
      * @param options
      * @constructor
      */
-    var Scene =  function (options) {
-        var self = this;
+    let Scene =  function (options) {
+        let self = this;
         options = options || {};
         self.audios = options.audios || {};
         self.graphics = options.graphics || {};
@@ -84,9 +84,9 @@
      * @param args
      */
     Scene.prototype.trigger = function(event,args){
-        var self = this;
+        let self = this;
         if(self.eventListeners[event] !== undefined){
-            var length = self.eventListeners[event].length;
+            let length = self.eventListeners[event].length;
             for(var i = 0; i < length;i++){
                 self.eventListeners[event][i].apply(self,args);
             }
@@ -99,7 +99,7 @@
      * @param callback
      */
     Scene.prototype.addEventListener = function(event,callback){
-        var self = this;
+        let self = this;
         if(self.eventListeners[event] === undefined){
             self.eventListeners[event] = [];
         }
@@ -114,9 +114,9 @@
      * @param callback
      */
     Scene.prototype.removeEventListener = function(event,callback){
-        var self = this;
+        let self = this;
         if(self.eventListeners[event] !== undefined){
-            var index =self.eventListeners[event].indexOf(callback);
+            let index =self.eventListeners[event].indexOf(callback);
             if(index !== -1){
                 self.eventListeners[event].splice(index,1);
             }
@@ -140,7 +140,7 @@
      *
      */
     Scene.prototype.step = function(){
-        var self = this;
+        let self = this;
         step_animations(self);
     };
 
@@ -154,20 +154,20 @@
      */
     function fade_graphic_effect(image, options, oncomplete, direction) {
         options = options || {};
-        var sx = options.sx || 0;
-        var sy = options.sy || 0;
-        var sWidth = options.sWidth || image.width;
-        var sHeight = options.sHeight || image.height;
-        var dx = options.dx || 0;
-        var dy = options.dy || 0;
-        var dWidth = options.dWidth || image.width;
-        var dHeight = options.dHeight || image.height;
-        var time = options.time || 1000;
-        var vAlign = options.vAlign || null;
-        var hAlign = options.hAlign || null;
-        var layer = Canvas.getLayer(Consts.EFFECT_LAYER,Consts.FADE_SCREEN_LAYER);
+        let sx = options.sx || 0;
+        let sy = options.sy || 0;
+        let sWidth = options.sWidth || image.width;
+        let sHeight = options.sHeight || image.height;
+        let dx = options.dx || 0;
+        let dy = options.dy || 0;
+        let dWidth = options.dWidth || image.width;
+        let dHeight = options.dHeight || image.height;
+        let time = options.time || 1000;
+        let vAlign = options.vAlign || null;
+        let hAlign = options.hAlign || null;
+        let layer = Canvas.getLayer(Consts.EFFECT_LAYER,Consts.FADE_SCREEN_LAYER);
 
-        var self = this;
+        let self = this;
 
         if (vAlign != null) {
             switch (vAlign) {
@@ -197,8 +197,8 @@
             }
         }
 
-        var animation = new Animation(self.fps, self.fps * (time / 1000));
-        var type = '';
+        let animation = new Animation(self.fps, self.fps * (time / 1000));
+        let type = '';
         if (direction === 'positive') {
             type = 'fade_in_graphic'
         }
@@ -208,7 +208,7 @@
         }
 
         animation.run(true, direction);
-        var animation_set = {
+        let animation_set = {
             type: type,
             time: time,
             image_data: {
@@ -234,15 +234,15 @@
      * @param self
      */
     function step_animations(self) {
-        var length = self.animation_queue.length;
-        var i;
+        let length = self.animation_queue.length;
+        let i;
         for (i = 0; i < length; i++) {
-            var animation_set = self.animation_queue[i];
-            var animation = null;
-            var running = false;
-            var index = 0;
-            var opacity = null;
-            var ctx = null;
+            let animation_set = self.animation_queue[i];
+            let animation = null;
+            let running = false;
+            let index = 0;
+            let opacity = null;
+            let ctx = null;
 
             switch (animation_set.type) {
                 case 'fade_in_screen':
@@ -298,8 +298,8 @@
                 //    }
                 //
                 //
-                //    var layer = Canvas.getLayer(layer_name);
-                //    var image_data = animation_set.image_data;
+                //    let layer = Canvas.getLayer(layer_name);
+                //    let image_data = animation_set.image_data;
                 //    ctx = layer.getContext();
                 //
                 //    ctx.clearRect(image_data.dx, image_data.dy, image_data.dWidth, image_data.dHeight);
@@ -333,10 +333,10 @@
      * @param direction
      */
     function fade_screen_effect(time, oncomplete, direction) {
-        var self = this;
+        let self = this;
         time = parseInt(time);
         time = isNaN(time) || time < 0 ? 2000 : time;
-        var type = '';
+        let type = '';
         if (direction === 'negative') {
             type = 'fade_out_screen';
         }
@@ -345,9 +345,9 @@
             type = 'fade_in_screen';
         }
 
-        var animation = new Animation(self.fps, self.fps * (time / 1000));
+        let animation = new Animation(self.fps, self.fps * (time / 1000));
         animation.execute(true, direction);
-        var animation_set = {
+        let animation_set = {
             type: type,
             time: time,
             oncomplete: oncomplete,

@@ -21,26 +21,26 @@
         throw "SceneLoader requires Audio"
     }
 
-    var Audios = root.Audio,
+    let Audios = root.Audio,
         Graphics = root.Main.Graphics,
         Audio_Loader = w.Audio_Loader,
         Graphic_Loader = w.Graphic_Loader;
 
-    var Scene_Loader = function () {};
+    let Scene_Loader = function () {};
     /**
      *
      * @param scene
      * @param callback
      */
     Scene_Loader.prototype.load = function (scene,callback) {
-        var count = 0;
-        var audios = scene.audios || {};
-        var graphics = scene.graphics || {};
+        let count = 0;
+        let audios = scene.audios || {};
+        let graphics = scene.graphics || {};
 
-        var audio_types = Object.keys(audios);
-        var graphic_types = Object.keys(graphics);
-        var total = 0;
-        var i;
+        let audio_types = Object.keys(audios);
+        let graphic_types = Object.keys(graphics);
+        let total = 0;
+        let i;
 
         for(i =0; i < audio_types.length;i++){
             total += Object.keys(audios[audio_types[i]]).length;
@@ -63,7 +63,7 @@
             onsuccess();
         }
 
-        var old_progress = 0;
+        let old_progress = 0;
 
         function onprogress(progress) {
             if(progress > old_progress){
@@ -80,13 +80,13 @@
             scene.trigger('onaudioprogress',arguments);
         }
 
-        var globalprogress = new GlobalProgress();
+        let globalprogress = new GlobalProgress();
 
-        var type;
+        let type;
 
         for(i =0; i < audio_types.length;i++){
             type = audio_types[i];
-            var audio_urls = audios[type];
+            let audio_urls = audios[type];
             loadAudios(type,audio_urls, {
                 onsuccess: onsuccess,
                 globalprogress: globalprogress,
@@ -98,7 +98,7 @@
 
         for(i =0; i < graphic_types.length;i++){
             type = graphic_types[i];
-            var graphic_urls = graphics[type];
+            let graphic_urls = graphics[type];
             loadGraphics(type,graphic_urls, {
                 onsuccess: onsuccess,
                 globalprogress: globalprogress,
@@ -121,11 +121,11 @@
     function loadAudios(type,audios, options) {
         audios = audios || {};
         options = options || {};
-        var names = Object.keys(audios);
-        var onsuccess = options.onsuccess || null;
-        var onglobalprogress = options.onglobalprogress || null;
-        var globalprogress = options.globalprogress || null;
-        var onprogress = options.onprogress || null;
+        let names = Object.keys(audios);
+        let onsuccess = options.onsuccess || null;
+        let onglobalprogress = options.onglobalprogress || null;
+        let globalprogress = options.globalprogress || null;
+        let onprogress = options.onprogress || null;
         loadAudiosHell(type,names,audios,onsuccess,onglobalprogress,globalprogress,onprogress);
     }
 
@@ -138,11 +138,11 @@
     function loadGraphics(type,graphics, options) {
         graphics = graphics || {};
         options = options ||{};
-        var names = Object.keys(graphics);
-        var onsuccess = options.onsuccess || null;
-        var onglobalprogress = options.onglobalprogress || null;
-        var globalprogress = options.globalprogress || null;
-        var onprogress = options.onprogress || null;
+        let names = Object.keys(graphics);
+        let onsuccess = options.onsuccess || null;
+        let onglobalprogress = options.onglobalprogress || null;
+        let globalprogress = options.globalprogress || null;
+        let onprogress = options.onprogress || null;
         loadGraphicsHell(type,names,graphics,onsuccess,onglobalprogress,globalprogress,onprogress);
     }
 
@@ -158,7 +158,7 @@
      */
     function loadAudiosHell(type,names,data,q,onglobalprogress,globalprogress,onprogress){
         if(names.length > 0){
-            var name = names.pop();
+            let name = names.pop();
             Audio_Loader.load(data[name],name, {
                 onsuccess: function (id,src) {
                     Audios.set(type,id,src);
@@ -186,7 +186,7 @@
      */
     function loadGraphicsHell(type,names,data,q,onglobalprogress,globalprogress,onprogress){
         if(names.length > 0){
-            var name = names.pop();
+            let name = names.pop();
             Graphic_Loader.load(data[name],name, {
                 onsuccess: function (id,image) {
                     Graphics.set(type, id, image);

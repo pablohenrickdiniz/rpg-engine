@@ -4,9 +4,9 @@
         throw "Graphics requires Main";
     }
 
-    var Main = root.Main;
+    let Main = root.Main;
 
-    var graphics =  {};
+    let graphics =  {};
 
     Main.Graphics = {
         /**

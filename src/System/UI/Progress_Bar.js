@@ -8,7 +8,7 @@
         throw "Progress_Bar requires Element";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = UI.classes.Element;
 
     /**
@@ -16,8 +16,8 @@
      * @param options
      * @constructor
      */
-    var Progress_Bar = function(options){
-        var self = this;
+    let Progress_Bar = function(options){
+        let self = this;
         options = options || {};
         Element.call(self,options,'progress');
         initialize(self);

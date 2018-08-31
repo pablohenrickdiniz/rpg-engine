@@ -5,8 +5,8 @@
      * @param options
      * @constructor
      */
-    var Timer_Ticker = function (options) {
-        var self = this;
+    let Timer_Ticker = function (options) {
+        let self = this;
         options = options || {};
         self.fps = options.fps || 60;
         self.currentTime = 0;
@@ -17,7 +17,7 @@
     };
 
     Timer_Ticker.prototype.run = function () {
-        var self = this;
+        let self = this;
         if (!self.running) {
             self.running = true;
             self.trigger('start');
@@ -26,7 +26,7 @@
     };
 
     Timer_Ticker.prototype.stop = function () {
-        var self = this;
+        let self = this;
         w.cancelAnimationFrame(self.interval);
         self.last_tick = null;
         self.running = false;
@@ -38,7 +38,7 @@
      * @param callback
      */
     Timer_Ticker.prototype.addEventListener = function (eventName, callback) {
-        var self = this;
+        let self = this;
         if(self.listeners[eventName] === undefined){
             self.listeners[eventName] = [];
         }
@@ -52,9 +52,9 @@
      * @param callback
      */
     Timer_Ticker.prototype.removeEventListener = function (event, callback) {
-        var self = this;
+        let self = this;
         if(self.listeners[event] !==undefined){
-            var index = self.listeners[event].indexOf(callback);
+            let index = self.listeners[event].indexOf(callback);
             if(index !== -1){
                 self.listeners[event].splice(index,1);
             }
@@ -66,10 +66,10 @@
      * @param args
      */
     Timer_Ticker.prototype.trigger = function (eventName,args) {
-        var self = this;
+        let self = this;
 
         if(self.listeners[eventName] !== undefined){
-            var length = self.listeners[eventName].length;
+            let length = self.listeners[eventName].length;
             args = args || [];
             for(var i =0; i < length;i++){
                 self.listeners[eventName][i].apply(self,args);
@@ -87,8 +87,8 @@
                 clearInterval(timer.interval);
                 tick(timer);
             });
-            var passed = 0;
-            var current_time = new Date().getTime();
+            let passed = 0;
+            let current_time = new Date().getTime();
             if (timer.last_tick != null) {
                 passed = current_time - timer.last_tick;
             }

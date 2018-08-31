@@ -8,18 +8,18 @@
         throw "Event_Page requires Game_Character";
     }
 
-    var Consts = root.Consts,
+    let Consts = root.Consts,
         Game_Character = root.Game_Character;
 
-    var SWITCH_CONDITION_REGEX = /^(LOCAL|GLOBAL):([A-Za-z0-9]+):(ON|OFF)$/;
+    let SWITCH_CONDITION_REGEX = /^(LOCAL|GLOBAL):([A-Za-z0-9]+):(ON|OFF)$/;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Event_Page = function (options) {
-        var self = this;
+    let Event_Page = function (options) {
+        let self = this;
         Game_Character.call(self, options);
         options = options || {};
         initialize(self);
@@ -39,7 +39,7 @@
     Event_Page.prototype.constructor = Event_Page;
 
     Event_Page.prototype.update = function(){
-        var self =this;
+        let self =this;
         switch(self.movement_type){
             case Consts.MOVE_ROUTE:
                 if(self.route.length > 0 && self.currentMove !== -1){
@@ -47,7 +47,7 @@
                         self.currentMove = self.repeatRoute?0:-1;
                     }
                     if(self.currentMove !== -1){
-                        var move = self.route[self.currentMove];
+                        let move = self.route[self.currentMove];
                         self.currentMove++;
 
                         switch(move){
@@ -79,10 +79,10 @@
         condition = condition.toUpperCase();
         if(SWITCH_CONDITION_REGEX.test(condition)){
             condition = condition.split(':');
-            var scope = condition[0];
-            var id = condition[1];
-            var status = condition[2]==='ON';
-            var self = this;
+            let scope = condition[0];
+            let id = condition[1];
+            let status = condition[2]==='ON';
+            let self = this;
             if(self.conditions[scope] === undefined){
                 self.conditions[scope] = [];
             }
@@ -94,10 +94,10 @@
      *
      * @param self
      */
-    var initialize = function(self){
-        var conditions = [];
-        var through = null;
-        var walkingAnimation =false;
+    let initialize = function(self){
+        let conditions = [];
+        let through = null;
+        let walkingAnimation =false;
 
         Object.defineProperty(self,'conditions',{
             /**
@@ -106,7 +106,7 @@
              */
             set:function(cond){
                 conditions = [];
-                var length = cond.length;
+                let length = cond.length;
                 for(var i =0; i < length;i++){
                     self.addCondition(cond[i]);
                 }
@@ -161,7 +161,7 @@
                 if(wa !== walkingAnimation){
                     walkingAnimation = wa;
                     if(self.event){
-                        var event = self.event;
+                        let event = self.event;
                         if(walkingAnimation && !event.currentAnimation.running){
                             event.currentAnimation.start();
                         }

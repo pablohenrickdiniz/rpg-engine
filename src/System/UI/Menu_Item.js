@@ -8,7 +8,7 @@
         throw "Menu_Item requires UI.Element";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = root.UI.classes.Element;
 
     /**
@@ -16,8 +16,8 @@
      * @param options
      * @constructor
      */
-    var Menu_Item = function(options){
-        var self = this;
+    let Menu_Item = function(options){
+        let self = this;
         options = options || {};
         Element.call(self,options,'li');
         initialize(self);

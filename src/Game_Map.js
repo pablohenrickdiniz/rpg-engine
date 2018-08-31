@@ -5,8 +5,8 @@
      * @param options
      * @constructor
      */
-    var Game_Map = function (options) {
-        var self = this;
+    let Game_Map = function (options) {
+        let self = this;
         options = options  || {};
         self.tileset = options.tileset || null;
         self.name = options.name || '';
@@ -25,7 +25,7 @@
      * @param obj
      */
     Game_Map.prototype.add = function (obj) {
-        var self = this;
+        let self = this;
         self.listeners.push(obj);
     };
 
@@ -34,8 +34,8 @@
      * @param obj
      */
     Game_Map.prototype.remove = function (obj) {
-        var self = this;
-        var index = self.listeners.indexOf(obj);
+        let self = this;
+        let index = self.listeners.indexOf(obj);
         if (index !== -1) {
             delete obj.parent;
         }

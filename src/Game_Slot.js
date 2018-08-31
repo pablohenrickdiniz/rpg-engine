@@ -8,7 +8,7 @@
         throw "Game_Slot requires Items";
     }
 
-    var Item = root.Item,
+    let Item = root.Item,
         Items = root.Main.Items;
 
     /**
@@ -16,8 +16,8 @@
      * @param options
      * @constructor
      */
-    var Game_Slot = function(options){
-        var self = this;
+    let Game_Slot = function(options){
+        let self = this;
         initialize(self);
 
         self.type = options.type || 'generic';
@@ -38,14 +38,14 @@
      * @returns {boolean}
      */
     Game_Slot.prototype.hasItem = function(){
-        var self = this;
+        let self = this;
         return self.item != null;
     };
 
     function initialize(self){
-        var amount = 0;
-        var max = 99;
-        var item = null;
+        let amount = 0;
+        let max = 99;
+        let item = null;
 
         Object.defineProperty(self,'freeAmount',{
             /**

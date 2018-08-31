@@ -8,7 +8,7 @@
         throw "Text requires Element";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = UI.classes.Element;
 
     /**
@@ -17,8 +17,8 @@
      * @param tag
      * @constructor
      */
-    var Text = function(options,tag){
-        var self = this;
+    let Text = function(options,tag){
+        let self = this;
         tag = tag || 'p';
         options = options || {};
         Element.call(self,options,tag);
@@ -30,7 +30,7 @@
     Text.prototype.constructor = Text;
 
     function initialize(self){
-        var value = '';
+        let value = '';
 
         Object.defineProperty(self,'value',{
             /**

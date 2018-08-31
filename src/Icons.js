@@ -8,9 +8,9 @@
         throw "Icons requires Game_Icon";
     }
 
-    var Main = root.Main;
-    var Game_Icon = root.Game_Icon;
-    var icons = [];
+    let Main = root.Main;
+    let Game_Icon = root.Game_Icon;
+    let icons = [];
 
     Main.Icons = {
         /**

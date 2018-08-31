@@ -3,10 +3,10 @@
         throw "UI_Text requires UI_Element"
     }
 
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
 
-    var UI_Element = root.UI_Element;
+    let UI_Element = root.UI_Element;
 
     /**
      *
@@ -14,8 +14,8 @@
      * @param options
      * @constructor
      */
-    var UI_Text = function (parent, options) {
-        var self = this;
+    let UI_Text = function (parent, options) {
+        let self = this;
         options = options || {};
         initialize(self);
         UI_Element.call(self, parent, options);
@@ -35,9 +35,9 @@
      * @param layer
      */
     UI_Text.prototype.update = function (layer) {
-        var self = this;
+        let self = this;
         if (self.visible && self.visibleOnScreen) {
-            var parent = self.parent;
+            let parent = self.parent;
 
             //var al = self.absoluteLeft;
             //var at = self.absoluteTop;
@@ -99,10 +99,10 @@
             //    });
             //
             //    if (parent && parent.padding > 0) {
-            //        var pp = parent.padding;
-            //        var pal = parent.absoluteLeft;
-            //        var pat = parent.absoluteTop;
-            //        var prw = parent.realWidth;
+            //        let pp = parent.padding;
+            //        let pal = parent.absoluteLeft;
+            //        let pat = parent.absoluteTop;
+            //        let prw = parent.realWidth;
             //        layer.clear(pal, pat, prw, pp);
             //        layer.clear(pal, pat + parent.realHeight - pp, prw, pp);
             //    }
@@ -113,13 +113,13 @@
      *
      * @param self
      */
-    var initialize = function (self) {
-        var text = '';
-        var fontSize = [10];
-        var fontFamilly = ['Arial'];
-        var color = ['black'];
-        var textAlign = ['left'];
-        var processedText = [];
+    let initialize = function (self) {
+        let text = '';
+        let fontSize = [10];
+        let fontFamilly = ['Arial'];
+        let color = ['black'];
+        let textAlign = ['left'];
+        let processedText = [];
 
         Object.defineProperty(self, 'text', {
             get: function () {
@@ -199,10 +199,10 @@
      *
      * @param self
      */
-    var update_size = function (self) {
+    let update_size = function (self) {
         if(self.initialized){
-            var fontSize = self.fontSize;
-            var processed = processText(self.text, {
+            let fontSize = self.fontSize;
+            let processed = processText(self.text, {
                 width: self.parent.containerWidth,
                 fontSize: fontSize,
                 fontFamilly: self.fontFamilly
@@ -217,24 +217,24 @@
      * @param options
      * @returns {Array}
      */
-    var processText = function (text, options) {
-        var width = options.width || null;
-        var fontSize = options.fontSize || 10;
-        var fontFamilly = options.fontFamily || 'Arial';
-        var canvas = document.createElement('canvas');
+    let processText = function (text, options) {
+        let width = options.width || null;
+        let fontSize = options.fontSize || 10;
+        let fontFamilly = options.fontFamily || 'Arial';
+        let canvas = document.createElement('canvas');
         ctx.font = fontSize + 'px ' + fontFamilly;
         text = text.split(' ');
-        var length = text.length;
-        var lines = [];
-        var oldTextWidth = 0;
-        var textWidth = 0;
-        var line = [];
-        var i;
-        var line_length;
+        let length = text.length;
+        let lines = [];
+        let oldTextWidth = 0;
+        let textWidth = 0;
+        let line = [];
+        let i;
+        let line_length;
 
         for (i = 0; i < length; i++) {
             line.push(text[i]);
-            var join = line.join(' ');
+            let join = line.join(' ');
             oldTextWidth = textWidth;
             textWidth = ctx.measureText(join).width;
             line_length = line.length;

@@ -4,15 +4,15 @@
         throw "Game_Icon requires Game_Graphic";
     }
 
-    var Game_Graphic = root.Game_Graphic;
+    let Game_Graphic = root.Game_Graphic;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Game_Icon = function(options){
-        var self = this;
+    let Game_Icon = function(options){
+        let self = this;
         options = options || {};
         Game_Graphic.call(self,options);
         self.graphicType = 'icons';

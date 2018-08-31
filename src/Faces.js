@@ -8,8 +8,8 @@
         throw "Faces requires Main";
     }
 
-    var Game_Face = root.Game_Face, Main = root.Main;
-    var faces = [];
+    let Game_Face = root.Game_Face, Main = root.Main;
+    let faces = [];
 
     Main.Faces = {
         /**

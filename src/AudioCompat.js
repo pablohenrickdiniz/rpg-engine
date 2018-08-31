@@ -2,14 +2,14 @@
 (function (w) {
     if (w.Audio === undefined) {
         (function (w) {
-            var context = new (w.AudioContext || w.webkitAudioContext)();
+            let context = new (w.AudioContext || w.webkitAudioContext)();
             /**
              *
              * @param url
              */
-            var load_audio = function (url) {
-                var self = this;
-                var request = new XMLHttpRequest();
+            let load_audio = function (url) {
+                let self = this;
+                let request = new XMLHttpRequest();
                 request.open('GET', url, true);
                 request.responseType = 'arraybuffer';
 
@@ -27,15 +27,15 @@
              *
              * @constructor
              */
-            var Audio = function () {
-                var self = this;
-                var src = '';
+            let Audio = function () {
+                let self = this;
+                let src = '';
                 self.listeners = [];
                 self.buffer = null;
                 self.source = null;
                 self.paused = true;
                 self.timeStart = null;
-                var currentTime = 0;
+                let currentTime = 0;
 
                 Object.defineProperty(self, 'src', {
                     /**
@@ -76,7 +76,7 @@
             };
 
             Audio.prototype.play = function () {
-                var self = this;
+                let self = this;
                 if (self.paused && self.buffer != null) {
                     if (self.time_start == null) {
                         self.time_start = (new Date()).getTime();
@@ -85,7 +85,7 @@
                         self.time_start = (new Date()).getTime() - self.currentTime;
                     }
 
-                    var source = context.createBufferSource();
+                    let source = context.createBufferSource();
                     source.buffer = self.buffer;
                     source.connect(context.destination);
                     source.start(0, self.currentTime / 1000);
@@ -95,7 +95,7 @@
             };
 
             Audio.prototype.pause = function () {
-                var self = this;
+                let self = this;
                 if (!self.paused) {
                     self.paused = true;
                     self.source.stop();
@@ -108,7 +108,7 @@
              * @param callback
              */
             Audio.prototype.addEventListener = function (event, callback) {
-                var self = this;
+                let self = this;
                 if (self.listeners[event] === undefined) {
                     self.listeners[event] = [];
                 }
@@ -120,9 +120,9 @@
              * @param callback
              */
             Audio.prototype.removeEventListener = function (event, callback) {
-                var self = this;
+                let self = this;
                 if (self.listeners[event] !== undefined) {
-                    var index = self.listeners[event].indexOf(callback);
+                    let index = self.listeners[event].indexOf(callback);
                     if (index !== -1) {
                         self.listeners[event].splice(index, 1);
                     }
@@ -133,9 +133,9 @@
              * @param event
              */
             Audio.prototype.trigger = function (event) {
-                var self = this;
+                let self = this;
                 if (self.listeners[event] !== undefined) {
-                    var i;
+                    let i;
                     for (i = 0; i < self.listeners[event].length; i++) {
                         self.listeners[event][i].apply(self);
                     }
@@ -148,7 +148,7 @@
     else {
         if (w.Audio.prototype.stop === undefined) {
             w.Audio.prototype.stop = function () {
-                var self = this;
+                let self = this;
                 self.pause();
                 self.currentTime = 0;
             };

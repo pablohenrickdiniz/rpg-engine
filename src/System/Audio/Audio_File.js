@@ -4,16 +4,16 @@
         throw "Audio_File requires Game_Timer"
     }
 
-    var Game_Timer = root.Game_Timer;
+    let Game_Timer = root.Game_Timer;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Audio_File = function(options){
+    let Audio_File = function(options){
         options = options || {};
-        var self  =this;
+        let self  =this;
         initialize(self);
         self.name = options.name || '';
         self.type = options.type;
@@ -23,21 +23,21 @@
     };
 
     Audio_File.prototype.play = function(){
-        var self = this;
+        let self = this;
         if(!self.playing){
             self.audio.play();
         }
     };
 
     Audio_File.prototype.pause = function(){
-        var self = this;
+        let self = this;
         if(self.playing){
             self.audio.pause();
         }
     };
 
     Audio_File.prototype.stop = function(){
-        var self = this;
+        let self = this;
         self.audio.pause();
         self.audio.currentTime = 0;
     };
@@ -47,14 +47,14 @@
      * @param self
      */
     function initialize(self){
-        var audio = null;
-        var aux_aud = new Audio();
-        var loop = false;
-        var timeupdate = function(){
+        let audio = null;
+        let aux_aud = new Audio();
+        let loop = false;
+        let timeupdate = function(){
             if(loop){
                 if(audio.currentTime+audio.playbackRate > audio.duration){
                     audio.removeEventListener('timeupdate',timeupdate);
-                    var tmp = audio;
+                    let tmp = audio;
                     audio = aux_aud;
                     aux_aud = tmp;
                     audio.addEventListener('timeupdate',timeupdate);

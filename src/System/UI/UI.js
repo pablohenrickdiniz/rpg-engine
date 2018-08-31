@@ -1,7 +1,7 @@
 'use strict';
 (function(root){
-    var ui_root = null;
-    var UI = {
+    let ui_root = null;
+    let UI = {
         classes:[]
     };
 

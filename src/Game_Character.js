@@ -28,7 +28,7 @@
         throw "Game_Character requires Faces";
     }
 
-    var Animation_Time = root.Animation_Time,
+    let Animation_Time = root.Animation_Time,
         Consts = root.Consts,
         Main = root.Main,
         Game_Timer = root.Game_Timer,
@@ -42,8 +42,8 @@
      * @param options
      * @constructor
      */
-    var Game_Character = function (options) {
-        var self = this;
+    let Game_Character = function (options) {
+        let self = this;
         Game_Object.call(self,options);
         initialize(self);
         options = options || {};
@@ -61,12 +61,12 @@
      * @param direction
      */
     Game_Character.prototype.moveTo = function (direction) {
-        var self = this;
+        let self = this;
         if (direction === Consts.CHARACTER_DIRECTION_RANDOM) {
             direction = Math.floor(Math.random() * 4);
         }
-        var x = 0;
-        var y = 0;
+        let x = 0;
+        let y = 0;
         self.direction = direction;
         switch (direction) {
             case Consts.CHARACTER_DIRECTION_UP:
@@ -90,7 +90,7 @@
     };
 
     Game_Character.prototype.stop = function(){
-        var self = this;
+        let self = this;
         switch (self.direction) {
             case Consts.CHARACTER_DIRECTION_UP:
                 self.currentAnimation = self.animations[Consts.CHARACTER_STOP_UP];
@@ -112,7 +112,7 @@
      * @param times
      */
     Game_Character.prototype.moveUp = function(times){
-        var self = this;
+        let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_UP,times);
     };
 
@@ -121,7 +121,7 @@
      * @param times
      */
     Game_Character.prototype.moveDown = function(times){
-        var self = this;
+        let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_DOWN,times);
     };
 
@@ -130,7 +130,7 @@
      * @param times
      */
     Game_Character.prototype.moveRight = function(times){
-        var self = this;
+        let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT,times);
     };
 
@@ -139,7 +139,7 @@
      * @param times
      */
     Game_Character.prototype.moveLeft = function(times){
-        var self = this;
+        let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_LEFT,times);
     };
 
@@ -148,7 +148,7 @@
      * @param times
      */
     Game_Character.prototype.stepForward = function (times) {
-        var self = this;
+        let self = this;
         self.moveTo(self.direction,times);
     };
 
@@ -165,7 +165,7 @@
      * @param direction
      */
     Game_Character.prototype.turn = function (direction) {
-        var self = this;
+        let self = this;
         switch (direction) {
             case Consts.CHARACTER_DIRECTION_UP:
             case Consts.CHARACTER_DIRECTION_DOWN:
@@ -175,8 +175,8 @@
                 break;
             default:
                 if (direction instanceof Game_Character) {
-                    var d_x = self.body.x - direction.body.x;
-                    var d_y = self.body.y - direction.body.y;
+                    let d_x = self.body.x - direction.body.x;
+                    let d_y = self.body.y - direction.body.y;
 
                     if(Math.abs(d_x) > Math.abs(d_y)){
                         if(d_x > 0){
@@ -200,27 +200,27 @@
     };
 
     Game_Character.prototype.turnDown = function(){
-        var self = this;
+        let self = this;
         self.turn(Consts.CHARACTER_DIRECTION_DOWN);
     };
 
     Game_Character.prototype.turnUp = function(){
-        var self = this;
+        let self = this;
         self.turn(Consts.CHARACTER_DIRECTION_UP);
     };
 
     Game_Character.prototype.turnLeft = function(){
-        var self = this;
+        let self = this;
         self.turn(Consts.CHARACTER_DIRECTION_LEFT);
     };
 
     Game_Character.prototype.turnRight = function(){
-        var self = this;
+        let self = this;
         self.turn(Consts.CHARACTER_DIRECTION_RIGHT);
     };
 
     Game_Character.prototype.lookToPlayer = function () {
-        var self = this;
+        let self = this;
         self.turn(Main.Player);
     };
 
@@ -229,8 +229,8 @@
      * @param self
      */
     function initialize(self) {
-        var charaID = null;
-        var faceID = null;
+        let charaID = null;
+        let faceID = null;
         Object.defineProperty(self, 'charaID', {
             /**
              *
@@ -239,7 +239,7 @@
             set: function (id) {
                 if (id !== charaID) {
                     charaID = id;
-                    var graphic = Charas.get(id);
+                    let graphic = Charas.get(id);
                     if (graphic != null) {
                         self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation_Time(self.animationSpeed, graphic.cols);
                         self.animations[Consts.CHARACTER_STEP_UP] = new Animation_Time(self.animationSpeed, graphic.cols);
@@ -312,8 +312,8 @@
              */
             get:function(){
                 if(self.currentAnimation !=null && self.graphic != null){
-                    var animation = self.currentAnimation;
-                    var index = animation.getIndexFrame();
+                    let animation = self.currentAnimation;
+                    let index = animation.getIndexFrame();
                     //
                     //index = self.graphic.startFrame+index;
                     //while(index > self.graphic.cols){

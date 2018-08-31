@@ -3,11 +3,11 @@
         throw "UI_Element requires Document"
     }
 
-    var document = root.Document;
+    let document = root.Document;
 
-    var ID = 0;
+    let ID = 0;
     const TRANSPARENT_REG = /^\s*transparent\s*|rgba\((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\s*,\s*0\s*\)\s*$/;
-    var prop_implies = {
+    let prop_implies = {
         'width':{
             'self':['realWidth']
         },
@@ -119,8 +119,8 @@
      * @param options
      * @constructor
      */
-    var UI_Element = function (parent, options) {
-        var self = this;
+    let UI_Element = function (parent, options) {
+        let self = this;
         options = options || {};
         self.listeners = {};
         self.contents = [];
@@ -163,7 +163,7 @@
 
 
     UI_Element.prototype.add = function (element) {
-        var self = this;
+        let self = this;
         if (element instanceof UI_Element && self.contents.indexOf(element) == -1) {
             element.parent = self;
             element.index = self.contents.length;
@@ -174,7 +174,7 @@
 
 
     UI_Element.prototype.lastItem = function () {
-        var self = this;
+        let self = this;
         if (self.contents.length > 0) {
             return self.contents[self.contents.length - 1];
         }
@@ -187,15 +187,15 @@
      * @returns {UI_Element}
      */
     UI_Element.prototype.remove = function (element) {
-        var self = this;
+        let self = this;
         if (element != undefined) {
-            var index = self.contents.indexOf(element);
+            let index = self.contents.indexOf(element);
             if (index != -1) {
                 element.parent = null;
                 element.index = null;
                 self.contents.splice(index, 1);
-                var length = self.contents.length;
-                var i;
+                let length = self.contents.length;
+                let i;
                 for (i = index; i < length; i++) {
                     self.contents[i].index = i;
                 }
@@ -208,7 +208,7 @@
     };
 
     UI_Element.prototype.addEventListener = function (name, callback) {
-        var self = this;
+        let self = this;
         if (self.listeners[name] == undefined) {
             self.listeners[name] = [];
         }
@@ -218,9 +218,9 @@
     };
 
     UI_Element.prototype.removeEventListener = function (name, callback) {
-        var self = this;
+        let self = this;
         if (self.listeners[name] != undefined) {
-            var index = self.listeners[name].indexOf(callback);
+            let index = self.listeners[name].indexOf(callback);
             if (index != -1) {
                 self.listeners[name].splice(index, 1);
             }
@@ -229,52 +229,52 @@
     };
 
     UI_Element.prototype.show = function () {
-        var self = this;
+        let self = this;
         self.visible = true;
         return self;
     };
 
     UI_Element.prototype.hide = function () {
-        var self = this;
+        let self = this;
         self.visible = false;
         return self;
     };
 
-    var initialize = function (self) {
+    let initialize = function (self) {
         //FIXED VARS
-        var width = [100];
-        var height = [100];
-        var opacity = [50];
-        var left = 0;
-        var top = 0;
-        var padding = [0];
-        var backgroundColor = ['transparent'];
-        var borderColor = ['yellow'];
-        var borderWidth = [2];
-        var borderStyle = ['rounded'];
-        var visible = [true];
-        var draggable = ['draggable'];
-        var parent = null;
-        var state = 0;
-        var cursor = ['default'];
-        var backgroundOpacity = [100];
-        var horizontalAlign = [null];
-        var verticalAlign = [null];
-        var scrollableX = false;
-        var scrollableY = false;
-        var scrollLeft = 0;
-        var scrollTop = 0;
-        var scrollWidth = 15;
-        var scrollHeight = 0;
-        var index = 0;
+        let width = [100];
+        let height = [100];
+        let opacity = [50];
+        let left = 0;
+        let top = 0;
+        let padding = [0];
+        let backgroundColor = ['transparent'];
+        let borderColor = ['yellow'];
+        let borderWidth = [2];
+        let borderStyle = ['rounded'];
+        let visible = [true];
+        let draggable = ['draggable'];
+        let parent = null;
+        let state = 0;
+        let cursor = ['default'];
+        let backgroundOpacity = [100];
+        let horizontalAlign = [null];
+        let verticalAlign = [null];
+        let scrollableX = false;
+        let scrollableY = false;
+        let scrollLeft = 0;
+        let scrollTop = 0;
+        let scrollWidth = 15;
+        let scrollHeight = 0;
+        let index = 0;
 
 
         //SIZE
         //SIZE VARS
-        var realWidth = null;       //self.width,parent.realWidth
-        var realHeight = null;      //self.height,parent.realHeight
-        var containerWidth = null;  //self.realWidth,self.padding,self.verticalScrollActive
-        var containerHeight = null; //self.realHeight,self.padding,self.horizontalScrollActive
+        let realWidth = null;       //self.width,parent.realWidth
+        let realHeight = null;      //self.height,parent.realHeight
+        let containerWidth = null;  //self.realWidth,self.padding,self.verticalScrollActive
+        let containerHeight = null; //self.realHeight,self.padding,self.horizontalScrollActive
 
 
         Object.defineProperty(self, 'realWidth', {
@@ -340,21 +340,21 @@
 
         //POSITION
         //POSITION VARS
-        var realLeft = null;     //self.left,self.horizontalAlign,parent.realWidth,self.realWidth
-        var realTop = null;      //self.top,self.verticalAlign,parent.realHeight,self.realHeight
-        var absoluteLeft = null; //parent.absoluteLeft,parent.padding,parent.scrollLeft,self.realLeft
-        var absoluteTop = null;  //parent.absoluteTop, parent.padding,parent.scrollTop,self.realTop
-        var containerX = null;   //self.absoluteLeft,self.padding;
-        var containerY = null;   //self.absoluteTop,self.padding;
-        var level = null;        //parent.level
+        let realLeft = null;     //self.left,self.horizontalAlign,parent.realWidth,self.realWidth
+        let realTop = null;      //self.top,self.verticalAlign,parent.realHeight,self.realHeight
+        let absoluteLeft = null; //parent.absoluteLeft,parent.padding,parent.scrollLeft,self.realLeft
+        let absoluteTop = null;  //parent.absoluteTop, parent.padding,parent.scrollTop,self.realTop
+        let containerX = null;   //self.absoluteLeft,self.padding;
+        let containerY = null;   //self.absoluteTop,self.padding;
+        let level = null;        //parent.level
 
         //POSITION VARS CACHED
         Object.defineProperty(self, 'realLeft', {
             get: function () {
                 if (realLeft == null) {
-                    var sum = 0;
-                    var ha = horizontalAlign[state] || horizontalAlign[0];
-                    var l = calc_size(self.left, parent ? parent.realWidth : 0);
+                    let sum = 0;
+                    let ha = horizontalAlign[state] || horizontalAlign[0];
+                    let l = calc_size(self.left, parent ? parent.realWidth : 0);
 
                     if (ha != null) {
                         sum = calculate_align(ha, self.realWidth, parent ? parent.realWidth : 0);
@@ -375,9 +375,9 @@
         Object.defineProperty(self, 'realTop', {
             get: function () {
                 if (realTop == null) {
-                    var sum = 0;
-                    var va = verticalAlign[state] || verticalAlign[0];
-                    var t = calc_size(self.top, parent ? parent.realHeight : 0);
+                    let sum = 0;
+                    let va = verticalAlign[state] || verticalAlign[0];
+                    let t = calc_size(self.top, parent ? parent.realHeight : 0);
 
 
                     if (va != null) {
@@ -400,8 +400,8 @@
         Object.defineProperty(self, 'absoluteLeft', {
             get: function () {
                 if (absoluteLeft == null) {
-                    var parent = self.parent;
-                    var sum = 0;
+                    let parent = self.parent;
+                    let sum = 0;
                     if (parent != null) {
                         sum += parent.absoluteLeft + parent.padding - parent.scrollLeft;
                     }
@@ -420,8 +420,8 @@
         Object.defineProperty(self, 'absoluteTop', {
             get: function () {
                 if (absoluteTop == null) {
-                    var parent = self.parent;
-                    var sum = 0;
+                    let parent = self.parent;
+                    let sum = 0;
                     if (parent != null) {
                         sum += parent.absoluteTop + parent.padding - parent.scrollTop;
                     }
@@ -527,14 +527,14 @@
         //returns boolean;
         Object.defineProperty(self, 'visibleOnScreen', {
             get: function () {
-                var xa = self.absoluteLeft;
-                var ya = self.absoluteTop;
-                var wa = self.realWidth;
-                var ha = self.realHeight;
-                var xb = parent ? parent.containerX : 0;
-                var yb = parent ? parent.containerY : 0;
-                var wb = parent ? parent.containerWidth : 0;
-                var hb = parent ? parent.containerHeight : 0;
+                let xa = self.absoluteLeft;
+                let ya = self.absoluteTop;
+                let wa = self.realWidth;
+                let ha = self.realHeight;
+                let xb = parent ? parent.containerX : 0;
+                let yb = parent ? parent.containerY : 0;
+                let wb = parent ? parent.containerWidth : 0;
+                let hb = parent ? parent.containerHeight : 0;
                 return collide_bounds(xa, ya, wa, ha, xb, yb, wb, hb);
             }
         });
@@ -790,20 +790,20 @@
 
         //SCROLL
         //SCROLL VARS
-        var scrollLeftButtonX = null; //self.absoluteLeft,self.scrollWidth
-        var scrollLeftButtonY = null; //self.absoluteTop,self.realHeight,self.scrollWidth
-        var scrollRightButtonX = null;//self.absoluteLeft,self.realWidth,self.scrollWidth
-        var scrollRightButtonY = null;//self.absoluteTop,self.realHeight,self.scrollWidth
-        var scrollUpButtonX = null;    //self.absoluteLeft,self.realWidth,self.scrollWidth;
-        var scrollUpButtonY = null;   //self.absoluteTop,self.scrollWidth;
-        var scrollDownButtonX = null; //self.absoluteLeft,self.realWidth,self.scrollWidth
-        var scrollDownButtonY = null; //self.absoluteTop,self.realHeight,self.scrollWidth
-        var railWidth = null;         //self.realWidth,self.scrollWidth
-        var railHeight = null;        //self.realHeight,self.scrollWidth
-        var maxScrollTop = null;      //self.contentHeight,self.containerHeight
-        var maxScrollLeft = null;     //self.contentWidth,self.containerWidth;
-        var verticalScrollActive = null; //self.scrollableY,self.contentHeight,self.realHeight,self.padding
-        var horizontalScrollActive = null;//self.scrollableX,self.contentWidth,self.realWidth, self.padding
+        let scrollLeftButtonX = null; //self.absoluteLeft,self.scrollWidth
+        let scrollLeftButtonY = null; //self.absoluteTop,self.realHeight,self.scrollWidth
+        let scrollRightButtonX = null;//self.absoluteLeft,self.realWidth,self.scrollWidth
+        let scrollRightButtonY = null;//self.absoluteTop,self.realHeight,self.scrollWidth
+        let scrollUpButtonX = null;    //self.absoluteLeft,self.realWidth,self.scrollWidth;
+        let scrollUpButtonY = null;   //self.absoluteTop,self.scrollWidth;
+        let scrollDownButtonX = null; //self.absoluteLeft,self.realWidth,self.scrollWidth
+        let scrollDownButtonY = null; //self.absoluteTop,self.realHeight,self.scrollWidth
+        let railWidth = null;         //self.realWidth,self.scrollWidth
+        let railHeight = null;        //self.realHeight,self.scrollWidth
+        let maxScrollTop = null;      //self.contentHeight,self.containerHeight
+        let maxScrollLeft = null;     //self.contentWidth,self.containerWidth;
+        let verticalScrollActive = null; //self.scrollableY,self.contentHeight,self.realHeight,self.padding
+        let horizontalScrollActive = null;//self.scrollableX,self.contentWidth,self.realWidth, self.padding
 
 
         //SCROLL CACHE
@@ -1055,7 +1055,7 @@
             },
             set: function (sl) {
                 if (sl != scrollLeft) {
-                    var max = self.maxScrollLeft;
+                    let max = self.maxScrollLeft;
                     if (sl < 0) {
                         sl = 0;
                     }
@@ -1079,7 +1079,7 @@
             },
             set: function (st) {
                 if (st != scrollTop) {
-                    var max = self.maxScrollTop;
+                    let max = self.maxScrollTop;
                     if (st < 0) {
                         st = 0;
                     }
@@ -1122,11 +1122,11 @@
 
 
         //BOUND VARS
-        var visibleBoundsX = null;      //parent.containerX, self.absoluteLeft
-        var visibleBoundsY = null;      //parent.containerY, self.absoluteTop
-        var visibleBoundsWidth = null;  //parent.containerWidth, parent.containerX,self.absoluteLeft,self.realWidth
-        var visibleBoundsHeight = null; //parent.containerHeight,parent.containerY,self.absoluteTop,self.realHeight
-        var visibleBounds = null; //self.visibleBoundsX,self.visibleBoundsY,self.visibleBoundsWidth,self.visibleBoundsHeight
+        let visibleBoundsX = null;      //parent.containerX, self.absoluteLeft
+        let visibleBoundsY = null;      //parent.containerY, self.absoluteTop
+        let visibleBoundsWidth = null;  //parent.containerWidth, parent.containerX,self.absoluteLeft,self.realWidth
+        let visibleBoundsHeight = null; //parent.containerHeight,parent.containerY,self.absoluteTop,self.realHeight
+        let visibleBounds = null; //self.visibleBoundsX,self.visibleBoundsY,self.visibleBoundsWidth,self.visibleBoundsHeight
 
         Object.defineProperty(self, 'visibleBoundsX', {
             get: function () {
@@ -1191,15 +1191,15 @@
         Object.defineProperty(self, 'visibleBounds', {
             get: function () {
                 if(visibleBounds == null){
-                    var xb = self.absoluteLeft;
-                    var yb = self.absoluteTop;
-                    var wb = self.realWidth;
-                    var hb = self.realHeight;
+                    let xb = self.absoluteLeft;
+                    let yb = self.absoluteTop;
+                    let wb = self.realWidth;
+                    let hb = self.realHeight;
                     if(parent){
-                        var xa = parent.containerX;
-                        var ya = parent.containerY;
-                        var wa = parent.containerWidth;
-                        var ha = parent.containerHeight;
+                        let xa = parent.containerX;
+                        let ya = parent.containerY;
+                        let wa = parent.containerWidth;
+                        let ha = parent.containerHeight;
                         visibleBounds = rect_intersect(xa,ya,wa,ha,xb,yb,wb,hb);
                     }
                     else{
@@ -1225,23 +1225,23 @@
      * @param layer
      */
     UI_Element.prototype.update = function (layer) {
-        var self = this;
+        let self = this;
         if (self.visible && self.visibleOnScreen) {
-            var lineWidth = self.borderWidth;
-            var self_content_width = self.contentWidth;
-            var self_content_height = self.contentHeight;
-            var self_container_width = self.containerWidth;
-            var self_container_height = self.containerHeight;
-            var fillStyle = self.backgroundColor;
-            var strokeStyle = self.borderColor;
-            var borderOpacity = self.borderOpacity;
-            var backgroundOpacity = self.backgroundOpacity;
+            let lineWidth = self.borderWidth;
+            let self_content_width = self.contentWidth;
+            let self_content_height = self.contentHeight;
+            let self_container_width = self.containerWidth;
+            let self_container_height = self.containerHeight;
+            let fillStyle = self.backgroundColor;
+            let strokeStyle = self.borderColor;
+            let borderOpacity = self.borderOpacity;
+            let backgroundOpacity = self.backgroundOpacity;
 
-            var bounds = self.visibleBounds;
-            var x = body.x;
-            var y = body.y;
-            var width = body.width;
-            var height = body.height;
+            let bounds = self.visibleBounds;
+            let x = body.x;
+            let y = body.y;
+            let width = body.width;
+            let height = body.height;
 
             layer.rect({
                 x:x,
@@ -1255,17 +1255,17 @@
                 borderOpacity: borderOpacity
             });
 
-            var scrollbar_size = self.scrollWidth;
-            var fontSize = scrollbar_size / 1.5;
+            let scrollbar_size = self.scrollWidth;
+            let fontSize = scrollbar_size / 1.5;
 
             //SCROLL VERTICAL
             if (self.scrollableY && self_content_height > self_container_height) {
-                var buttonUpX = self.scrollUpButtonX;
-                var buttonUpY = self.scrollUpButtonY;
-                var buttonDownX = self.scrollDownButtonX;
-                var buttonDownY = self.scrollDownButtonY;
-                var rail_y = y + scrollbar_size * 2;
-                var rail_height = self.railHeight;
+                let buttonUpX = self.scrollUpButtonX;
+                let buttonUpY = self.scrollUpButtonY;
+                let buttonDownX = self.scrollDownButtonX;
+                let buttonDownY = self.scrollDownButtonY;
+                let rail_y = y + scrollbar_size * 2;
+                let rail_height = self.railHeight;
 
                 //Scrollbar background
                 layer.rect({
@@ -1277,8 +1277,8 @@
                     backgroundOpacity: 80
                 });
 
-                var scroll_y = rail_y + rail_height * (self.scrollTop / self_content_height);
-                var scroll_height = (self_container_height / self_content_height) * rail_height;
+                let scroll_y = rail_y + rail_height * (self.scrollTop / self_content_height);
+                let scroll_height = (self_container_height / self_content_height) * rail_height;
 
 
                 //  Scrollbar Slider
@@ -1340,13 +1340,13 @@
 
             //SCROLL HORIZONTAL
             if (self.scrollableX && self_content_width > self_container_width) {
-                var buttonLeftX = self.scrollLeftButtonX;
-                var buttonLeftY = self.scrollLeftButtonY;
-                var buttonRightX = self.scrollRightButtonX;
-                var buttonRightY = self.scrollRightButtonY;
+                let buttonLeftX = self.scrollLeftButtonX;
+                let buttonLeftY = self.scrollLeftButtonY;
+                let buttonRightX = self.scrollRightButtonX;
+                let buttonRightY = self.scrollRightButtonY;
 
-                var rail_x = x + scrollbar_size * 2;
-                var rail_width = self.railWidth;
+                let rail_x = x + scrollbar_size * 2;
+                let rail_width = self.railWidth;
 
                 //Scrollbar background
                 layer.rect({
@@ -1358,8 +1358,8 @@
                     backgroundOpacity: 80
                 });
 
-                var scroll_x = rail_x + rail_width * (self.scrollLeft / self_content_width);
-                var scroll_width = (self_container_width / self_content_width) * rail_width;
+                let scroll_x = rail_x + rail_width * (self.scrollLeft / self_content_width);
+                let scroll_width = (self_container_width / self_content_width) * rail_width;
 
                 //  Scrollbar Slider
                 layer.rect({
@@ -1432,8 +1432,8 @@
      * @param layer
      */
     UI_Element.prototype.clear = function (layer) {
-        var self = this;
-        var bounds = self.visibleBounds;
+        let self = this;
+        let bounds = self.visibleBounds;
         if (body.width != 0 && body.height != 0) {
             layer.clear(body.x, body.y, body.width, body.height);
         }
@@ -1446,8 +1446,8 @@
      * @returns {UI_Element}
      */
     UI_Element.prototype.setStateStyle = function (state, style, value) {
-        var self = this;
-        var tmp = self.state;
+        let self = this;
+        let tmp = self.state;
         self.state = state;
         self[style] = value;
         self.state = tmp;
@@ -1467,12 +1467,12 @@
 
     UI_Element.uncache = function (el, prop) {
         if(prop_implies[prop] != undefined){
-            var implies = prop_implies[prop];
-            var i;
-            var key;
+            let implies = prop_implies[prop];
+            let i;
+            let key;
 
             if(implies['self']){
-                var length = implies['self'].length;
+                let length = implies['self'].length;
                 for(i =0; i < length;i++){
                     key = implies['self'][i];
                     el[key] = false;
@@ -1480,11 +1480,11 @@
             }
 
             if(implies['children'] && el.contents.length > 0){
-                var children = el.contents;
-                var lengthA = el.contents.length;
-                var lengthB = implies['children'].length;
-                var j;
-                var child;
+                let children = el.contents;
+                let lengthA = el.contents.length;
+                let lengthB = implies['children'].length;
+                let j;
+                let child;
 
                 for(i = 0; i < lengthA;i++){
                     child = children[i];
@@ -1517,9 +1517,9 @@
      * @param total
      * @returns {*}
      */
-    var calc_size = function (size, total) {
+    let calc_size = function (size, total) {
         if (/[0-9]+(.\[0-9]+)?%/.test(size)) {
-            var pc = parseFloat(size);
+            let pc = parseFloat(size);
             return (total * pc) / 100
         }
         return size;
@@ -1532,7 +1532,7 @@
      * @param contSize
      * @returns {number}
      */
-    var calculate_align = function (align, objSize, contSize) {
+    let calculate_align = function (align, objSize, contSize) {
         switch (align) {
             case 'top':
             case 'left':
@@ -1560,23 +1560,23 @@
      * @param hb
      * @returns {boolean}
      */
-    var collide_bounds = function (xa, ya, wa, ha, xb, yb, wb, hb) {
+    let collide_bounds = function (xa, ya, wa, ha, xb, yb, wb, hb) {
         return !(xa > xb + wb || xb > xa + wa || ya > yb + hb || yb > ya + ha);
     };
 
 
-    var rect_intersect = function(xa,ya,wa,ha,xb,yb,wb,hb){
-        var rect = {
+    let rect_intersect = function(xa,ya,wa,ha,xb,yb,wb,hb){
+        let rect = {
             x:0,
             y:0,
             width:0,
             height:0
         };
 
-        var xaw = xa+wa;
-        var xbw = xb+wb;
-        var yah = ya+ha;
-        var ybh = yb+hb;
+        let xaw = xa+wa;
+        let xbw = xb+wb;
+        let yah = ya+ha;
+        let ybh = yb+hb;
 
         if(xb > xaw || xa > xbw || yb > yah || ya > ybh){
             return rect;

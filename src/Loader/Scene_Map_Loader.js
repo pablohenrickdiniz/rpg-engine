@@ -74,7 +74,7 @@
         throw "Scene_Map_Loader requires Item"
     }
 
-    var Spriteset_Map = root.Spriteset_Map,
+    let Spriteset_Map = root.Spriteset_Map,
         Game_Map = root.Game_Map,
         Scene_Loader = root.Scene_Loader,
         Tile = root.Tile,
@@ -93,7 +93,7 @@
         Icons = Main.Icons,
         Actors = Main.Actors;
 
-    var fields = [
+    let fields = [
         'image',
         'sx',
         'sy',
@@ -107,7 +107,7 @@
      *
      * @constructor
      */
-    var Scene_Map_Loader = function () {
+    let Scene_Map_Loader = function () {
     };
 
     Scene_Map_Loader.prototype = Object.create(Scene_Loader.prototype);
@@ -120,16 +120,16 @@
      */
     Scene_Map_Loader.prototype.load = function (scene, callback) {
         Scene_Loader.prototype.load.call(this,scene,function(){
-            var map = scene.map;
-            var keys;
-            var length;
-            var key;
-            var i;
-            var conf;
+            let map = scene.map;
+            let keys;
+            let length;
+            let key;
+            let i;
+            let conf;
 
             if(map.tileset && map.tileset.graphicID){
-                var id = map.tileset.graphicID;
-                var tileset = new Tileset(map.tileset);
+                let id = map.tileset.graphicID;
+                let tileset = new Tileset(map.tileset);
                 Tilesets.set(id,tileset);
             }
 
@@ -161,7 +161,7 @@
                 for(i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.charas[key];
-                    var chara = new Chara(conf);
+                    let chara = new Chara(conf);
                     Charas.set(key,chara);
                 }
             }

@@ -8,25 +8,25 @@
         throw "Audio requires AudioInstance"
     }
 
-    var Game_Timer = root.Game_Timer;
-    var Audio_Instance  = root.Audio_File;
+    let Game_Timer = root.Game_Timer;
+    let Audio_Instance  = root.Audio_File;
 
-    var playing = {};
-    var fade = {};
-    var paused = {};
-    var audios = {};
+    let playing = {};
+    let fade = {};
+    let paused = {};
+    let audios = {};
 
     root.Audio = {
         freeze: function () {
-            var keys = Object.keys(playing);
-            var i;
+            let keys = Object.keys(playing);
+            let i;
             for (i = 0; i < keys.length; i++) {
                 playing[keys[i]].pause();
             }
         },
         resume: function () {
-            var keys = Object.keys(playing);
-            var i;
+            let keys = Object.keys(playing);
+            let i;
             for (i = 0; i < keys.length; i++) {
                 playing[keys[i]].play();
             }
@@ -41,7 +41,7 @@
          */
         play: function (type, name, id,loop) {
             if (audios[type] && audios[type][name]) {
-                var src =audios[type][name];
+                let src =audios[type][name];
                 if(playing[type] === undefined){
                     playing[type] = {};
                 }
@@ -91,14 +91,14 @@
                     fade[type] = {};
                 }
 
-                var audio_obj = playing[type][id];
+                let audio_obj = playing[type][id];
                 if(!fade[type][id]){
                     fade[type][id]  = audio_obj;
-                    var start_time = Game_Timer.currentTime;
-                    var end_time = start_time+time;
-                    var volume = audio_obj.volume;
+                    let start_time = Game_Timer.currentTime;
+                    let end_time = start_time+time;
+                    let volume = audio_obj.volume;
 
-                    var callback = function(){
+                    let callback = function(){
                         if(Game_Timer.currentTime >= end_time){
                             Game_Timer.removeEventListener('tick',callback);
                             audio_obj.stop();
@@ -113,7 +113,7 @@
                             }
                         }
                         else{
-                            var passed_time = end_time - Game_Timer.currentTime;
+                            let passed_time = end_time - Game_Timer.currentTime;
                             audio_obj.volume = passed_time*volume/time;
                         }
                     };

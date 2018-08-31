@@ -3,13 +3,13 @@
         throw "UI_Button requires UI_Element"
     }
 
-    var UI_Element = root.UI_Element;
+    let UI_Element = root.UI_Element;
     /**
      *
      * @constructor
      */
-    var UI_Button = function () {
-        var self = this;
+    let UI_Button = function () {
+        let self = this;
         UI_Element.call(self, arguments);
         self.text = '';
     };

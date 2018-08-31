@@ -9,7 +9,7 @@
         }
     }
 
-    var Graphics = root.Main.Graphics;
+    let Graphics = root.Main.Graphics;
 
     /**
      *
@@ -17,7 +17,7 @@
      * @constructor
      */
     root.Game_Graphic = function(options){
-        var self = this;
+        let self = this;
         initialize(self);
         options = options || {};
         self.sx = options.sx || 0;
@@ -37,14 +37,14 @@
      * @param self
      */
     function initialize(self){
-        var graphicID = null;
-        var url = null;
-        var sx = 0;
-        var sy = 0;
-        var sWidth = null;
-        var sHeight = null;
-        var dWidth = null;
-        var dHeight = null;
+        let graphicID = null;
+        let url = null;
+        let sx = 0;
+        let sy = 0;
+        let sWidth = null;
+        let sHeight = null;
+        let dWidth = null;
+        let dHeight = null;
 
         Object.defineProperty(self,'graphicID',{
             /**
@@ -175,15 +175,15 @@
              */
             get:function(){
                 if(url == null){
-                    var sx = self.sx;
-                    var sy = self.sy;
-                    var width = self.width;
-                    var height = self.height;
-                    var image = self.image;
-                    var canvas = document.createElement('canvas');
+                    let sx = self.sx;
+                    let sy = self.sy;
+                    let width = self.width;
+                    let height = self.height;
+                    let image = self.image;
+                    let canvas = document.createElement('canvas');
                     canvas.width = width;
                     canvas.height = height;
-                    var ctx = canvas.getContext('2d');
+                    let ctx = canvas.getContext('2d');
                     ctx.drawImage(image,sx,sy,width,height,0,0,width,height);
                     url = canvas.toDataURL();
                 }

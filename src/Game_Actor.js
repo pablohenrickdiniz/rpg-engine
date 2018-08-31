@@ -8,7 +8,7 @@
         throw "Game_Actor requires Game_Inventory";
     }
 
-    var Game_Character = root.Game_Character,
+    let Game_Character = root.Game_Character,
         Consts = root.Consts,
         Keyboard = w.Keyboard,
         Game_Inventory = root.Game_Inventory;
@@ -18,8 +18,8 @@
      * @param options
      * @constructor
      */
-    var Game_Actor = function(options){
-        var self = this;
+    let Game_Actor = function(options){
+        let self = this;
         Game_Character.call(self, options);
         options = options || {};
         initialize(self);
@@ -35,9 +35,9 @@
     Game_Actor.prototype.constructor = Game_Actor;
 
     Game_Actor.prototype.update = function () {
-        var self = this;
+        let self = this;
         if(self.type === 'Player'){
-            var keyboard = root.Controls.Keyboard;
+            let keyboard = root.Controls.Keyboard;
             if (keyboard.state[Keyboard.LEFT]) {
                 self.moveTo(Consts.CHARACTER_DIRECTION_LEFT);
             }
@@ -63,8 +63,8 @@
      * @param self
      */
     function initialize(self){
-        var inventory = new Game_Inventory();
-        var level = 1;
+        let inventory = new Game_Inventory();
+        let level = 1;
 
         Object.defineProperty(self,'inventory',{
             /**

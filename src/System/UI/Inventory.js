@@ -20,7 +20,7 @@
         throw "Inventory requires Slot";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Window = UI.classes.Window,
         Game_Inventory = root.Game_Inventory,
         Element = UI.classes.Element,
@@ -31,8 +31,8 @@
      * @param options
      * @constructor
      */
-    var Inventory = function(options){
-        var self = this;
+    let Inventory = function(options){
+        let self = this;
         options = options || {};
         Window.call(self,options);
         initialize(self);
@@ -51,9 +51,9 @@
      * @returns {boolean}
      */
     Inventory.prototype.swap = function(){
-        var self = this;
+        let self = this;
         if(self.inventory != null && self.from != null && self.to != null && self.from !== self.to){
-            var from = self.from, to = self.to;
+            let from = self.from, to = self.to;
             self.from = null;
             self.top = null;
             if(self.inventory.swap(from,to)){
@@ -69,14 +69,14 @@
      * @param self
      */
     function initialize(self){
-        var slots = {};
+        let slots = {};
 
-        var inventoryA  = new Element({
+        let inventoryA  = new Element({
             class:'inventoryA',
             parent:self
         });
 
-        var inventoryB =  new Element({
+        let inventoryB =  new Element({
             class:'inventoryB',
             parent:self
         });
@@ -101,7 +101,7 @@
             }
         });
 
-        var inventory = null;
+        let inventory = null;
         Object.defineProperty(self,'inventory',{
             /**
              *
@@ -116,7 +116,7 @@
              */
             set:function(i){
                 if((i == null || i instanceof Game_Inventory) && i !== inventory){
-                    var callback = function(){self.render(slots)};
+                    let callback = function(){self.render(slots)};
                     if(inventory != null){
                         inventory.off('addItem',callback);
                         inventory.off('dropItem',callback);
@@ -133,15 +133,15 @@
     }
 
     Inventory.prototype.render = function(){
-        var self = this;
-        var slots = self.slots;
-        var inventory = self.inventory;
-        var old_keys = Object.keys(slots);
-        var new_keys = Object.keys(inventory.slots);
-        var length = new_keys.length;
-        var i;
-        var id;
-        var equip = [
+        let self = this;
+        let slots = self.slots;
+        let inventory = self.inventory;
+        let old_keys = Object.keys(slots);
+        let new_keys = Object.keys(inventory.slots);
+        let length = new_keys.length;
+        let i;
+        let id;
+        let equip = [
             'armor',
             'elm',
             'glooves',
@@ -151,9 +151,9 @@
         for(i = 0; i < length;i++){
             id = new_keys[i];
             if(slots[id] === undefined){
-                var index = equip.indexOf(id);
-                var is_equip = index !== -1;
-                var className = 'inventory-slot';
+                let index = equip.indexOf(id);
+                let is_equip = index !== -1;
+                let className = 'inventory-slot';
                 if(is_equip){
                     className += ' '+equip[index];
                 }

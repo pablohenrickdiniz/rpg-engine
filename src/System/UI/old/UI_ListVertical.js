@@ -4,10 +4,10 @@
     }
 
 
-    var UI_Element = root.UI_Element;
+    let UI_Element = root.UI_Element;
 
-    var UI_ListVertical = function (parent, options) {
-        var self = this;
+    let UI_ListVertical = function (parent, options) {
+        let self = this;
         UI_Element.call(self, parent, options);
         initialize(self);
         self.type = 'List';
@@ -17,12 +17,12 @@
     UI_ListVertical.prototype.constructor = UI_ListVertical;
 
     UI_ListVertical.prototype.add = function (element) {
-        var self = this;
+        let self = this;
         if (element instanceof UI_Element && self.contents.indexOf(element) == -1) {
             element.parent = self;
             element.index = self.contents.length;
-            var last = self.lastItem();
-            var top = 0;
+            let last = self.lastItem();
+            let top = 0;
             if(last != null){
                 top = last.realTop+last.realHeight;
             }
@@ -34,10 +34,10 @@
 
 
     UI_ListVertical.prototype.remove = function (item) {
-        var self = this;
+        let self = this;
 
         if (item instanceof UI_Element) {
-            var index = self.contents.indexOf(item);
+            let index = self.contents.indexOf(item);
             if (index != -1) {
                 self.contents.splice(index, 1)[0].parent = null;
                 update_elements_position(self, index);
@@ -53,25 +53,25 @@
     };
 
     UI_ListVertical.prototype.indexOf = function (item) {
-        var self = this;
+        let self = this;
         return self.contents.indexOf(item);
     };
 
     UI_ListVertical.prototype.swapIndex = function (indexA, indexB) {
-        var self = this;
+        let self = this;
         if (self.contents[indexA] != undefined && self.contents[indexB] != undefined) {
-            var tmp = self.contents[indexA];
+            let tmp = self.contents[indexA];
             self.contents[indexA] = self.contents[indexB];
             self.contents[indexB] = tmp;
         }
     };
 
-    var update_elements_position = function (self, index) {
+    let update_elements_position = function (self, index) {
         for (var i = index; i < self.contents.length; i++) {
-            var el = self.contents[i];
-            var top = 0;
+            let el = self.contents[i];
+            let top = 0;
             if (i > 0) {
-                var prev = self.contents[i - 1];
+                let prev = self.contents[i - 1];
                 top = prev.top + prev.realHeight;
             }
             el.top = top;
@@ -79,9 +79,9 @@
     };
 
 
-    var initialize = function(self){
-        var contentWidth = null;
-        var contentHeight = null;
+    let initialize = function(self){
+        let contentWidth = null;
+        let contentHeight = null;
 
         Object.defineProperty(self,'contentWidth',{
             get:function(){

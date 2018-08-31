@@ -3,15 +3,15 @@
         throw "UI_ListItem requires UI_Element"
     }
 
-    var UI_Element = root.UI_Element;
+    let UI_Element = root.UI_Element;
     /**
      *
      * @param parent
      * @param options
      * @constructor
      */
-    var UI_ListItem = function (parent, options) {
-        var self = this;
+    let UI_ListItem = function (parent, options) {
+        let self = this;
         options.height = options.height || 20;
         UI_Element.call(self, parent, options);
         self.width = '100%';

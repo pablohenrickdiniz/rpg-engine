@@ -8,10 +8,10 @@
         throw "Switches requires RPG Main";
     }
 
-    var Main = root.Main,
+    let Main = root.Main,
         Game_Event = root.Game_Event;
 
-    var switches = {
+    let switches = {
         global:{},
         local:{},
         map:{}
@@ -25,7 +25,7 @@
          * @param switch_id
          */
         enable:function(map_id,event_id,switch_id){
-            var changed = false;
+            let changed = false;
             if(map_id != null){
                 if(event_id != null){
                     if(switches.local[map_id] === undefined){
@@ -68,7 +68,7 @@
          * @param name
          */
         disable:function(map_id,event_id,name){
-            var changed = false;
+            let changed = false;
             if(map_id != null){
                 if(event_id != null){
                     if(switches.local[map_id][event_id]){
@@ -93,10 +93,10 @@
     };
 
     function propagate_switch_changes(){
-        var scene = Main.currentScene;
+        let scene = Main.currentScene;
         if(scene){
-            var objects = scene.listeners;
-            var length = objects.length;
+            let objects = scene.listeners;
+            let length = objects.length;
             for(var i =0; i < length;i++){
                 if(objects[i] instanceof Game_Event){
                     objects[i].updateCurrentPage();

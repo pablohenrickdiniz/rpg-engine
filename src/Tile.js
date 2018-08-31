@@ -5,8 +5,8 @@
      * @param options
      * @constructor
      */
-    var Tile = function (options) {
-        var self = this;
+    let Tile = function (options) {
+        let self = this;
         initialize(self);
         options = options || {};
         self.i = options.i || 0;
@@ -19,7 +19,7 @@
      * @returns {*[]}
      */
     Tile.prototype.toJSON = function(){
-        var self = this;
+        let self = this;
         return [
             self.tileset?self.tileset.id:null, //tileset
             self.i,                            //sx
@@ -32,7 +32,7 @@
      * @returns {{tileset: *, sx: (*|sx), sy: (*|sy), sWidth: *, sHeight: *}}
      */
     Tile.prototype.toOBJ = function(){
-        var self = this;
+        let self = this;
         return {
             tileset:self.tileset?self.tileset.id:null,
             sx:self.sx,
@@ -46,7 +46,7 @@
      *
      * @param self
      */
-    var initialize = function(self){
+    let initialize = function(self){
         Object.defineProperty(self,'sx',{
             /**
              *

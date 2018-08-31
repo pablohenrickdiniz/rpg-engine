@@ -8,7 +8,7 @@
         throw "Menu requires Element";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = UI.classes.Element;
 
     /**
@@ -16,8 +16,8 @@
      * @param options
      * @constructor
      */
-    var Menu = function(options){
-        var self = this;
+    let Menu = function(options){
+        let self = this;
         options = options || {};
         Element.call(self,options,'ul');
         initialize(self);
@@ -32,7 +32,7 @@
      * @param item
      */
     Menu.prototype.addItem = function(item){
-        var self = this;
+        let self = this;
         if(item instanceof UI.classes.Menu_Item && self.items.indexOf(item) === -1){
             self.items.push(item);
             item.parent = self;
@@ -45,8 +45,8 @@
      * @param item
      */
     Menu.prototype.removeItem = function(item){
-        var self = this;
-        var index = self.items.indexOf(item);
+        let self = this;
+        let index = self.items.indexOf(item);
         if(index !== -1){
             self.items.splice(index,1);
             item.remove();
@@ -58,8 +58,8 @@
      * @param self
      */
     function initialize(self){
-        var parent = null;
-        var items = [];
+        let parent = null;
+        let items = [];
 
         Object.defineProperty(self,'items',{
             get:function(){
@@ -67,15 +67,15 @@
             },
             set:function(i){
                 if(i instanceof Array){
-                    var c = {}.constructor;
-                    var length = i.length;
-                    var Menu_Item = UI.classes.Menu_Item;
+                    let c = {}.constructor;
+                    let length = i.length;
+                    let Menu_Item = UI.classes.Menu_Item;
                     for(var j =0; j < length;j++){
                         if(i[j] instanceof Menu_Item){
                             self.addItem(i[j]);
                         }
                         else if(i[j].constructor === c){
-                            var config = i[j];
+                            let config = i[j];
                             config.parent = self;
                             self.addItem(new Menu_Item(config));
                         }

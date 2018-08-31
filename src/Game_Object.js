@@ -1,7 +1,7 @@
 'use strict';
 (function(root,w){
-    var ID = 0;
-    var Game_Timer = root.Game_Timer;
+    let ID = 0;
+    let Game_Timer = root.Game_Timer;
 
     if(root.Main === undefined){
         throw "Game Object requires Main";
@@ -11,7 +11,7 @@
         throw "Game Object requires Matter";
     }
 
-    var Main = root.Main,
+    let Main = root.Main,
         Matter = w.Matter,
         Bodies = Matter.Bodies,
         Body = Matter.Body;
@@ -21,8 +21,8 @@
      * @param options
      * @constructor
      */
-    var Game_Object = function(options){
-        var self = this;
+    let Game_Object = function(options){
+        let self = this;
         initialize(self);
         options = options || {};
         self.object_id = ID;
@@ -58,7 +58,7 @@
      */
     Game_Object.prototype.clone = function(properties){
         properties = properties || {};
-        var id = ID;
+        let id = ID;
         ID++;
         return Object.assign({object_id:id},properties,this);
     };
@@ -68,7 +68,7 @@
      * @param group
      */
     Game_Object.prototype.addCollisionGroup = function(group){
-        var self = this;
+        let self = this;
        // QuadTree.addGroup(self.bounds,group);
     };
 
@@ -77,7 +77,7 @@
      * @param name
      */
     Game_Object.prototype.removeCollisionGroup = function(name){
-        var self = this;
+        let self = this;
         //QuadTree.removeGroup(self.bounds,name);
     };
 
@@ -89,8 +89,8 @@
      * @param y
      */
     Game_Object.prototype.move = function (x, y) {
-        var self = this;
-        var body = self.body;
+        let self = this;
+        let body = self.body;
         Body.applyForce(body,{x:body.position.x,y:body.position.y},{x:x,y:y});
     };
 
@@ -99,12 +99,12 @@
      * @param self
      */
     function initialize(self){
-        var speed = 5;
-        var currentAnimation = null;
-        var through = null;
-        var body = null;
-        var width = null;
-        var height = null;
+        let speed = 5;
+        let currentAnimation = null;
+        let through = null;
+        let body = null;
+        let width = null;
+        let height = null;
 
         Object.defineProperty(self,'body',{
             /**
@@ -224,9 +224,9 @@
             set:function(s){
                 if(s !== speed){
                     speed = s;
-                    var keys = Object.keys(self.animations);
-                    var length = keys.length;
-                    var key;
+                    let keys = Object.keys(self.animations);
+                    let length = keys.length;
+                    let key;
                     for(var i =0; i < length;i++){
                         key = keys[i];
                         self.animations[key].fps = speed;

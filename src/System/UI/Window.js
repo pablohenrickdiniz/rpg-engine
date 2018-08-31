@@ -16,7 +16,7 @@
         throw "Window requires Text";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = UI.classes.Element,
         Button = UI.classes.Button,
         Text = UI.classes.Text;
@@ -26,8 +26,8 @@
      * @param options
      * @constructor
      */
-    var Window = function(options){
-        var self = this;
+    let Window = function(options){
+        let self = this;
         options = options || {};
         Element.call(self,options);
         initialize(self);
@@ -44,7 +44,7 @@
      * @param el
      */
     Window.prototype.add = function(el){
-        var self = this;
+        let self = this;
         self.body.add(el);
     };
 
@@ -53,7 +53,7 @@
      * @param el
      */
     Window.prototype.remove = function(el){
-        var self = this;
+        let self = this;
         self.body.remove(el);
     };
 
@@ -62,13 +62,13 @@
      * @param self
      */
     function initialize(self){
-        var title = '';
-        var width = 0;
-        var height = 0;
-        var header = new Element({
+        let title = '';
+        let width = 0;
+        let height = 0;
+        let header = new Element({
             class:'window-header'
         });
-        var close = new Button({
+        let close = new Button({
             class:'button'
         });
         close.text = '&times';
@@ -76,11 +76,11 @@
             self.visible = false;
         });
 
-        var body =   body =  new Element({
+        let body =  new Element({
             class:'window-body'
         });
 
-        var headerTitle = new Text({
+        let headerTitle = new Text({
             class:'window-header-title'
         },'h1');
 

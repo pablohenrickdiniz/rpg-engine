@@ -8,9 +8,9 @@
 		throw "Skills requires Game_Skill";
 	}
 
-	var Game_Skill = root.Game_Skill,
+	let Game_Skill = root.Game_Skill,
 		Main = root.Main;
-	var skills = [];	
+	let skills = [];
 
 	Main.Skills = {
         /**

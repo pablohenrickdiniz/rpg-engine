@@ -13,11 +13,11 @@
         throw "Tilesets requires Tileset";
     }
 
-    var Tileset = root.Tileset,
+    let Tileset = root.Tileset,
         Main = root.Main,
         Graphics = Main.Graphics;
 
-    var tilesets = [];
+    let tilesets = [];
 
     Main.Tilesets = {
         /**

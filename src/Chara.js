@@ -17,7 +17,7 @@
         throw "Chara requires Game_Graphic";
     }
 
-    var Tile = root.Tile,
+    let Tile = root.Tile,
         Graphics = root.Main.Graphics,
         Game_Graphic = root.Game_Graphic;
 
@@ -26,8 +26,8 @@
      * @param options
      * @constructor
      */
-    var Chara = function (options) {
-        var self = this;
+    let Chara = function (options) {
+        let self = this;
         options = options || {};
         Game_Graphic.call(self,options);
         initialize(self);
@@ -48,7 +48,7 @@
      * @returns {*}
      */
     Chara.prototype.get = function (i, j) {
-        var self = this;
+        let self = this;
         if (i >= 0 && i < self.rows && j >= 0 && j < self.cols) {
 
             if (self.sprites[i] === undefined) {

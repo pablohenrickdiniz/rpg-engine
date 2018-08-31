@@ -4,15 +4,15 @@
         throw "Element requires UI";
     }
 
-    var UI = root.UI;
+    let UI = root.UI;
     /**
      *
      * @param options
      * @param tag
      * @constructor
      */
-    var Element = function(options,tag){
-        var self = this;
+    let Element = function(options,tag){
+        let self = this;
         options = options || {};
         self.tag = tag || 'div';
         initialize(self);
@@ -35,7 +35,7 @@
      * @param callback
      */
     Element.prototype.addEventListener = function(event,callback){
-        var self = this;
+        let self = this;
         if(!self.listeners[event]){
             self.listeners[event] = [];
         }
@@ -50,9 +50,9 @@
      * @param callback
      */
     Element.prototype.removeEventListener = function(event,callback){
-        var self = this;
+        let self = this;
         if(self.listeners[event]){
-            var index = self.listeners[event].indexOf(callback);
+            let index = self.listeners[event].indexOf(callback);
             if(index !== -1){
                 self.listeners[event].splice(index,1);
             }
@@ -65,9 +65,9 @@
      * @param args
      */
     Element.prototype.trigger = function(event,args){
-        var self = this;
+        let self = this;
         if(self.listeners[event]){
-            var length = self.listeners[event].length;
+            let length = self.listeners[event].length;
             for(var i =0; i < length;i++){
                 self.listeners[event][i].apply(self,args);
             }
@@ -79,7 +79,7 @@
      * @param el
      */
     Element.prototype.add = function(el){
-        var self = this;
+        let self = this;
         if(el instanceof Element && el !== self && self.children.indexOf(el) === -1){
             self.children.push(el);
             el.parent = self;
@@ -92,8 +92,8 @@
      * @param el
      */
     Element.prototype.remove = function(el){
-        var self = this;
-        var index = self.children.indexOf(el);
+        let self = this;
+        let index = self.children.indexOf(el);
         if(index !== -1){
             self.children.splice(index,1);
             if(self.element === el.element.parent){
@@ -104,7 +104,7 @@
     };
 
     Element.prototype.destroy = function(){
-        var self = this;
+        let self = this;
         if(self.parent){
             self.parent.remove(self);
             delete self.element;
@@ -116,12 +116,12 @@
      * @param self
      */
     function initialize(self){
-        var parent = null;
-        var element = null;
-        var id = null;
-        var className = '';
-        var visible = true;
-        var draggable = false;
+        let parent = null;
+        let element = null;
+        let id = null;
+        let className = '';
+        let visible = true;
+        let draggable = false;
 
         Object.defineProperty(self,'bounds',{
             /**
@@ -375,11 +375,11 @@
      * @returns {*|Array}
      */
     Element.prototype.findByClass = function(className,results){
-        var self = this;
+        let self = this;
         results = results || [];
-        var length = self.children.length;
+        let length = self.children.length;
         for(var i =0; i < length;i++){
-            var child = self.children[i];
+            let child = self.children[i];
             if(child.hasClass(className) && results.indexOf(child) === -1){
                 results.push(child);
             }
@@ -394,11 +394,11 @@
      * @returns {*}
      */
     Element.prototype.findById = function(id){
-        var self = this;
-        var result = null;
-        var length = self.children.length;
+        let self = this;
+        let result = null;
+        let length = self.children.length;
         for(var i =0; i < length;i++){
-            var child = self.children[i];
+            let child = self.children[i];
             if(child.id === id){
                 result = child;
                 break;
@@ -418,8 +418,8 @@
      * @returns {boolean}
      */
     Element.prototype.hasClass = function(className){
-        var self = this;
-        var tmp = self.class.split(' ');
+        let self = this;
+        let tmp = self.class.split(' ');
         return tmp.indexOf(className) !== -1;
     };
 
@@ -428,8 +428,8 @@
      * @param className
      */
     Element.prototype.addClass = function(className){
-        var self =this;
-        var old = self.class;
+        let self =this;
+        let old = self.class;
         old = old.split(' ');
         if(old.indexOf(className) === -1){
             old.push(className);
@@ -442,10 +442,10 @@
      * @param className
      */
     Element.prototype.removeClass = function(className){
-        var self = this;
-        var old = self.class;
+        let self = this;
+        let old = self.class;
         old = old.split(' ');
-        var index = old.indexOf(className);
+        let index = old.indexOf(className);
         if(index !== -1){
             old.splice(index,1);
             self.class = old.join(' ');
@@ -453,7 +453,7 @@
     };
 
     Element.prototype.empty = function(){
-        var self = this;
+        let self = this;
         while(self.children.length > 0){
             self.remove(self.children[0]);
         }
@@ -465,10 +465,10 @@
      * @returns {boolean}
      */
     Element.prototype.overlap = function(el){
-        var self = this;
+        let self = this;
         if(el instanceof Element && el !== self){
-            var rect1 = self.bounds;
-            var rect2 = el.bounds;
+            let rect1 = self.bounds;
+            let rect2 = el.bounds;
             return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
         }
         return false;
@@ -480,9 +480,9 @@
      * @returns {Array}
      */
     Element.prototype.findOverlaps = function(el){
-        var self = this;
-        var overlaps = [];
-        var length = self.children.length;
+        let self = this;
+        let overlaps = [];
+        let length = self.children.length;
         if(el !== self){
             for(var i  = 0; i < length;i++){
                 overlaps = overlaps.concat(self.children[i].findOverlaps(el));
@@ -496,8 +496,8 @@
     };
 
     Element.prototype.unbind = function(){
-        var self = this;
-        var element = self.element;
+        let self = this;
+        let element = self.element;
 
         if(element != null){
             //element.addEventListener('onclick',function(e){e.preventDefault();return false;});
@@ -536,13 +536,13 @@
     };
 
     Element.prototype.bind = function(){
-        var self = this;
+        let self = this;
         self.unbind();
-        var oldposition = null;
-        var oldparent = null;
-        var element = self.element;
-        var downX = 0;
-        var downY = 0;
+        let oldposition = null;
+        let oldparent = null;
+        let element = self.element;
+        let downX = 0;
+        let downY = 0;
 
         self.ondblclick = function(e){
             e.preventDefault();
@@ -588,8 +588,8 @@
 
         self.mousemove =  function (e){
             e.stopPropagation();
-            var left = e.clientX-downX;
-            var top = e.clientY-downY;
+            let left = e.clientX-downX;
+            let top = e.clientY-downY;
             self.left = left;
             self.top = top;
             self.trigger('drag',[e]);
@@ -601,7 +601,7 @@
                 w.removeEventListener('mousemove',self.mousemove,false);
                 w.removeEventListener('mouseup',self.mouseup,false);
                 self.trigger('dragend',[e]);
-                var overlaps =  root.UI.root.findOverlaps(self);
+                let overlaps =  root.UI.root.findOverlaps(self);
                 self.element.style.position = oldposition;
                 root.UI.root.remove(self);
                 if(oldparent){
@@ -625,7 +625,7 @@
                         oldposition = self.element.style.position;
                         oldparent = self.parent;
 
-                        var el = e.target;
+                        let el = e.target;
                         downX = e.offsetX;
                         downY = e.offsetY;
 

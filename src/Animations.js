@@ -8,10 +8,10 @@
         throw "Animations requires Animation"
     }
 
-    var Animation = root.Animation,
+    let Animation = root.Animation,
     	Main = root.Main;
 
-    var animations = [];	
+    let animations = [];	
 
     Main.Animations = {
         /**

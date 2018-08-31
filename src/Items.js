@@ -8,10 +8,10 @@
         throw "Items requires Main";
     }
 
-    var Item = root.Item,
+    let Item = root.Item,
         Main = root.Main;
 
-    var items = [];
+    let items = [];
 
     Main.Items = {
         /**

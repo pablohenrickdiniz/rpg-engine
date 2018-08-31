@@ -4,10 +4,10 @@
         throw "GraphicLoader requires GlobalProgress"
     }
 
-    var GlobalProgress = w.GlobalProgress;
-    var images = {};
+    let GlobalProgress = w.GlobalProgress;
+    let images = {};
 
-    var Graphic_Loader = {
+    let Graphic_Loader = {
         /**
          *
          * @param urls
@@ -15,18 +15,18 @@
          */
         loadAll: function (urls, options) {
             options = options || {};
-            var keys = Object.keys(urls);
-            var loaded = [];
-            var length = keys.length;
-            var onsuccess = options.onsuccess || null;
-            var onprogress = options.onprogress || null;
-            var onglobalprogress = options.onglobalprogress || null;
-            var globalprogress = options.globalprogress || new GlobalProgress();
+            let keys = Object.keys(urls);
+            let loaded = [];
+            let length = keys.length;
+            let onsuccess = options.onsuccess || null;
+            let onprogress = options.onprogress || null;
+            let onglobalprogress = options.onglobalprogress || null;
+            let globalprogress = options.globalprogress || new GlobalProgress();
 
-            var onerror = options.onerror || null;
+            let onerror = options.onerror || null;
 
             if (length > 0) {
-                var q = function(image, id) {
+                let q = function(image, id) {
                     loaded[id] = image;
                     length--;
                     if (length === 0 && onsuccess) {
@@ -35,7 +35,7 @@
                 };
 
                 for (var k = 0; k < keys.length; k++) {
-                    var key = keys[k];
+                    let key = keys[k];
                     Graphic_Loader.load(urls[key], key, {
                         onsuccess: q,
                         onprogress: onprogress,
@@ -57,18 +57,18 @@
          */
         load: function (url, id, options) {
             options = options || {};
-            var onsuccess = options.onsuccess || null;
-            var onprogress = options.onprogress || null;
-            var onerror = options.onerror || null;
-            var globalprogress = options.globalprogress || new GlobalProgress();
-            var onglobalprogress = options.onglobalprogress || null;
+            let onsuccess = options.onsuccess || null;
+            let onprogress = options.onprogress || null;
+            let onerror = options.onerror || null;
+            let globalprogress = options.globalprogress || new GlobalProgress();
+            let onglobalprogress = options.onglobalprogress || null;
 
-            var media = null;
+            let media = null;
 
             if (images[url] === undefined) {
-                var request = new XMLHttpRequest();
+                let request = new XMLHttpRequest();
                 request.onprogress = function (e) {
-                    var computable = e.lengthComputable;
+                    let computable = e.lengthComputable;
                     if (computable) {
                         if(globalprogress){
                             if(media == null){
@@ -89,7 +89,7 @@
                             onglobalprogress(globalprogress.progress());
                         }
 
-                        var progress = parseInt(e.loaded / e.total * 100);
+                        let progress = parseInt(e.loaded / e.total * 100);
                         if (onprogress) {
                             onprogress(id, progress);
                         }
@@ -97,14 +97,14 @@
                 };
 
                 request.onload = function () {
-                    var reader = new window.FileReader();
+                    let reader = new window.FileReader();
                     reader.readAsDataURL(this.response);
                     reader.onloadend = function () {
-                        var base64data = reader.result;
-                        var image = document.createElement('img');
+                        let base64data = reader.result;
+                        let image = document.createElement('img');
                         image.src = base64data;
 
-                        var onload = function () {
+                        let onload = function () {
                             image.removeEventListener('load', onload);
                             images[url] = image;
                             if (onsuccess) {
@@ -136,12 +136,12 @@
          função callback
          */
         toDataURL: function (img, id, callback) {
-            var canvas = document.createElement('canvas');
-            var context = canvas.getContext('2d');
+            let canvas = document.createElement('canvas');
+            let context = canvas.getContext('2d');
             canvas.width = img.width;
             canvas.height = img.height;
             context.drawImage(img, 0, 0);
-            var dataUrl = canvas.toDataURL();
+            let dataUrl = canvas.toDataURL();
             callback(dataUrl, id);
             canvas = null;
         },
@@ -152,10 +152,10 @@
          */
         toDataURLS: function (urls, callback) {
             Graphic_Loader.loadAll(urls, function (loaded) {
-                var keys = Object.keys(loaded);
-                var loaded_data = [];
-                var length = keys.length;
-                var q = function (dataUrl, id) {
+                let keys = Object.keys(loaded);
+                let loaded_data = [];
+                let length = keys.length;
+                let q = function (dataUrl, id) {
                     loaded_data[id] = dataUrl;
                     length--;
                     if (length <= 0) {
@@ -163,7 +163,7 @@
                     }
                 };
                 for (var k = 0; k < keys.length; k++) {
-                    var key = keys[k];
+                    let key = keys[k];
                     Graphic_Loader.toDataURL(urls[key], key, q);
                 }
             });
@@ -175,16 +175,16 @@
          */
         fromDataURL: function (data, callback) {
             if (data != null) {
-                var img = new Image();
+                let img = new Image();
                 img.src = data;
 
-                var load_callback = function () {
+                let load_callback = function () {
                     this.removeEventListener('load', load_callback);
                     this.removeEventListener('error', error_callback);
                     callback(img);
                 };
 
-                var error_callback = function () {
+                let error_callback = function () {
                     this.removeEventListener('load', load_callback);
                     this.removeEventListener('error', error_callback);
                     callback(null);

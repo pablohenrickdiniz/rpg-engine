@@ -4,15 +4,15 @@
         throw "Game_Face requires Game_Graphic";
     }
 
-    var Game_Graphic = root.Game_Graphic;
+    let Game_Graphic = root.Game_Graphic;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Game_Face = function(options){
-        var self = this;
+    let Game_Face = function(options){
+        let self = this;
         options = options || {};
         Game_Graphic.call(self,options);
         self.graphicType = 'faces';

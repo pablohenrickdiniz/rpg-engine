@@ -9,15 +9,15 @@
         }
     }
 
-    var Icons = root.Main.Icons;
+    let Icons = root.Main.Icons;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Item = function (options) {
-        var self = this;
+    let Item = function (options) {
+        let self = this;
         initialize(self);
         options = options || {};
         self.durability = options.durability || 'INDESTRUCTIBLE';

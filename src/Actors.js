@@ -8,9 +8,9 @@
         throw "Actors requires RPG Main";
     }
 
-    var Main = root.Main;
-    var Game_Actor = root.Game_Actor;
-    var actors = [];
+    let Main = root.Main;
+    let Game_Actor = root.Game_Actor;
+    let actors = [];
 
     Main.Actors = {
         /**

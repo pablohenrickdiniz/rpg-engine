@@ -23,16 +23,16 @@
         throw "Scene_Manager requires Scene_Map"
     }
 
-    var Scene_Loader = new root.Scene_Loader(),
+    let Scene_Loader = new root.Scene_Loader(),
         Scene_Map_Loader = new root.Scene_Map_Loader(),
         Scene_Map = root.Scene_Map,
         Scene = root.Scene,
         Main = root.Main,
         Game_Timer = root.Game_Timer;
 
-    var Scenes = Main.Scenes;
-    var current_scene = null;
-    var queue = [];
+    let Scenes = Main.Scenes;
+    let current_scene = null;
+    let queue = [];
 
     /**
      *
@@ -57,7 +57,7 @@
          * @returns {*}
          */
         new: function (type,name, options) {
-            var scene = null;
+            let scene = null;
             options = options || {};
             switch (type) {
                 case 'map':
@@ -74,7 +74,7 @@
          * @param name
          */
         call: function (name) {
-            var scene = Scenes.get(name);
+            let scene = Scenes.get(name);
             if(scene == null){
                 throw new Error('Cena '+name+' não existe!');
             }

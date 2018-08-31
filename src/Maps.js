@@ -8,11 +8,11 @@
         throw "Maps requires Game_Map";
     }
 
-    var Main = root.Main,
+    let Main = root.Main,
         Game_Map = root.Game_Map;
 
 
-    var maps = [];
+    let maps = [];
 
     Main.Maps = {
         /**

@@ -4,8 +4,8 @@
         throw "Variables requires RPG Main";
     }
 
-    var Main = root.Main;
-    var variables = [];
+    let Main = root.Main;
+    let variables = [];
 
     Main.Variables = {
         /**

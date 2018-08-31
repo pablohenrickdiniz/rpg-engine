@@ -1,8 +1,8 @@
 'use strict';
 (function(root){
-	var Animation = function(options){
+	let Animation = function(options){
 		options = options || {};
-		var self = this;
+		let self = this;
 	};
 
 	root.Animation = Animation;

@@ -8,11 +8,11 @@
         throw "Scenes requires Scene";
     }
 
-    var Main = root.Main,
+    let Main = root.Main,
         Scene = root.Scene;
 
 
-    var scenes = [];
+    let scenes = [];
 
     Main.Scenes = {
         /**

@@ -13,7 +13,7 @@
         throw "Game_Item requires Game_Object";
     }
 
-    var Game_Object = root.Game_Object,
+    let Game_Object = root.Game_Object,
         Consts = root.Consts,
         Items = root.Main.Items;
 
@@ -22,8 +22,8 @@
      * @param options
      * @constructor
      */
-    var Game_Item = function (options) {
-        var self = this;
+    let Game_Item = function (options) {
+        let self = this;
         options = options || {};
         options.type = options.type || 'generic';
         options.through = options.through === true;

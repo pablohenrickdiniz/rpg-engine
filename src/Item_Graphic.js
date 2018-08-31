@@ -8,7 +8,7 @@
         throw "Item_Graphic requires Tile";
     }
 
-    var Game_Graphic = root.Game_Graphic,
+    let Game_Graphic = root.Game_Graphic,
         Tile = root.Tile;
 
     /**
@@ -16,8 +16,8 @@
      * @param options
      * @constructor
      */
-    var Item_Graphic = function(options){
-        var self = this;
+    let Item_Graphic = function(options){
+        let self = this;
         Game_Graphic.call(self,options);
         initialize(self);
         self.frame = null;
@@ -32,7 +32,7 @@
      * @returns {null}
      */
     Item_Graphic.prototype.getFrame = function(){
-        var self = this;
+        let self = this;
         if(self.frame == null){
             self.frame = new Tile({
                 image:self.image,

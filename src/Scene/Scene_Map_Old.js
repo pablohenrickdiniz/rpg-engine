@@ -41,7 +41,7 @@
         throw "Scene_Map requires Game_Object"
     }
 
-    var Scene = root.Scene,
+    let Scene = root.Scene,
         Canvas = root.Canvas,
         Consts = root.Consts,
         Main = root.Main,
@@ -52,17 +52,17 @@
         Tilesets = Main.Tilesets,
         Graphics =  Main.Graphics;
 
-    var clear_queue = [];
-    var bg_refreshed = false;
-    var focused_object = null;
+    let clear_queue = [];
+    let bg_refreshed = false;
+    let focused_object = null;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Scene_Map = function (options) {
-        var self = this;
+    let Scene_Map = function (options) {
+        let self = this;
         Scene.call(self, options);
         initialize(self);
         self.map = options.map || {};
@@ -85,7 +85,7 @@
      * @param object
      */
     Scene_Map.prototype.add= function(object){
-        var self = this;
+        let self = this;
         self.objs.push(object);
         self.tree.insert(object.body);
     };
@@ -95,8 +95,8 @@
      * @param object
      */
     Scene_Map.prototype.remove = function(object){
-        var self = this;
-        var index = self.objs.indexOf(object);
+        let self = this;
+        let index = self.objs.indexOf(object);
         if(index !=  -1){
             self.objs.splice(index,1);
         }
@@ -109,7 +109,7 @@
      */
     Scene_Map.prototype.focus = function (object) {
         if(object instanceof Game_Object){
-            var self = this;
+            let self = this;
             if (focused_object !=  null) {
                 focused_object.focused = false;
             }
@@ -123,7 +123,7 @@
      */
     Scene_Map.prototype.step = function () {
         Scene.prototype.step.apply(this);
-        var self = this;
+        let self = this;
 
         if(Main.currentPlayer){
             action_events(self);
@@ -156,16 +156,16 @@
      * Obtém a região do mapa de sprites a ser redenrizada
      */
     function get_area_interval(options) {
-        var x = options.x || 0;
-        var y = options.y || 0;
-        var width = options.width || 0;
-        var height = options.height || 0;
-        var tileWidth = options.tileWidth || 32;
-        var tileHeight = options.tileHeight || 32;
-        var si = Math.floor(y / tileHeight);
-        var sj = Math.floor(x / tileWidth);
-        var ei = Math.floor((y + height) / tileHeight);
-        var ej = Math.floor((x + width) / tileWidth);
+        let x = options.x || 0;
+        let y = options.y || 0;
+        let width = options.width || 0;
+        let height = options.height || 0;
+        let tileWidth = options.tileWidth || 32;
+        let tileHeight = options.tileHeight || 32;
+        let si = Math.floor(y / tileHeight);
+        let sj = Math.floor(x / tileWidth);
+        let ei = Math.floor((y + height) / tileHeight);
+        let ej = Math.floor((x + width) / tileWidth);
         return {si: si, sj: sj, ei: ei, ej: ej,width:width,height:height};
     }
 
@@ -175,24 +175,24 @@
      * @returns {Array}
      */
     function get_area_intervals(options){
-        var x = options.x || 0;
-        var y = options.y || 0;
-        var width = options.width || 0;
-        var height = options.height || 0;
-        var tileWidth = options.tileWidth || 32;
-        var tileHeight = options.tileHeight || 32;
-        var mapWidth = options.mapWidth || 32;
-        var mapHeight = options.mapHeight || 32;
-        var intervals = [];
-        var i;
-        var j;
-        var cols = Math.ceil(width/mapWidth);
-        var rows = Math.ceil(height/mapHeight);
+        let x = options.x || 0;
+        let y = options.y || 0;
+        let width = options.width || 0;
+        let height = options.height || 0;
+        let tileWidth = options.tileWidth || 32;
+        let tileHeight = options.tileHeight || 32;
+        let mapWidth = options.mapWidth || 32;
+        let mapHeight = options.mapHeight || 32;
+        let intervals = [];
+        let i;
+        let j;
+        let cols = Math.ceil(width/mapWidth);
+        let rows = Math.ceil(height/mapHeight);
 
         for(i = 0; i < rows;i++){
             for(j = 0;j < cols;j++){
-                var mw = j ==0?mapWidth-x:j ==cols-1?width-x:mapWidth;
-                var mh = i ==0?mapHeight-y:i ==rows-1?height-y:mapHeight;
+                let mw = j ==0?mapWidth-x:j ==cols-1?width-x:mapWidth;
+                let mh = i ==0?mapHeight-y:i ==rows-1?height-y:mapHeight;
 
                 if(intervals[i] ==undefined){
                     intervals[i] = [];
@@ -213,28 +213,28 @@
 
 
     function draw_spriteset_interval(self,interval,x,y){
-        var spriteset = self.spriteset;
-        var tileWidth = spriteset.tileWidth;
-        var tileHeight = spriteset.tileHeight;
+        let spriteset = self.spriteset;
+        let tileWidth = spriteset.tileWidth;
+        let tileHeight = spriteset.tileHeight;
 
         for (var i = interval.si; i <= interval.ei; i++) {
             for (var j = interval.sj; j <= interval.ej; j++) {
                 if (spriteset.data[i] !=  undefined && spriteset.data[i][j] !=  undefined) {
                     for (var k in  spriteset.data[i][j]) {
-                        var tile_data = spriteset.data[i][j][k];
-                        var tileset = Tilesets.get(tile_data[0]);
-                        var tile = tileset.get(tile_data[1],tile_data[2]);
+                        let tile_data = spriteset.data[i][j][k];
+                        let tileset = Tilesets.get(tile_data[0]);
+                        let tile = tileset.get(tile_data[1],tile_data[2]);
 
                         if(tile != null){
-                            var type = Consts.BACKGROUND_LAYER;
+                            let type = Consts.BACKGROUND_LAYER;
                             if(k > 1){
                                 type = Consts.FOREGROUND_LAYER;
                             }
-                            var layer = Canvas.getLayer(type, k);
+                            let layer = Canvas.getLayer(type, k);
                             if (layer != null) {
-                                var context = layer.context;
-                                var dx =  x + j * tileWidth;
-                                var dy =  y + i * tileHeight;
+                                let context = layer.context;
+                                let dx =  x + j * tileWidth;
+                                let dy =  y + i * tileHeight;
                                 dx = parseInt(dx);
                                 dy = parseInt(dy);
                                 context.drawImage(tile.image, tile.sx, tile.sy, tile.sWidth, tile.sHeight, dx, dy, tileWidth, tileHeight);
@@ -256,10 +256,10 @@
      * Renderiza o mapa de sprites
      */
     function refresh_spriteset_map(self) {
-        var x = Canvas.x;
-        var y = Canvas.y;
+        let x = Canvas.x;
+        let y = Canvas.y;
 
-        var interval = get_area_interval({
+        let interval = get_area_interval({
             x:x,
             y:y,
             width:Math.min(self.spriteset.width*self.spriteset.tileWidth,Canvas.width),
@@ -291,7 +291,7 @@
      */
     function clear_graphics(self) {
         while(clear_queue.length > 0){
-            var clear = clear_queue.pop();
+            let clear = clear_queue.pop();
             Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
         }
     }
@@ -302,15 +302,15 @@
      * Renderiza os objetos no mapa
      */
     function draw_graphics(self) {
-        var i;
-        var sx = root.Canvas.x;
-        var sy = root.Canvas.y;
-        var cw = root.Canvas.width;
-        var ch = root.Canvas.height;
-        var object;
-        var collision;
+        let i;
+        let sx = root.Canvas.x;
+        let sy = root.Canvas.y;
+        let cw = root.Canvas.width;
+        let ch = root.Canvas.height;
+        let object;
+        let collision;
 
-        var collisions = self.tree.retrieve({
+        let collisions = self.tree.retrieve({
             x:sx,
             y:sy,
             width:cw,
@@ -321,16 +321,16 @@
             return a.yb-b.yb;
         });
 
-        var size = collisions.length;
-        var bounds;
-        var bx;
-        var by;
-        var mw = self.map.width;
-        var mh = self.map.height;
-        var xw = sx+cw;
-        var yh = sy+ch;
-        var x;
-        var y;
+        let size = collisions.length;
+        let bounds;
+        let bx;
+        let by;
+        let mw = self.map.width;
+        let mh = self.map.height;
+        let xw = sx+cw;
+        let yh = sy+ch;
+        let x;
+        let y;
 
         for (i = 0; i < size; i++) {
             collision = collisions[i];
@@ -394,9 +394,9 @@
      * @param y
      */
     function draw_object(object,x,y){
-        var frame = object.currentFrame;
+        let frame = object.currentFrame;
         if (frame != null && frame.image) {
-            var image = frame.image;
+            let image = frame.image;
 
             Canvas.drawImage(image, {
                 dx: x,
@@ -429,12 +429,12 @@
      */
     function step_focus(self) {
         if (focused_object != null) {
-            var obj = focused_object;
-            var graphic = obj.graphic;
+            let obj = focused_object;
+            let graphic = obj.graphic;
             console.log('stepfocus');
             if(graphic != null) {
-                var width = root.Canvas.width > self.map.width ? root.Canvas.width : self.map.width;
-                var height = root.Canvas.height > self.map.height ? root.Canvas.height : self.map.height;
+                let width = root.Canvas.width > self.map.width ? root.Canvas.width : self.map.width;
+                let height = root.Canvas.height > self.map.height ? root.Canvas.height : self.map.height;
                 Canvas.x = -(width / 2) + obj.x + (obj.width);
                 Canvas.y = -(height / 2) + obj.y + (obj.height);
             }
@@ -446,9 +446,9 @@
      * @param self
      */
     function step_events(self) {
-        var objs = self.objs;
-        var length = objs.length;
-        var i;
+        let objs = self.objs;
+        let length = objs.length;
+        let i;
         if(Main.currentPlayer){
             Main.currentPlayer.update();
         }
@@ -463,10 +463,10 @@
      * @param self
      */
     function action_events(self) {
-        var player = Main.currentPlayer;
-        var tree = self.tree;
+        let player = Main.currentPlayer;
+        let tree = self.tree;
 
-        var bounds_tmp = {
+        let bounds_tmp = {
             x: player.body.x,
             y: player.body.y,
             width: player.body.width,
@@ -474,7 +474,7 @@
             groups: ['ACTION_BUTTON']
         };
 
-        var d = player.direction;
+        let d = player.direction;
 
         switch (d) {
             case Consts.CHARACTER_DIRECTION_UP:
@@ -493,11 +493,11 @@
                 break;
         }
 
-        var length;
-        var collisions;
-        var i;
-        var collision;
-        var obj;
+        let length;
+        let collisions;
+        let i;
+        let collision;
+        let obj;
 
         collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
         length = collisions.length;
@@ -505,7 +505,7 @@
             collision = collisions[i];
             obj = collision.object;
             if (obj instanceof Game_Event && obj.currentPage) {
-                var page = obj.currentPage;
+                let page = obj.currentPage;
                 if (typeof page.script =='function') {
                     if (page.trigger ==Consts.TRIGGER_PLAYER_TOUCH || (page.trigger ==Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
                         page.script.apply(obj);
@@ -538,7 +538,7 @@
      */
     function drawquadtree(tree,first){
         first = first || false;
-        var layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
+        let layer = root.Canvas.getLayer(Consts.UI_LAYER,0);
         layer.rect({
             x:tree.body.x-Canvas.x,
             y:tree.body.y-Canvas.y,
@@ -550,7 +550,7 @@
 
         if(first){
             Object.keys(tree.objects).forEach(function(key){
-                var ob = tree.objects[key];
+                let ob = tree.objects[key];
                 layer.rect({
                     x:ob.x-Canvas.x,
                     y:ob.y-Canvas.y,
@@ -572,7 +572,7 @@
      * @param self
      */
     function initialize(self){
-        var tree = null;
+        let tree = null;
         Object.defineProperty(self,'tree',{
             get:function(){
                 if(tree == null){

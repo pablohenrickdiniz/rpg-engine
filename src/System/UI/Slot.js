@@ -19,7 +19,7 @@
         throw "Slot requires Item";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = UI.classes.Element,
         Image = UI.classes.Image,
         Item = root.Item,
@@ -30,8 +30,8 @@
      * @param options
      * @constructor
      */
-    var Slot = function(options){
-        var self = this;
+    let Slot = function(options){
+        let self = this;
         options = options || {};
         options.class = options.class || 'slot';
         Element.call(self,options);
@@ -50,7 +50,7 @@
      * @returns {boolean}
      */
     Slot.prototype.hasItem = function(){
-       var self = this;
+       let self = this;
         return self.item != null;
     };
 
@@ -59,24 +59,24 @@
      * @param self
      */
     function initialize(self){
-        var amount = 0;
-        var item = null;
-        var showAmount = true;
+        let amount = 0;
+        let item = null;
+        let showAmount = true;
 
-        var itemContainer = new Element({
+        let itemContainer = new Element({
             class:'item',
             parent:self,
             draggable:true,
             visible:false
         });
 
-        var image = new Image({
+        let image = new Image({
             class:'item-icon',
             parent:itemContainer,
             draggable:false
         });
 
-        var amountContainer = new Text({
+        let amountContainer = new Text({
             class:'item-amount',
             parent:itemContainer,
             visible:showAmount

@@ -4,14 +4,14 @@
         throw "Game_Inventory requires Game_Slot";
     }
 
-    var Game_Slot = root.Game_Slot;
+    let Game_Slot = root.Game_Slot;
     /**
      *
      * @param options
      * @constructor
      */
-    var Game_Inventory = function(options){
-        var self = this;
+    let Game_Inventory = function(options){
+        let self = this;
         initialize(self);
         options = options || {};
         self.slots = options.slots || {};
@@ -26,18 +26,18 @@
      * @returns {boolean}
      */
     Game_Inventory.prototype.swap = function(slotA,slotB) {
-        var self = this;
+        let self = this;
         if (self.slots[slotA] && self.slots[slotB]) {
-            var from = self.slots[slotA];
-            var to = self.slots[slotB];
+            let from = self.slots[slotA];
+            let to = self.slots[slotB];
 
             if (from.hasItem()) {
                 if (to.type === 'generic' || from.item.type === to.type) {
                     if (to.hasItem()) {
-                        var swap = false;
+                        let swap = false;
                         if(from.item === to.item){
                             if (to.freeAmount > 0) {
-                                var qtd = Math.min(from.amount, to.freeAmount);
+                                let qtd = Math.min(from.amount, to.freeAmount);
                                 from.amount -= qtd;
                                 to.amount += qtd;
                                 return true;
@@ -51,17 +51,17 @@
                         }
 
                         if(swap){
-                            var tmp_amount = to.amount;
+                            let tmp_amount = to.amount;
                             to.amount = from.amount;
                             from.amount = tmp_amount;
-                            var tmp_item = to.item;
+                            let tmp_item = to.item;
                             to.item = from.item;
                             from.item = tmp_item;
                             return true;
                         }
                     }
                     else {
-                        var add = Math.min(to.freeAmount,from.amount);
+                        let add = Math.min(to.freeAmount,from.amount);
                         to.item = from.item;
                         to.amount +=add;
                         from.amount -=add;
@@ -79,7 +79,7 @@
      * @param callback
      */
     Game_Inventory.prototype.on = function(event,callback){
-        var self = this;
+        let self = this;
         if(!self.listeners[event]){
             self.listeners[event] = [];
         }
@@ -94,9 +94,9 @@
      * @param callback
      */
     Game_Inventory.prototype.off = function(event,callback){
-        var self = this;
+        let self = this;
         if(self.listeners[event]){
-            var index = self.listeners[event].indexOf(callback);
+            let index = self.listeners[event].indexOf(callback);
             if(index !== -1){
                 self.listeners[event].splice(index,1);
             }
@@ -109,9 +109,9 @@
      * @param args
      */
     Game_Inventory.prototype.trigger = function(event,args){
-        var self = this;
+        let self = this;
         if(self.listeners[event]){
-            var length = self.listeners[event].length;
+            let length = self.listeners[event].length;
             for(var i =0; i < length;i++){
                 self.listeners[event][i].apply(self,args);
             }
@@ -125,19 +125,19 @@
      * @returns {*}
      */
     Game_Inventory.prototype.addItem = function(item,amount){
-        var self = this;
-        var keys = Object.keys(self.slots);
-        var length = keys.length;
+        let self = this;
+        let keys = Object.keys(self.slots);
+        let length = keys.length;
 
         for(var i =0; i < length;i++){
             if(amount === 0){
                 break;
             }
 
-            var slot = self.slots[keys[i]];
+            let slot = self.slots[keys[i]];
 
             if((item.type === slot.type || slot.type === 'generic') && (!slot.hasItem() || slot.item === item) && slot.freeAmount > 0){
-                var add = amount;
+                let add = amount;
                 if(slot.freeAmount < amount){
                     add = slot.freeAmount;
                 }
@@ -156,7 +156,7 @@
      * @param options
      */
     Game_Inventory.prototype.addSlot = function(id,options){
-        var self = this;
+        let self = this;
         self.slots[id] = new Game_Slot(options);
     };
 
@@ -166,8 +166,8 @@
      * @returns {*}
      */
     Game_Inventory.prototype.getSlot = function(id){
-        var self = this;
-        var slots = self.slots;
+        let self = this;
+        let slots = self.slots;
         if(slots[id]){
             return slots[id];
         }
@@ -179,7 +179,7 @@
      * @param self
      */
     function initialize(self){
-        var slots = {};
+        let slots = {};
 
         Object.defineProperty(self,'slots',{
             get:function(){
@@ -187,11 +187,11 @@
             },
             set:function(sls){
                 if(sls.constructor === {}.constructor){
-                    var keys = Object.keys(sls);
-                    var length = keys.length;
+                    let keys = Object.keys(sls);
+                    let length = keys.length;
                     for(var i = 0; i < length;i++){
-                        var id = keys[i];
-                        var config = sls[id];
+                        let id = keys[i];
+                        let config = sls[id];
                         self.addSlot(id,config);
                     }
                 }

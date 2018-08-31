@@ -49,7 +49,7 @@
         throw "Scene_Map requires Canvas"
     }
 
-    var Scene = root.Scene,
+    let Scene = root.Scene,
         Canvas = root.Canvas,
         Consts = root.Consts,
         Main = root.Main,
@@ -65,17 +65,17 @@
         Body = Matter.Body,
         Bodies = Matter.Bodies;
 
-    var clear_queue = [];
-    var bg_refreshed = false;
-    var focused_object = null;
+    let clear_queue = [];
+    let bg_refreshed = false;
+    let focused_object = null;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Scene_Map = function (options) {
-        var self = this;
+    let Scene_Map = function (options) {
+        let self = this;
         Scene.call(self, options);
         initialize(self);
         self.map = options.map || {};
@@ -94,7 +94,7 @@
             y:0
         };
 
-        var size = 20;
+        let size = 20;
 
         World.add(self.engine.world,[
             Bodies.rectangle(self.spriteset.realWidth/2, -size/2, self.spriteset.realWidth, size, { isStatic: true,friction: 0 }),
@@ -112,7 +112,7 @@
      * @param object
      */
     Scene_Map.prototype.add= function(object){
-        var self = this;
+        let self = this;
         self.objs.push(object);
         if(object.body){
             World.add(self.engine.world,object.body);
@@ -124,8 +124,8 @@
      * @param object
      */
     Scene_Map.prototype.remove = function(object){
-        var self = this;
-        var index = self.objs.indexOf(object);
+        let self = this;
+        let index = self.objs.indexOf(object);
         if(index !== -1){
             self.objs.splice(index,1);
         }
@@ -152,7 +152,7 @@
      * Executa passo de tempo da cena
      */
     Scene_Map.prototype.step = function () {
-        var self = this;
+        let self = this;
         Scene.prototype.step.apply(this);
         Engine.update(self.engine);
         // if(Main.currentPlayer){
@@ -180,16 +180,16 @@
      * Obtém a região do mapa de sprites a ser redenrizada
      */
     function get_area_interval(options) {
-        var x = options.x || 0;
-        var y = options.y || 0;
-        var width = options.width || 0;
-        var height = options.height || 0;
-        var tileWidth = options.tileWidth || 32;
-        var tileHeight = options.tileHeight || 32;
-        var si = parseInt(Math.floor(y / tileHeight));
-        var sj = parseInt(Math.floor(x / tileWidth));
-        var ei = parseInt(Math.floor((y + height) / tileHeight));
-        var ej = parseInt(Math.floor((x + width) / tileWidth));
+        let x = options.x || 0;
+        let y = options.y || 0;
+        let width = options.width || 0;
+        let height = options.height || 0;
+        let tileWidth = options.tileWidth || 32;
+        let tileHeight = options.tileHeight || 32;
+        let si = parseInt(Math.floor(y / tileHeight));
+        let sj = parseInt(Math.floor(x / tileWidth));
+        let ei = parseInt(Math.floor((y + height) / tileHeight));
+        let ej = parseInt(Math.floor((x + width) / tileWidth));
         return {si: si, sj: sj, ei: ei, ej: ej};
     }
 
@@ -199,17 +199,17 @@
      * Renderiza o mapa de sprites
      */
     function refresh_spriteset_map(self) {
-        var sx = Canvas.x;
-        var sy = Canvas.y;
-        var spriteset = self.spriteset;
+        let sx = Canvas.x;
+        let sy = Canvas.y;
+        let spriteset = self.spriteset;
 
-        var width = Math.min(Canvas.width,self.spriteset.realWidth);
-        var height = Math.min(Canvas.height,self.spriteset.realHeight);
+        let width = Math.min(Canvas.width,self.spriteset.realWidth);
+        let height = Math.min(Canvas.height,self.spriteset.realHeight);
 
-        var tileWidth = spriteset.tileWidth;
-        var tileHeight = spriteset.tileHeight;
-        var loop_x = self.map.loop_x;
-        var loop_y = self.map.loop_y;
+        let tileWidth = spriteset.tileWidth;
+        let tileHeight = spriteset.tileHeight;
+        let loop_x = self.map.loop_x;
+        let loop_y = self.map.loop_y;
 
         if(!loop_x){
             sx = Math.max(sx,0);
@@ -219,12 +219,12 @@
             sy = Math.max(sy,0);
         }
 
-        var interval = get_area_interval({x: sx, y: sy, width: width, height: height});
-        var maxi = spriteset.height-1;
-        var maxj = spriteset.width-1;
+        let interval = get_area_interval({x: sx, y: sy, width: width, height: height});
+        let maxi = spriteset.height-1;
+        let maxj = spriteset.width-1;
 
-        for (var i = interval.si; i < interval.ei || (loop_y && i === interval.ei); i++) {
-            var ti = i;
+        for (let i = interval.si; i <= interval.ei; i++) {
+            let ti = i;
             if(ti < 0){
                 ti = maxi + 1 + ti;
             }
@@ -232,8 +232,8 @@
                 ti = (ti % (maxi+1));
             }
 
-            for(var j = interval.sj; j < interval.ej || (loop_x && j === interval.ej);j++){
-                var tj = j;
+            for(let j = interval.sj; j <= interval.ej;j++){
+                let tj = j;
 
                 if(tj < 0){
                     tj = maxj + 1 + tj;
@@ -242,30 +242,31 @@
                     tj = (tj % (maxj+1));
                 }
                 if (spriteset.data[ti] !== undefined && spriteset.data[ti][tj] !== undefined) {
-                    for (var k in  spriteset.data[ti][tj]) {
-                        var tile_data = spriteset.data[ti][tj][k];
-                        var tileset = Tilesets.get(tile_data[0]);
-                        var tile = tileset.get(tile_data[1],tile_data[2]);
+                    for (let k in  spriteset.data[ti][tj]) {
+                        let tile_data = spriteset.data[ti][tj][k];
+                        let tileset = Tilesets.get(tile_data[0]);
+                        let tile = tileset.get(tile_data[1],tile_data[2]);
                         if(tile != null){
-                            var type = Consts.BACKGROUND_LAYER;
+                            let type = Consts.BACKGROUND_LAYER;
                             if(k > 1){
                                 type = Consts.FOREGROUND_LAYER;
                             }
-                            var layer = Canvas.getLayer(type, k);
+                            let layer = Canvas.getLayer(type, k);
                             if (layer != null) {
-                                var context = layer.context;
-                                var dx = j * tileWidth - sx;
-                                var dy = i * tileHeight - sy;
-                                debugger;
-                                var wdx = width-dx;
-                                var hdy = height-dy;
-                                dx = parseInt(dx);
-                                dy = parseInt(dy);
-                                var tw = Math.min(tileWidth,wdx);
-                                var th = Math.min(tileHeight,hdy);
-                                var tsw = Math.min(tile.sWidth,wdx);
-                                var tsh = Math.min(tile.sHeight,hdy);
-                                context.drawImage(tile.image, tile.sx, tile.sy, tileWidth,tileHeight, dx, dy, tileWidth,tileHeight);
+                                let context = layer.context;
+                                let dx = j * tileWidth - sx;
+                                let dy = i * tileHeight - sy;
+
+                                let wdx = width-dx;
+                                let hdy = height-dy;
+
+                                if(wdx > 0 && hdy > 0){
+                                    dx = parseInt(dx);
+                                    dy = parseInt(dy);
+                                    let tw = Math.min(tileWidth,wdx);
+                                    let th = Math.min(tileHeight,hdy);
+                                    context.drawImage(tile.image, tile.sx, tile.sy,tw,th, dx, dy, tw,th);
+                                }
                             }
                         }
                     }
@@ -296,7 +297,7 @@
      */
     function clear_graphics(self) {
         while(clear_queue.length > 0){
-            var clear = clear_queue.pop();
+            let clear = clear_queue.pop();
             Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
         }
     }
@@ -307,29 +308,29 @@
      * Renderiza os objetos no mapa
      */
     function draw_graphics(self) {
-        var sx = root.Canvas.x;
-        var sy = root.Canvas.y;
-        var spriteset = self.spriteset;
+        let sx = root.Canvas.x;
+        let sy = root.Canvas.y;
+        let spriteset = self.spriteset;
 
-        var mw = spriteset.realWidth;
-        var mh = spriteset.realHeight;
+        let mw = spriteset.realWidth;
+        let mh = spriteset.realHeight;
 
-        var objs = self.objs.sort(function(a,b){
+        let objs = self.objs.sort(function(a,b){
             return a.y-b.y;
         });
 
-        for(var i =0; i < objs.length;i++){
+        for(let i =0; i < objs.length;i++){
             draw_object(objs[i].x,objs[i].y,objs[i],mw,mh);
         }
 
         if(RPG.debug){
-            var length = self.engine.world.bodies.length;
-            for(var i =0; i < length;i++){
-                var body = self.engine.world.bodies[i];
-                var x = body.body.min.x;
-                var y = body.body.min.y;
-                var width = body.body.max.x-x;
-                var height = body.body.max.y-y;
+            let length = self.engine.world.bodies.length;
+            for(let i =0; i < length;i++){
+                let body = self.engine.world.bodies[i];
+                let x = body.body.min.x;
+                let y = body.body.min.y;
+                let width = body.body.max.x-x;
+                let height = body.body.max.y-y;
                 x = Math.round(x-Canvas.x);
                 y = Math.round(y-Canvas.y);
                 Canvas.drawRect({
@@ -354,9 +355,9 @@
     }
 
     function splith(o,vw){
-        var frames = [];
+        let frames = [];
 
-        var dxw = o.dx+o.dWidth;
+        let dxw = o.dx+o.dWidth;
 
         if(o.dx >= vw){
             frames[0] = clone(o);
@@ -365,8 +366,8 @@
         else if(dxw > vw){
             frames[0] = clone(o);
             frames[1] = clone(o);
-            var d = vw-o.dx;
-            var ds = d*(o.sWidth/o.dWidth);
+            let d = vw-o.dx;
+            let ds = d*(o.sWidth/o.dWidth);
 
             Object.assign(frames[0],{dWidth:d,sWidth:ds});
             Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
@@ -375,8 +376,8 @@
             if(dxw > 0){
                 frames[0] = clone(o);
                 frames[1] = clone(o);
-                var d = Math.abs(o.dx);
-                var ds = d*(o.sWidth/o.dWidth);
+                let d = Math.abs(o.dx);
+                let ds = d*(o.sWidth/o.dWidth);
 
                 Object.assign(frames[0],{dWidth:d,sWidth:ds,dx:vw-d});
                 Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
@@ -394,8 +395,8 @@
     }
 
     function splitv(o,vh){
-        var frames = [];
-        var dxh = o.dy+o.dHeight;
+        let frames = [];
+        let dxh = o.dy+o.dHeight;
         if(o.dy >= vh){
             frames[0] = clone(o);
             Object.assign(frames[0],{dy:o.dy-vh});
@@ -403,8 +404,8 @@
         else if(dxh > vh){
             frames[0] = clone(o);
             frames[1] = clone(o);
-            var d = vh-o.dy;
-            var ds = d*(o.sHeight/o.dHeight);
+            let d = vh-o.dy;
+            let ds = d*(o.sHeight/o.dHeight);
 
             Object.assign(frames[0],{dHeight:d,sHeight:ds});
             Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
@@ -413,8 +414,8 @@
             if(dxh > 0){
                 frames[0] = clone(o);
                 frames[1] = clone(o);
-                var d = Math.abs(o.dy);
-                var ds = d*(o.sHeight/o.dHeight);
+                let d = Math.abs(o.dy);
+                let ds = d*(o.sHeight/o.dHeight);
 
                 Object.assign(frames[0],{dHeight:d,sHeight:ds,dy:vh-d});
                 Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
@@ -431,25 +432,21 @@
         return frames;
     }
 
-
     function split(obj,vw,vh){
-        var frames = [];
+        let frames = [];
+        let tmp = splith(obj,vw);
+        let length = tmp.length;
 
-        var tmp = splith(obj,vw);
-
-        var length = tmp.length;
-
-        for(var i =0; i < length;i++){
-            var tmp2 = splitv(tmp[i],vh);
-            var length2 = tmp2.length;
-            for(var j = 0; j < length2;j++){
+        for(let i =0; i < length;i++){
+            let tmp2 = splitv(tmp[i],vh);
+            let length2 = tmp2.length;
+            for(let j = 0; j < length2;j++){
                 frames.push(tmp2[j]);
             }
         }
 
         return frames;
     }
-
 
     /**
      *
@@ -460,11 +457,11 @@
      * @param vh
      */
     function draw_object(x,y,object,vw,vh){
-        var frame = object.currentFrame;
+        let frame = object.currentFrame;
         if (frame != null && frame.image) {
-            var image = frame.image;
-            /*  var i;
-              var draws = split({
+            let image = frame.image;
+            /*  let i;
+              let draws = split({
                   dx:x,
                   dy:y,
                   dWidth: frame.dWidth,
@@ -512,19 +509,19 @@
      */
     function step_focus(self) {
         if (focused_object != null) {
-            var obj = focused_object;
-            var graphic = obj.graphic;
+            let obj = focused_object;
+            let graphic = obj.graphic;
 
             if(graphic != null){
-                var spriteset = self.spriteset;
-                var viewport_width = Math.min(Canvas.width, spriteset.realWidth);
-                var viewport_height = Math.min(Canvas.height, spriteset.realHeight);
-                var viewport_x = (obj.x) - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
-                var viewport_y = (obj.y) - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
+                let spriteset = self.spriteset;
+                let viewport_width = Math.min(Canvas.width, spriteset.realWidth);
+                let viewport_height = Math.min(Canvas.height, spriteset.realHeight);
+                let viewport_x = (obj.x) - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
+                let viewport_y = (obj.y) - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
 
 
-                var max_screen_x = spriteset.realWidth - viewport_width;
-                var max_screen_y = spriteset.realHeight - viewport_height;
+                let max_screen_x = spriteset.realWidth - viewport_width;
+                let max_screen_y = spriteset.realHeight - viewport_height;
 
                 if(!self.map.loop_x){
                     if (viewport_x < 0) {
@@ -562,9 +559,9 @@
      * @param self
      */
     function step_events(self) {
-        var objs = self.objs;
-        var length = objs.length;
-        var i;
+        let objs = self.objs;
+        let length = objs.length;
+        let i;
 
         for (i = 0; i < length; i++) {
             objs[i].update();
@@ -577,10 +574,10 @@
      * @param self
      */
     function action_events(self) {
-        var player = Main.currentPlayer;
-        var tree = self.tree;
+        let player = Main.currentPlayer;
+        let tree = self.tree;
 
-        var bounds_tmp = {
+        let bounds_tmp = {
             x: player.body.x,
             y: player.body.y,
             width: player.body.width,
@@ -588,7 +585,7 @@
             groups: ['ACTION_BUTTON']
         };
 
-        var d = player.direction;
+        let d = player.direction;
 
         switch (d) {
             case Consts.CHARACTER_DIRECTION_UP:
@@ -607,11 +604,11 @@
                 break;
         }
 
-        var length;
-        var collisions;
-        var i;
-        var collision;
-        var obj;
+        let length;
+        let collisions;
+        let i;
+        let collision;
+        let obj;
 
         collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
         length = collisions.length;
@@ -619,7 +616,7 @@
             collision = collisions[i];
             obj = collision.object;
             if (obj instanceof Game_Event && obj.currentPage) {
-                var page = obj.currentPage;
+                let page = obj.currentPage;
                 if (typeof page.script === 'function') {
                     if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
                         page.script.apply(obj);
@@ -658,7 +655,7 @@
      * @param self
      */
     function initialize(self){
-        var tree = null;
+        let tree = null;
         Object.defineProperty(self,'tree',{
             get:function(){
                 if(tree == null){
@@ -677,9 +674,17 @@
         });
 
         Object.defineProperty(self,'bg_refreshed',{
+            /**
+             *
+             * @returns {boolean}
+             */
             get:function(){
                 return bg_refreshed;
             },
+            /**
+             *
+             * @param bgr
+             */
             set:function(bgr){
                 bg_refreshed = !!bgr;
             }

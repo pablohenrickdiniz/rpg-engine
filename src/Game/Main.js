@@ -1,8 +1,8 @@
 'use strict';
 (function (root,w) {
-    var current_scene = null;
-    var current_map = null;
-    var current_player_id = null;
+    let current_scene = null;
+    let current_map = null;
+    let current_player_id = null;
 
     if(root.Scene === undefined){
         throw "Main requires Scene";
@@ -16,11 +16,11 @@
         throw "Main requires QuadTree";
     }
 
-    var Scene = root.Scene,
+    let Scene = root.Scene,
         Game_Map = root.Game_Map,
         QuadTree = root.QuadTree;
 
-    var Main = {
+    let Main = {
         Actors: null,   //Atores
         Variables: null,//Variáveis
         Scenes:null,    //Cenas
@@ -57,18 +57,18 @@
             return current_player_id;
         },
         set:function(player_id){
-            var self = this;
+            let self = this;
             if(player_id !== current_player_id){
                 if(current_player_id != null){
-                    var tmp = self.Actors.get(current_player_id);
+                    let tmp = self.Actors.get(current_player_id);
                     if(tmp != null){
                         tmp.type = 'Actor';
                     }
                 }
 
                 current_player_id = player_id;
-                var scene = self.currentScene;
-                var actor = self.Actors.get(player_id);
+                let scene = self.currentScene;
+                let actor = self.Actors.get(player_id);
                 if(scene != null && actor != null){
                     actor.type = 'Player';
                     scene.add(actor);

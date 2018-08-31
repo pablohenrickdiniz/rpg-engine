@@ -17,7 +17,7 @@
         throw "Tileset requires Game_Graphic";
     }
 
-    var Tile= root.Tile,
+    let Tile= root.Tile,
         Graphics = root.Main.Graphics,
         Game_Graphic = root.Game_Graphic;
 
@@ -26,8 +26,8 @@
      * @param options
      * @constructor
      */
-    var Tileset = function (options) {
-        var self = this;
+    let Tileset = function (options) {
+        let self = this;
         Game_Graphic.call(self,options);
         initialize(self);
         options = options || {};
@@ -46,7 +46,7 @@
      * @returns {{image: (self.src|*|src|Audio.src|Audio_File.src|Image.src), rows: (*|.map.tileset.rows|.charas.char1.rows|Chara.rows|Matrix.rows|null), cols: (*|.map.tileset.cols|.charas.char1.cols|Chara.cols|Matrix.cols|null), width: *, height: *, collision: Array}}
      */
     Tileset.prototype.toOBJ = function(){
-        var self  =this;
+        let self  =this;
         return {
             image:self.image.src,
             rows:self.rows,
@@ -62,7 +62,7 @@
      * @returns {*[]}
      */
     Tileset.prototype.toJSON = function(){
-        var self  =this;
+        let self  =this;
         return [
             self.image.src, //image
             self.rows,      //rows
@@ -81,7 +81,7 @@
      * @returns {*}
      */
     Tileset.prototype.get = function (i, j) {
-        var self = this;
+        let self = this;
         if (i >= 0 && i < self.rows && j >= 0 && j < self.cols) {
             if (self.sprites[i] === undefined) {
                 self.sprites[i] = [];
@@ -107,7 +107,7 @@
      * @param val
      */
     Tileset.prototype.setCollision = function(i,j,val){
-        var self = this;
+        let self = this;
         if(i >= 0 && i < self.rows && j >= 0 && j < self.cols){
             if(val){
                 if(self.collision[i] === undefined){
@@ -130,7 +130,7 @@
      * @returns {*|boolean}
      */
     Tileset.prototype.isPassable = function(i,j){
-        var self = this;
+        let self = this;
         return !self.collision[i] || !self.collision[i][j];
     };
 
@@ -139,8 +139,8 @@
      * @param self
      */
     function initialize(self){
-        var rows = 1;
-        var cols = 1;
+        let rows = 1;
+        let cols = 1;
 
         Object.defineProperty(self,'tileDWidth',{
             /**
@@ -232,16 +232,16 @@
      * @returns {Tileset}
      */
     Tileset.fromJSON = function(json){
-        var image_data = json[0];
-        var rows = parseInt(json[1]);
-        var cols = parseInt(json[2]);
-        var width = parseFloat(json[3]);
-        var height = parseFloat(json[4]);
+        let image_data = json[0];
+        let rows = parseInt(json[1]);
+        let cols = parseInt(json[2]);
+        let width = parseFloat(json[3]);
+        let height = parseFloat(json[4]);
 
-        var image = new Image();
+        let image = new Image();
         image.src = image_data;
 
-        var tileset = new Tileset({
+        let tileset = new Tileset({
             image:image,
             rows:rows,
             cols:cols,
@@ -249,10 +249,10 @@
             height:height
         });
 
-        var collision = json[5];
-        var length = collision.length;
+        let collision = json[5];
+        let length = collision.length;
         for(var i =0; i < length;i++){
-            var c = collision[i];
+            let c = collision[i];
             tileset.setCollision(parseInt(c[0]),parseInt(c[1]),true);
         }
 
@@ -265,7 +265,7 @@
      * @returns {Array}
      */
     function collisiontoJSON(collision){
-        var c = [];
+        let c = [];
         for(var i in collision){
             for(var j in collision[i]){
                 c.push([parseInt(i),parseInt(j)]);

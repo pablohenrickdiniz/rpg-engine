@@ -1,6 +1,6 @@
 'use strict';
 (function(root){
-	var Game_Skill = function(options){
+	let Game_Skill = function(options){
 		options = options || {};
 			
 	};

@@ -1,21 +1,21 @@
 (function(w){
-    var document = w.document;
-    var CloseButtonProto = Object.create(HTMLButtonElement.prototype);
-    var GameWindowProto = Object.create(HTMLDivElement.prototype);
-    var WindowHeaderProto = Object.create(HTMLDivElement.prototype);
-    var WindowContentProto = Object.create(HTMLDivElement.prototype);
+    let document = w.document;
+    let CloseButtonProto = Object.create(HTMLButtonElement.prototype);
+    let GameWindowProto = Object.create(HTMLDivElement.prototype);
+    let WindowHeaderProto = Object.create(HTMLDivElement.prototype);
+    let WindowContentProto = Object.create(HTMLDivElement.prototype);
 
     WindowHeaderProto.createdCallback = function(){
-        var self = this;
+        let self = this;
         self.style.width = '100%';
         self.style.backgroundColor = '#0000A0';
         self.style.display = 'inline-block';
-        var button = new CloseButton();
+        let button = new CloseButton();
         self.appendChild(button);
     };
 
     CloseButtonProto.createdCallback = function(){
-        var self = this;
+        let self = this;
         self.innerHTML = '&times;';
         self.style.float = 'right';
         self.style.backgroundColor = 'white';
@@ -23,49 +23,49 @@
     };
 
     WindowContentProto.createCallback = function(){
-        var self = this;
+        let self = this;
         self.style.width = '100%';
     };
 
-    var CloseButton = document.registerElement('close-button',{
+    let CloseButton = document.registerElement('close-button',{
         prototype:CloseButtonProto,
         extends:'button'
     });
 
-    var WindowHeader = document.registerElement('game-window-header',{
+    let WindowHeader = document.registerElement('game-window-header',{
         prototype:WindowHeaderProto
     });
 
-    var WindowContent = document.registerElement('game-window-content',{
+    let WindowContent = document.registerElement('game-window-content',{
         prototype:WindowContentProto
     });
 
 
     GameWindowProto.createdCallback  =function(){
-        var self = this;
+        let self = this;
         initialize(self);
         self.style.position = 'absolute';
         self.style.backgroundColor = 'Blue';
         self.width = 300;
         self.height = 300;
-        var header = new WindowHeader();
-        var content = new WindowContent();
+        let header = new WindowHeader();
+        let content = new WindowContent();
         self.appendChild(header);
         self.appendChild(content);
     };
 
     GameWindowProto.hide = function(){
-        var self = this;
+        let self = this;
         self.style.visibility = 'hidden';
     };
 
     GameWindowProto.show = function(){
-        var self = this;
+        let self = this;
         self.style.visibility = 'visible';
     };
 
 
-    var initialize = function(self){
+    let initialize = function(self){
         Object.defineProperty(self,'width',{
             get:function(){
                 return parseFloat(self.style.width);

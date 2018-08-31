@@ -8,7 +8,7 @@
         throw "Button requires Element";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = UI.classes.Element;
 
     /**
@@ -16,8 +16,8 @@
      * @param options
      * @constructor
      */
-    var Button = function(options){
-        var self = this;
+    let Button = function(options){
+        let self = this;
         options = options || {};
         Element.call(self,options,'button');
         initialize(self);
@@ -32,7 +32,7 @@
      * @param self
      */
     function initialize(self){
-        var text = '';
+        let text = '';
         Object.defineProperty(self,'text',{
             get:function(){
                 return text;

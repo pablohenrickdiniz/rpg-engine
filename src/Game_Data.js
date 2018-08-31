@@ -12,7 +12,7 @@
         throw "Game_Data requires Game_Actor";
     }
 
-    var database = {
+    let database = {
         actors: {},
         characters: {},
         items: {}
@@ -25,9 +25,9 @@
          * @param callback
          */
         load: function (url, callback) {
-            var req = new XMLHttpRequest();
+            let req = new XMLHttpRequest();
             req.onload = function () {
-                var data = request.response;
+                let data = request.response;
                 for (var key in data) {
                     if (database[key]) {
                         database[key] = data[key];

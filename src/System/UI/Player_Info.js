@@ -24,7 +24,7 @@
         throw "Player_Info requires Text";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Game_Face = root.Game_Face,
         Progress_Bar = UI.classes.Progress_Bar,
         Element = UI.classes.Element,
@@ -36,8 +36,8 @@
      * @param options
      * @constructor
      */
-    var Player_Info = function(options){
-        var self = this;
+    let Player_Info = function(options){
+        let self = this;
         options = options || {};
         Element.call(self,options);
         initialize(self);
@@ -58,41 +58,41 @@
      * @param self
      */
     function initialize(self){
-        var element = null;
-        var face = null;
-        var totalMP = 1;
-        var totalHP = 1;
-        var totalST = 1;
-        var MP = 0;
-        var HP = 0;
-        var ST = 0;
-        var name = '';
+        let element = null;
+        let face = null;
+        let totalMP = 1;
+        let totalHP = 1;
+        let totalST = 1;
+        let MP = 0;
+        let HP = 0;
+        let ST = 0;
+        let name = '';
 
         /*faceContainer*/
-        var faceContainer = new Element({
+        let faceContainer = new Element({
             parent:self,
             class:"face-container"
         });
 
         /*Face Image*/
-        var faceImage = new Image({
+        let faceImage = new Image({
             parent:faceContainer,
             class:"face-image"
         });
 
-        var nameContainer = new Text({
+        let nameContainer = new Text({
             parent:self,
             class:"name-container"
         });
 
-        var barContainer = new Element({
+        let barContainer = new Element({
             parent:self,
             class:"bar-container"
         });
 
-        var stBar = new Progress_Bar({parent:barContainer,class:'stamina-bar'});
-        var mpBar = new Progress_Bar({parent:barContainer,class:'mp-bar'});
-        var hpBar = new Progress_Bar({parent:barContainer,class:'hp-bar'});
+        let stBar = new Progress_Bar({parent:barContainer,class:'stamina-bar'});
+        let mpBar = new Progress_Bar({parent:barContainer,class:'mp-bar'});
+        let hpBar = new Progress_Bar({parent:barContainer,class:'hp-bar'});
 
         Object.defineProperty(self,'face',{
             get:function(){

@@ -8,9 +8,9 @@
         throw "Charas requires Main";
     }
 
-    var Chara = root.Chara,
+    let Chara = root.Chara,
         Main = root.Main;
-    var charas = [];
+    let charas = [];
 
     Main.Charas = {
         /**

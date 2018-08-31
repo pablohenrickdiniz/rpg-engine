@@ -8,7 +8,7 @@
         throw "Image requires Element";
     }
 
-    var UI = root.UI,
+    let UI = root.UI,
         Element = UI.classes.Element;
 
     /**
@@ -16,8 +16,8 @@
      * @param options
      * @constructor
      */
-    var Image = function(options){
-        var self = this;
+    let Image = function(options){
+        let self = this;
         options = options || {};
         Element.call(self,options,'img');
         initialize(self);
@@ -31,7 +31,7 @@
      * @param self
      */
     function initialize(self){
-        var src = '';
+        let src = '';
 
         Object.defineProperty(self,'src',{
             /**

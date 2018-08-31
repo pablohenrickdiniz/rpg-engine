@@ -4,15 +4,15 @@
         throw "Game_Event requires Event_Page";
     }
 
-    var Event_Page = root.Event_Page;
+    let Event_Page = root.Event_Page;
 
     /**
      *
      * @param options
      * @constructor
      */
-    var Game_Event = function (options) {
-        var self = this;
+    let Game_Event = function (options) {
+        let self = this;
         self.switches = [];
         self.currentPage = null;
         self.pages = options.pages || [];
@@ -29,8 +29,8 @@
      */
     Game_Event.prototype.newPage = function(options) {
         options = options || {};
-        var self = this;
-        var page = new Event_Page(options);
+        let self = this;
+        let page = new Event_Page(options);
         self.pages.push(page);
         self.updateCurrentPage();
         return page;
@@ -42,7 +42,7 @@
      * @returns {boolean}
      */
     Game_Event.prototype.isEnabled = function(name){
-        var self = this;
+        let self = this;
         return !!self.switches[name];
     };
 
@@ -51,7 +51,7 @@
      * @param name
      */
     Game_Event.prototype.enableSwitch = function (name) {
-        var self = this;
+        let self = this;
         if(!self.switches[name]){
             self.switches[name] = true;
             self.updateCurrentPage();
@@ -63,7 +63,7 @@
      * @param name
      */
     Game_Event.prototype.disableSwitch = function (name) {
-        var self = this;
+        let self = this;
         if(self.switches[name]){
             delete self.switches[name];
             self.updateCurrentPage();
@@ -75,7 +75,7 @@
      * @param page
      */
     Game_Event.prototype.add = function (page) {
-        var self = this;
+        let self = this;
         if(page instanceof Event_Page && self.pages.indexOf(page) === -1){
             self.pages.push(page);
             self.updateCurrentPage();
@@ -87,8 +87,8 @@
      * @param page
      */
     Game_Event.prototype.remove = function(page){
-        var self = this;
-        var index = self.pages.indexOf(page);
+        let self = this;
+        let index = self.pages.indexOf(page);
         if(index !== -1){
             self.pages.splice(index,1);
             self.updateCurrentPage();
@@ -96,7 +96,7 @@
     };
 
     Game_Event.prototype.update = function(){
-        var self =this;
+        let self =this;
         if(self.currentPage != null){
             self.currentPage.update();
         }
@@ -107,14 +107,14 @@
      * @param self
      */
     function initialize(self){
-        var length = self.pages.length;
+        let length = self.pages.length;
         for(var i =0; i < length;i++){
             self.pages[i].event = self;
         }
 
-        var currentPage = null;
-        var x = 0;
-        var y = 0;
+        let currentPage = null;
+        let x = 0;
+        let y = 0;
 
         Object.defineProperty(self,'currentFrame',{
             /**
@@ -229,10 +229,10 @@
     };
 
     Game_Event.prototype.updateCurrentPage = function(){
-        var self = this;
-        var pages = self.pages;
-        var length = pages.length;
-        var currentPage = null;
+        let self = this;
+        let pages = self.pages;
+        let length = pages.length;
+        let currentPage = null;
         for(var i =0; i < length;i++){
             if(validateConditions(pages[i])){
                 currentPage = pages[i];
@@ -247,21 +247,21 @@
      * @returns {boolean}
      */
     function validateConditions(page){
-        var conditions = page.conditions;
+        let conditions = page.conditions;
         for(var scope in conditions){
             switch(scope){
                 case 'LOCAL':
                     for(var id in conditions[scope]){
-                        var status = !!event.switches[id];
+                        let status = !!event.switches[id];
                         if(conditions[scope][id] !== status){
                             return false;
                         }
                     }
                     break;
                 case 'GLOBAL':
-                    var GlobalSwitches = root.GlobalSwitches;
+                    let GlobalSwitches = root.GlobalSwitches;
                     for(var id in conditions[scope]){
-                        var status = !!GlobalSwitches.switches[id];
+                        let status = !!GlobalSwitches.switches[id];
                         if(conditions[scope][id] !== status){
                             return false;
                         }
