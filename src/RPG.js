@@ -24,7 +24,7 @@
         throw "RPG requires Matter";
     }
 
-    var Keyboard = w.Keyboard,
+    let Keyboard = w.Keyboard,
         Mouse = w.Mouse,
         TimerTicker = w.TimerTicker,
         Matter = w.Matter,
@@ -46,10 +46,10 @@
          * @param options
          */
         initialize: function (options) {
-            var self = this;
+            let self = this;
             options = options || {};
-            var container = options.container;
-            var ui_root = options.ui_root;
+            let container = options.container;
+            let ui_root = options.ui_root;
 
             self.UI.root = new self.UI.classes.Element({
                 id:'ui-root',
@@ -96,7 +96,7 @@
      * @param root
      */
     function unbind(root){
-        var Game_Timer = root.Game_Timer,
+        let Game_Timer = root.Game_Timer,
             Keyboard = root.Controls.Keyboard,
             Canvas  = root.Canvas;
 
@@ -118,7 +118,7 @@
      * @param root
      */
     function bind(root){
-        var Game_Timer = root.Game_Timer,
+        let Game_Timer = root.Game_Timer,
             Keyboard = root.Controls.Keyboard,
             Canvas  = root.Canvas;
 
@@ -135,25 +135,25 @@
     }
 
     function zoomin(){
-        var Canvas = RPG.Canvas;
+        let Canvas = RPG.Canvas;
         Canvas.zoomIn();
     }
 
     function zoomout(){
-        var Canvas = RPG.Canvas;
+        let Canvas = RPG.Canvas;
         Canvas.zoomOut();
     }
 
     function actionbutton(){
-        var Main = RPG.Main;
-        var current_scene = Main.currentScene;
+        let Main = RPG.Main;
+        let current_scene = Main.currentScene;
         if(current_scene){
             current_scene.action_button = true;
         }
     }
 
     function pausegame(){
-        var Game_Timer = RPG.Game_Timer;
+        let Game_Timer = RPG.Game_Timer;
         if(Game_Timer.running){
             Game_Timer.stop();
         }
@@ -163,16 +163,16 @@
     }
 
     function canvasresize(){
-        var Main = RPG.Main;
-        var current_scene = Main.currentScene;
+        let Main = RPG.Main;
+        let current_scene = Main.currentScene;
         if(current_scene){
             current_scene.bg_refreshed = false;
         }
     }
 
     function windowresize(){
-       var Canvas = RPG.Canvas;
-       var UI = RPG.UI;
+       let Canvas = RPG.Canvas;
+       let UI = RPG.UI;
        Canvas.height = w.innerHeight;
        Canvas.width = w.innerWidth;
         UI.height = w.innerHeight;
@@ -180,8 +180,8 @@
     }
 
     function tick(){
-        var Main = RPG.Main;
-        var current_scene = Main.currentScene;
+        let Main = RPG.Main;
+        let current_scene = Main.currentScene;
         if (current_scene) {
             current_scene.step();
         }

@@ -1,7 +1,7 @@
 'use strict';
 (function (w) {
     if(w.GlobalProgress === undefined){
-        throw "ImageLoader requires GlobalProgress"
+        throw "GraphicLoader requires GlobalProgress"
     }
 
     var GlobalProgress = w.GlobalProgress;

@@ -504,8 +504,8 @@
                     }
                 }
 
-                viewport_x = parseInt(viewport_x);
-                viewport_y = parseInt(viewport_y);
+                viewport_x = Math.round(viewport_x);
+                viewport_y = Math.round(viewport_y);
 
                 if (Canvas.x !== viewport_x || Canvas.y !== viewport_y) {
                     bg_refreshed = false;

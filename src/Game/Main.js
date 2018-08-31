@@ -63,7 +63,6 @@
                     var tmp = self.Actors.get(current_player_id);
                     if(tmp != null){
                         tmp.type = 'Actor';
-                        QuadTree.remove(tmp.body);
                     }
                 }
 
@@ -83,7 +82,6 @@
             return Main.Actors.get(current_player_id);
         }
     });
-
 
     root.Main = Main;
 })(RPG,window);
