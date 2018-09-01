@@ -29,15 +29,9 @@
         ID++;
         self.animations = [];
         self.animationSpeed = options.animationSpeed || 4;
-        self.body = Bodies.rectangle(
-            options.x || 0,
-            options.y || 0,
-            options.width || 32,
-            options.height || 32,{
-                frictionAir:0.09,
-                inertia:Infinity,
-                friction:0.0001
-            });
+        self.static = options.static || false;
+        self.x = options.x || 0;
+        self.y = options.y || 0;
         self.width = options.width || 32;
         self.height = options.height || 32;
         self.layer = options.layer || 2;
@@ -69,7 +63,7 @@
      */
     Game_Object.prototype.addCollisionGroup = function(group){
         let self = this;
-       // QuadTree.addGroup(self.bounds,group);
+        // QuadTree.addGroup(self.bounds,group);
     };
 
     /**
@@ -103,8 +97,11 @@
         let currentAnimation = null;
         let through = null;
         let body = null;
-        let width = null;
-        let height = null;
+        let width = 32;
+        let height = 32;
+        let x = 0;
+        let y = 0;
+        let st = true;
 
         Object.defineProperty(self,'body',{
             /**
@@ -121,6 +118,22 @@
              * @returns {*}
              */
             get:function(){
+                if(body == null){
+                    body = Bodies.rectangle(
+                        x,
+                        y,
+                        width,
+                        height,{
+                            frictionAir:0.09,
+                            inertia:Infinity,
+                            friction:0.0001,
+                            isStatic:st,
+                            plugin:{
+                                ref:self
+                            }
+                        }
+                    );
+                }
                 return body;
             }
         });
@@ -131,19 +144,23 @@
              * @returns {*}
              */
             get:function(){
-                return self.body.position.x;
+                if(body !== null && body.position.x !== x){
+                    x = body.position.x;
+                }
+                return x;
             },
             /**
              *
-             * @param x
+             * @param bx
              */
-            set:function(x){
-                if(x !== self.body.position.x){
-                    Body.setPosition(self.body,{
-                        x:x,
-                        y:self.y
+            set:function(bx){
+                if(body !== null && bx !== body.position.x){
+                    Body.setPosition(body,{
+                        x:bx,
+                        y:body.position.y
                     });
                 }
+                x = bx;
             }
         });
 
@@ -153,19 +170,23 @@
              * @returns {*}
              */
             get:function(){
-                return self.body.position.y;
+                if(body !== null && body.position.y !== y){
+                    y = body.position.y;
+                }
+                return y;
             },
             /**
              *
-             * @param y
+             * @param by
              */
-            set:function(y){
-                if(y !== self.body.position.y){
-                    Body.setPosition(self.body,{
-                        x:self.x,
-                        y:y
+            set:function(by){
+                if(by !== self.body.position.y){
+                    Body.setPosition(body,{
+                        x:body.position.x,
+                        y:by
                     });
                 }
+                y = by;
             }
         });
 
@@ -182,9 +203,9 @@
              * @param w
              */
             set:function(w){
-                if(w !== width){
+                if(width !== w){
+                    Body.scale(body,w/width,1);
                     width = w;
-                    Body.set(self.body,'width',w);
                 }
             }
         });
@@ -202,9 +223,9 @@
              * @param h
              */
             set:function(h){
-                if(h !== height){
+                if(height !== h){
+                    Body.scale(body,1,h/height);
                     height = h;
-                    Body.set(self.body,'height',h);
                 }
             }
         });
@@ -227,7 +248,7 @@
                     let keys = Object.keys(self.animations);
                     let length = keys.length;
                     let key;
-                    for(var i =0; i < length;i++){
+                    for(let i =0; i < length;i++){
                         key = keys[i];
                         self.animations[key].fps = speed;
                     }
@@ -254,7 +275,9 @@
                         currentAnimation.stop(self.graphic.startFrame);
                     }
                     currentAnimation = ca;
-                    currentAnimation.start();
+                    if(currentAnimation){
+                        currentAnimation.start();
+                    }
                 }
             }
         });
@@ -284,6 +307,24 @@
                 }
             }
         });
+
+
+        Object.defineProperty(self,'static',{
+            set:function(s){
+                if(body !== null){
+                    Body.set(body,'isStatic',!!s);
+                }
+                if(st !== s){
+                    st = s;
+                }
+            },
+            get:function(){
+                if(body != null && body.isStatic !== st){
+                    st = body.isStatic;
+                }
+                return st;
+            }
+        })
     }
 
     root.Game_Object = Game_Object;

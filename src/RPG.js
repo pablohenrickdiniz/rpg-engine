@@ -20,17 +20,9 @@
         throw "RPG requires TimeTicker";
     }
 
-    if(w.Matter === undefined){
-        throw "RPG requires Matter";
-    }
-
     let Keyboard = w.Keyboard,
         Mouse = w.Mouse,
-        TimerTicker = w.TimerTicker,
-        Matter = w.Matter,
-       
-        Render = Matter.Render;
-
+        TimerTicker = w.TimerTicker;
 
     w.RPG = {
         Game_Timer: new TimerTicker(),
@@ -61,7 +53,7 @@
             }
 
             if(self.Controls.Mouse instanceof Mouse){
-               self.Controls.Mouse.element = container;
+                self.Controls.Mouse.element = container;
             }
             else{
                 self.Controls.Mouse = new Mouse(container);
@@ -85,7 +77,7 @@
 
             self.UI.width = w.innerWidth;
             self.UI.height = w.innerHeight;
-        //    self.Game_Timer.stop();
+            //    self.Game_Timer.stop();
             unbind(self);
             bind(self);
         }
@@ -105,11 +97,11 @@
         w.removeEventListener('focus',windowfocus);
         w.removeEventListener('resize',windowresize);
         Game_Timer.removeEventListener('tick',tick);
-        Keyboard.removeShortcutListener('P',pausegame);
-        Keyboard.removeShortcutListener('ENTER', actionbutton);
+        Keyboard.removeShortcutListener('P',pause);
+        Keyboard.removeShortcutListener('ENTER', action);
         Keyboard.removeShortcutListener('PLUS',zoomin);
         Keyboard.removeShortcutListener('MINUS',zoomout);
-       Canvas.removeEventListener('resize',canvasresize);
+        Canvas.removeEventListener('resize',canvasresize);
 
     }
 
@@ -127,8 +119,8 @@
         w.addEventListener('focus', windowfocus);
         w.addEventListener('resize',windowresize);
         Game_Timer.addEventListener('tick', tick);
-        Keyboard.addShortcutListener('P', pausegame);
-        Keyboard.addShortcutListener('ENTER', actionbutton);
+        Keyboard.addShortcutListener('P', pause);
+        Keyboard.addShortcutListener('ENTER', action);
         Keyboard.addShortcutListener('PLUS',zoomin);
         Keyboard.addShortcutListener('MINUS',zoomout);
         Canvas.addEventListener('resize',canvasresize);
@@ -144,15 +136,15 @@
         Canvas.zoomOut();
     }
 
-    function actionbutton(){
+    function action(){
         let Main = RPG.Main;
         let current_scene = Main.currentScene;
         if(current_scene){
-            current_scene.action_button = true;
+            current_scene.action = true;
         }
     }
 
-    function pausegame(){
+    function pause(){
         let Game_Timer = RPG.Game_Timer;
         if(Game_Timer.running){
             Game_Timer.stop();
@@ -171,10 +163,10 @@
     }
 
     function windowresize(){
-       let Canvas = RPG.Canvas;
-       let UI = RPG.UI;
-       Canvas.height = w.innerHeight;
-       Canvas.width = w.innerWidth;
+        let Canvas = RPG.Canvas;
+        let UI = RPG.UI;
+        Canvas.height = w.innerHeight;
+        Canvas.width = w.innerWidth;
         UI.height = w.innerHeight;
         UI.width = w.innerWidth;
     }

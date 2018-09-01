@@ -1,11 +1,11 @@
 'use strict';
 (function (root,w) {
     if (w.Graphic_Loader === undefined) {
-        throw "TilesetLoader requires Graphic_Loader"
+        throw "TilesetLoader requires Graphic_Loader";
     }
 
     if (root.Tileset === undefined) {
-        throw "TilesetLoader requires Tileset"
+        throw "TilesetLoader requires Tileset";
     }
 
     let Tileset = root.Tileset,

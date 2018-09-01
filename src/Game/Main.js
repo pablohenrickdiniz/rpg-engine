@@ -17,8 +17,7 @@
     }
 
     let Scene = root.Scene,
-        Game_Map = root.Game_Map,
-        QuadTree = root.QuadTree;
+        Game_Map = root.Game_Map;
 
     let Main = {
         Actors: null,   //Atores
@@ -31,9 +30,17 @@
     };
 
     Object.defineProperty(self,'currentScene',{
+        /**
+         *
+         * @returns {*}
+         */
         get:function(){
             return current_scene;
         },
+        /**
+         *
+         * @param c
+         */
         set:function(c){
             if(c instanceof Scene && c !== current_scene){
                 current_scene = c;
@@ -42,9 +49,17 @@
     });
 
     Object.defineProperty(Main,'currentMap',{
+        /**
+         *
+         * @returns {*}
+         */
         get:function(){
             return current_map;
         },
+        /**
+         *
+         * @param map
+         */
         set:function(map){
             if(map instanceof Game_Map){
                 current_map = map;
@@ -53,9 +68,17 @@
     });
 
     Object.defineProperty(Main,'currentPlayerID',{
+        /**
+         *
+         * @returns {*}
+         */
         get:function(){
             return current_player_id;
         },
+        /**
+         *
+         * @param player_id
+         */
         set:function(player_id){
             let self = this;
             if(player_id !== current_player_id){
@@ -78,6 +101,10 @@
     });
 
     Object.defineProperty(Main,'currentPlayer',{
+        /**
+         *
+         * @returns Actor
+         */
         get:function(){
             return Main.Actors.get(current_player_id);
         }

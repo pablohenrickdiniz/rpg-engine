@@ -1,69 +1,69 @@
 'use strict';
 (function (root,w) {
-    if (w.QuadTree === undefined) {
-        throw "Scene_Map requires QuadTree"
-    }
-
     if (root.Scene === undefined) {
-        throw "Scene_Map requires Scene"
+        throw "Scene_Map requires Scene";
     }
 
     if (root.Canvas === undefined) {
-        throw "Scene_Map requires Canvas"
+        throw "Scene_Map requires Canvas";
     }
 
     if (root.Game_Item === undefined) {
-        throw "Scene_Map requires Game_Item"
+        throw "Scene_Map requires Game_Item";
     }
 
-    if (root.Game_Event === undefined) {
-        throw "Scene_Map requires Game_Event"
+    if (root.Event_Page === undefined) {
+        throw "Scene_Map requires Event_Page";
+    }
+
+    if(root.Game_Actor === undefined){
+        throw "Scene_Map requires Game_Actor";
     }
 
     if(root.Main === undefined){
-        throw "Scene_Map requires Main"
+        throw "Scene_Map requires Main";
     }
     else{
         if (root.Main.Graphics === undefined) {
-            throw "Scene_Map requires Graphics"
+            throw "Scene_Map requires Graphics";
         }
 
         if(root.Main.Tilesets === undefined){
-            throw "Scene_Map requires Tilesets"
+            throw "Scene_Map requires Tilesets";
         }
     }
 
     if(root.Spriteset_Map === undefined){
-        throw "Scene_Map requires Spriteset_Map"
+        throw "Scene_Map requires Spriteset_Map";
     }
 
     if(root.Game_Object === undefined){
-        throw "Scene_Map requires Game_Object"
+        throw "Scene_Map requires Game_Object";
     }
 
     if(w.Matter === undefined){
-        throw "Scene_Map requires Matter"
+        throw "Scene_Map requires Matter";
     }
 
     if(root.Canvas === undefined){
-        throw "Scene_Map requires Canvas"
+        throw "Scene_Map requires Canvas";
     }
 
     let Scene = root.Scene,
         Canvas = root.Canvas,
         Consts = root.Consts,
         Main = root.Main,
-        Game_Event = root.Game_Event,
+        Event_Page = root.Event_Page,
         Game_Item = root.Game_Item,
+        Game_Actor = root.Game_Actor,
         Spriteset_Map = root.Spriteset_Map,
         Game_Object = root.Game_Object,
         Tilesets = Main.Tilesets,
-        Graphics =  Main.Graphics,
         Matter = w.Matter,
         Engine = Matter.Engine,
         World = Matter.World,
-        Body = Matter.Body,
-        Bodies = Matter.Bodies;
+        Bodies = Matter.Bodies,
+        Events = Matter.Events;
 
     let clear_queue = [];
     let bg_refreshed = false;
@@ -77,9 +77,8 @@
     let Scene_Map = function (options) {
         let self = this;
         Scene.call(self, options);
-        initialize(self);
         self.map = options.map || {};
-        self.action_button = false;
+        self.action = false;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
         self.objs = [];
         self.charas = options.charas || {};
@@ -88,25 +87,38 @@
         self.items = options.items || {};
         self.icons = options.icons || {};
         self.objects = options.objects || [];
-        self.engine = Engine.create();
-        self.engine.world.gravity = {
-            x:0,
-            y:0
-        };
+        initialize(self);
 
-        let size = 20;
+        self.addEventListener('collisionActive',function(a,b){
+            let page = null;
+            let actor = null;
+            if(a instanceof Event_Page){
+                page = a;
+            }
+            else if(a instanceof Game_Actor){
+                actor = a;
+            }
 
-        World.add(self.engine.world,[
-            Bodies.rectangle(self.spriteset.realWidth/2, -size/2, self.spriteset.realWidth, size, { isStatic: true,friction: 0 }),
-            Bodies.rectangle(self.spriteset.realWidth+size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true,friction:0 }),
-            Bodies.rectangle(self.spriteset.realWidth/2, self.spriteset.realHeight+(size/2), self.spriteset.realWidth, size, { isStatic: true,friction:0}),
-            Bodies.rectangle(-size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true, friction:0})
-        ]);
+            if(b instanceof Event_Page){
+                page = b;
+            }
+            else if(b instanceof Game_Actor){
+                actor = b;
+            }
+
+            if (page !== null && actor !== null) {
+                if (typeof page.script === 'function') {
+                    if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action)) {
+                        self.action = false;
+                        page.script.apply(page.event);
+                    }
+                }
+            }
+        });
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
     Scene_Map.prototype.constructor = Scene_Map;
-
     /**
      * Adiciona um objeto na cena
      * @param object
@@ -155,21 +167,13 @@
         let self = this;
         Scene.prototype.step.apply(this);
         Engine.update(self.engine);
-        // if(Main.currentPlayer){
-        //     action_events(self);
-        // }
+        self.action = false;
         step_events(self);
         step_focus(self);
         refresh_bg(self);
         clear_graphics(self);
         draw_graphics(self);
     };
-
-
-
-
-
-
 
     //Private Methods
 
@@ -289,7 +293,6 @@
         }
     }
 
-
     /**
      *
      * @param self
@@ -308,16 +311,14 @@
      * Renderiza os objetos no mapa
      */
     function draw_graphics(self) {
-        let sx = root.Canvas.x;
-        let sy = root.Canvas.y;
         let spriteset = self.spriteset;
-
         let mw = spriteset.realWidth;
         let mh = spriteset.realHeight;
 
         let objs = self.objs.sort(function(a,b){
             return a.y-b.y;
         });
+
 
         for(let i =0; i < objs.length;i++){
             draw_object(objs[i].x,objs[i].y,objs[i],mw,mh);
@@ -354,6 +355,12 @@
         }
     }
 
+    /**
+     *
+     * @param o
+     * @param vw
+     * @returns {Array}
+     */
     function splith(o,vw){
         let frames = [];
 
@@ -394,6 +401,12 @@
         return frames;
     }
 
+    /**
+     *
+     * @param o
+     * @param vh
+     * @returns {Array}
+     */
     function splitv(o,vh){
         let frames = [];
         let dxh = o.dy+o.dHeight;
@@ -432,6 +445,13 @@
         return frames;
     }
 
+    /**
+     *
+     * @param obj
+     * @param vw
+     * @param vh
+     * @returns {Array}
+     */
     function split(obj,vw,vh){
         let frames = [];
         let tmp = splith(obj,vw);
@@ -460,24 +480,8 @@
         let frame = object.currentFrame;
         if (frame != null && frame.image) {
             let image = frame.image;
-            /*  let i;
-              let draws = split({
-                  dx:x,
-                  dy:y,
-                  dWidth: frame.dWidth,
-                  dHeight: frame.dHeight,
-                  sx: frame.sx,
-                  sy: frame.sy,
-                  sWidth: frame.sWidth,
-                  sHeight: frame.sHeight,
-                  layer: object.layer,
-                  type: Consts.EVENT_LAYER
-              },vw,vh);*/
-            // for(i =0; i < draws.length;i++){
-
-            x = Math.round(x-Canvas.x-object.width/2);
-            y = Math.round(y-Canvas.y-object.height/2);
-
+            x = Math.round(x-Canvas.x-(object.width/2));
+            y = Math.round(y-Canvas.y-(object.height/2));
             Canvas.drawImage(image,{
                 dx:x,
                 dy:y,
@@ -566,7 +570,6 @@
         for (i = 0; i < length; i++) {
             objs[i].update();
         }
-
     }
 
     /**
@@ -574,80 +577,45 @@
      * @param self
      */
     function action_events(self) {
-        let player = Main.currentPlayer;
-        let tree = self.tree;
+        // let player = Main.currentPlayer;
+        //
+        //
+        // let length;
+        // let collisions;
+        // let i;
+        // let collision;
+        // let obj;
+        //
+        // collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
+        // length = collisions.length;
+        // for (i = 0; i < length; i++) {
+        //     collision = collisions[i];
+        //     obj = collision.object;
 
-        let bounds_tmp = {
-            x: player.body.x,
-            y: player.body.y,
-            width: player.body.width,
-            height: player.body.height,
-            groups: ['ACTION_BUTTON']
-        };
-
-        let d = player.direction;
-
-        switch (d) {
-            case Consts.CHARACTER_DIRECTION_UP:
-                bounds_tmp.y -= bounds_tmp.height;
-                bounds_tmp.height *= 2;
-                break;
-            case Consts.CHARACTER_DIRECTION_RIGHT:
-                bounds_tmp.width *= 2;
-                break;
-            case Consts.CHARACTER_DIRECTION_DOWN:
-                bounds_tmp.height *= 2;
-                break;
-            case Consts.CHARACTER_DIRECTION_LEFT:
-                bounds_tmp.x -= bounds_tmp.width;
-                bounds_tmp.width *= 2;
-                break;
-        }
-
-        let length;
-        let collisions;
-        let i;
-        let collision;
-        let obj;
-
-        collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
-        length = collisions.length;
-        for (i = 0; i < length; i++) {
-            collision = collisions[i];
-            obj = collision.object;
-            if (obj instanceof Game_Event && obj.currentPage) {
-                let page = obj.currentPage;
-                if (typeof page.script === 'function') {
-                    if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action_button)) {
-                        page.script.apply(obj);
-                    }
-                }
-
-            }
-        }
-
-        bounds_tmp = {
-            x: player.body.x,
-            y: player.body.y,
-            width: player.body.width,
-            height: player.body.height,
-            groups: ['ITEM']
-        };
-
-        collisions = tree.retrieve(bounds_tmp, 'ITEM');
-        length = collisions.length;
-        for (i = 0; i < length; i++) {
-            collision = collisions[i];
-            obj = collision.object;
-            if (obj instanceof Game_Item) {
-                if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
-                    player.inventory.addItem(obj.item,obj.amount);
-                    self.remove(obj);
-                }
-            }
-        }
-
-        self.action_button = false;
+        // }
+        //
+        // bounds_tmp = {
+        //     x: player.body.x,
+        //     y: player.body.y,
+        //     width: player.body.width,
+        //     height: player.body.height,
+        //     groups: ['ITEM']
+        // };
+        //
+        // collisions = tree.retrieve(bounds_tmp, 'ITEM');
+        // length = collisions.length;
+        // for (i = 0; i < length; i++) {
+        //     collision = collisions[i];
+        //     obj = collision.object;
+        //     if (obj instanceof Game_Item) {
+        //         if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
+        //             player.inventory.addItem(obj.item,obj.amount);
+        //             self.remove(obj);
+        //         }
+        //     }
+        // }
+        //
+        // self.action_button = false;
     }
 
     /**
@@ -655,23 +623,52 @@
      * @param self
      */
     function initialize(self){
-        let tree = null;
-        Object.defineProperty(self,'tree',{
-            get:function(){
-                if(tree == null){
-                    tree = new QuadTree({
-                        x: 0,
-                        y: 0,
-                        width: self.spriteset.realWidth || 640,
-                        height: self.spriteset.realHeight || 640
-                    },{
-                        loop_x:true,
-                        loop_y:true
-                    });
+        let engine = Engine.create();
+        engine.world.gravity = {
+            x:0,
+            y:0
+        };
+        let size = 20;
+        World.add(engine.world,[
+            Bodies.rectangle(self.spriteset.realWidth/2, -size/2, self.spriteset.realWidth, size, { isStatic: true,friction: 0 }),
+            Bodies.rectangle(self.spriteset.realWidth+size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true,friction:0 }),
+            Bodies.rectangle(self.spriteset.realWidth/2, self.spriteset.realHeight+(size/2), self.spriteset.realWidth, size, { isStatic: true,friction:0}),
+            Bodies.rectangle(-size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true, friction:0})
+        ]);
+
+        Events.on(engine,'collisionStart',function(event){
+            let pairs = event.pairs;
+            // change object colours to show those starting a collision
+            for (let i = 0; i < pairs.length; i++) {
+                let pair = pairs[i];
+                if(pair.bodyA.plugin.ref !== undefined && pair.bodyB.plugin.ref !== undefined){
+                    self.trigger('collisionStart',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
                 }
-                return tree;
             }
         });
+
+        Events.on(engine,'collisionActive',function(event){
+            let pairs = event.pairs;
+            // change object colours to show those starting a collision
+            for (let i = 0; i < pairs.length; i++) {
+                let pair = pairs[i];
+                if(pair.bodyA.plugin.ref !== undefined && pair.bodyB.plugin.ref !== undefined){
+                    self.trigger('collisionActive',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
+                }
+            }
+        });
+
+        Events.on(engine,'collisionEnd',function(event){
+            let pairs = event.pairs;
+            // change object colours to show those starting a collision
+            for (let i = 0; i < pairs.length; i++) {
+                let pair = pairs[i];
+                if(pair.bodyA.plugin.ref !== undefined && pair.bodyB.plugin.ref !== undefined){
+                    self.trigger('collisionEnd',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
+                }
+            }
+        });
+
 
         Object.defineProperty(self,'bg_refreshed',{
             /**
@@ -687,6 +684,16 @@
              */
             set:function(bgr){
                 bg_refreshed = !!bgr;
+            }
+        });
+
+        Object.defineProperty(self,'engine',{
+            /**
+             *
+             * @returns {engine}
+             */
+            get:function(){
+                return engine;
             }
         });
     }

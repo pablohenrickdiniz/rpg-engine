@@ -28,7 +28,7 @@
         self.graphics = options.graphics || {};
         self.animation_queue = [];
         self.fps = options.fps || 60;
-        self.eventListeners = {};
+        self.listeners = [];
 
         if(typeof options.start === 'function'){
             self.addEventListener('start',options.start);
@@ -85,10 +85,10 @@
      */
     Scene.prototype.trigger = function(event,args){
         let self = this;
-        if(self.eventListeners[event] !== undefined){
-            let length = self.eventListeners[event].length;
+        if(self.listeners[event] !== undefined){
+            let length = self.listeners[event].length;
             for(var i = 0; i < length;i++){
-                self.eventListeners[event][i].apply(self,args);
+                self.listeners[event][i].apply(self,args);
             }
         }
     };
@@ -100,11 +100,11 @@
      */
     Scene.prototype.addEventListener = function(event,callback){
         let self = this;
-        if(self.eventListeners[event] === undefined){
-            self.eventListeners[event] = [];
+        if(self.listeners[event] === undefined){
+            self.listeners[event] = [];
         }
-        if(self.eventListeners[event].indexOf(callback) === -1){
-            self.eventListeners[event].push(callback);
+        if(self.listeners[event].indexOf(callback) === -1){
+            self.listeners[event].push(callback);
         }
     };
 
@@ -115,10 +115,10 @@
      */
     Scene.prototype.removeEventListener = function(event,callback){
         let self = this;
-        if(self.eventListeners[event] !== undefined){
-            let index =self.eventListeners[event].indexOf(callback);
+        if(self.listeners[event] !== undefined){
+            let index =self.listeners[event].indexOf(callback);
             if(index !== -1){
-                self.eventListeners[event].splice(index,1);
+                self.listeners[event].splice(index,1);
             }
         }
     };

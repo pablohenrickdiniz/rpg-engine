@@ -1,8 +1,7 @@
 'use strict';
 (function(w){
     let GlobalProgress = function () {
-        let self = this;
-        self.media = [];
+        this.media = [];
     };
 
     /**
@@ -10,8 +9,7 @@
      * @param media
      */
     GlobalProgress.prototype.add = function(media){
-        let self = this;
-        self.media.push(media);
+        this.media.push(media);
     };
 
     /**
@@ -20,8 +18,7 @@
      * @returns {boolean}
      */
     GlobalProgress.prototype.exists = function (obj) {
-        let self = this;
-        return self.media.indexOf(obj) !== -1;
+        return this.media.indexOf(obj) !== -1;
     };
 
     /**
@@ -32,7 +29,7 @@
         let self = this;
         let length = self.media.length;
         let sum = 0;
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             sum += self.media[i].total;
         }
         return sum;
@@ -46,7 +43,7 @@
         let self = this;
         let length = self.media.length;
         let sum = 0;
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             sum += self.media[i].loaded;
         }
         return sum;

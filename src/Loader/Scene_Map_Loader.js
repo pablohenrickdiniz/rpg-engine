@@ -1,83 +1,83 @@
 'use strict';
 (function (root) {
     if (root.Scene_Loader === undefined) {
-        throw "Scene_Map_Loader requires Scene_Loader"
+        throw "Scene_Map_Loader requires Scene_Loader";
     }
 
     if (root.Spriteset_Map === undefined) {
-        throw "Scene_Map_Loader requires Spriteset_Map"
+        throw "Scene_Map_Loader requires Spriteset_Map";
     }
 
     if (root.Game_Map === undefined) {
-        throw "Scene_Map_Loader requires Game_Map"
+        throw "Scene_Map_Loader requires Game_Map";
     }
 
     if (root.Tile === undefined) {
-        throw "Scene_Map_Loader requires Tile"
+        throw "Scene_Map_Loader requires Tile";
     }
 
     if(root.Tileset === undefined){
-        throw "Scene_Map_Loader requires Tileset"
+        throw "Scene_Map_Loader requires Tileset";
     }
 
     if(root.Game_Icon === undefined){
-        throw "Scene_Map_Loader requires Game_Icon"
+        throw "Scene_Map_Loader requires Game_Icon";
     }
 
     if(root.Game_Item === undefined){
-        throw "Scehe_Map_Loader requires Game_Item"
+        throw "Scene_Map_Loader requires Game_Item";
+    }
+
+    if(root.Game_Event === undefined){
+        throw "Scene_Map_Loader requires Game_Event";
     }
 
     if(root.Main === undefined){
-        throw "Scene_Map_Loader requires Main"
+        throw "Scene_Map_Loader requires Main";
     }
     else{
         if(root.Main.Tilesets === undefined){
-            throw "Scene_Map_Loader requires Tilesets"
+            throw "Scene_Map_Loader requires Tilesets";
         }
 
         if(root.Main.Charas === undefined){
-            throw "Scene_Map_Loader requires Charas"
+            throw "Scene_Map_Loader requires Charas";
         }
 
         if(root.Main.Faces === undefined){
-            throw "Scene_Map_Loader requires Faces"
+            throw "Scene_Map_Loader requires Faces";
         }
 
         if(root.Main.Items === undefined){
-            throw "Scene_Map_Loader requires Items"
+            throw "Scene_Map_Loader requires Items";
         }
 
         if(root.Main.Icons === undefined){
-            throw "Scene_Map_Loader requires Icons"
+            throw "Scene_Map_Loader requires Icons";
         }
 
         if(root.Main.Actors === undefined){
-            throw "Scene_Map_Loader requires Actors"
+            throw "Scene_Map_Loader requires Actors";
         }
     }
 
-
     if(root.Chara === undefined){
-        throw "Scene_Map_Loader requires Chara"
+        throw "Scene_Map_Loader requires Chara";
     }
 
     if(root.Game_Actor === undefined){
-        throw "Scene_Map_Loader requires Game_Actor"
+        throw "Scene_Map_Loader requires Game_Actor";
     }
 
     if(root.Game_Face === undefined){
-        throw "Scene_Map_Loader requires Game_Face"
+        throw "Scene_Map_Loader requires Game_Face";
     }
 
     if(root.Item === undefined){
-        throw "Scene_Map_Loader requires Item"
+        throw "Scene_Map_Loader requires Item";
     }
 
-    let Spriteset_Map = root.Spriteset_Map,
-        Game_Map = root.Game_Map,
-        Scene_Loader = root.Scene_Loader,
-        Tile = root.Tile,
+    let Scene_Loader = root.Scene_Loader,
         Tileset = root.Tileset,
         Main = root.Main,
         Chara = root.Chara,
@@ -86,6 +86,7 @@
         Item = root.Item,
         Game_Icon = root.Game_Icon,
         Game_Item = root.Game_Item,
+        Game_Event = root.Game_Event,
         Tilesets = Main.Tilesets,
         Charas  = Main.Charas,
         Faces = Main.Faces,
@@ -187,14 +188,16 @@
                 }
             }
 
-
             if(scene.objects){
                 length = scene.objects.length;
                 for(i =0; i < length;i++){
                     conf = scene.objects[i];
                     switch(conf.class){
-                        case 'Game_Item':
+                        case 'Item':
                             scene.add(new Game_Item(conf));
+                            break;
+                        case 'Event':
+                            scene.add(new Game_Event(conf));
                             break;
                     }
                 }

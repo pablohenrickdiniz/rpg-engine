@@ -106,10 +106,6 @@
                 onprogress:ongraphicprogress
             })
         }
-
-
-
-
     };
 
     /**

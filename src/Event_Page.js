@@ -107,7 +107,7 @@
             set:function(cond){
                 conditions = [];
                 let length = cond.length;
-                for(var i =0; i < length;i++){
+                for(let i =0; i < length;i++){
                     self.addCondition(cond[i]);
                 }
             },
@@ -173,7 +173,6 @@
             }
         });
     };
-
 
     root.Event_Page = Event_Page;
 })(RPG);
