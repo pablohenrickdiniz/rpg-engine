@@ -125,7 +125,6 @@
             let keys;
             let length;
             let key;
-            let i;
             let conf;
 
             if(map.tileset && map.tileset.graphicID){
@@ -134,10 +133,20 @@
                 Tilesets.set(id,tileset);
             }
 
+            if(map.tilesets && map.tilesets instanceof Array){
+                for(let i =0; i < map.tilesets.length;i++){
+                    if(map.tilesets[i].graphicID){
+                        let id = map.tilesets[i].graphicID;
+                        let tileset = new Tileset(map.tilesets[i]);
+                        Tilesets.set(id,tileset);
+                    }
+                }
+            }
+
             if(scene.icons && scene.icons.constructor === {}.constructor){
                 keys = Object.keys(scene.icons);
                 length = keys.length;
-                for(i =0; i < length;i++){
+                for(let i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.icons[key];
                     Icons.set(key,new Game_Icon(conf));
@@ -148,7 +157,7 @@
             if(scene.faces && scene.faces.constructor === {}.constructor){
                 keys = Object.keys(scene.faces);
                 length = keys.length;
-                for(i =0; i < length;i++){
+                for(let i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.faces[key];
                     Faces.set(key,new Game_Face(conf));
@@ -159,7 +168,7 @@
             if(scene.charas && scene.charas.constructor === {}.constructor){
                 keys = Object.keys(scene.charas);
                 length = keys.length;
-                for(i =0; i < length;i++){
+                for(let i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.charas[key];
                     let chara = new Chara(conf);
@@ -170,7 +179,7 @@
             if(scene.items && scene.items.constructor === {}.constructor){
                 keys = Object.keys(scene.items);
                 length = keys.length;
-                for(i =0; i < length;i++){
+                for(let i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.items[key];
                     conf = Object.assign({id:key},conf);
@@ -181,7 +190,7 @@
             if(scene.actors && scene.actors.constructor === {}.constructor){
                 keys = Object.keys(scene.actors);
                 length = keys.length;
-                for(i =0; i < length;i++){
+                for(let i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.actors[key];
                     Actors.set(key,new Game_Actor(conf));
@@ -190,7 +199,7 @@
 
             if(scene.objects){
                 length = scene.objects.length;
-                for(i =0; i < length;i++){
+                for(let i =0; i < length;i++){
                     conf = scene.objects[i];
                     switch(conf.class){
                         case 'Item':

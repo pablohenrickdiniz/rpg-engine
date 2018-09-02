@@ -1,15 +1,40 @@
 'use strict';
-(function (root) {
-    if(root.Event_Page === undefined){
+(function (root,w) {
+    if(!root.Event_Page){
         throw "Game_Event requires Event_Page";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Game_Event requires Main";
     }
 
+    if(!root.Main.Switches){
+        throw "Game_Event requires Switches";
+    }
+
+    if(!root.Main.Events){
+        throw "Game_Event requires Events";
+    }
+
+    if(!w.Matter){
+        throw "Game_Event requires Matter";
+    }
+
+    if(!root.Audio){
+        throw "Game_Event requires Audio";
+    }
+
+    if(!root.Consts){
+        throw "Game_Event requires Consts";
+    }
+
     let Event_Page = root.Event_Page,
-        Switches = root.Main.Switches;
+        Switches = root.Main.Switches,
+        Matter = w.Matter,
+        Body = Matter.Body,
+        Audio = root.Audio,
+        Events = root.Main.Events,
+        Consts = root.Consts;
 
     /**
      *
@@ -43,36 +68,138 @@
 
     /**
      *
-     * @param name
+     * @param names
      * @returns {boolean}
      */
-    Game_Event.prototype.isEnabled = function(name){
+    Game_Event.prototype.isSwitchEnabled = function(names){
+        if(!(names instanceof Array))
+            names = [names];
+
         let self = this;
-        return !!self.switches[name];
+        for(let i = 0; i < names.length;i++){
+            let name = names[i];
+            if(!self.switches[name]){
+                return false;
+            }
+        }
+        return true;
     };
 
     /**
      *
-     * @param name
+     * @param names
+     * @returns {boolean}
      */
-    Game_Event.prototype.enableSwitch = function (name) {
+    Game_Event.prototype.isSwitchDisabled = function(names){
+        if(!(names instanceof Array))
+            names = [names];
+
         let self = this;
-        if(!self.switches[name]){
-            self.switches[name] = true;
-            self.updateCurrentPage();
+        for(let i = 0; i < names.length;i++){
+            let name = names[i];
+            if(!!self.switches[name]){
+                return false;
+            }
         }
+        return true;
     };
 
     /**
      *
-     * @param name
+     * @param names
+     * @returns {Game_Event}
      */
-    Game_Event.prototype.disableSwitch = function (name) {
+    Game_Event.prototype.enableSwitch = function (names) {
+        if(!(names instanceof Array))
+            names = [names];
+
         let self = this;
-        if(self.switches[name]){
-            delete self.switches[name];
+        let changed = false;
+        for(let i = 0; i < names.length;i++){
+            let name = names[i];
+            if(!self.switches[name]){
+                self.switches[name] = true;
+                changed = true;
+            }
+        }
+        if(changed){
             self.updateCurrentPage();
         }
+        return self;
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {Game_Event}
+     */
+    Game_Event.prototype.disableSwitch = function (names) {
+        if(!(names instanceof Array))
+            names = [names];
+
+        let self = this;
+        let changed = false;
+        for(let i = 0; i < names.length;i++){
+            let name = names[i];
+            if(self.switches[name]){
+                delete self.switches[name];
+                changed = true;
+            }
+        }
+
+        if(changed){
+            self.updateCurrentPage();
+        }
+
+        return self;
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {Game_Event}
+     */
+    Game_Event.prototype.enableGlobalSwitch = function (names) {
+        Switches.enable(names);
+        return this;
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {Game_Event}
+     */
+    Game_Event.prototype.disableGlobalSwitch = function (names) {
+        Switches.disable(names);
+        return this;
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {boolean}
+     */
+    Game_Event.prototype.isGlobalSwitchEnabled = function (names) {
+        return Switches.isEnabled(names);
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {boolean}
+     */
+    Game_Event.prototype.isGlobalSwitchDisabled = function (names) {
+        return Switches.isDisabled(names);
+    };
+
+    /**
+     *
+     * @param type
+     * @param name
+     */
+    Game_Event.prototype.playAudio = function(type,name){
+        Audio.play(type,name);
+        return this;
     };
 
     /**
@@ -182,8 +309,14 @@
                     cp.y = self.y;
                     if(currentPage != null && currentPage.body){
                         cp.body = currentPage.body;
+                        cp.body.plugin.ref = cp;
+                        Body.scale(cp.body,cp.width/currentPage.width,1);
+                        Body.scale(cp.body,1,cp.height/currentPage.height);
                     }
                     currentPage = cp;
+                    if(typeof cp.script === 'function' && cp.trigger === Consts.TRIGGER_AUTO_RUN){
+                        cp.script();
+                    }
                 }
             }
         });
@@ -277,8 +410,12 @@
                 }
                 return 0;
             }
-        })
-    };
+        });
+
+        Events.on('globalSwitchChanged',function(){
+            self.updateCurrentPage();
+        });
+    }
 
     Game_Event.prototype.updateCurrentPage = function(){
         let self = this;
@@ -290,7 +427,6 @@
                 currentPage = pages[i];
             }
         }
-
         self.currentPage = currentPage;
     };
 
@@ -313,7 +449,7 @@
                     break;
                 case 'GLOBAL':
                     for(let id in conditions[scope]){
-                        if(conditions[scope][id] !== Switches.read(id)){
+                        if(conditions[scope][id] !== Switches.isEnabled(id)){
                             return false;
                         }
                     }
@@ -325,4 +461,4 @@
     }
 
     root.Game_Event = Game_Event;
-})(RPG);
+})(RPG,window);

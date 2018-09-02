@@ -26,7 +26,8 @@
         Switches:null,  //Switches
         Items:null,     //Items
         Maps:null,      //Maps
-        Faces:null      //Faces
+        Faces:null,      //Faces
+        Events:null
     };
 
     Object.defineProperty(self,'currentScene',{

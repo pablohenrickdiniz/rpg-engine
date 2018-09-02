@@ -73,21 +73,114 @@
 
     /**
      *
+     * @param name
+     * @returns {Game_Event}
+     */
+    Event_Page.prototype.enableSwitch = function(name){
+        return this.event.enableSwitch(name);
+    };
+
+    /**
+     *
+     * @param name
+     * @returns {Game_Event}
+     */
+    Event_Page.prototype.disableSwitch = function(name){
+        return this.event.disableSwitch(name);
+    };
+
+    /**
+     *
+     * @param name
+     * @returns {boolean}
+     */
+    Event_Page.prototype.isSwitchEnabled = function(name){
+        return this.event.isSwitchEnabled(name);
+    };
+
+    /**
+     *
+     * @param name
+     * @returns {boolean}
+     */
+    Event_Page.prototype.isSwitchDisabled = function(name){
+        return this.event.isSwitchDisabled(name);
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {*|Game_Event}
+     */
+    Event_Page.prototype.enableGlobalSwitch = function (names) {
+        return this.event.enableGlobalSwitch(names);
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {*|Game_Event}
+     */
+    Event_Page.prototype.disableGlobalSwitch = function (names) {
+        return this.event.disableGlobalSwitch(names);
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {boolean}
+     */
+    Event_Page.prototype.isGlobalSwitchEnabled = function (names) {
+        return this.event.isGlobalSwitchEnabled(names);
+    };
+
+    /**
+     *
+     * @param names
+     * @returns {boolean}
+     */
+    Event_Page.prototype.isGlobalSwitchDisabled = function (names) {
+        return this.event.isGlobalSwitchDisabled(names);
+    };
+
+    /**
+     *
+     * @param type
+     * @param name
+     * @returns {*}
+     */
+    Event_Page.prototype.playAudio = function(type,name){
+        return this.event.playAudio(type,name);
+    };
+
+    /**
+     *
+     * @param name
+     * @returns {*}
+     */
+    Event_Page.prototype.isDisabled = function(name){
+        return this.event.isDisabled(name);
+    };
+
+    /**
+     *
      * @param condition
+     * @returns {Event_Page}
      */
     Event_Page.prototype.addCondition = function(condition){
+        let self = this;
         condition = condition.toUpperCase();
         if(SWITCH_CONDITION_REGEX.test(condition)){
             condition = condition.split(':');
             let scope = condition[0];
             let id = condition[1];
             let status = condition[2]==='ON';
-            let self = this;
             if(self.conditions[scope] === undefined){
                 self.conditions[scope] = [];
             }
             self.conditions[scope][id] = status;
         }
+        return self;
     };
 
     /**

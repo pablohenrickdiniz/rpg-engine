@@ -32,7 +32,6 @@
         self.amount = options.amount || 1;
         self.graphic_type = 'icon';
         self.capture = options.capture || Consts.TRIGGER_PLAYER_TOUCH;
-        self.body.groups.push('ITEM');
         self.itemID = options.itemID;
     };
 
@@ -56,7 +55,6 @@
             }
         });
     }
-
 
     root.Game_Item = Game_Item;
 })(RPG);

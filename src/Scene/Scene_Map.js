@@ -110,7 +110,7 @@
                 if (typeof page.script === 'function') {
                     if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action)) {
                         self.action = false;
-                        page.script.apply(page.event);
+                        page.script();
                     }
                 }
             }
@@ -480,8 +480,8 @@
         let frame = object.currentFrame;
         if (frame != null && frame.image) {
             let image = frame.image;
-            x = Math.round(x-Canvas.x-(object.width/2));
-            y = Math.round(y-Canvas.y-(object.height/2));
+            x = Math.round(x-Canvas.x-(frame.dWidth/2));
+            y = Math.round(y-Canvas.y-(frame.dHeight/2));
             Canvas.drawImage(image,{
                 dx:x,
                 dy:y,

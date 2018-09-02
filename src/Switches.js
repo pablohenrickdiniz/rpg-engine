@@ -1,59 +1,95 @@
 'use strict';
 (function(root){
-    if(root.Game_Event === undefined){
-        throw "Switches requires Game_Event";
-    }
-
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Switches requires RPG Main";
     }
 
-    let Main = root.Main,
-        Game_Event = root.Game_Event;
-
-    let switches = {};
-
-    function update(){
-        let scene = Main.currentScene;
-        if(scene){
-            let objects = scene.objs;
-            let length = objects.length;
-            for(let i =0; i < length;i++){
-                if(objects[i] instanceof Game_Event){
-                    objects[i].updateCurrentPage();
-                }
-            }
-        }
+    if(!root.Main.Events){
+        throw "Switches requires Events";
     }
+
+    let Main = root.Main,
+        Events = Main.Events;
+
+    let switches = [];
 
     Main.Switches = {
         /**
          *
-         * @param name
+         * @param names
          */
-        enable:function(name){
-            if(switches[name] !== true){
-                switches[name] = true;
-                update();
+        enable:function(names){
+            if(!(names instanceof Array))
+                names = [names];
+
+            let changed = [];
+            for(let i = 0; i < names.length;i++){
+                let name = names[i];
+                if(!switches[name]){
+                    switches[name] = true;
+                    changed.push(name);
+                }
+            }
+            if(changed.length > 0){
+                Events.emmit('globalSwitchChanged',[changed]);
             }
         },
         /**
          *
-         * @param name
+         * @param names
          */
-        disable:function(name){
-            if(switches[name] !== false){
-                switches[name] = false;
-                update();
+        disable:function(names){
+            if(!(names instanceof Array))
+                names = [names];
+
+            let changed = [];
+            for(let i = 0; i < names.length;i++){
+                let name = names[i];
+                if(switches[name]){
+                    delete switches[name];
+                    changed.push(name);
+                }
+            }
+
+            if(changed.length > 0){
+                Events.emmit('globalSwitchChanged',[changed]);
             }
         },
+
         /**
          *
-         * @param name
-         * @returns {*|boolean}
+         * @param names
+         * @returns {boolean}
          */
-        read:function(name){
-            return !!switches[name];
+        isEnabled:function(names){
+            if(!(names instanceof Array))
+                names = [names];
+
+            for(let i = 0; i < names.length;i++){
+                let name = names[i];
+                if(!switches[name]){
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        /**
+         *
+         * @param names
+         * @returns {boolean}
+         */
+        isDisabled:function(names){
+            if(!(names instanceof Array))
+                names = [names];
+
+            for(let i = 0; i < names.length;i++){
+                let name = names[i];
+                if(!!switches[name]){
+                    return false;
+                }
+            }
+            return true;
         }
     };
 })(RPG);
