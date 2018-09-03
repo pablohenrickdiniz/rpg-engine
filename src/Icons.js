@@ -11,8 +11,7 @@
     let Main = root.Main;
     let Game_Icon = root.Game_Icon;
     let icons = [];
-
-    Main.Icons = {
+    let Icons = {
         /**
          *
          * @param id
@@ -35,4 +34,14 @@
             return null;
         }
     };
+
+    Object.defineProperty(Main,'Icons',{
+        /**
+         *
+         * @returns {{set: set, get: get}}
+         */
+       get:function(){
+           return Icons;
+       }
+    });
 })(RPG);

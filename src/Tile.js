@@ -129,6 +129,13 @@
         });
     };
 
-
-    root.Tile = Tile;
+    Object.defineProperty(root,'Tile',{
+        /**
+         *
+         * @returns {Tile}
+         */
+       get:function(){
+           return Tile;
+       }
+    });
 })(RPG);

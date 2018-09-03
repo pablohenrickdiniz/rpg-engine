@@ -109,5 +109,13 @@
         });
     }
 
-    root.Game_Actor = Game_Actor;
+    Object.defineProperty(root,'Game_Actor',{
+        /**
+         *
+         * @returns {Game_Actor}
+         */
+        get:function(){
+            return Game_Actor;
+        }
+    });
 })(RPG,window);

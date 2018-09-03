@@ -5,5 +5,14 @@
 		let self = this;
 	};
 
-	root.Animation = Animation;
+
+	Object.defineProperty(root,'Animation',{
+        /**
+		 *
+         * @returns {Animation}
+         */
+		get:function(){
+			return Animation;
+		}
+	});
 })(RPG);

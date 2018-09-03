@@ -1,36 +1,22 @@
 'use strict';
 (function (root,w) {
-    let current_scene = null;
-    let current_map = null;
-    let current_player_id = null;
-
-    if(root.Scene === undefined){
+    if(!root.Scene){
         throw "Main requires Scene";
     }
 
-    if(root.Game_Map === undefined){
+    if(!root.Game_Map){
         throw "Main requires Game_Map";
     }
 
-    if(w.QuadTree === undefined){
-        throw "Main requires QuadTree";
-    }
-
     let Scene = root.Scene,
-        Game_Map = root.Game_Map;
+        Game_Map = root.Game_Map,
+        current_scene = null,
+        current_map = null,
+        current_player_id = null;
 
-    let Main = {
-        Actors: null,   //Atores
-        Variables: null,//Variáveis
-        Scenes:null,    //Cenas
-        Switches:null,  //Switches
-        Items:null,     //Items
-        Maps:null,      //Maps
-        Faces:null,      //Faces
-        Events:null
-    };
+    let Main = {};
 
-    Object.defineProperty(self,'currentScene',{
+    Object.defineProperty(Main,'currentScene',{
         /**
          *
          * @returns {*}
@@ -81,18 +67,17 @@
          * @param player_id
          */
         set:function(player_id){
-            let self = this;
             if(player_id !== current_player_id){
                 if(current_player_id != null){
-                    let tmp = self.Actors.get(current_player_id);
+                    let tmp = Main.Actors.get(current_player_id);
                     if(tmp != null){
                         tmp.type = 'Actor';
                     }
                 }
 
                 current_player_id = player_id;
-                let scene = self.currentScene;
-                let actor = self.Actors.get(player_id);
+                let scene = Main.currentScene;
+                let actor = Main.Actors.get(player_id);
                 if(scene != null && actor != null){
                     actor.type = 'Player';
                     scene.add(actor);
@@ -111,5 +96,12 @@
         }
     });
 
-    root.Main = Main;
+    Object.defineProperty(root,'Main',{
+        /**
+         *
+          */
+       get:function(){
+           return Main;
+       }
+    });
 })(RPG,window);

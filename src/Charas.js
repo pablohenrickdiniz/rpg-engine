@@ -12,7 +12,7 @@
         Main = root.Main;
     let charas = [];
 
-    Main.Charas = {
+    let Charas = {
         /**
          *
          * @param id
@@ -35,4 +35,14 @@
             }
         }
     };
+
+    Object.defineProperty(Main,'Charas',{
+        /**
+         *
+         * @returns {{get: get, set: set}}
+         */
+       get:function(){
+           return Charas;
+       }
+    });
 })(RPG);

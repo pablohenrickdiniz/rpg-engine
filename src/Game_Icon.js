@@ -21,5 +21,13 @@
     Game_Icon.prototype = Object.create(Game_Graphic.prototype);
     Game_Icon.prototype.constructor = Game_Icon;
 
-    root.Game_Icon = Game_Icon;
+    Object.defineProperty(root,'Game_Icon',{
+        /**
+         *
+         * @returns {Game_Icon}
+         */
+       get:function () {
+           return Game_Icon;
+       }
+    });
 })(RPG);

@@ -1,20 +1,19 @@
 'use strict';
 (function(root,w){
     let ID = 0;
-    let Game_Timer = root.Game_Timer;
-
-    if(root.Main === undefined){
-        throw "Game Object requires Main";
+    if(!w.Matter){
+        throw "Game_Object requires Matter";
     }
 
-    if(w.Matter === undefined){
-        throw "Game Object requires Matter";
+    if(!root.Animation_Time){
+        throw "Game_Object requires Animation_Time";
     }
 
-    let Main = root.Main,
+    let
         Matter = w.Matter,
         Bodies = Matter.Bodies,
-        Body = Matter.Body;
+        Body = Matter.Body,
+        Animation_Time = root.Animation_Time;
 
     /**
      *
@@ -271,11 +270,11 @@
              */
             set:function(ca){
                 if(currentAnimation !== ca){
-                    if(currentAnimation != null){
+                    if(currentAnimation !== null && currentAnimation instanceof Animation_Time){
                         currentAnimation.stop(self.graphic.startFrame);
                     }
                     currentAnimation = ca;
-                    if(currentAnimation){
+                    if(currentAnimation !== null && currentAnimation instanceof  Animation_Time){
                         currentAnimation.start();
                     }
                 }
@@ -327,5 +326,13 @@
         })
     }
 
-    root.Game_Object = Game_Object;
+    Object.defineProperty(root,'Game_Object',{
+        /**
+         *
+         * @returns {Game_Object}
+         */
+       get:function(){
+           return Game_Object;
+       }
+    });
 })(RPG,window);

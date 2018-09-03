@@ -18,8 +18,7 @@
         Graphics = Main.Graphics;
 
     let tilesets = [];
-
-    Main.Tilesets = {
+    let Tilesets = {
         /**
          *
          * @param id
@@ -29,7 +28,7 @@
             if(tilesets[id] !== undefined){
                 return tilesets[id];
             }
-            return tilesets[id];
+            return null;
         },
         /**
          *
@@ -42,4 +41,14 @@
             }
         }
     };
+
+    Object.defineProperty(Main,'Tilesets',{
+        /**
+         *
+         * @returns {{get: get, set: set}}
+         */
+        get:function(){
+            return Tilesets;
+        }
+    });
 })(RPG);

@@ -5,10 +5,8 @@
     }
 
     let Main = root.Main;
-
     let graphics =  {};
-
-    Main.Graphics = {
+    let Graphics = {
         /**
          *
          * @param type
@@ -46,4 +44,14 @@
             }
         }
     };
+
+    Object.defineProperty(Main,'Graphics',{
+        /**
+         *
+         * @returns {{get: get, set: set, unset: unset}}
+         */
+        get:function(){
+            return Graphics;
+        }
+    });
 })(RPG);

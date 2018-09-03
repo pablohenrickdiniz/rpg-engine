@@ -10,11 +10,9 @@
 
     let Main = root.Main,
         Scene = root.Scene;
-
-
     let scenes = [];
 
-    Main.Scenes = {
+    let Scenes = {
         /**
          *
          * @param id
@@ -37,4 +35,14 @@
             return null;
         }
     };
+
+    Object.defineProperty(Main,'Scenes',{
+        /**
+         *
+         * @returns {{set: set, get: get}}
+         */
+       get:function(){
+           return Scenes;
+       }
+    });
 })(RPG);

@@ -128,5 +128,13 @@
         });
     }
 
-    root.Game_Slot= Game_Slot;
+    Object.defineProperty(root,'Game_Slot',{
+        /**
+         *
+         * @returns {Game_Slot}
+         */
+       get:function(){
+           return Game_Slot;
+       }
+    });
 })(RPG,window);

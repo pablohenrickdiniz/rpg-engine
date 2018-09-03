@@ -267,5 +267,9 @@
         });
     };
 
-    root.Event_Page = Event_Page;
+    Object.defineProperty(root,'Event_Page',{
+       get:function(){
+           return Event_Page;
+       }
+    });
 })(RPG);

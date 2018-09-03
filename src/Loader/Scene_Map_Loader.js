@@ -1,79 +1,79 @@
 'use strict';
 (function (root) {
-    if (root.Scene_Loader === undefined) {
+    if (!root.Scene_Loader) {
         throw "Scene_Map_Loader requires Scene_Loader";
     }
 
-    if (root.Spriteset_Map === undefined) {
+    if (!root.Spriteset_Map) {
         throw "Scene_Map_Loader requires Spriteset_Map";
     }
 
-    if (root.Game_Map === undefined) {
+    if (!root.Game_Map) {
         throw "Scene_Map_Loader requires Game_Map";
     }
 
-    if (root.Tile === undefined) {
+    if (!root.Tile) {
         throw "Scene_Map_Loader requires Tile";
     }
 
-    if(root.Tileset === undefined){
+    if(!root.Tileset){
         throw "Scene_Map_Loader requires Tileset";
     }
 
-    if(root.Game_Icon === undefined){
+    if(!root.Game_Icon){
         throw "Scene_Map_Loader requires Game_Icon";
     }
 
-    if(root.Game_Item === undefined){
+    if(!root.Game_Item){
         throw "Scene_Map_Loader requires Game_Item";
     }
 
-    if(root.Game_Event === undefined){
+    if(!root.Game_Event){
         throw "Scene_Map_Loader requires Game_Event";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Scene_Map_Loader requires Main";
     }
     else{
-        if(root.Main.Tilesets === undefined){
+        if(!root.Main.Tilesets){
             throw "Scene_Map_Loader requires Tilesets";
         }
 
-        if(root.Main.Charas === undefined){
+        if(!root.Main.Charas){
             throw "Scene_Map_Loader requires Charas";
         }
 
-        if(root.Main.Faces === undefined){
+        if(!root.Main.Faces){
             throw "Scene_Map_Loader requires Faces";
         }
 
-        if(root.Main.Items === undefined){
+        if(!root.Main.Items){
             throw "Scene_Map_Loader requires Items";
         }
 
-        if(root.Main.Icons === undefined){
+        if(!root.Main.Icons){
             throw "Scene_Map_Loader requires Icons";
         }
 
-        if(root.Main.Actors === undefined){
+        if(!root.Main.Actors){
             throw "Scene_Map_Loader requires Actors";
         }
     }
 
-    if(root.Chara === undefined){
+    if(!root.Chara){
         throw "Scene_Map_Loader requires Chara";
     }
 
-    if(root.Game_Actor === undefined){
+    if(!root.Game_Actor){
         throw "Scene_Map_Loader requires Game_Actor";
     }
 
-    if(root.Game_Face === undefined){
+    if(!root.Game_Face){
         throw "Scene_Map_Loader requires Game_Face";
     }
 
-    if(root.Item === undefined){
+    if(!root.Item){
         throw "Scene_Map_Loader requires Item";
     }
 
@@ -216,5 +216,13 @@
         });
     };
 
-    root.Scene_Map_Loader = Scene_Map_Loader;
+    Object.defineProperty(root,'Scene_Map_Loader',{
+        /**
+         *
+         * @returns {Scene_Map_Loader}
+         */
+       get:function(){
+           return Scene_Map_Loader;
+       }
+    });
 })(RPG);

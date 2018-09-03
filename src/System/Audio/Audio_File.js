@@ -4,8 +4,6 @@
         throw "Audio_File requires Game_Timer"
     }
 
-    let Game_Timer = root.Game_Timer;
-
     /**
      *
      * @param options
@@ -144,5 +142,13 @@
         });
     }
 
-    root.Audio_File = Audio_File;
+    Object.defineProperty(root,'Audio_File',{
+        /**
+         *
+         * @returns {Audio_File}
+         */
+       get:function(){
+           return Audio_File;
+       }
+    });
 })(RPG);

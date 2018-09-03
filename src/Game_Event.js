@@ -460,5 +460,13 @@
         return true;
     }
 
-    root.Game_Event = Game_Event;
+    Object.defineProperty(root,'Game_Event',{
+        /**
+         *
+         * @returns {Game_Event}
+         */
+        get:function(){
+            return Game_Event;
+        }
+    })
 })(RPG,window);

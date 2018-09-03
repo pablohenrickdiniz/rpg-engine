@@ -51,6 +51,8 @@
     <script type="text/javascript" src="../src/Charas.js"></script>
     <script type="text/javascript" src="../src/Game_Face.js"></script>
     <script type="text/javascript" src="../src/Faces.js"></script>
+    <script type="text/javascript" src="../src/Tileset.js"></script>
+    <script type="text/javascript" src="../src/Tilesets.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
     <script type="text/javascript" src="../src/Game_Skill.js"></script>
@@ -65,14 +67,14 @@
     <script type="text/javascript" src="../src/Game_Slot.js"></script>
     <script type="text/javascript" src="../src/Game_Inventory.js"></script>
     <script type="text/javascript" src="../src/Game_Item.js"></script>
-    <script type="text/javascript" src="../src/Tileset.js"></script>
-    <script type="text/javascript" src="../src/Tilesets.js"></script>
+    <script type="text/javascript" src="../src/Events.js"></script>
+    <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
-    <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
+    <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
+
     <script type="text/javascript" src="../src/Item_Graphic.js"></script>
     <script type="text/javascript" src="../src/Actors.js"></script>
-    <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Variables.js"></script>
     <script type="text/javascript" src="../src/Scenes.js"></script>
     <script type="text/javascript" src="../src/Maps.js"></script>
@@ -89,7 +91,6 @@
 
     <!-- Scene-->
     <script type="text/javascript" src="../src/Scene/Scene_Manager.js"></script>
-    <script type="text/javascript" src="../src/Scene/Scene.js"></script>
 
     <!-- UI-->
     <script type="text/javascript" src="../src/System/UI/UI.js"></script>
@@ -106,8 +107,9 @@
     <script type="text/javascript" src="../src/System/UI/Inventory.js"></script>
     <script type="text/javascript">
         function init() {
-            var container = document.getElementById('container');
-            var ui_root = document.getElementById('ui-root');
+            window.RPG = false;
+            let container = document.getElementById('container');
+            let ui_root = document.getElementById('ui-root');
 
             RPG.initialize({
                 container:container,
@@ -121,11 +123,14 @@
                 graphics:{
                     tilesets:{
                         forest1:'http://localhost/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200001.png',
-                        forest2:'http://localhost/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200091.png'
+                        forest2:'http://localhost/resources/Tilesets/WOOD%20&%20FOREST/Wood%20&%20Forest%20-%200091.png',
+                        cavesAndUnderground:'http://localhost/rpg-engine/tests/graphics/tilesets/Caves%20&%20Undergrounds%20-%200043.png'
                     },
                     charasets:{
                         char01:'http://localhost/resources/Charasets/VARIOUS%204.200/0183.png',
-                        male:'http://localhost/resources/White_Male_11_00_11_152_12_00_00_00_00_12_%2000_50_VX.png'
+                        male:'http://localhost/resources/White_Male_11_00_11_152_12_00_00_00_00_12_%2000_50_VX.png',
+                        switch:'http://localhost/rpg-engine/tests/graphics/characters/recolored-handle-switches-2.png',
+                        lamp:'http://localhost/rpg-engine/tests/graphics/characters/Object%20-%200905.png'
                     },
                     faces:{
                         face01:'http://localhost/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
@@ -140,29 +145,151 @@
                         music1:'http://localhost/resources/Audio/Music%20OGG/Final%20Fantasy%20IX%20-%20Awakened%20Forest.ogg'
                     },
                     fx:{
-                        inventory:'http://localhost/resources/Audio/Sound%20FX/Pack%20-%20Big%20Category%20Pack/COMMUN~1/SW46DE~1.ogg'
+                        inventory:'http://localhost/resources/Audio/Sound%20FX/Pack%20-%20Big%20Category%20Pack/COMMUN~1/SW46DE~1.ogg',
+                        switch1:'http://localhost/rpg-engine/tests/audio/fx/SWITCH_3.ogg',
+                        switch2:'http://localhost/rpg-engine/tests/audio/fx/SWITCH_4.ogg',
                     }
                 },
                 map:{
                     loop_x:false,
                     loop_y:false,
-                    tileset:{
-                        graphicID:'forest2',
-                        cols:8,
-                        rows:149,
-                        width:256,
-                        height:4768
-                    },
+                    tilesets:[
+                        {
+                            graphicID:'forest2',
+                            cols:8,
+                            rows:149,
+                            width:256,
+                            height:4768
+                        },
+                        {
+                            graphicID:'cavesAndUnderground',
+                            cols:8,
+                            rows:17,
+                            width:256,
+                            height:544
+                        }
+                    ],
                     spriteset:{
-                        width:30,
-                        height:30,
+                        width:15,
+                        height:15,
                         tileWidth:32,
                         tileHeight:32,
                         data:[]
                     }
                 },
                 objects:[
+                    {
+                        class:'Event',
+                        x:250,
+                        y:200,
+                        pages:[
+                            {
+                                width:32,
+                                height:32,
+                                static:true,
+                                charaID:'switch',
+                                trigger:6,
+                                script:function(){
+                                    if(this.isSwitchDisabled('ON')){
+                                        this.turnRight();
+                                        this.playAudio('fx','switch2');
+                                        this.enableSwitch('ON');
+                                        this.enableGlobalSwitch('LAMP');
+                                    }
+                                    else{
+                                        this.turnDown();
+                                        this.playAudio('fx','switch1');
+                                        this.disableSwitch('ON');
+                                        this.disableGlobalSwitch('LAMP');
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        class:'Event',
+                        x:218,
+                        y:200,
+                        pages:[
+                            {
+                                width:32,
+                                height:32,
+                                static:true,
+                                tilesetID:'cavesAndUnderground',
+                                i:15,
+                                j:2,
+                                script:function(){
 
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        class:'Event',
+                        x:186,
+                        y:200,
+                        pages:[
+                            {
+                                width:32,
+                                height:32,
+                                static:true,
+                                tilesetID:'cavesAndUnderground',
+                                i:15,
+                                j:2,
+                                script:function(){
+
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        class:'Event',
+                        x:154,
+                        y:200,
+                        pages:[
+                            {
+                                width:32,
+                                height:32,
+                                static:true,
+                                tilesetID:'cavesAndUnderground',
+                                i:15,
+                                j:2,
+                                script:function(){
+
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        class:'Event',
+                        x:122,
+                        y:200,
+                        pages:[
+                            {
+                                width:32,
+                                height:32,
+                                static:true,
+                                charaID:'lamp',
+                                trigger:4,
+                                script:function(){
+                                    this.turnLeft();
+                                }
+                            },
+                            {
+                                conditions:[
+                                    'GLOBAL:LAMP:ON'
+                                ],
+                                width:32,
+                                height:32,
+                                static:true,
+                                charaID:'lamp',
+                                trigger:4,
+                                script:function(){
+                                    this.turnDown();
+                                }
+                            }
+                        ]
+                    }
                 ],
                 charas:{
                     char1:{
@@ -175,6 +302,17 @@
                         rows:4,
                         cols:3,
                         startFrame:1
+                    },
+                    switch:{
+                        graphicID:'switch',
+                        rows:8,
+                        cols:12,
+                        startFrame:1
+                    },
+                    lamp:{
+                        graphicID:'lamp',
+                        rows:4,
+                        cols:4
                     }
                 },
                 faces:{
@@ -192,7 +330,7 @@
                         hSpeed:0.001,
                         animationSpeed:6,
                         type:'Player',
-                        name:'Pablo',  
+                        name:'Pablo',
                         inventory:{
                             slots: {
                                 0: {max:99},
@@ -313,15 +451,17 @@
                     }
                 },
                 beforeload:function(root){
-                    var classes = root.UI.classes;
-                    root.UI.root.add(new classes.Progress_Bar({
+                    let classes = root.UI.classes;
+                    let ui = root.UI.root;
+
+                    ui.add(new classes.Progress_Bar({
                         id:'loading-progress'
                     }));
-                    root.UI.root.add(new classes.Player_Info({
+                    ui.add(new classes.Player_Info({
                         id:'player-info',
                         visible:false
                     }));
-                    root.UI.root.add(new classes.Inventory({
+                    ui.add(new classes.Inventory({
                         id:'inventory',
                         class:'window inventory',
                         width:200,
@@ -331,7 +471,7 @@
                         left:300,
                         top:300
                     }));
-                    root.UI.root.add(new classes.Text({
+                    ui.add(new classes.Text({
                         id:'fps',
                         width:100,
                         height:30,
@@ -339,13 +479,13 @@
                         class:'fps',
                         value:20
                     }));
-				
+
                 },
                 afterload:function(root){
                     root.UI.root.findById('loading-progress').visible = false;
-                    var spriteset = root.Main.currentScene.spriteset;
-                    var i;
-                    var j;
+                    let spriteset = root.Main.currentScene.spriteset;
+                    let i;
+                    let j;
                     for(i =0; i < spriteset.height;i++){
                         for(j = 0; j < spriteset.width;j++){
                             spriteset.set(i,j,0,['forest2',0,0]);
@@ -356,41 +496,25 @@
                 },
                 start:function(root){
                     if(root.Main.currentPlayer){
-                        root.UI.root.findById('player-info').face = root.Main.currentPlayer.face;
-                        root.UI.root.findById('player-info').totalMP = 500;
-                        root.UI.root.findById('player-info').MP = 400;
-                        root.UI.root.findById('player-info').name = root.Main.currentPlayer.name;
-                        root.UI.root.findById('player-info').visible = true;
+                        let info = root.UI.root.findById('player-info');
+                        info.face = root.Main.currentPlayer.face;
+                        info.totalMP = 500;
+                        info.MP = 400;
+                        info.name = root.Main.currentPlayer.name;
+                        info.visible = true;
                         root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
                         root.UI.root.findById('fps').visible = true;
                     }
-                    
+
                     root.Controls.Keyboard.addShortcutListener('i', function () {
-                        var inventory_ui = root.UI.root.findById('inventory');
+                        let inventory_ui = root.UI.root.findById('inventory');
                         inventory_ui.visible = !inventory_ui.visible;
                     });
 
                     root.Main.currentScene.focus(root.Main.currentPlayer);
-                    // var spriteset =root.Main.currentScene.spriteset;
-                    //
-                    //
-                    //
-                    // for(var i =0; i < 2;i++){
-                    //     var event = new root.Game_Event({
-                    //         x:Math.floor(Math.random()*spriteset.realWidth),
-                    //         y:Math.floor(Math.random()*spriteset.realHeight),
-                    //         pages:[
-                    //             new root.Event_Page({
-                    //                 charaID:'char1'
-                    //             })
-                    //         ]
-                    //     });
-                    //
-                    //     root.Main.currentScene.add(event);
-                    // }
                 },
                 onprogress:function(progress){
-                    var progress_bar = RPG.UI.root.findById('loading-progress');
+                    let progress_bar = RPG.UI.root.findById('loading-progress');
 
                     if(progress_bar != null){
                         progress_bar.progress = progress;

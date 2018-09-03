@@ -10,8 +10,7 @@
 
     let Game_Face = root.Game_Face, Main = root.Main;
     let faces = [];
-
-    Main.Faces = {
+    let Faces = {
         /**
          *
          * @param id
@@ -34,4 +33,14 @@
             return null;
         }
     };
+
+    Object.defineProperty(Main,'Faces',{
+        /**
+         *
+         * @returns {{set: set, get: get}}
+         */
+       get:function(){
+           return Faces;
+       }
+    });
 })(RPG);

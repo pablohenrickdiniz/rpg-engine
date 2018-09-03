@@ -6,7 +6,6 @@
 
     let Main = root.Main;
     let listeners = [];
-
     let Events = {
         /**
          *
@@ -60,5 +59,13 @@
         }
     };
 
-    Main.Events = Events;
+    Object.defineProperty(Main,'Events',{
+        /**
+         *
+         * @returns {{on: function(*, *=), off: off, emmit: emmit}}
+         */
+       get:function(){
+           return Events;
+       }
+    });
 })(RPG);

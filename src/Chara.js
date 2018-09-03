@@ -96,5 +96,9 @@
         });
     }
 
-    root.Chara = Chara;
+    Object.defineProperty(root,'Chara',{
+       get:function(){
+           return Chara;
+       }
+    });
 })(RPG);

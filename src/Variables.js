@@ -6,8 +6,7 @@
 
     let Main = root.Main;
     let variables = [];
-
-    Main.Variables = {
+    let Variables = {
         /**
          *
          * @param id
@@ -28,4 +27,14 @@
             return null;
         }
     };
+
+    Object.defineProperty(Main,'Variables',{
+        /**
+         *
+         * @returns {{set: set, get: get}}
+         */
+       get:function(){
+           return Variables;
+       }
+    });
 })(RPG);

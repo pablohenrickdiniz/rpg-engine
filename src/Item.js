@@ -40,5 +40,13 @@
         });
     }
 
-    root.Item = Item;
+    Object.defineProperty(root,'Item',{
+        /**
+         *
+         * @returns {Item}
+         */
+       get:function(){
+           return Item;
+       }
+    });
 })(RPG);

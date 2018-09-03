@@ -98,5 +98,14 @@
         }
     }
 
-    w.TimerTicker = Timer_Ticker;
+    w.Timer_Ticker = Timer_Ticker;
+    Object.defineProperty(w,'Time_Ticker',{
+        /**
+         *
+         * @returns {Timer_Ticker}
+         */
+        get:function(){
+            return Timer_Ticker;
+        }
+    });
 })(window);

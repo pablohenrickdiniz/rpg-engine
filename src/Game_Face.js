@@ -21,5 +21,13 @@
     Game_Face.prototype = Object.create(Game_Graphic.prototype);
     Game_Face.prototype.constructor = Game_Graphic;
 
-    root.Game_Face = Game_Face;
+    Object.defineProperty(root,'Game_Face',{
+        /**
+         *
+         * @returns {Game_Face}
+         */
+       get:function(){
+           return Game_Face;
+       }
+    });
 })(RPG);

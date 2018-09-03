@@ -11,9 +11,8 @@
     let Animation = root.Animation,
     	Main = root.Main;
 
-    let animations = [];	
-
-    Main.Animations = {
+    let animations = [];
+    let Animations = {
         /**
 		 *
          * @param id
@@ -36,4 +35,14 @@
     		}		
     	}		
     };
+
+    Object.defineProperty(Main,'Animations',{
+        /**
+		 *
+         * @returns {{get: get, set: set}}
+         */
+    	get:function(){
+    		return Animations;
+		}
+	});
 })(RPG);

@@ -199,5 +199,13 @@
         });
     }
 
-    root.Game_Inventory = Game_Inventory;
+    Object.defineProperty(root,'Game_Inventory',{
+        /**
+         *
+          * @returns {Game_Inventory}
+         */
+       get:function(){
+           return Game_Inventory;
+       }
+    });
 })(RPG);

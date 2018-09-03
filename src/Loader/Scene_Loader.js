@@ -1,24 +1,24 @@
 'use strict';
 (function (root, w) {
-    if(root.Main === undefined){
-        throw "Scene_Loader requires Main"
+    if(!root.Main){
+        throw "Scene_Loader requires Main";
     }
     else{
-        if(root.Main.Graphics === undefined){
-            throw "Scene_Loader requires Graphics"
+        if(!root.Main.Graphics){
+            throw "Scene_Loader requires Graphics";
         }
     }
 
-    if (w.Graphic_Loader === undefined) {
-        throw "SceneLoader requires Graphic_Loader"
+    if (!w.Graphic_Loader) {
+        throw "SceneLoader requires Graphic_Loader";
     }
 
-    if (w.Audio_Loader === undefined) {
-        throw "SceneLoader requires Audio_Loader"
+    if (!w.Audio_Loader) {
+        throw "SceneLoader requires Audio_Loader";
     }
 
-    if (root.Audio === undefined) {
-        throw "SceneLoader requires Audio"
+    if (!root.Audio) {
+        throw "SceneLoader requires Audio";
     }
 
     let Audios = root.Audio,
@@ -196,6 +196,14 @@
         }
     }
 
-    root.Scene_Loader = Scene_Loader;
+    Object.defineProperty(root,'Scene_Loader',{
+        /**
+         *
+         * @returns {Scene_Loader}
+         */
+       get:function(){
+           return Scene_Loader;
+       }
+    });
 })
 (RPG, window);

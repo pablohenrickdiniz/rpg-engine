@@ -155,5 +155,13 @@
 
     }
 
-    root.Spriteset_Map = Spriteset_Map;
+    Object.defineProperty(root,'Spriteset_Map',{
+        /**
+         *
+         * @returns {Spriteset_Map}
+         */
+       get:function(){
+           return Spriteset_Map;
+       }
+    });
 })(RPG);

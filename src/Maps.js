@@ -11,10 +11,8 @@
     let Main = root.Main,
         Game_Map = root.Game_Map;
 
-
     let maps = [];
-
-    Main.Maps = {
+    let Maps = {
         /**
          *
          * @param id
@@ -37,4 +35,14 @@
             return null;
         }
     };
+
+    Object.defineProperty(Main,'Maps',{
+        /**
+         *
+         * @returns {{set: set, get: get}}
+         */
+       get:function(){
+           return Maps;
+       }
+    });
 })(RPG);

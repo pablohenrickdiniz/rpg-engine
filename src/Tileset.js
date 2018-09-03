@@ -224,7 +224,7 @@
                 }
             }
         });
-    };
+    }
 
     /**
      *
@@ -251,7 +251,7 @@
 
         let collision = json[5];
         let length = collision.length;
-        for(var i =0; i < length;i++){
+        for(let i =0; i < length;i++){
             let c = collision[i];
             tileset.setCollision(parseInt(c[0]),parseInt(c[1]),true);
         }
@@ -266,13 +266,21 @@
      */
     function collisiontoJSON(collision){
         let c = [];
-        for(var i in collision){
-            for(var j in collision[i]){
+        for(let i in collision){
+            for(let j in collision[i]){
                 c.push([parseInt(i),parseInt(j)]);
             }
         }
         return c;
     }
 
-    root.Tileset = Tileset;
+    Object.defineProperty(root,'Tileset',{
+        /**
+         *
+         * @returns {Tileset}
+         */
+       get:function(){
+           return Tileset;
+       }
+    });
 })(RPG);

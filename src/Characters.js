@@ -1,31 +1,30 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Characters requires Main";
     }
 
-    if(root.Game_Character === undefined){
+    if(!root.Game_Character){
         throw "Characters requires Game_Character";
     }
 
-    if(root.Character_Graphic === undefined){
+    if(!root.Character_Graphic){
         throw "Characters requires Character_Graphic";
     }
 
     let Game_Character = root.Game_Character,
         Character_Graphic = root.Character_Graphic,
-        Main = root.Main;
+        Main = root.Main,
+        characters = {};
 
-    Main.Characters = {
-        characters:{},
+    let Characters = {
         /**
          *
          * @param id
          * @param character
          */
         set:function(id,character){
-            let self = this;
-            self.characters[id] = character;
+            characters[id] = character;
         },
         /**
          *
@@ -33,9 +32,8 @@
          * @returns {*}
          */
         get:function(id){
-            let self = this;
-            if(self.characters[id] !== undefined){
-                return self.characters[id];
+            if(characters[id] !== undefined){
+                return characters[id];
             }
             return null;
         },
@@ -47,8 +45,8 @@
          */
         createInstance:function(id,options){
             let self = this;
-            if(self.characters[id] !== undefined){
-                let graphic = new Character_Graphic(self.characters[id].graphic);
+            if(characters[id] !== undefined){
+                let graphic = new Character_Graphic(characters[id].graphic);
                 options = options || {};
                 options.id = id;
                 options.graphic = graphic;
@@ -59,4 +57,15 @@
             return null;
         }
     };
+
+
+    Object.defineProperty(Main,'Characters',{
+        /**
+         *
+         * @returns {{characters: {}, set: set, get: get, createInstance: createInstance}}
+         */
+       get:function(){
+           return Characters;
+       }
+    });
 })(RPG);

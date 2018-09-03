@@ -98,5 +98,13 @@
         self.pauseToFrame(index);
     };
 
-    root.Animation_Time = Animation_Time;
+    Object.defineProperty(root,'Animation_Time',{
+        /**
+         *
+         * @returns {Animation_Time}
+         */
+       get:function(){
+           return Animation_Time;
+       }
+    });
 })(RPG);

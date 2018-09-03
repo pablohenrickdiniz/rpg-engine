@@ -11,8 +11,7 @@
 	let Game_Skill = root.Game_Skill,
 		Main = root.Main;
 	let skills = [];
-
-	Main.Skills = {
+	let Skills = {
         /**
 		 *
          * @param id
@@ -34,5 +33,15 @@
 				skills[id] = skill;	
 			}	
 		}
-	};	
+	};
+
+	Object.defineProperty(Main,'Skills',{
+        /**
+		 *
+         * @returns {{get: get, set: set}}
+         */
+		get:function(){
+			return Skills;
+		}
+	});
 })(RPG);

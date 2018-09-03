@@ -11,8 +11,7 @@
     let Main = root.Main;
     let Game_Actor = root.Game_Actor;
     let actors = [];
-
-    Main.Actors = {
+    let Actors = {
         /**
          *
          * @param id
@@ -35,4 +34,14 @@
             return null;
         }
     };
+
+    Object.defineProperty(Main,'Actors',{
+        /**
+         *
+         * @returns {{set: set, get: get}}
+         */
+        get:function(){
+            return Actors;
+        }
+    })
 })(RPG);

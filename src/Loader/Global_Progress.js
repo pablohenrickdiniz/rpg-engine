@@ -58,5 +58,13 @@
         return (self.loaded()) * 100 / self.total();
     };
 
-    w.GlobalProgress = GlobalProgress;
+    Object.defineProperty(w,'GlobalProgress',{
+        /**
+         *
+         * @returns {GlobalProgress}
+         */
+        get:function(){
+            return GlobalProgress;
+        }
+    });
 })(window);

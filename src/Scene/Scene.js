@@ -1,14 +1,14 @@
 'use strict';
 (function (root) {
-    if(root.Animation === undefined){
+    if(!root.Animation){
         throw "Scene requires Animation"
     }
 
-    if(root.Canvas === undefined){
+    if(!root.Canvas){
         throw "Scene requires Canvas"
     }
 
-    if(root.Consts === undefined){
+    if(!root.Consts){
         throw "Scene requires Consts"
     }
 
@@ -87,7 +87,7 @@
         let self = this;
         if(self.listeners[event] !== undefined){
             let length = self.listeners[event].length;
-            for(var i = 0; i < length;i++){
+            for(let i = 0; i < length;i++){
                 self.listeners[event][i].apply(self,args);
             }
         }
@@ -357,5 +357,13 @@
         self.animation_queue.push(animation_set);
     }
 
-    root.Scene = Scene;
+    Object.defineProperty(root,'Scene',{
+        /**
+         *
+         * @returns {Scene}
+         */
+       get:function(){
+           return Scene;
+       }
+    });
 })(RPG);

@@ -1,31 +1,35 @@
 'use strict';
 (function (root) {
-    if (root.Animation_Time === undefined) {
+    if (!root.Animation_Time) {
         throw "Game_Character requires Animation_Time";
     }
 
-    if (root.Consts === undefined) {
+    if (!root.Consts) {
         throw "Game_Character requires Consts";
     }
 
-    if(root.Chara === undefined){
+    if(!root.Chara){
         throw "Game_Character requires Chara";
     }
 
-    if(root.Game_Timer === undefined){
+    if(!root.Game_Timer){
         throw "Game_Character requires Game_Timer";
     }
 
-    if(root.Game_Object === undefined){
+    if(!root.Game_Object){
         throw "Game_Character requires Game_Object";
     }
 
-    if(root.Main.Charas === undefined){
+    if(!root.Main.Charas){
         throw "Game_Character requires Charas";
     }
 
-    if(root.Main.Faces === undefined){
+    if(!root.Main.Faces){
         throw "Game_Character requires Faces";
+    }
+
+    if(!root.Main.Tilesets){
+        throw "Game_Character requres Tilesets";
     }
 
     let Animation_Time = root.Animation_Time,
@@ -35,7 +39,8 @@
         Chara = root.Chara,
         Game_Object = root.Game_Object,
         Charas = Main.Charas,
-        Faces = Main.Faces;
+        Faces = Main.Faces,
+        Tilesets = Main.Tilesets;
 
     /**
      *
@@ -47,10 +52,11 @@
         Game_Object.call(self,options);
         initialize(self);
         options = options || {};
-        self.direction = Consts.CHARACTER_DIRECTION_DOWN;
-        self.charaID = options.charaID;
+        self.direction = options.i || Consts.CHARACTER_DIRECTION_DOWN;
+        self.charaID = options.charaID || null;
+        self.tilesetID = options.tilesetID || null;
         self.faceID = options.faceID;
-        self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
+        self.currentAnimation = options.j || self.animations[Consts.CHARACTER_STOP_DOWN];
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -231,6 +237,8 @@
     function initialize(self) {
         let charaID = null;
         let faceID = null;
+        let tilesetID = null;
+
         Object.defineProperty(self, 'charaID', {
             /**
              *
@@ -283,6 +291,27 @@
             }
         });
 
+
+
+        Object.defineProperty(self, 'tilesetID', {
+            /**
+             *
+             * @param id
+             */
+            set: function (id) {
+                if (id !== tilesetID) {
+                    tilesetID = id;
+                }
+            },
+            /**
+             *
+             * @returns {*}
+             */
+            get: function () {
+                return tilesetID;
+            }
+        });
+
         Object.defineProperty(self,'graphic',{
             configurable:true,
             /**
@@ -290,7 +319,14 @@
              * @returns {*}
              */
             get:function(){
-                return Charas.get(self.charaID);
+                if(charaID !== null){
+                    return Charas.get(charaID);
+                }
+                else if(tilesetID !== null){
+                    return Tilesets.get(tilesetID);
+                }
+
+                return null;
             }
         });
 
@@ -311,16 +347,22 @@
              * @returns {*}
              */
             get:function(){
-                if(self.currentAnimation !=null && self.graphic != null){
+                if(self.currentAnimation !== null && self.graphic !== null){
                     let animation = self.currentAnimation;
-                    let index = animation.getIndexFrame();
+                    let i = self.direction;
+                    let j;
+                    if(animation instanceof Animation_Time){
+                        j = animation.getIndexFrame();
+                    }
+                    else{
+                        j = animation;
+                    }
                     //
                     //index = self.graphic.startFrame+index;
                     //while(index > self.graphic.cols){
                     //    index = index % self.graphic.cols-1;
                     //}
-
-                    return self.graphic.get(self.direction, index);
+                    return self.graphic.get(i,j);
                 }
                 return null;
             }

@@ -1,26 +1,27 @@
 'use strict';
 (function (root) {
-    if (root.Scene_Loader === undefined) {
-        throw "Scene_Manager requires Scene_Loader"
+    if (!root.Scene_Loader) {
+        throw "Scene_Manager requires Scene_Loader";
     }
 
-    if(root.Scene_Map_Loader === undefined){
-        throw "Scene_Manager requires Scene_Map_Loader"
+    if(!root.Scene_Map_Loader){
+        throw "Scene_Manager requires Scene_Map_Loader";
     }
 
-    if (root.Main === undefined) {
-        throw "Scene_Manager requires Main"
-    }
-    else if(root.Main.Scenes === undefined){
-        throw "Scene_Manager requires Main.Scenes"
+    if (!root.Main) {
+        throw "Scene_Manager requires Main";
     }
 
-    if(root.Game_Timer === undefined){
-        throw "Scene_Manager requires Game_Timer"
+    else if(!root.Main.Scenes){
+        throw "Scene_Manager requires Main.Scenes";
     }
 
-    if(root.Scene_Map === undefined){
-        throw "Scene_Manager requires Scene_Map"
+    if(!root.Game_Timer){
+        throw "Scene_Manager requires Game_Timer";
+    }
+
+    if(!root.Scene_Map){
+        throw "Scene_Manager requires Scene_Map";
     }
 
     let Scene_Loader = new root.Scene_Loader(),
@@ -48,7 +49,7 @@
         scene.trigger('start',[root]);
     }
 
-    root.Scene_Manager = {
+    let Scene_Manager = {
         /**
          *
          * @param type
@@ -89,4 +90,14 @@
             }
         }
     };
+
+    Object.defineProperty(root,'Scene_Manager',{
+        /**
+         *
+         * @returns {{new: function(*, *=, *=): *, call: call}}
+         */
+       get:function(){
+           return Scene_Manager;
+       }
+    });
 })(RPG);

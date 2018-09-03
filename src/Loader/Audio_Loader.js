@@ -1,7 +1,7 @@
 'use strict';
 (function (w) {
-    if (w.Audio === undefined) {
-        throw "AudioLoader requires Audio support"
+    if (!w.Audio) {
+        throw "Audio_Loader requires Audio support";
     }
 
     /**
@@ -60,7 +60,7 @@
                     }
                 };
 
-                for (var k = 0; k < keys.length; k++) {
+                for (let k = 0; k < keys.length; k++) {
                     let key = keys[k];
                     Audio_Loader.load(urls[key], key, {
                         onsuccess:q,
@@ -183,5 +183,13 @@
         }
     };
 
-    w.Audio_Loader = Audio_Loader;
+    Object.defineProperty(w,'Audio_Loader',{
+        /**
+         *
+         * @returns {{loadAll: loadAll, load: load}}
+         */
+        get:function(){
+            return Audio_Loader;
+        }
+    });
 })(window);

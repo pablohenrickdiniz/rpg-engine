@@ -18,7 +18,7 @@
         items: {}
     };
 
-    root.Game_Data = {
+    let Game_Data = {
         /**
          *
          * @param url
@@ -47,4 +47,14 @@
             }
         }
     };
+
+    Object.defineProperty(root,'Game_Data',{
+        /**
+         *
+         * @returns {{load: load, createInstance: createInstance}}
+         */
+       get:function(){
+           return Game_Data;
+       }
+    });
 })(RPG);

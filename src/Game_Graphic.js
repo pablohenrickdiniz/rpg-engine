@@ -16,7 +16,7 @@
      * @param options
      * @constructor
      */
-    root.Game_Graphic = function(options){
+    let Game_Graphic = function(options){
         let self = this;
         initialize(self);
         options = options || {};
@@ -263,4 +263,14 @@
             }
         });
     }
+
+    Object.defineProperty(root,'Game_Graphic',{
+        /**
+         *
+         * @returns {Game_Graphic}
+         */
+       get:function(){
+           return Game_Graphic;
+       }
+    });
 })(RPG);

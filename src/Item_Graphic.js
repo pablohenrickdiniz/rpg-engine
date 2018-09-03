@@ -65,5 +65,13 @@
         });
     }
 
-    root.Item_Graphic = Item_Graphic;
+    Object.defineProperty(root,'Item_Graphic',{
+        /**
+         *
+         * @returns {Item_Graphic}
+         */
+       get:function(){
+           return Item_Graphic;
+       }
+    });
 })(RPG);

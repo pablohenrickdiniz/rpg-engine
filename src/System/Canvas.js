@@ -9,12 +9,14 @@
     }
 
     let Consts= root.Consts;
+    let x = 0;
+    let y = 0;
+    let engine = null;
+    let layers = [[], [], [], [], []];
+    let listeners = [];
 
-    root.Canvas = {
+    let Canvas = {
         visible: true,
-        engine: null,
-        layers:[[], [], [], [], []],
-        listeners:[],
         /**
          *
          * @param options
@@ -26,7 +28,7 @@
             let width = options.width;
             let height = options.height;
             let scale = options.scale | 1;
-            self.engine = CE.create(container, {
+            engine = CE.create(container, {
                 width: width,
                 height: height,
                 scale:scale,
@@ -37,17 +39,15 @@
                 resizeLayers:true
             });
 
-            self.engine.addEventListener('resize',function(){
+            engine.addEventListener('resize',function(){
                 self.trigger('resize');
             });
         },
         zoomIn:function(){
-            let self = this;
-            self.engine.scale += 0.1;
+            engine.scale += 0.1;
         },
         zoomOut:function(){
-            let self = this;
-            self.engine.scale -= 0.1;
+            engine.scale -= 0.1;
         },
         /**
          *
@@ -55,12 +55,11 @@
          * @param callback
          */
         addEventListener:function(event,callback){
-            let self = this;
-            if(self.listeners[event] === undefined){
-                self.listeners[event] = [];
+            if(listeners[event] === undefined){
+                listeners[event] = [];
             }
-            if(self.listeners[event].indexOf(callback) === -1){
-                self.listeners[event].push(callback);
+            if(listeners[event].indexOf(callback) === -1){
+                listeners[event].push(callback);
             }
         },
         /**
@@ -69,11 +68,10 @@
          * @param callback
          */
         removeEventListener:function(event,callback){
-            let self = this;
-            if(self.listeners[event] !== undefined){
-                let index = self.listeners[event].indexOf(callback);
+            if(listeners[event] !== undefined){
+                let index = listeners[event].indexOf(callback);
                 if(index !== -1){
-                    self.listeners[event].splice(index,1);
+                    listeners[event].splice(index,1);
                 }
             }
         },
@@ -83,11 +81,11 @@
          * @param args
          */
         trigger:function(event,args){
-            let self = this;
-            if(self.listeners[event] !== undefined){
-                let length = self.listeners[event].length;
-                for(var i =0; i < length;i++){
-                    self.listeners[event][i].apply(self,args);
+            if(listeners[event] !== undefined){
+                let self = this;
+                let length = listeners[event].length;
+                for(let i =0; i < length;i++){
+                    listeners[event][i].apply(self,args);
                 }
             }
         },
@@ -99,7 +97,7 @@
          */
         getLayer: function (type, index) {
             let self = this;
-            let keys = Object.keys(self.layers);
+            let keys = Object.keys(layers);
             let i;
             let length = keys.length;
             let s_index = 0;
@@ -109,21 +107,21 @@
                 for(i =0; i < length;i++){
                     key = parseInt(keys[i]);
                     if(type !== key){
-                        s_index+=self.layers[key].length;
+                        s_index+=layers[key].length;
                     }
                     else{
-                        while(index > self.layers[key].length-1){
+                        while(index > layers[key].length-1){
                             let layer = self.engine.createLayer({
-                                zIndex:s_index+self.layers[key].length
+                                zIndex:s_index+layers[key].length
                             });
-                            self.layers[key].push(layer);
+                            layers[key].push(layer);
                         }
-                        return self.layers[key][index];
+                        return layers[key][index];
                     }
                 }
             }
-            else if(self.layers[type] !== undefined){
-                return self.layers[type];
+            else if(layers[type] !== undefined){
+                return layers[type];
             }
 
             return null;
@@ -216,7 +214,7 @@
             if(layer != null){
                 if(layer instanceof Array){
                     let length = layer.length;
-                    for(var i =0; i < length;i++){
+                    for(let i =0; i < length;i++){
                         layer[i].clear(x, y, width, height);
                     }
                 }
@@ -227,11 +225,7 @@
         }
     };
 
-    let x = 0;
-    let y = 0;
-    let canvas = root.Canvas;
-
-    Object.defineProperty(canvas,'x',{
+    Object.defineProperty(Canvas,'x',{
         /**
          *
          * @returns {number}
@@ -251,7 +245,7 @@
         }
     });
 
-    Object.defineProperty(canvas,'y',{
+    Object.defineProperty(Canvas,'y',{
         /**
          *
          * @returns {number}
@@ -271,54 +265,66 @@
         }
     });
 
-    Object.defineProperty(canvas,'width',{
+    Object.defineProperty(Canvas,'width',{
         /**
          *
          * @returns {*}
          */
         get:function(){
-            return canvas.engine.width;
+            return engine.width;
         },
         /**
          *
          * @param w
          */
         set:function(w){
-            canvas.engine.width = w;
+            engine.width = w;
         }
     });
 
-    Object.defineProperty(canvas,'height',{
+    Object.defineProperty(Canvas,'height',{
         /**
          *
          * @returns {*}
          */
         get:function(){
-            return canvas.engine.height;
+            return engine.height;
         },
         /**
          *
          * @param h
          */
         set:function(h){
-            canvas.engine.height = h;
+            engine.height = h;
         }
     });
 
-    Object.defineProperty(canvas,'scale',{
+    Object.defineProperty(Canvas,'scale',{
         /**
          *
          * @returns {*}
          */
         get:function(){
-            return canvas.engine.scale;
+            return engine.scale;
         },
         /**
          *
          * @param scale
          */
         set:function(scale){
-            canvas.engine.scale = scale;
+            engine.scale = scale;
         }
+    });
+
+    Object.defineProperty(Canvas,'engine',{
+        get:function(){
+            return engine;
+        }
+    });
+
+    Object.defineProperty(root,'Canvas',{
+       get:function(){
+           return Canvas;
+       }
     });
 })(RPG);

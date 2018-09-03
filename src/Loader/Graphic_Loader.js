@@ -1,7 +1,7 @@
 'use strict';
 (function (w) {
-    if(w.GlobalProgress === undefined){
-        throw "GraphicLoader requires GlobalProgress"
+    if(!w.GlobalProgress){
+        throw "Graphic_Loader requires GlobalProgress";
     }
 
     let GlobalProgress = w.GlobalProgress;
@@ -199,5 +199,13 @@
         }
     };
 
-    w.Graphic_Loader = Graphic_Loader;
+    Object.defineProperty(w,'Graphic_Loader',{
+        /**
+         *
+         * @returns {{loadAll: loadAll, load: load, toDataURL: toDataURL, toDataURLS: toDataURLS, fromDataURL: fromDataURL}}
+         */
+        get:function(){
+            return Graphic_Loader;
+        }
+    });
 })(window);

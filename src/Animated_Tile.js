@@ -74,5 +74,13 @@
         };
     };
 
-    root.Animated_Tile = Animated_Tile;
+    Object.defineProperty(root,'Animated_Tile',{
+        /**
+         *
+         * @returns {Animated_Tile}
+         */
+       get:function(){
+           return Animated_Tile;
+       }
+    });
 })(RPG);

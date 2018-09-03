@@ -19,7 +19,6 @@
         initialize(self);
     };
 
-
     /**
      *
      * @param obj
@@ -67,6 +66,14 @@
         });
     }
 
-    root.Game_Map = Game_Map;
+    Object.defineProperty(root,'Game_Map',{
+        /**
+         *
+         * @returns {Game_Map}
+         */
+       get:function(){
+           return Game_Map;
+       }
+    });
 })(RPG,window);
 

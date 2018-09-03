@@ -56,5 +56,13 @@
         });
     }
 
-    root.Game_Item = Game_Item;
+    Object.defineProperty(root,'Game_Item',{
+        /**
+         *
+         * @returns {Game_Item}
+         */
+        get:function(){
+            return Game_Item;
+        }
+    });
 })(RPG);

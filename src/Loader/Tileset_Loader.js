@@ -1,18 +1,18 @@
 'use strict';
 (function (root,w) {
-    if (w.Graphic_Loader === undefined) {
+    if (!w.Graphic_Loader) {
         throw "TilesetLoader requires Graphic_Loader";
     }
 
-    if (root.Tileset === undefined) {
+    if (!root.Tileset) {
         throw "TilesetLoader requires Tileset";
     }
 
     let Tileset = root.Tileset,
         Graphic_Loader = w.Graphic_Loader;
 
-    let TilesetLoader = {
-        tilesets: {},
+    let tilesets = {};
+    let Tileset_Loader = {
         /**
          *
          * @param urls
@@ -34,7 +34,7 @@
                     }
                 };
 
-                for (var k = 0; k < keys.length; k++) {
+                for (let k = 0; k < keys.length; k++) {
                     let key = keys[k];
                     TilesetLoader.load(urls[key], key, q, onprogress, onerror);
                 }
@@ -52,18 +52,25 @@
          * @param onerror
          */
         load: function (url, id, onsuccess, onprogress, onerror) {
-            let self = this;
-            if (self.tilesets[url] === undefined) {
+            if (tilesets[url] === undefined) {
                 Graphic_Loader.load(url, id, function (image, id) {
-                    self.tilesets[url] = new Tileset(image);
-                    onsuccess(self.tilesets[url], id);
+                    tilesets[url] = new Tileset(image);
+                    onsuccess(tilesets[url], id);
                 }, onprogress, onerror);
             }
             else if (onsuccess) {
-                onsuccess(self.tilesets[url], id);
+                onsuccess(tilesets[url], id);
             }
         }
     };
 
-    root.TilesetLoader = TilesetLoader;
+    Object.defineProperty(root,'Tileset_Loader',{
+        /**
+         *
+         * @returns {{loadAll: loadAll, load: load}}
+         */
+        get:function(){
+            return Tileset_Loader;
+        }
+    });
 })(RPG,window);

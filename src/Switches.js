@@ -12,8 +12,7 @@
         Events = Main.Events;
 
     let switches = [];
-
-    Main.Switches = {
+    let Switches = {
         /**
          *
          * @param names
@@ -92,4 +91,14 @@
             return true;
         }
     };
+
+    Object.defineProperty(Main,'Switches',{
+        /**
+         *
+         * @returns {{enable: enable, disable: disable, isEnabled: isEnabled, isDisabled: isDisabled}}
+         */
+       get:function(){
+           return Switches;
+       }
+    });
 })(RPG);

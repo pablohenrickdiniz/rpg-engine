@@ -12,8 +12,7 @@
         Main = root.Main;
 
     let items = [];
-
-    Main.Items = {
+    let Items = {
         /**
          *
          * @param id
@@ -36,4 +35,14 @@
             }
         }
     };
+
+    Object.defineProperty(Main,'Items',{
+        /**
+         *
+         * @returns {{get: get, set: set}}
+         */
+       get:function(){
+           return Items;
+       }
+    });
 })(RPG);

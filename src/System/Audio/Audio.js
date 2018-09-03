@@ -16,7 +16,7 @@
     let paused = {};
     let audios = {};
 
-    root.Audio = {
+    let Audio = {
         freeze: function () {
             let keys = Object.keys(playing);
             let i;
@@ -164,4 +164,14 @@
             }
         }
     };
+
+    Object.defineProperty(root,'Audio',{
+        /**
+         *
+         * @returns {{freeze: freeze, resume: resume, play: play, stop: stop, fade: fade, pause: pause, set: set, unset: unset}}
+         */
+       get:function(){
+           return Audio;
+       }
+    });
 })(RPG);

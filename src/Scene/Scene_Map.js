@@ -1,51 +1,51 @@
 'use strict';
 (function (root,w) {
-    if (root.Scene === undefined) {
+    if (!root.Scene) {
         throw "Scene_Map requires Scene";
     }
 
-    if (root.Canvas === undefined) {
+    if (!root.Canvas) {
         throw "Scene_Map requires Canvas";
     }
 
-    if (root.Game_Item === undefined) {
+    if (!root.Game_Item) {
         throw "Scene_Map requires Game_Item";
     }
 
-    if (root.Event_Page === undefined) {
+    if (!root.Event_Page) {
         throw "Scene_Map requires Event_Page";
     }
 
-    if(root.Game_Actor === undefined){
+    if(!root.Game_Actor){
         throw "Scene_Map requires Game_Actor";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Scene_Map requires Main";
     }
     else{
-        if (root.Main.Graphics === undefined) {
+        if (!root.Main.Graphics) {
             throw "Scene_Map requires Graphics";
         }
 
-        if(root.Main.Tilesets === undefined){
+        if(!root.Main.Tilesets){
             throw "Scene_Map requires Tilesets";
         }
     }
 
-    if(root.Spriteset_Map === undefined){
+    if(!root.Spriteset_Map){
         throw "Scene_Map requires Spriteset_Map";
     }
 
-    if(root.Game_Object === undefined){
+    if(!root.Game_Object){
         throw "Scene_Map requires Game_Object";
     }
 
-    if(w.Matter === undefined){
+    if(!w.Matter){
         throw "Scene_Map requires Matter";
     }
 
-    if(root.Canvas === undefined){
+    if(!root.Canvas){
         throw "Scene_Map requires Canvas";
     }
 
@@ -702,5 +702,13 @@
         return Object.assign({},obj);
     }
 
-    root.Scene_Map = Scene_Map;
+    Object.defineProperty(root,'Scene_Map',{
+        /**
+         *
+         * @returns {Scene_Map}
+         */
+       get:function(){
+           return Scene_Map;
+       }
+    });
 })(RPG,window);
