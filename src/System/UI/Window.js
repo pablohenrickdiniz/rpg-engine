@@ -1,25 +1,25 @@
 'use strict';
 (function(root,w){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Window requires UI";
     }
 
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Window requires Element";
     }
 
-    if(root.UI.classes.Button === undefined){
+    if(!root.UI.Button){
         throw "Window requires Button";
     }
 
-    if(root.UI.classes.Text === undefined){
+    if(!root.UI.Text){
         throw "Window requires Text";
     }
 
     let UI = root.UI,
-        Element = UI.classes.Element,
-        Button = UI.classes.Button,
-        Text = UI.classes.Text;
+        Element = UI.Element,
+        Button = UI.Button,
+        Text = UI.Text;
 
     /**
      *
@@ -122,5 +122,13 @@
         });
     }
 
-    UI.classes.Window = Window;
+    Object.defineProperty(UI,'Window',{
+        /**
+         *
+         * @returns {Window}
+         */
+        get:function(){
+            return Window;
+        }
+    });
 })(RPG,window);

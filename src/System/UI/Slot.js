@@ -1,29 +1,29 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
-        throw "Slot requires UI"
+    if(!root.UI){
+        throw "Slot requires UI";
     }
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Slot requires Element";
     }
 
-    if(root.UI.classes.Image === undefined){
+    if(!root.UI.Image){
         throw "Slot requires Image";
     }
 
-    if(root.UI.classes.Text === undefined){
+    if(!root.UI.Text){
         throw "Slot requires Text";
     }
 
-    if(root.Item === undefined){
+    if(!root.Item){
         throw "Slot requires Item";
     }
 
     let UI = root.UI,
-        Element = UI.classes.Element,
-        Image = UI.classes.Image,
+        Element = UI.Element,
+        Image = UI.Image,
         Item = root.Item,
-        Text = UI.classes.Text;
+        Text = UI.Text;
 
     /**
      *
@@ -157,5 +157,13 @@
         });
     }
 
-    UI.classes.Slot = Slot;
+    Object.defineProperty(UI,'Slot',{
+        /**
+         *
+         * @returns {Slot}
+         */
+        get:function(){
+            return Slot;
+        }
+    });
 })(RPG);

@@ -1,30 +1,30 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Inveontory requires UI";
     }
 
-    if(root.UI.classes.Window === undefined){
+    if(!root.UI.Window){
         throw "Inventory requires Window";
     }
 
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Inventory requires Element";
     }
 
-    if(root.Game_Inventory === undefined){
+    if(!root.Game_Inventory){
         throw "Inventory requires Game_Inventory";
     }
 
-    if(root.UI.classes.Slot === undefined){
+    if(!root.UI.Slot){
         throw "Inventory requires Slot";
     }
 
     let UI = root.UI,
-        Window = UI.classes.Window,
+        Window = UI.Window,
         Game_Inventory = root.Game_Inventory,
-        Element = UI.classes.Element,
-        Slot = root.UI.classes.Slot;
+        Element = UI.Element,
+        Slot = root.UI.Slot;
 
     /**
      *
@@ -182,5 +182,13 @@
         }
     };
 
-    UI.classes.Inventory = Inventory;
+    Object.defineProperty(UI,'Inventory',{
+        /**
+         *
+         * @returns {Inventory}
+         */
+        get:function(){
+            return Inventory;
+        }
+    });
 })(RPG);

@@ -1,15 +1,15 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
-        throw "Menu requires UI"
+    if(!root.UI){
+        throw "Menu requires UI";
     }
 
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Button requires Element";
     }
 
     let UI = root.UI,
-        Element = UI.classes.Element;
+        Element = UI.Element;
 
     /**
      *
@@ -34,9 +34,17 @@
     function initialize(self){
         let text = '';
         Object.defineProperty(self,'text',{
+            /**
+             *
+             * @returns {string}
+             */
             get:function(){
                 return text;
             },
+            /**
+             *
+             * @param t
+             */
             set:function(t){
                 if(t !== text){
                     text = t;
@@ -46,5 +54,13 @@
         });
     }
 
-    UI.classes.Button = Button;
+    Object.defineProperty(UI,'Button',{
+        /**
+         *
+         * @returns {Button}
+         */
+        get:function(){
+            return Button;
+        }
+    });
 })(RPG);

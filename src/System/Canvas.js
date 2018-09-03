@@ -1,14 +1,14 @@
 'use strict';
-(function (root) {
-    if (CE === undefined) {
+(function (root,w) {
+    if (!w.CE) {
         throw "Viewport requires Canvas Engine";
     }
 
-    if(root.Consts === undefined){
+    if(!root.Consts){
         throw "Canvas requires Consts";
     }
 
-    let Consts= root.Consts;
+    let Consts = root.Consts;
     let x = 0;
     let y = 0;
     let engine = null;
@@ -327,4 +327,4 @@
            return Canvas;
        }
     });
-})(RPG);
+})(RPG,window);

@@ -1,35 +1,35 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Player_Info requires UI";
     }
 
-    if(root.Game_Face === undefined){
+    if(!root.Game_Face){
         throw "Player_Info requires Game_Face";
     }
 
-    if(root.UI.classes.Progress_Bar === undefined){
+    if(!root.UI.Progress_Bar){
         throw  "Player_Info requires Progress_Bar";
     }
 
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Player_Info requires Element";
     }
 
-    if(root.UI.classes.Image === undefined){
+    if(!root.UI.Image){
         throw "Player_Info requires Image";
     }
 
-    if(root.UI.classes.Text === undefined){
+    if(!root.UI.Text){
         throw "Player_Info requires Text";
     }
 
     let UI = root.UI,
         Game_Face = root.Game_Face,
-        Progress_Bar = UI.classes.Progress_Bar,
-        Element = UI.classes.Element,
-        Image = UI.classes.Image,
-        Text = UI.classes.Text;
+        Progress_Bar = UI.Progress_Bar,
+        Element = UI.Element,
+        Image = UI.Image,
+        Text = UI.Text;
 
     /**
      *
@@ -197,5 +197,13 @@
         });
     }
 
-    UI.classes.Player_Info = Player_Info;
+    Object.defineProperty(UI,'Player_Info',{
+        /**
+         *
+         * @returns {Player_Info}
+         */
+       get:function(){
+           return Player_Info;
+       }
+    });
 })(RPG);

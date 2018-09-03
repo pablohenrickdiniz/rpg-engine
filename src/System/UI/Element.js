@@ -1,6 +1,6 @@
 'use strict';
 (function(root,w){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Element requires UI";
     }
 
@@ -68,7 +68,7 @@
         let self = this;
         if(self.listeners[event]){
             let length = self.listeners[event].length;
-            for(var i =0; i < length;i++){
+            for(let i = 0; i < length;i++){
                 self.listeners[event][i].apply(self,args);
             }
         }
@@ -378,7 +378,7 @@
         let self = this;
         results = results || [];
         let length = self.children.length;
-        for(var i =0; i < length;i++){
+        for(let i =0; i < length;i++){
             let child = self.children[i];
             if(child.hasClass(className) && results.indexOf(child) === -1){
                 results.push(child);
@@ -397,7 +397,7 @@
         let self = this;
         let result = null;
         let length = self.children.length;
-        for(var i =0; i < length;i++){
+        for(let i =0; i < length;i++){
             let child = self.children[i];
             if(child.id === id){
                 result = child;
@@ -484,7 +484,7 @@
         let overlaps = [];
         let length = self.children.length;
         if(el !== self){
-            for(var i  = 0; i < length;i++){
+            for(let i  = 0; i < length;i++){
                 overlaps = overlaps.concat(self.children[i].findOverlaps(el));
             }
             if(self.overlap(el)){
@@ -607,7 +607,7 @@
                 if(oldparent){
                     oldparent.add(self);
                 }
-                for(var i = 0; i < overlaps.length;i++){
+                for(let i = 0; i < overlaps.length;i++){
                     overlaps[i].trigger('drop',[e]);
                 }
             }
@@ -691,5 +691,13 @@
         return false;
     }
 
-    UI.classes.Element = Element;
+    Object.defineProperty(UI,'Element',{
+        /**
+         *
+         * @returns {Element}
+         */
+        get:function(){
+            return Element;
+        }
+    })
 })(RPG,window);

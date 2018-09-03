@@ -1,15 +1,19 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Menu requires UI";
     }
 
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Menu requires Element";
     }
 
+    if(!root.UI.Menu_Item){
+        throw "Menu requires Menu_Item";
+    }
+
     let UI = root.UI,
-        Element = UI.classes.Element;
+        Element = UI.Element;
 
     /**
      *
@@ -33,7 +37,7 @@
      */
     Menu.prototype.addItem = function(item){
         let self = this;
-        if(item instanceof UI.classes.Menu_Item && self.items.indexOf(item) === -1){
+        if(item instanceof UI.Menu_Item && self.items.indexOf(item) === -1){
             self.items.push(item);
             item.parent = self;
             self.element.appendChild(item.element);
@@ -58,7 +62,6 @@
      * @param self
      */
     function initialize(self){
-        let parent = null;
         let items = [];
 
         Object.defineProperty(self,'items',{
@@ -69,8 +72,8 @@
                 if(i instanceof Array){
                     let c = {}.constructor;
                     let length = i.length;
-                    let Menu_Item = UI.classes.Menu_Item;
-                    for(var j =0; j < length;j++){
+                    let Menu_Item = UI.Menu_Item;
+                    for(let j = 0; j < length;j++){
                         if(i[j] instanceof Menu_Item){
                             self.addItem(i[j]);
                         }
@@ -85,5 +88,13 @@
         });
     }
 
-    UI.classes.Menu = Menu;
+    Object.defineProperty(UI,'Menu',{
+        /**
+         *
+         * @returns {Menu}
+         */
+       get:function(){
+           return Menu;
+       }
+    });
 })(RPG);

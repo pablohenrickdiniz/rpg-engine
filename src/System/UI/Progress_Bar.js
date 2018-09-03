@@ -1,15 +1,15 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Progress_Bar requires UI";
     }
 
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Progress_Bar requires Element";
     }
 
     let UI = root.UI,
-        Element = UI.classes.Element;
+        Element = UI.Element;
 
     /**
      *
@@ -64,5 +64,13 @@
         });
     }
 
-    UI.classes.Progress_Bar = Progress_Bar;
+    Object.defineProperty(UI,'Progress_Bar',{
+        /**
+         *
+          * @returns {Progress_Bar}
+         */
+       get:function(){
+           return Progress_Bar;
+       }
+    });
 })(RPG);

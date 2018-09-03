@@ -54,7 +54,7 @@
             let container = options.container;
             let ui_root = options.ui_root;
 
-            self.UI.root = new self.UI.classes.Element({
+            self.UI.root = new self.UI.Element({
                 id:'ui-root',
                 element:ui_root
             });
@@ -207,6 +207,10 @@
     }
 
     Object.defineProperty(w,'RPG',{
+        /**
+         *
+         * @returns {{Canvas: null, initialize: initialize}}
+         */
        get:function(){
            return RPG;
        }

@@ -1,19 +1,12 @@
 'use strict';
 (function(root){
     let ui_root = null;
-    let UI = {
-        classes:[]
-    };
-
-    function prevent(e){
-        e.preventDefault();
-        return false;
-    }
+    let UI = {};
 
     Object.defineProperty(UI,'root',{
         /**
          *
-         * @returns {UI.classes.Element}
+         * @returns {*}
          */
         get:function(){
             return ui_root;
@@ -23,7 +16,7 @@
          * @param r
          */
         set:function(r){
-            if(r !== ui_root && r instanceof UI.classes.Element){
+            if(r !== ui_root && r instanceof UI.Element){
                 if(ui_root != null){
                     while(ui_root.children.length > 0){
                         r.add(ui_root.children[0]);
@@ -69,5 +62,14 @@
         }
     });
 
-    root.UI = UI;
+
+    Object.defineProperty(root,'UI',{
+        /**
+         *
+         * @returns {{classes: Array}}
+         */
+        get:function(){
+            return UI;
+        }
+    });
 })(RPG);

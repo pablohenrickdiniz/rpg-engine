@@ -99,8 +99,8 @@
     <script type="text/javascript" src="../src/System/UI/Image.js"></script>
     <script type="text/javascript" src="../src/System/UI/Text.js"></script>
     <script type="text/javascript" src="../src/System/UI/Player_Info.js"></script>
-    <script type="text/javascript" src="../src/System/UI/Menu.js"></script>
     <script type="text/javascript" src="../src/System/UI/Menu_Item.js"></script>
+    <script type="text/javascript" src="../src/System/UI/Menu.js"></script>
     <script type="text/javascript" src="../src/System/UI/Button.js"></script>
     <script type="text/javascript" src="../src/System/UI/Window.js"></script>
     <script type="text/javascript" src="../src/System/UI/Slot.js"></script>
@@ -451,17 +451,17 @@
                     }
                 },
                 beforeload:function(root){
-                    let classes = root.UI.classes;
+                    let UI = root.UI;
                     let ui = root.UI.root;
 
-                    ui.add(new classes.Progress_Bar({
+                    ui.add(new UI.Progress_Bar({
                         id:'loading-progress'
                     }));
-                    ui.add(new classes.Player_Info({
+                    ui.add(new UI.Player_Info({
                         id:'player-info',
                         visible:false
                     }));
-                    ui.add(new classes.Inventory({
+                    ui.add(new UI.Inventory({
                         id:'inventory',
                         class:'window inventory',
                         width:200,
@@ -471,7 +471,7 @@
                         left:300,
                         top:300
                     }));
-                    ui.add(new classes.Text({
+                    ui.add(new UI.Text({
                         id:'fps',
                         width:100,
                         height:30,

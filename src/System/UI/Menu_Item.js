@@ -1,15 +1,15 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Menu_Item requires UI";
     }
 
-    if(root.UI.classes.Element === undefined){
-        throw "Menu_Item requires UI.Element";
+    if(!root.UI.Element){
+        throw "Menu_Item requires Element";
     }
 
     let UI = root.UI,
-        Element = root.UI.classes.Element;
+        Element = root.UI.Element;
 
     /**
      *
@@ -33,14 +33,30 @@
      */
     function initialize(self){
         Object.defineProperty(self,'text',{
+            /**
+             *
+             * @returns {*}
+             */
             get:function(){
                 return self.element.innerHTML;
             },
+            /**
+             *
+             * @param t
+             */
             set:function(t){
                 self.element.innerHTML = t;
             }
         });
     }
 
-    UI.classes.Menu_Item = Menu_Item;
+    Object.defineProperty(UI,'Menu_Item',{
+        /**
+         *
+         * @returns {Menu_Item}
+         */
+       get:function(){
+           return Menu_Item;
+       }
+    });
 })(RPG);

@@ -1,15 +1,15 @@
 'use strict';
 (function(root){
-    if(root.UI === undefined){
+    if(!root.UI){
         throw "Image requires UI";
     }
 
-    if(root.UI.classes.Element === undefined){
+    if(!root.UI.Element){
         throw "Image requires Element";
     }
 
     let UI = root.UI,
-        Element = UI.classes.Element;
+        Element = UI.Element;
 
     /**
      *
@@ -54,5 +54,13 @@
         });
     }
 
-    UI.classes.Image = Image;
+    Object.defineProperty(UI,'Image',{
+        /**
+         *
+         * @returns {Image}
+         */
+       get:function(){
+           return Image;
+       }
+    });
 })(RPG);
