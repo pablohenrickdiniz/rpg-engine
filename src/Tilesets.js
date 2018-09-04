@@ -1,28 +1,27 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Tilesets requires Main";
     }
     else{
-        if(root.Main.Graphics === undefined){
+        if(!root.Main.Graphics){
             throw "Tilesets requires Graphics";
         }
     }
 
-    if(root.Tileset === undefined){
+    if(!root.Tileset){
         throw "Tilesets requires Tileset";
     }
 
     let Tileset = root.Tileset,
-        Main = root.Main,
-        Graphics = Main.Graphics;
+        Main = root.Main;
 
     let tilesets = [];
     let Tilesets = {
         /**
          *
-         * @param id
-         * @returns {*}
+         * @param id {string}
+         * @returns {Tileset}
          */
         get:function(id){
             if(tilesets[id] !== undefined){
@@ -32,8 +31,8 @@
         },
         /**
          *
-         * @param id
-         * @param tileset
+         * @param id {string}
+         * @param tileset {Tileset}
          */
         set:function(id,tileset){
             if(tileset instanceof Tileset){
@@ -45,7 +44,7 @@
     Object.defineProperty(Main,'Tilesets',{
         /**
          *
-         * @returns {{get: get, set: set}}
+         * @returns {Tilesets}
          */
         get:function(){
             return Tilesets;

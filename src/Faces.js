@@ -1,20 +1,22 @@
 'use strict';
 (function(root){
-    if(root.Game_Face === undefined){
+    if(!root.Game_Face){
         throw "Faces requires Game_Face";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Faces requires Main";
     }
 
-    let Game_Face = root.Game_Face, Main = root.Main;
+    let Game_Face = root.Game_Face,
+        Main = root.Main;
+
     let faces = [];
     let Faces = {
         /**
          *
-         * @param id
-         * @param face
+         * @param id{string}
+         * @param face{Game_Face}
          */
         set:function(id,face){
             if(face instanceof Game_Face){
@@ -24,7 +26,7 @@
         /**
          *
          * @param id
-         * @returns {*}
+         * @returns {Game_Face}
          */
         get:function(id){
             if(faces[id] !== undefined){
@@ -37,7 +39,7 @@
     Object.defineProperty(Main,'Faces',{
         /**
          *
-         * @returns {{set: set, get: get}}
+         * @returns {Faces}
          */
        get:function(){
            return Faces;

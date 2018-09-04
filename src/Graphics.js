@@ -1,6 +1,6 @@
 'use strict';
 (function (root) {
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Graphics requires Main";
     }
 
@@ -9,9 +9,9 @@
     let Graphics = {
         /**
          *
-         * @param type
-         * @param name
-         * @returns {*}
+         * @param type {string}
+         * @param name {string}
+         * @returns {Game_Graphic}
          */
         get: function (type, name) {
             if (graphics[type] && graphics[type][name]) {
@@ -21,9 +21,9 @@
         },
         /**
          *
-         * @param type
-         * @param name
-         * @param graphic
+         * @param type {string}
+         * @param name {name}
+         * @param graphic {Game_Graphic}
          */
         set: function (type, name, graphic) {
             if (graphics[type] === undefined) {
@@ -33,8 +33,8 @@
         },
         /**
          *
-         * @param type
-         * @param name
+         * @param type {string}
+         * @param name {Game_Graphic}
          */
         unset: function (type, name) {
             if (graphics[type] !== undefined) {
@@ -48,7 +48,7 @@
     Object.defineProperty(Main,'Graphics',{
         /**
          *
-         * @returns {{get: get, set: set, unset: unset}}
+         * @returns {Graphics}
          */
         get:function(){
             return Graphics;

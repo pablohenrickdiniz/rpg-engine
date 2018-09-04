@@ -3,8 +3,11 @@
         throw "Energy_Source requires Game_Event";
     }
 
-    let Energy_Source = {
+    if(!root.Custom){
+        throw "Energy_Source requires Custom";
+    }
+
+    let Battery = {
 
     };
-
 })(RPG);

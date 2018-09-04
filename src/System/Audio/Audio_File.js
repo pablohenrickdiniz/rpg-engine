@@ -1,12 +1,12 @@
 'use strict';
 (function(root){
-    if(root.Game_Timer === undefined){
+    if(!root.Game_Timer){
         throw "Audio_File requires Game_Timer"
     }
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Audio_File = function(options){
@@ -20,29 +20,44 @@
         self.loop = options.loop || false;
     };
 
+    /**
+     *
+     * @returns {Audio_File}
+     */
     Audio_File.prototype.play = function(){
         let self = this;
         if(!self.playing){
             self.audio.play();
         }
+        return self;
     };
 
+    /**
+     *
+     * @returns {Audio_File}
+     */
     Audio_File.prototype.pause = function(){
         let self = this;
         if(self.playing){
             self.audio.pause();
         }
-    };
-
-    Audio_File.prototype.stop = function(){
-        let self = this;
-        self.audio.pause();
-        self.audio.currentTime = 0;
+        return self;
     };
 
     /**
      *
-     * @param self
+     * @returns {Audio_File}
+     */
+    Audio_File.prototype.stop = function(){
+        let self = this;
+        self.audio.pause();
+        self.audio.currentTime = 0;
+        return self;
+    };
+
+    /**
+     *
+     * @param self {Audio_File}
      */
     function initialize(self){
         let audio = null;
@@ -68,14 +83,14 @@
         Object.defineProperty(self,'src',{
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get:function(){
                 return self.audio.src;
             },
             /**
              *
-             * @param src
+             * @param src {string}
              */
             set:function(src){
                 self.audio.src = src;
@@ -86,14 +101,14 @@
         Object.defineProperty(self,'volume',{
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get:function(){
                 return self.audio.volume;
             },
             /**
              *
-             * @param volume
+             * @param volume {number}
              */
             set:function(volume){
                 volume  = parseFloat(volume);
@@ -107,7 +122,7 @@
         Object.defineProperty(self,'audio',{
             /**
              *
-             * @returns {*}
+             * @returns {Audio}
              */
             get:function(){
                 if(audio == null){
@@ -128,7 +143,7 @@
             },
             /**
              *
-             * @param l
+             * @param l {boolean}
              */
             set:function(l){
                 loop = !!l;
@@ -136,6 +151,9 @@
         });
 
         Object.defineProperty(self,'playing',{
+            /**
+             * @returns {boolean}
+             */
             get:function(){
                 return self.audio.playing;
             }

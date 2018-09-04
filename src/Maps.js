@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Maps requires Main";
     }
 
-    if(root.Game_Map === undefined){
+    if(!root.Game_Map){
         throw "Maps requires Game_Map";
     }
 
@@ -15,8 +15,8 @@
     let Maps = {
         /**
          *
-         * @param id
-         * @param map
+         * @param id {string}
+         * @param map {Game_Map}
          */
         set:function(id,map){
             if(map instanceof Game_Map){
@@ -25,8 +25,8 @@
         },
         /**
          *
-         * @param id
-         * @returns {*}
+         * @param id {string}
+         * @returns {Game_Map}
          */
         get:function(id){
             if(maps[id] !== undefined){
@@ -39,7 +39,7 @@
     Object.defineProperty(Main,'Maps',{
         /**
          *
-         * @returns {{set: set, get: get}}
+         * @returns {Maps}
          */
        get:function(){
            return Maps;

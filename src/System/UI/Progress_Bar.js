@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Progress_Bar = function(options){
@@ -28,11 +28,23 @@
     Progress_Bar.prototype = Object.create(Element.prototype);
     Progress_Bar.prototype.constructor = Progress_Bar;
 
+    /**
+     *
+     * @param self {Progress_Bar}
+     */
     function initialize(self){
         Object.defineProperty(self,'progress',{
+            /**
+             *
+             * @returns {float}
+             */
             get:function(){
-                return self.element.value;
+                return parseFloat(self.element.value);
             },
+            /**
+             *
+             * @param p {float}
+             */
             set:function(p){
                 p = parseFloat(p);
                 if(!isNaN(p)){
@@ -43,9 +55,17 @@
         });
 
         Object.defineProperty(self,'total',{
+            /**
+             *
+             * @returns {float}
+             */
             get:function(){
                 return self.element.max;
             },
+            /**
+             *
+             * @param total {float}
+             */
             set:function(total){
                 total = parseFloat(total);
                 if(!isNaN(total)){
@@ -55,9 +75,17 @@
         });
 
         Object.defineProperty(self,'text',{
+            /**
+             *
+             * @returns {string}
+             */
             get:function(){
                 return self.element.getAttribute("text");
             },
+            /**
+             *
+             * @param text {string}
+             */
             set:function(text){
                 self.element.setAttribute("text",text);
             }

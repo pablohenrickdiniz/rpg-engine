@@ -2,7 +2,7 @@
 (function (root) {
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Spriteset_Map = function (options) {
@@ -18,10 +18,10 @@
 
     /**
      *
-     * @param i
-     * @param j
-     * @param k
-     * @param tile
+     * @param i {number}
+     * @param j {number}
+     * @param k {number}
+     * @param tile {Tile}
      * @returns {Spriteset_Map}
      */
     Spriteset_Map.prototype.set = function (i, j, k, tile) {
@@ -44,10 +44,10 @@
 
     /**
      *
-     * @param i
-     * @param j
-     * @param k
-     * @returns {*}
+     * @param i {number}
+     * @param j {number}
+     * @param k {number}
+     * @returns {Tile}
      */
     Spriteset_Map.prototype.get = function (i, j, k) {
         let self = this;
@@ -60,9 +60,9 @@
 
     /**
      *
-     * @param i
-     * @param j
-     * @param k
+     * @param i {number}
+     * @param j {number}
+     * @param k {number}
      */
     Spriteset_Map.prototype.unset = function (i, j, k) {
         let self = this;
@@ -73,22 +73,22 @@
 
     /**
      *
-     * @returns {*[]}
+     * @returns {object}
      */
     Spriteset_Map.prototype.toJSON = function(){
         let self = this;
-        return [ //tilesets
-            self.data,  //sprites
-            self.width,    //width
-            self.height,   //height
-            self.tileWidth,//tileWidth
-            self.tileHeight//tileHeight
+        return [
+            self.data,
+            self.width,
+            self.height,
+            self.tileWidth,
+            self.tileHeight
         ];
     };
 
     /**
      *
-     * @param self
+     * @param self {Spriteset_Map}
      */
     function initialize(self){
         let width = 0;
@@ -103,7 +103,7 @@
             },
             /**
              *
-             * @param w
+             * @param w {number}
              */
             set:function(w){
                 w = parseInt(w);
@@ -123,7 +123,7 @@
             },
             /**
              *
-             * @param h
+             * @param h {number}
              */
             set:function(h){
                 h = parseInt(h);

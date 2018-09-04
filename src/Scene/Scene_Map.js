@@ -54,7 +54,6 @@
         Consts = root.Consts,
         Main = root.Main,
         Event_Page = root.Event_Page,
-        Game_Item = root.Game_Item,
         Game_Actor = root.Game_Actor,
         Spriteset_Map = root.Spriteset_Map,
         Game_Object = root.Game_Object,
@@ -71,7 +70,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Scene_Map = function (options) {
@@ -119,9 +118,10 @@
 
     Scene_Map.prototype = Object.create(Scene.prototype);
     Scene_Map.prototype.constructor = Scene_Map;
+
     /**
-     * Adiciona um objeto na cena
-     * @param object
+     *
+     * @param object {Game_Object}
      */
     Scene_Map.prototype.add= function(object){
         let self = this;
@@ -132,8 +132,8 @@
     };
 
     /**
-     * Remove um objeto da cena
-     * @param object
+     *
+     * @param object {Game_Object}
      */
     Scene_Map.prototype.remove = function(object){
         let self = this;
@@ -147,8 +147,8 @@
     };
 
     /**
-     * Mantêm a câmera focada em um obeto
-     * @param object
+     *
+     * @param object {Game_Object}
      */
     Scene_Map.prototype.focus = function (object) {
         if(object instanceof Game_Object){
@@ -160,28 +160,19 @@
         }
     };
 
-    /**
-     * Executa passo de tempo da cena
-     */
     Scene_Map.prototype.step = function () {
         let self = this;
         Scene.prototype.step.apply(this);
         Engine.update(self.engine);
-        self.action = false;
-        step_events(self);
-        step_focus(self);
-        refresh_bg(self);
-        clear_graphics(self);
-        draw_graphics(self);
+        update(self);
+        clear(self);
+        draw(self);
     };
-
-    //Private Methods
 
     /**
      *
-     * @param options
-     * @returns {{si: Number, sj: Number, ei: Number, ej: Number}}
-     * Obtém a região do mapa de sprites a ser redenrizada
+     * @param options {object}
+     * @returns {object}
      */
     function get_area_interval(options) {
         let x = options.x || 0;
@@ -199,10 +190,9 @@
 
     /**
      *
-     * @param self
-     * Renderiza o mapa de sprites
+     * @param self {Scene_Map}
      */
-    function refresh_spriteset_map(self) {
+    function draw_spriteset(self) {
         let sx = Canvas.x;
         let sy = Canvas.y;
         let spriteset = self.spriteset;
@@ -281,36 +271,9 @@
 
     /**
      *
-     * @param self
-     * Renderiza o ambiente, chão, casas,etc
+     * @param self {Scene_Map}
      */
-    function refresh_bg(self) {
-        if (!bg_refreshed) {
-            Canvas.clear(Consts.BACKGROUND_LAYER);
-            Canvas.clear(Consts.FOREGROUND_LAYER);
-            refresh_spriteset_map(self);
-            bg_refreshed = true;
-        }
-    }
-
-    /**
-     *
-     * @param self
-     * Apaga o gráfico dos objetos
-     */
-    function clear_graphics(self) {
-        while(clear_queue.length > 0){
-            let clear = clear_queue.pop();
-            Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
-        }
-    }
-
-    /**
-     *
-     * @param self
-     * Renderiza os objetos no mapa
-     */
-    function draw_graphics(self) {
+    function draw_objects(self){
         let spriteset = self.spriteset;
         let mw = spriteset.realWidth;
         let mh = spriteset.realHeight;
@@ -318,7 +281,6 @@
         let objs = self.objs.sort(function(a,b){
             return a.y-b.y;
         });
-
 
         for(let i =0; i < objs.length;i++){
             draw_object(objs[i].x,objs[i].y,objs[i],mw,mh);
@@ -357,8 +319,35 @@
 
     /**
      *
-     * @param o
-     * @param vw
+     * @param self {Scene}
+     */
+    function clear(self) {
+        if (!bg_refreshed) {
+            Canvas.clear(Consts.BACKGROUND_LAYER);
+            Canvas.clear(Consts.FOREGROUND_LAYER);
+        }
+        while(clear_queue.length > 0){
+            let clear = clear_queue.pop();
+            Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
+        }
+    }
+
+    /**
+     *
+     * @param self {Scene_Map}
+     */
+    function draw(self) {
+        if(!bg_refreshed){
+            draw_spriteset(self);
+            bg_refreshed = true;
+        }
+        draw_objects(self);
+    }
+
+    /**
+     *
+     * @param o {object}
+     * @param vw {number}
      * @returns {Array}
      */
     function splith(o,vw){
@@ -403,8 +392,8 @@
 
     /**
      *
-     * @param o
-     * @param vh
+     * @param o {object}
+     * @param vh {number}
      * @returns {Array}
      */
     function splitv(o,vh){
@@ -447,9 +436,9 @@
 
     /**
      *
-     * @param obj
-     * @param vw
-     * @param vh
+     * @param obj {object}
+     * @param vw {number}
+     * @param vh {number}
      * @returns {Array}
      */
     function split(obj,vw,vh){
@@ -470,11 +459,11 @@
 
     /**
      *
-     * @param x
-     * @param y
-     * @param object
-     * @param vw
-     * @param vh
+     * @param x {number}
+     * @param y {number}
+     * @param object {Game_Object}
+     * @param vw {number}
+     * @param vh {number}
      */
     function draw_object(x,y,object,vw,vh){
         let frame = object.currentFrame;
@@ -508,10 +497,17 @@
 
     /**
      *
-     * @param self
-     * Foca a câmera em um objeto
+     * @param self {Scene_Map}
      */
-    function step_focus(self) {
+    function update(self) {
+        let objs = self.objs;
+        let length = objs.length;
+        let i;
+
+        for (i = 0; i < length; i++) {
+            objs[i].update();
+        }
+
         if (focused_object != null) {
             let obj = focused_object;
             let graphic = obj.graphic;
@@ -556,71 +552,12 @@
                 Canvas.y = viewport_y;
             }
         }
+        self.action = false;
     }
 
     /**
      *
-     * @param self
-     */
-    function step_events(self) {
-        let objs = self.objs;
-        let length = objs.length;
-        let i;
-
-        for (i = 0; i < length; i++) {
-            objs[i].update();
-        }
-    }
-
-    /**
-     *
-     * @param self
-     */
-    function action_events(self) {
-        // let player = Main.currentPlayer;
-        //
-        //
-        // let length;
-        // let collisions;
-        // let i;
-        // let collision;
-        // let obj;
-        //
-        // collisions = tree.retrieve(bounds_tmp, 'ACTION_BUTTON');
-        // length = collisions.length;
-        // for (i = 0; i < length; i++) {
-        //     collision = collisions[i];
-        //     obj = collision.object;
-
-        // }
-        //
-        // bounds_tmp = {
-        //     x: player.body.x,
-        //     y: player.body.y,
-        //     width: player.body.width,
-        //     height: player.body.height,
-        //     groups: ['ITEM']
-        // };
-        //
-        // collisions = tree.retrieve(bounds_tmp, 'ITEM');
-        // length = collisions.length;
-        // for (i = 0; i < length; i++) {
-        //     collision = collisions[i];
-        //     obj = collision.object;
-        //     if (obj instanceof Game_Item) {
-        //         if(obj.capture === Consts.TRIGGER_PLAYER_TOUCH || (obj.capture === Consts.TRIGGER_ACTION_BUTTON && self.action_button)){
-        //             player.inventory.addItem(obj.item,obj.amount);
-        //             self.remove(obj);
-        //         }
-        //     }
-        // }
-        //
-        // self.action_button = false;
-    }
-
-    /**
-     *
-     * @param self
+     * @param self {Scene_Map}
      */
     function initialize(self){
         let engine = Engine.create();
@@ -680,7 +617,7 @@
             },
             /**
              *
-             * @param bgr
+             * @param bgr {boolean}
              */
             set:function(bgr){
                 bg_refreshed = !!bgr;
@@ -698,6 +635,11 @@
         });
     }
 
+    /**
+     *
+     * @param obj {object}
+     * @returns {object}
+     */
     function clone(obj){
         return Object.assign({},obj);
     }

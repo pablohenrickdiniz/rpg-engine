@@ -1,21 +1,17 @@
 'use strict';
 (function (w) {
-    /*Canvas Engine*/
     if (!w.CE) {
         throw 'RPG requires Canvas Engine';
     }
 
-    /*Keyboard*/
     if (!w.Keyboard) {
         throw "RPG requires Keyboard";
     }
 
-    /*Mouse*/
     if (!w.Mouse) {
         throw "RPG requires Mouse";
     }
 
-    /*TimeTicker*/
     if (!w.Timer_Ticker) {
         throw "RPG requires Time_Ticker";
     }
@@ -29,14 +25,23 @@
         debug = false;
 
     let Controls  = {};
+    let Custom = {};
 
     Object.defineProperty(Controls,'Keyboard',{
+        /**
+         *
+         * @returns {Keyboard}
+         */
        get:function(){
            return keyboard;
        }
     });
 
     Object.defineProperty(Controls,'Mouse',{
+        /**
+         *
+         * @returns {Mouse}
+         */
         get:function(){
             return mouse;
         }
@@ -46,7 +51,7 @@
         Canvas: null,
         /**
          *
-         * @param options
+         * @param options {object}
          */
         initialize: function (options) {
             let self = this;
@@ -90,21 +95,45 @@
     };
 
     Object.defineProperty(RPG,'Game_Timer',{
+        /**
+         *
+         * @returns {Timer_Ticker}
+         */
         get:function(){
             return Game_Timer;
         }
     });
 
     Object.defineProperty(RPG,'Controls',{
+        /**
+         * @returns{Controls}
+         */
        get:function(){
            return Controls;
        }
     });
 
+    Object.defineProperty(RPG,'Custom',{
+        /**
+         * @returns{Custom}
+         */
+        get:function(){
+            return Custom;
+        }
+    });
+
     Object.defineProperty(RPG,'debug',{
+        /**
+         *
+         * @returns {boolean}
+         */
         get:function(){
             return debug;
         },
+        /**
+         *
+         * @param d {boolean}
+         */
         set:function(d){
             debug = !!d;
         }
@@ -112,11 +141,10 @@
 
     /**
      *
-     * @param root
+     * @param root {RPG}
      */
     function unbind(root){
         let Canvas  = root.Canvas;
-        /*unbind*/
         w.removeEventListener('blur',windowblur);
         w.removeEventListener('focus',windowfocus);
         w.removeEventListener('resize',windowresize);
@@ -130,11 +158,10 @@
 
     /**
      *
-     * @param root
+     * @param root {RPG}
      */
     function bind(root){
         let Canvas  = root.Canvas;
-        /*bind*/
         w.addEventListener('blur', windowblur);
         w.addEventListener('focus', windowfocus);
         w.addEventListener('resize',windowresize);
@@ -209,7 +236,7 @@
     Object.defineProperty(w,'RPG',{
         /**
          *
-         * @returns {{Canvas: null, initialize: initialize}}
+         * @returns {RPG}
          */
        get:function(){
            return RPG;

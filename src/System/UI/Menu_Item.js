@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Menu_Item = function(options){
@@ -29,20 +29,20 @@
 
     /**
      *
-     * @param self
+     * @param self {Menu_Item}
      */
     function initialize(self){
         Object.defineProperty(self,'text',{
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get:function(){
                 return self.element.innerHTML;
             },
             /**
              *
-             * @param t
+             * @param t {string}
              */
             set:function(t){
                 self.element.innerHTML = t;

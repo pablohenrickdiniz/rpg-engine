@@ -27,7 +27,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Slot = function(options){
@@ -56,7 +56,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Slot}
      */
     function initialize(self){
         let amount = 0;
@@ -116,7 +116,7 @@
             },
             /**
              *
-             * @param a
+             * @param a {number}
              */
             set:function(a){
                 a = parseInt(a);
@@ -131,14 +131,14 @@
         Object.defineProperty(self,'item',{
             /**
              *
-             * @returns {*}
+             * @returns {Item}
              */
             get:function(){
                 return item;
             },
             /**
              *
-             * @param i
+             * @param i {Item}
              */
             set:function(i){
                 if((i == null || i instanceof Item) && i !== item){

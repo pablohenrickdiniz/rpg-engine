@@ -28,7 +28,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Inventory = function(options){
@@ -84,7 +84,7 @@
         Object.defineProperty(self,'inventoryA',{
             /**
              *
-             * @returns {Element|*}
+             * @returns {Element}
              */
             get:function(){
                 return inventoryA;
@@ -94,7 +94,7 @@
         Object.defineProperty(self,'inventoryB',{
             /**
              *
-             * @returns {Element|*}
+             * @returns {Element}
              */
             get:function(){
                 return inventoryB;
@@ -105,14 +105,14 @@
         Object.defineProperty(self,'inventory',{
             /**
              *
-             * @returns {*}
+             * @returns {Game_Inventory}
              */
             get:function(){
                 return inventory;
             },
             /**
              *
-             * @param i
+             * @param i {Game_Inventory}
              */
             set:function(i){
                 if((i == null || i instanceof Game_Inventory) && i !== inventory){
@@ -131,6 +131,7 @@
             }
         });
     }
+
 
     Inventory.prototype.render = function(){
         let self = this;

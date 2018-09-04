@@ -38,7 +38,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Event = function (options) {
@@ -53,8 +53,8 @@
 
     /**
      *
-     * @param options
-     * @returns {*}
+     * @param options {object}
+     * @returns {Event_Page}
      */
     Game_Event.prototype.newPage = function(options) {
         options = options || {};
@@ -68,7 +68,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {boolean}
      */
     Game_Event.prototype.isSwitchEnabled = function(names){
@@ -87,7 +87,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {boolean}
      */
     Game_Event.prototype.isSwitchDisabled = function(names){
@@ -106,7 +106,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {Game_Event}
      */
     Game_Event.prototype.enableSwitch = function (names) {
@@ -130,7 +130,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {Game_Event}
      */
     Game_Event.prototype.disableSwitch = function (names) {
@@ -156,7 +156,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {Game_Event}
      */
     Game_Event.prototype.enableGlobalSwitch = function (names) {
@@ -166,7 +166,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {Game_Event}
      */
     Game_Event.prototype.disableGlobalSwitch = function (names) {
@@ -176,7 +176,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {boolean}
      */
     Game_Event.prototype.isGlobalSwitchEnabled = function (names) {
@@ -185,7 +185,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {boolean}
      */
     Game_Event.prototype.isGlobalSwitchDisabled = function (names) {
@@ -194,8 +194,8 @@
 
     /**
      *
-     * @param type
-     * @param name
+     * @param type {string}
+     * @param name {string}
      */
     Game_Event.prototype.playAudio = function(type,name){
         Audio.play(type,name);
@@ -204,7 +204,7 @@
 
     /**
      *
-     * @param page
+     * @param page {Event_Page}
      */
     Game_Event.prototype.add = function (page) {
         let self = this;
@@ -216,7 +216,7 @@
 
     /**
      *
-     * @param page
+     * @param page {Event_Page}
      */
     Game_Event.prototype.remove = function(page){
         let self = this;
@@ -236,7 +236,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Game_Event}
      */
     function initialize(self){
         let currentPage = null;
@@ -254,7 +254,7 @@
             },
             /**
              *
-             * @param pgs
+             * @param pgs {Array}
              */
             set:function(pgs){
                 pgs = (pgs instanceof Array)?pgs:[];
@@ -281,7 +281,7 @@
         Object.defineProperty(self,'currentFrame',{
             /**
              *
-             * @returns {null}
+             * @returns {Tile}
              */
             get:function(){
                 if(currentPage != null){
@@ -294,14 +294,14 @@
         Object.defineProperty(self,'currentPage',{
             /**
              *
-             * @returns {*}
+             * @returns {Event_Page}
              */
             get:function(){
                 return currentPage;
             },
             /**
              *
-             * @param cp
+             * @param cp {Event_Page}
              */
             set:function(cp){
                 if(cp !== currentPage && cp instanceof Event_Page){
@@ -324,7 +324,7 @@
         Object.defineProperty(self,'through',{
             /**
              *
-             * @returns {*}
+             * @returns {boolean}
              */
             get:function(){
                 if(currentPage != null){
@@ -337,7 +337,7 @@
         Object.defineProperty(self,'x',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(currentPage !== null && currentPage.x !== x){
@@ -347,7 +347,7 @@
             },
             /**
              *
-             * @param px
+             * @param px {number}
              */
             set:function(px){
                 if(currentPage !== null){
@@ -360,7 +360,7 @@
         Object.defineProperty(self,'y',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(currentPage !== null && currentPage.y !== y){
@@ -370,7 +370,7 @@
             },
             /**
              *
-             * @param py
+             * @param py {number}
              */
             set:function(py){
                 if(currentPage !== null){
@@ -383,7 +383,7 @@
         Object.defineProperty(self,'body',{
             /**
              *
-             * @returns {*}
+             * @returns {Body}
              */
             get:function(){
                 if(currentPage !== null){
@@ -395,6 +395,10 @@
 
 
         Object.defineProperty(self,'width',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 if(currentPage !== null){
                     return currentPage.width;
@@ -404,6 +408,10 @@
         });
 
         Object.defineProperty(self,'height',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 if(currentPage !== null){
                     return currentPage.height;
@@ -432,7 +440,7 @@
 
     /**
      *
-     * @param page
+     * @param page {Event_Page}
      * @returns {boolean}
      */
     function validateConditions(page){

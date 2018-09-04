@@ -7,8 +7,8 @@
     let UI = root.UI;
     /**
      *
-     * @param options
-     * @param tag
+     * @param options {object}
+     * @param tag {string}
      * @constructor
      */
     let Element = function(options,tag){
@@ -31,52 +31,59 @@
 
     /**
      *
-     * @param event
-     * @param callback
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Element}
      */
-    Element.prototype.addEventListener = function(event,callback){
+    Element.prototype.addEventListener = function(eventName,callback){
         let self = this;
-        if(!self.listeners[event]){
-            self.listeners[event] = [];
+        if(!self.listeners[eventName]){
+            self.listeners[eventName] = [];
         }
-        if(self.listeners[event].indexOf(callback) === -1){
-            self.listeners[event].push(callback);
+        if(self.listeners[eventName].indexOf(callback) === -1){
+            self.listeners[eventName].push(callback);
         }
+        return self;
     };
 
     /**
      *
-     * @param event
-     * @param callback
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Element}
      */
-    Element.prototype.removeEventListener = function(event,callback){
+    Element.prototype.removeEventListener = function(eventName,callback){
         let self = this;
-        if(self.listeners[event]){
-            let index = self.listeners[event].indexOf(callback);
+        if(self.listeners[eventName]){
+            let index = self.listeners[eventName].indexOf(callback);
             if(index !== -1){
-                self.listeners[event].splice(index,1);
+                self.listeners[eventName].splice(index,1);
             }
         }
+        return self;
     };
 
     /**
      *
-     * @param event
-     * @param args
+     * @param eventName {string}
+     * @param args {Array}
+     * @returns {Element}
      */
-    Element.prototype.trigger = function(event,args){
+    Element.prototype.trigger = function(eventName,args){
         let self = this;
-        if(self.listeners[event]){
-            let length = self.listeners[event].length;
+        if(self.listeners[eventName]){
+            let length = self.listeners[eventName].length;
             for(let i = 0; i < length;i++){
-                self.listeners[event][i].apply(self,args);
+                self.listeners[eventName][i].apply(self,args);
             }
         }
+        return self;
     };
 
     /**
      *
-     * @param el
+     * @param el {Element}
+     * @returns {Element}
      */
     Element.prototype.add = function(el){
         let self = this;
@@ -85,11 +92,13 @@
             el.parent = self;
             self.element.appendChild(el.element);
         }
+        return self;
     };
 
     /**
      *
-     * @param el
+     * @param el {Element}
+     * @returns {Element}
      */
     Element.prototype.remove = function(el){
         let self = this;
@@ -101,19 +110,25 @@
                 el.parent = null;
             }
         }
+        return self;
     };
 
+    /**
+     *
+     * @returns {Element}
+     */
     Element.prototype.destroy = function(){
         let self = this;
         if(self.parent){
             self.parent.remove(self);
             delete self.element;
         }
+        return self;
     };
 
     /**
      *
-     * @param self
+     * @param self {Element}
      */
     function initialize(self){
         let parent = null;
@@ -126,7 +141,7 @@
         Object.defineProperty(self,'bounds',{
             /**
              *
-             * @returns {*}
+             * @returns {object}
              */
             get:function(){
                 return self.element.getBoundingClientRect();
@@ -136,14 +151,14 @@
         Object.defineProperty(self,'parent',{
             /**
              *
-             * @returns {*}
+             * @returns {Element}
              */
             get:function(){
                 return parent;
             },
             /**
              *
-             * @param p
+             * @param p {Element}
              */
             set:function(p){
                 if((p === UI || p instanceof Element || p == null) && p !== parent){
@@ -168,7 +183,7 @@
             },
             /**
              *
-             * @param v
+             * @param v{boolean}
              */
             set:function(v){
                 v = !!v;
@@ -187,7 +202,7 @@
         Object.defineProperty(self,'element',{
             /**
              *
-             * @param el
+             * @param el {Node}
              */
             set:function(el){
                 if(el instanceof Node && el !== element){
@@ -199,14 +214,14 @@
                             element.removeChild(element.firstChild);
                         }
                     }
-                    self.unbind();
+                    unbind(self);
                     element = el;
-                    self.bind();
+                    bind(self);
                 }
             },
             /**
              *
-             * @returns {*}
+             * @returns {Node}
              */
             get:function(){
                 if(element == null){
@@ -220,7 +235,7 @@
                     if(id != null){
                         element.id = id;
                     }
-                    self.bind();
+                    bind(self);
                 }
                 return element;
             }
@@ -236,7 +251,7 @@
             },
             /**
              *
-             * @param d
+             * @param d {boolean}
              */
             set:function(d){
                 d = !!d;
@@ -256,7 +271,7 @@
             },
             /**
              *
-             * @param c
+             * @param c {string}
              */
             set:function(c){
                 if(c !== className){
@@ -270,17 +285,17 @@
         Object.defineProperty(self,'id',{
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get:function(){
                 return id;
             },
             /**
              *
-             * @param i
+             * @param i {string}
              */
             set:function(i){
-                if(typeof i === 'string' && i != id){
+                if(i !== id){
                     id = i;
                     self.element.id = i;
                 }
@@ -297,7 +312,7 @@
             },
             /**
              *
-             * @param l
+             * @param l {number}
              */
             set:function(l){
                 l = parseInt(l);
@@ -317,7 +332,7 @@
             },
             /**
              *
-             * @param t
+             * @param t {number}
              */
             set:function(t){
                 t = parseInt(t);
@@ -337,7 +352,7 @@
             },
             /**
              *
-             * @param w
+             * @param w {number}
              */
             set:function(w){
                 w = parseInt(w);
@@ -357,7 +372,7 @@
             },
             /**
              *
-             * @param h
+             * @param h {number}
              */
             set:function(h){
                 h = parseInt(h);
@@ -370,9 +385,9 @@
 
     /**
      *
-     * @param className
-     * @param results
-     * @returns {*|Array}
+     * @param className {string}
+     * @param results {Array}
+     * @returns {Array}
      */
     Element.prototype.findByClass = function(className,results){
         let self = this;
@@ -390,8 +405,8 @@
 
     /**
      *
-     * @param id
-     * @returns {*}
+     * @param id {string}
+     * @returns {Element}
      */
     Element.prototype.findById = function(id){
         let self = this;
@@ -414,7 +429,7 @@
 
     /**
      *
-     * @param className
+     * @param className {string}
      * @returns {boolean}
      */
     Element.prototype.hasClass = function(className){
@@ -425,7 +440,8 @@
 
     /**
      *
-     * @param className
+     * @param className {string}
+     * @returns {Element}
      */
     Element.prototype.addClass = function(className){
         let self =this;
@@ -435,11 +451,13 @@
             old.push(className);
             self.class = old.join(' ');
         }
+        return self;
     };
 
     /**
      *
-     * @param className
+     * @param className {string}
+     * @returns {Element}
      */
     Element.prototype.removeClass = function(className){
         let self = this;
@@ -450,18 +468,24 @@
             old.splice(index,1);
             self.class = old.join(' ');
         }
+        return self;
     };
 
+    /**
+     *
+     * @returns {Element}
+     */
     Element.prototype.empty = function(){
         let self = this;
         while(self.children.length > 0){
             self.remove(self.children[0]);
         }
+        return self;
     };
 
     /**
      *
-     * @param el
+     * @param el {Element}
      * @returns {boolean}
      */
     Element.prototype.overlap = function(el){
@@ -476,7 +500,7 @@
 
     /**
      *
-     * @param el
+     * @param el {Element}
      * @returns {Array}
      */
     Element.prototype.findOverlaps = function(el){
@@ -495,8 +519,7 @@
         return overlaps;
     };
 
-    Element.prototype.unbind = function(){
-        let self = this;
+    function unbind(self){
         let element = self.element;
 
         if(element != null){
@@ -535,9 +558,8 @@
         }
     };
 
-    Element.prototype.bind = function(){
-        let self = this;
-        self.unbind();
+    function bind(self){
+        unbind(self);
         let oldposition = null;
         let oldparent = null;
         let element = self.element;
@@ -684,7 +706,7 @@
 
         /*mouse events*/
         element.addEventListener('mousedown',self.mousedown);
-    };
+    }
 
     function prevent(e){
         e.preventDefault();

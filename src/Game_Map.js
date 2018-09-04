@@ -2,7 +2,7 @@
 (function (root) {
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Map = function (options) {
@@ -10,7 +10,7 @@
         options = options  || {};
         self.tileset = options.tileset || null;
         self.name = options.name || '';
-        self.listeners = options.listeners || [];
+        self.objects = options.objects || [];
         self.autoplay_bgs = options.autoplay_bgs || false;
         self.autoplay_bgm = options.autoplay_bgm || false;
         self.bgm = options.bgm || null;
@@ -21,20 +21,20 @@
 
     /**
      *
-     * @param obj
+     * @param obj {Game_Object}
      */
     Game_Map.prototype.add = function (obj) {
         let self = this;
-        self.listeners.push(obj);
+        self.objects.push(obj);
     };
 
     /**
      *
-     * @param obj
+     * @param obj {Game_Object}
      */
     Game_Map.prototype.remove = function (obj) {
         let self = this;
-        let index = self.listeners.indexOf(obj);
+        let index = self.objects.indexOf(obj);
         if (index !== -1) {
             delete obj.parent;
         }
@@ -42,7 +42,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Game_Map}
      */
     function initialize(self){
         Object.defineProperty(self,'width',{

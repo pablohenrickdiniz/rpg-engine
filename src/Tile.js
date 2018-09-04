@@ -2,7 +2,7 @@
 (function (root) {
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Tile = function (options) {
@@ -16,7 +16,7 @@
 
     /**
      *
-     * @returns {*[]}
+     * @returns {object}
      */
     Tile.prototype.toJSON = function(){
         let self = this;
@@ -29,7 +29,7 @@
 
     /**
      *
-     * @returns {{tileset: *, sx: (*|sx), sy: (*|sy), sWidth: *, sHeight: *}}
+     * @returns {object}
      */
     Tile.prototype.toOBJ = function(){
         let self = this;
@@ -44,7 +44,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Tile}
      */
     let initialize = function(self){
         Object.defineProperty(self,'sx',{

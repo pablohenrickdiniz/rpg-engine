@@ -1,11 +1,11 @@
 'use strict';
 (function (w) {
-    if (w.Audio === undefined) {
+    if (!w.Audio) {
         (function (w) {
             let context = new (w.AudioContext || w.webkitAudioContext)();
             /**
              *
-             * @param url
+             * @param url {string}
              */
             let load_audio = function (url) {
                 let self = this;
@@ -40,7 +40,7 @@
                 Object.defineProperty(self, 'src', {
                     /**
                      *
-                     * @param newSrc
+                     * @param newSrc {string}
                      */
                     set: function (newSrc) {
                         if (src !== newSrc) {
@@ -60,7 +60,7 @@
                 Object.defineProperty(self, 'currentTime', {
                     /**
                      *
-                     * @param newTime
+                     * @param newTime {number}
                      */
                     set: function (newTime) {
                         currentTime = newTime;
@@ -75,6 +75,10 @@
                 });
             };
 
+            /**
+             *
+             * @returns {Audio}
+             */
             Audio.prototype.play = function () {
                 let self = this;
                 if (self.paused && self.buffer != null) {
@@ -92,8 +96,13 @@
                     self.source = source;
                     self.paused = false;
                 }
+                return self;
             };
 
+            /**
+             *
+             * @returns {Audio}
+             */
             Audio.prototype.pause = function () {
                 let self = this;
                 if (!self.paused) {
@@ -101,56 +110,79 @@
                     self.source.stop();
                     self.currentTime = (new Date()).getTime() - self.time_start;
                 }
+
+                return self;
             };
             /**
              *
-             * @param event
-             * @param callback
+             * @param eventName {string}
+             * @param callback {function}
+             * @returns {Audio}
              */
-            Audio.prototype.addEventListener = function (event, callback) {
+            Audio.prototype.addEventListener = function (eventName, callback) {
                 let self = this;
-                if (self.listeners[event] === undefined) {
-                    self.listeners[event] = [];
+                if (self.listeners[eventName] === undefined) {
+                    self.listeners[eventName] = [];
                 }
-                self.listeners[event].push(callback);
+                self.listeners[eventName].push(callback);
+                return self;
             };
             /**
              *
-             * @param event
-             * @param callback
+             * @param eventName {string}
+             * @param callback {function}
+             * @returns {Audio}
              */
-            Audio.prototype.removeEventListener = function (event, callback) {
+            Audio.prototype.removeEventListener = function (eventName, callback) {
                 let self = this;
-                if (self.listeners[event] !== undefined) {
-                    let index = self.listeners[event].indexOf(callback);
+                if (self.listeners[eventName] !== undefined) {
+                    let index = self.listeners[eventName].indexOf(callback);
                     if (index !== -1) {
-                        self.listeners[event].splice(index, 1);
+                        self.listeners[eventName].splice(index, 1);
                     }
                 }
-            };
-            /**
-             *
-             * @param event
-             */
-            Audio.prototype.trigger = function (event) {
-                let self = this;
-                if (self.listeners[event] !== undefined) {
-                    let i;
-                    for (i = 0; i < self.listeners[event].length; i++) {
-                        self.listeners[event][i].apply(self);
-                    }
-                }
+                return self;
             };
 
-            w.Audio = Audio;
+            /**
+             *
+             * @param eventName {string}
+             * @param args {Array}
+             * @returns {Audio}
+             */
+            Audio.prototype.trigger = function (eventName,args) {
+                let self = this;
+                if (self.listeners[eventName] !== undefined) {
+                    let i;
+                    for (i = 0; i < self.listeners[eventName].length; i++) {
+                        self.listeners[eventName][i].apply(self,args);
+                    }
+                }
+                return self;
+            };
+
+            Object.defineProperty(w,'Audio',{
+                /**
+                 *
+                 * @returns {Audio}
+                 */
+                get:function(){
+                    return Audio;
+                }
+            });
         })(w);
     }
     else {
-        if (w.Audio.prototype.stop === undefined) {
+        if (!w.Audio.prototype.stop) {
+            /**
+             *
+             * @returns {w.Audio}
+             */
             w.Audio.prototype.stop = function () {
                 let self = this;
                 self.pause();
                 self.currentTime = 0;
+                return self;
             };
         }
     }

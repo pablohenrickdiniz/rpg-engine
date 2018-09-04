@@ -33,11 +33,9 @@
 
     let Scenes = Main.Scenes;
     let current_scene = null;
-    let queue = [];
-
     /**
      *
-     * @param scene
+     * @param scene {Scene}
      */
     function load_callback(scene){
         current_scene = scene;
@@ -52,10 +50,10 @@
     let Scene_Manager = {
         /**
          *
-         * @param type
-         * @param name
-         * @param options
-         * @returns {*}
+         * @param type {string}
+         * @param name {string}
+         * @param options {object}
+         * @returns {Scene}
          */
         new: function (type,name, options) {
             let scene = null;
@@ -72,7 +70,7 @@
         },
         /**
          *
-         * @param name
+         * @param name {string}
          */
         call: function (name) {
             let scene = Scenes.get(name);
@@ -94,7 +92,7 @@
     Object.defineProperty(root,'Scene_Manager',{
         /**
          *
-         * @returns {{new: function(*, *=, *=): *, call: call}}
+         * @returns {Scene_Manager}
          */
        get:function(){
            return Scene_Manager;

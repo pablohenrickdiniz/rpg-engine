@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Game_Actor === undefined){
+    if(!root.Game_Actor){
         throw "Actors requires Game_Actor";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Actors requires RPG Main";
     }
 
@@ -14,8 +14,8 @@
     let Actors = {
         /**
          *
-         * @param id
-         * @param actor
+         * @param id {string}
+         * @param actor {Game_Actor}
          */
         set:function(id,actor){
             if(actor instanceof Game_Actor){
@@ -24,8 +24,8 @@
         },
         /**
          *
-         * @param id
-         * @returns {*}
+         * @param id {string}
+         * @returns {Game_Actor}
          */
         get:function(id){
             if(actors[id] !== undefined){
@@ -38,7 +38,7 @@
     Object.defineProperty(Main,'Actors',{
         /**
          *
-         * @returns {{set: set, get: get}}
+         * @returns {Actors}
          */
         get:function(){
             return Actors;

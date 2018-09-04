@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Icons requires Main";
     }
 
-    if(root.Game_Icon === undefined){
+    if(!root.Game_Icon){
         throw "Icons requires Game_Icon";
     }
 
@@ -14,8 +14,8 @@
     let Icons = {
         /**
          *
-         * @param id
-         * @param icon
+         * @param id {string}
+         * @param icon {Game_Icon}
          */
         set:function(id,icon){
             if(icon instanceof Game_Icon){
@@ -25,7 +25,7 @@
         /**
          *
          * @param id
-         * @returns {*}
+         * @returns {Game_Icon}
          */
         get:function(id){
             if(icons[id] !== undefined){
@@ -38,7 +38,7 @@
     Object.defineProperty(Main,'Icons',{
         /**
          *
-         * @returns {{set: set, get: get}}
+         * @returns {Icons}
          */
        get:function(){
            return Icons;

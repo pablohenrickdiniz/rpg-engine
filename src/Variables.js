@@ -1,6 +1,6 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Variables requires RPG Main";
     }
 
@@ -9,15 +9,15 @@
     let Variables = {
         /**
          *
-         * @param id
-         * @param value
+         * @param id {string}
+         * @param value {*}
          */
         set:function(id,value){
             variables[id] = value;
         },
         /**
          *
-         * @param id
+         * @param id {string}
          * @returns {*}
          */
         get:function(id){
@@ -31,7 +31,7 @@
     Object.defineProperty(Main,'Variables',{
         /**
          *
-         * @returns {{set: set, get: get}}
+         * @returns {Variables}
          */
        get:function(){
            return Variables;

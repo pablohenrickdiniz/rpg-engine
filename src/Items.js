@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Item === undefined){
+    if(!root.Item){
         throw "Items requires Item";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Items requires Main";
     }
 
@@ -15,8 +15,8 @@
     let Items = {
         /**
          *
-         * @param id
-         * @returns {*}
+         * @param id {string}
+         * @returns {Item}
          */
         get:function(id){
             if(items[id] !== undefined){
@@ -26,8 +26,8 @@
         },
         /**
          *
-         * @param id
-         * @param item
+         * @param id {string}
+         * @param item {Item}
          */
         set:function(id,item){
             if(item instanceof Item){
@@ -39,7 +39,7 @@
     Object.defineProperty(Main,'Items',{
         /**
          *
-         * @returns {{get: get, set: set}}
+         * @returns {Items}
          */
        get:function(){
            return Items;

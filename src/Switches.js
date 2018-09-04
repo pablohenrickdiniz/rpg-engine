@@ -15,7 +15,7 @@
     let Switches = {
         /**
          *
-         * @param names
+         * @param names {string|Array}
          */
         enable:function(names){
             if(!(names instanceof Array))
@@ -35,7 +35,7 @@
         },
         /**
          *
-         * @param names
+         * @param names {string|Array}
          */
         disable:function(names){
             if(!(names instanceof Array))
@@ -57,7 +57,7 @@
 
         /**
          *
-         * @param names
+         * @param names {string|Array}
          * @returns {boolean}
          */
         isEnabled:function(names){
@@ -75,7 +75,7 @@
 
         /**
          *
-         * @param names
+         * @param names{string|Array}
          * @returns {boolean}
          */
         isDisabled:function(names){
@@ -95,7 +95,7 @@
     Object.defineProperty(Main,'Switches',{
         /**
          *
-         * @returns {{enable: enable, disable: disable, isEnabled: isEnabled, isDisabled: isDisabled}}
+         * @returns {Switches}
          */
        get:function(){
            return Switches;

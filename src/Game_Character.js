@@ -8,14 +8,6 @@
         throw "Game_Character requires Consts";
     }
 
-    if(!root.Chara){
-        throw "Game_Character requires Chara";
-    }
-
-    if(!root.Game_Timer){
-        throw "Game_Character requires Game_Timer";
-    }
-
     if(!root.Game_Object){
         throw "Game_Character requires Game_Object";
     }
@@ -35,8 +27,6 @@
     let Animation_Time = root.Animation_Time,
         Consts = root.Consts,
         Main = root.Main,
-        Game_Timer = root.Game_Timer,
-        Chara = root.Chara,
         Game_Object = root.Game_Object,
         Charas = Main.Charas,
         Faces = Main.Faces,
@@ -44,7 +34,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Character = function (options) {
@@ -64,7 +54,7 @@
 
     /**
      *
-     * @param direction
+     * @param direction {number}
      */
     Game_Character.prototype.moveTo = function (direction) {
         let self = this;
@@ -95,6 +85,10 @@
         self.move(x, y);
     };
 
+    /**
+     *
+     * @returns {Game_Character}
+     */
     Game_Character.prototype.stop = function(){
         let self = this;
         switch (self.direction) {
@@ -111,64 +105,79 @@
                 self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
                 break;
         }
+        return self;
     };
 
     /**
      *
-     * @param times
+     * @param times {number}
+     * @returns {Game_Character}
      */
     Game_Character.prototype.moveUp = function(times){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_UP,times);
+        return self;
     };
 
     /**
      *
-     * @param times
+     * @param times {number}
+     * @returns {Game_Character}
      */
     Game_Character.prototype.moveDown = function(times){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_DOWN,times);
+        return self;
     };
 
     /**
      *
-     * @param times
+     * @param times {number}
+     * @returns {Game_Character}
      */
     Game_Character.prototype.moveRight = function(times){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT,times);
+        return self;
     };
 
     /**
      *
-     * @param times
+     * @param times {number}
+     * @returns {Game_Character}
      */
     Game_Character.prototype.moveLeft = function(times){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_LEFT,times);
+        return self;
     };
 
     /**
      *
-     * @param times
+     * @param times {number}
+     * @returns {Game_Character}
      */
     Game_Character.prototype.stepForward = function (times) {
         let self = this;
         self.moveTo(self.direction,times);
+        return self;
     };
 
     /**
      *
-     * @param times
+     * @param times {number}
+     * @returns {Game_Character}
      */
     Game_Character.prototype.stepRandom = function (times) {
-        this.moveTo(Consts.CHARACTER_DIRECTION_RANDOM,times);
+        let self = this;
+        self.moveTo(Consts.CHARACTER_DIRECTION_RANDOM,times);
+        return self;
     };
 
     /**
      *
-     * @param direction
+     * @param direction {number}
+     * @returns {Game_Character}
      */
     Game_Character.prototype.turn = function (direction) {
         let self = this;
@@ -181,8 +190,8 @@
                 break;
             default:
                 if (direction instanceof Game_Character) {
-                    let d_x = self.body.x - direction.body.x;
-                    let d_y = self.body.y - direction.body.y;
+                    let d_x = self.x - direction.x;
+                    let d_y = self.y - direction.y;
 
                     if(Math.abs(d_x) > Math.abs(d_y)){
                         if(d_x > 0){
@@ -203,36 +212,57 @@
 
                 }
         }
-    };
-
-    Game_Character.prototype.turnDown = function(){
-        let self = this;
-        self.turn(Consts.CHARACTER_DIRECTION_DOWN);
-    };
-
-    Game_Character.prototype.turnUp = function(){
-        let self = this;
-        self.turn(Consts.CHARACTER_DIRECTION_UP);
-    };
-
-    Game_Character.prototype.turnLeft = function(){
-        let self = this;
-        self.turn(Consts.CHARACTER_DIRECTION_LEFT);
-    };
-
-    Game_Character.prototype.turnRight = function(){
-        let self = this;
-        self.turn(Consts.CHARACTER_DIRECTION_RIGHT);
-    };
-
-    Game_Character.prototype.lookToPlayer = function () {
-        let self = this;
-        self.turn(Main.Player);
+        return self;
     };
 
     /**
      *
-     * @param self
+     * @returns {Game_Character}
+     */
+    Game_Character.prototype.turnDown = function(){
+        let self = this;
+        return self.turn(Consts.CHARACTER_DIRECTION_DOWN);
+    };
+
+    /**
+     *
+     * @returns {Game_Character}
+     */
+    Game_Character.prototype.turnUp = function(){
+        let self = this;
+        return self.turn(Consts.CHARACTER_DIRECTION_UP);
+    };
+
+    /**
+     *
+     * @returns {Game_Character}
+     */
+    Game_Character.prototype.turnLeft = function(){
+        let self = this;
+        return self.turn(Consts.CHARACTER_DIRECTION_LEFT);
+    };
+
+    /**
+     *
+     * @returns {Game_Character}
+     */
+    Game_Character.prototype.turnRight = function(){
+        let self = this;
+        return self.turn(Consts.CHARACTER_DIRECTION_RIGHT);
+    };
+
+    /**
+     *
+     * @returns {Game_Character}
+     */
+    Game_Character.prototype.lookToPlayer = function () {
+        let self = this;
+        return self.turn(Main.Player);
+    };
+
+    /**
+     *
+     * @param self {Game_Character}
      */
     function initialize(self) {
         let charaID = null;
@@ -242,7 +272,7 @@
         Object.defineProperty(self, 'charaID', {
             /**
              *
-             * @param id
+             * @param id {string}
              */
             set: function (id) {
                 if (id !== charaID) {
@@ -265,7 +295,7 @@
             },
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get: function () {
                 return charaID;
@@ -275,7 +305,7 @@
         Object.defineProperty(self, 'faceID', {
             /**
              *
-             * @param id
+             * @param id {string}
              */
             set: function (id) {
                 if (id !== faceID) {
@@ -284,7 +314,7 @@
             },
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get: function () {
                 return faceID;
@@ -296,7 +326,7 @@
         Object.defineProperty(self, 'tilesetID', {
             /**
              *
-             * @param id
+             * @param id {string}
              */
             set: function (id) {
                 if (id !== tilesetID) {
@@ -305,7 +335,7 @@
             },
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get: function () {
                 return tilesetID;
@@ -316,7 +346,7 @@
             configurable:true,
             /**
              *
-             * @returns {*}
+             * @returns {Game_Graphic}
              */
             get:function(){
                 if(charaID !== null){
@@ -333,7 +363,7 @@
         Object.defineProperty(self,'face',{
             /**
              *
-             * @returns {*}
+             * @returns {Game_Face}
              */
             get:function(){
                 return Faces.get(self.faceID);
@@ -344,7 +374,7 @@
             configurable:false,
             /**
              *
-             * @returns {*}
+             * @returns {Tile}
              */
             get:function(){
                 if(self.currentAnimation !== null && self.graphic !== null){
@@ -369,5 +399,13 @@
         });
     }
 
-    root.Game_Character = Game_Character;
+    Object.defineProperty(root,'Game_Character',{
+        /**
+         *
+         * @returns {Game_Character}
+         */
+       get:function(){
+           return Game_Character;
+       }
+    });
 })(RPG);

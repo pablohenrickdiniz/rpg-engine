@@ -1,11 +1,11 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
-        throw "Animations requires Main"
+    if(!root.Main){
+        throw "Animations requires Main";
     }
 
-    if(root.Animation === undefined){
-        throw "Animations requires Animation"
+    if(!root.Animation){
+        throw "Animations requires Animation";
     }
 
     let Animation = root.Animation,
@@ -15,8 +15,8 @@
     let Animations = {
         /**
 		 *
-         * @param id
-         * @returns {*}
+         * @param id {string}
+         * @returns {Animation}
          */
     	get:function(id){
     		if(animations[id] === undefined){
@@ -26,8 +26,8 @@
     	},
         /**
 		 *
-         * @param id
-         * @param animation
+         * @param id {string}
+         * @param animation {Animation}
          */
     	set:function(id,animation){
     		if(animation instanceof Animation){
@@ -39,7 +39,7 @@
     Object.defineProperty(Main,'Animations',{
         /**
 		 *
-         * @returns {{get: get, set: set}}
+         * @returns {Animations}
          */
     	get:function(){
     		return Animations;

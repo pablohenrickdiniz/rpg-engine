@@ -1,13 +1,13 @@
 'use strict';
 (function(root){
-    if(root.Game_Slot === undefined){
+    if(!root.Game_Slot){
         throw "Game_Inventory requires Game_Slot";
     }
 
     let Game_Slot = root.Game_Slot;
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Inventory = function(options){
@@ -21,8 +21,8 @@
 
     /**
      *
-     * @param slotA
-     * @param slotB
+     * @param slotA {Game_Slot}
+     * @param slotB {Game_Slot}
      * @returns {boolean}
      */
     Game_Inventory.prototype.swap = function(slotA,slotB) {
@@ -75,61 +75,61 @@
 
     /**
      *
-     * @param event
-     * @param callback
+     * @param eventName {string}
+     * @param callback {function}
      */
-    Game_Inventory.prototype.on = function(event,callback){
+    Game_Inventory.prototype.on = function(eventName,callback){
         let self = this;
-        if(!self.listeners[event]){
-            self.listeners[event] = [];
+        if(!self.listeners[eventName]){
+            self.listeners[eventName] = [];
         }
-        if(self.listeners[event].indexOf(callback) === -1){
-            self.listeners[event].push(callback);
+        if(self.listeners[eventName].indexOf(callback) === -1){
+            self.listeners[eventName].push(callback);
         }
     };
 
     /**
      *
-     * @param event
-     * @param callback
+     * @param eventName {string}
+     * @param callback {function}
      */
-    Game_Inventory.prototype.off = function(event,callback){
+    Game_Inventory.prototype.off = function(eventName,callback){
         let self = this;
-        if(self.listeners[event]){
-            let index = self.listeners[event].indexOf(callback);
+        if(self.listeners[eventName]){
+            let index = self.listeners[eventName].indexOf(callback);
             if(index !== -1){
-                self.listeners[event].splice(index,1);
+                self.listeners[eventName].splice(index,1);
             }
         }
     };
 
     /**
      *
-     * @param event
-     * @param args
+     * @param eventName {string}
+     * @param args {Array}
      */
-    Game_Inventory.prototype.trigger = function(event,args){
+    Game_Inventory.prototype.trigger = function(eventName,args){
         let self = this;
-        if(self.listeners[event]){
-            let length = self.listeners[event].length;
-            for(var i =0; i < length;i++){
-                self.listeners[event][i].apply(self,args);
+        if(self.listeners[eventName]){
+            let length = self.listeners[eventName].length;
+            for(let i =0; i < length;i++){
+                self.listeners[eventName][i].apply(self,args);
             }
         }
     };
 
     /**
      *
-     * @param item
-     * @param amount
-     * @returns {*}
+     * @param item {Game_Item}
+     * @param amount {number}
+     * @returns {number}
      */
     Game_Inventory.prototype.addItem = function(item,amount){
         let self = this;
         let keys = Object.keys(self.slots);
         let length = keys.length;
 
-        for(var i =0; i < length;i++){
+        for(let i =0; i < length;i++){
             if(amount === 0){
                 break;
             }
@@ -152,18 +152,20 @@
 
     /**
      *
-     * @param id
-     * @param options
+     * @param id {string}
+     * @param options {boolean}
+     * @returns Game_Inventory
      */
     Game_Inventory.prototype.addSlot = function(id,options){
         let self = this;
         self.slots[id] = new Game_Slot(options);
+        return self;
     };
 
     /**
      *
      * @param id
-     * @returns {*}
+     * @returns {Game_Slot}
      */
     Game_Inventory.prototype.getSlot = function(id){
         let self = this;
@@ -176,7 +178,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Game_Inventory}
      */
     function initialize(self){
         let slots = {};
@@ -189,7 +191,7 @@
                 if(sls.constructor === {}.constructor){
                     let keys = Object.keys(sls);
                     let length = keys.length;
-                    for(var i = 0; i < length;i++){
+                    for(let i = 0; i < length;i++){
                         let id = keys[i];
                         let config = sls[id];
                         self.addSlot(id,config);

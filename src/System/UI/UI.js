@@ -6,14 +6,14 @@
     Object.defineProperty(UI,'root',{
         /**
          *
-         * @returns {*}
+         * @returns {Element}
          */
         get:function(){
             return ui_root;
         },
         /**
          *
-         * @param r
+         * @param r {Element}
          */
         set:function(r){
             if(r !== ui_root && r instanceof UI.Element){
@@ -38,7 +38,7 @@
         },
         /**
          *
-         * @param w
+         * @param w {number}
          */
         set:function(w){
             UI.root.width = w;
@@ -55,7 +55,7 @@
         },
         /**
          *
-         * @param h
+         * @param h {number}
          */
         set:function(h){
             UI.root.height = h;
@@ -66,7 +66,7 @@
     Object.defineProperty(root,'UI',{
         /**
          *
-         * @returns {{classes: Array}}
+         * @returns {UI}
          */
         get:function(){
             return UI;

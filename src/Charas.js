@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Chara === undefined){
+    if(!root.Chara){
         throw "Charas requires Chara";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Charas requires Main";
     }
 
@@ -15,8 +15,8 @@
     let Charas = {
         /**
          *
-         * @param id
-         * @returns {*}
+         * @param id {string}
+         * @returns {Chara}
          */
         get:function(id){
             if(charas[id] !== undefined){
@@ -26,12 +26,12 @@
         },
         /**
          *
-         * @param id
-         * @param chrgpc
+         * @param id {string}
+         * @param chara {Chara}
          */
-        set:function(id,chrgpc){
-            if(chrgpc instanceof Chara){
-                charas[id] = chrgpc;
+        set:function(id,chara){
+            if(chara instanceof Chara){
+                charas[id] = chara;
             }
         }
     };
@@ -39,7 +39,7 @@
     Object.defineProperty(Main,'Charas',{
         /**
          *
-         * @returns {{get: get, set: set}}
+         * @returns {Charas}
          */
        get:function(){
            return Charas;

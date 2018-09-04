@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Button = function(options){
@@ -29,7 +29,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Button}
      */
     function initialize(self){
         let text = '';
@@ -43,7 +43,7 @@
             },
             /**
              *
-             * @param t
+             * @param t {string}
              */
             set:function(t){
                 if(t !== text){

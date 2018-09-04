@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Item === undefined){
+    if(!root.Item){
         throw "Game_Slot requires Item";
     }
 
-    if(root.Main.Items === undefined){
+    if(!root.Main.Items){
         throw "Game_Slot requires Items";
     }
 
@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Slot = function(options){
@@ -42,6 +42,10 @@
         return self.item != null;
     };
 
+    /**
+     *
+     * @param self {Game_Slot}
+     */
     function initialize(self){
         let amount = 0;
         let max = 99;
@@ -67,7 +71,7 @@
             },
             /**
              *
-             * @param a
+             * @param a {number}
              */
             set:function(a){
                 a = parseInt(a);
@@ -91,7 +95,7 @@
             },
             /**
              *
-             * @param m
+             * @param m {number}
              */
             set:function(m){
                 m = parseInt(m);
@@ -104,14 +108,14 @@
         Object.defineProperty(self,'item',{
             /**
              *
-             * @returns {*}
+             * @returns {Item}
              */
             get:function(){
                 return item;
             },
             /**
              *
-             * @param i
+             * @param i {string|Item}
              */
             set:function(i){
                 if(item == null || (item instanceof Item && i !== item) || (/^[0-9]+$/.test(i) && i !== item.id)){

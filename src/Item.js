@@ -1,10 +1,10 @@
 'use strict';
 (function (root) {
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Item requires Main";
     }
     else{
-        if(root.Main.Icons === undefined){
+        if(!root.Main.Icons){
             throw "Item requires Icons";
         }
     }
@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Item = function (options) {
@@ -28,11 +28,15 @@
         self.id = options.id;
     };
 
+    /**
+     *
+     * @param self {Item}
+     */
     function initialize(self){
         Object.defineProperty(self,'graphic',{
             /**
              *
-             * @returns {*}
+             * @returns {Game_Icon}
              */
             get:function(){
                 return Icons.get(self.icon);

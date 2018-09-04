@@ -1,29 +1,28 @@
 'use strict';
 (function (root) {
-    if (root.Tile === undefined) {
+    if (!root.Tile) {
         throw "Chara requires Tile";
     }
 
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Chara requires Main";
     }
     else{
-        if(root.Main.Graphics === undefined){
+        if(!root.Main.Graphics){
             throw "Chara requires Graphics";
         }
     }
 
-    if(root.Game_Graphic === undefined){
+    if(!root.Game_Graphic){
         throw "Chara requires Game_Graphic";
     }
 
     let Tile = root.Tile,
-        Graphics = root.Main.Graphics,
         Game_Graphic = root.Game_Graphic;
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Chara = function (options) {
@@ -43,9 +42,9 @@
     Chara.prototype.constructor = Chara;
     /**
      *
-     * @param i
-     * @param j
-     * @returns {*}
+     * @param i {number}
+     * @param j {number}
+     * @returns {Tile}
      */
     Chara.prototype.get = function (i, j) {
         let self = this;
@@ -68,28 +67,42 @@
     };
     /**
      *
-     * @param self
+     * @param self {Chara}
      */
     function initialize(self){
         Object.defineProperty(self,'tileSWidth',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.sWidth/self.cols;
             }
         });
 
         Object.defineProperty(self,'tileSHeight',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.sHeight/self.rows;
             }
         });
 
         Object.defineProperty(self,'tileDWidth',{
+            /**
+             * @returns {number}
+             */
             get:function(){
                 return self.tileSWidth;
             }
         });
 
         Object.defineProperty(self,'tileDHeight',{
+            /**
+             * @returns {number}
+             */
             get:function(){
                 return self.tileSHeight;
             }
@@ -97,6 +110,10 @@
     }
 
     Object.defineProperty(root,'Chara',{
+        /**
+         *
+         * @returns {Chara}
+         */
        get:function(){
            return Chara;
        }

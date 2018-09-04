@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Image = function(options){
@@ -28,7 +28,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Image}
      */
     function initialize(self){
         let src = '';
@@ -43,7 +43,7 @@
             },
             /**
              *
-             * @param s
+             * @param s {string}
              */
             set:function(s){
                 if(s !== src){

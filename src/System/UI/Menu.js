@@ -13,11 +13,12 @@
     }
 
     let UI = root.UI,
-        Element = UI.Element;
+        Element = UI.Element,
+        Menu_Item = UI.Menu_Item;
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Menu = function(options){
@@ -33,11 +34,11 @@
 
     /**
      *
-     * @param item
+     * @param item {Menu_Item}
      */
     Menu.prototype.addItem = function(item){
         let self = this;
-        if(item instanceof UI.Menu_Item && self.items.indexOf(item) === -1){
+        if(item instanceof Menu_Item && self.items.indexOf(item) === -1){
             self.items.push(item);
             item.parent = self;
             self.element.appendChild(item.element);
@@ -46,7 +47,7 @@
 
     /**
      *
-     * @param item
+     * @param item {Menu_Item}
      */
     Menu.prototype.removeItem = function(item){
         let self = this;
@@ -59,15 +60,23 @@
 
     /**
      *
-     * @param self
+     * @param self {Menu}
      */
     function initialize(self){
         let items = [];
 
         Object.defineProperty(self,'items',{
+            /**
+             *
+             * @returns {Array}
+             */
             get:function(){
                 return items;
             },
+            /**
+             *
+             * @param i {Array}
+             */
             set:function(i){
                 if(i instanceof Array){
                     let c = {}.constructor;

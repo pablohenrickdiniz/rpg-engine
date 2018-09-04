@@ -1,6 +1,6 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Events requires RPG Main";
     }
 
@@ -9,51 +9,51 @@
     let Events = {
         /**
          *
-         * @param event
-         * @param callback
-         * @returns {{on: function(*, *=), off: off, emmit: emmit}}
+         * @param eventName{string}
+         * @param callback{function}
+         * @returns {Events}
          */
-        on:function(event,callback){
+        on:function(eventName,callback){
             if(typeof callback === 'function'){
-                if(listeners[event] === undefined){
-                    listeners[event] = [];
+                if(listeners[eventName] === undefined){
+                    listeners[eventName] = [];
                 }
                 if(listeners.indexOf(callback) === -1){
-                    listeners[event].push(callback);
+                    listeners[eventName].push(callback);
                 }
             }
             return Events;
         },
         /**
          *
-         * @param event
-         * @param callback
+         * @param eventName{string}
+         * @param callback{function}
          */
-        off:function(event,callback){
-            if(listeners[event] !== undefined){
+        off:function(eventName,callback){
+            if(listeners[eventName] !== undefined){
                 if(typeof callback === 'function'){
-                    let index = listeners[event].indexOf(callback);
+                    let index = listeners[eventName].indexOf(callback);
                     if(index !== -1){
-                        listeners[event].splice(index,1);
+                        listeners[eventName].splice(index,1);
                     }
-                    if(listeners[event].length === 0){
-                        delete listeners[event];
+                    if(listeners[eventName].length === 0){
+                        delete listeners[eventName];
                     }
                 }
                 else{
-                    delete listeners[event];
+                    delete listeners[eventName];
                 }
             }
         },
         /**
          *
-         * @param event
-         * @param args
+         * @param eventName{string}
+         * @param args{Array}
          */
-        emmit:function(event,args){
-            if(listeners[event] !== undefined){
-                for(let i = 0;i < listeners[event].length;i++){
-                    listeners[event][i].apply(null,args);
+        emmit:function(eventName,args){
+            if(listeners[eventName] !== undefined){
+                for(let i = 0;i < listeners[eventName].length;i++){
+                    listeners[eventName][i].apply(null,args);
                 }
             }
         }
@@ -62,7 +62,7 @@
     Object.defineProperty(Main,'Events',{
         /**
          *
-         * @returns {{on: function(*, *=), off: off, emmit: emmit}}
+         * @returns {Events}
          */
        get:function(){
            return Events;

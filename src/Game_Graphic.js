@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Game_Graphic requires Main";
     }
     else{
-        if(root.Main.Graphics === undefined){
+        if(!root.Main.Graphics){
             throw "Game_Graphic requires Graphics";
         }
     }
@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Graphic = function(options){
@@ -34,7 +34,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Game_Graphic}
      */
     function initialize(self){
         let graphicID = null;
@@ -49,14 +49,14 @@
         Object.defineProperty(self,'graphicID',{
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get:function(){
                 return graphicID;
             },
             /**
              *
-             * @param gid
+             * @param gid {string}
              */
             set:function(gid){
                 if(gid !== graphicID){
@@ -76,7 +76,7 @@
             },
             /**
              *
-             * @param sxn
+             * @param sxn {number}
              */
             set:function(sxn){
                 sxn = parseInt(sxn);
@@ -97,7 +97,7 @@
             },
             /**
              *
-             * @param syn
+             * @param syn {number}
              */
             set:function(syn){
                 syn = parseInt(syn);
@@ -112,7 +112,7 @@
             configurable:true,
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(sWidth == null){
@@ -122,7 +122,7 @@
             },
             /**
              *
-             * @param sw
+             * @param sw {number}
              */
             set:function(sw){
                 sw = parseInt(sw);
@@ -137,7 +137,7 @@
             configurable:true,
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(sHeight == null){
@@ -147,7 +147,7 @@
             },
             /**
              *
-             * @param sh
+             * @param sh {number}
              */
             set:function(sh){
                 sh = parseInt(sh);
@@ -159,10 +159,6 @@
         });
 
         Object.defineProperty(self,'image',{
-            /**
-             *
-             * @returns {*}
-             */
             get:function(){
                 return Graphics.get(self.graphicType,self.graphicID);
             }
@@ -171,7 +167,7 @@
         Object.defineProperty(self,'url',{
             /**
              *
-             * @returns {*}
+             * @returns {string}
              */
             get:function(){
                 if(url == null){
@@ -194,7 +190,7 @@
         Object.defineProperty(self,'width',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(sWidth != null){
@@ -207,7 +203,7 @@
         Object.defineProperty(self,'height',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(sHeight != null){
@@ -220,7 +216,7 @@
         Object.defineProperty(self,'dWidth',{
             /**
              *
-             * @param dw
+             * @param dw {number}
              */
             set:function(dw){
                 dw = parseInt(dw);
@@ -230,7 +226,7 @@
             },
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(dWidth != null){
@@ -243,7 +239,7 @@
         Object.defineProperty(self,'dHeight',{
             /**
              *
-             * @param dh
+             * @param dh {number}
              */
             set:function(dh){
                 dh = parseInt(dh);
@@ -253,7 +249,7 @@
             },
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(dHeight != null){

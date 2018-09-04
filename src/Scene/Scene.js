@@ -18,7 +18,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Scene =  function (options) {
@@ -57,8 +57,8 @@
 
     /**
      *
-     * @param time
-     * @param oncomplete
+     * @param time {number}
+     * @param oncomplete {function}
      */
     Scene.prototype.fadeIn = function (time, oncomplete) {
         fade_screen_effect.apply(this, [time, oncomplete, 'negative']);
@@ -66,8 +66,8 @@
 
     /**
      *
-     * @param time
-     * @param oncomplete
+     * @param time {number}
+     * @param oncomplete {function}
      */
     Scene.prototype.fadeOut =  function (time, oncomplete) {
         fade_screen_effect.apply(this, [time, oncomplete, 'positive']);
@@ -80,45 +80,45 @@
 
     /**
      *
-     * @param event
-     * @param args
+     * @param eventName {string}
+     * @param args {Array}
      */
-    Scene.prototype.trigger = function(event,args){
+    Scene.prototype.trigger = function(eventName,args){
         let self = this;
-        if(self.listeners[event] !== undefined){
-            let length = self.listeners[event].length;
+        if(self.listeners[eventName] !== undefined){
+            let length = self.listeners[eventName].length;
             for(let i = 0; i < length;i++){
-                self.listeners[event][i].apply(self,args);
+                self.listeners[eventName][i].apply(self,args);
             }
         }
     };
 
     /**
      *
-     * @param event
-     * @param callback
+     * @param eventName {string}
+     * @param callback {function}
      */
-    Scene.prototype.addEventListener = function(event,callback){
+    Scene.prototype.addEventListener = function(eventName,callback){
         let self = this;
-        if(self.listeners[event] === undefined){
-            self.listeners[event] = [];
+        if(self.listeners[eventName] === undefined){
+            self.listeners[eventName] = [];
         }
-        if(self.listeners[event].indexOf(callback) === -1){
-            self.listeners[event].push(callback);
+        if(self.listeners[eventName].indexOf(callback) === -1){
+            self.listeners[eventName].push(callback);
         }
     };
 
     /**
      *
-     * @param event
-     * @param callback
+     * @param eventName {string}
+     * @param callback {function}
      */
-    Scene.prototype.removeEventListener = function(event,callback){
+    Scene.prototype.removeEventListener = function(eventName,callback){
         let self = this;
-        if(self.listeners[event] !== undefined){
-            let index =self.listeners[event].indexOf(callback);
+        if(self.listeners[eventName] !== undefined){
+            let index =self.listeners[eventName].indexOf(callback);
             if(index !== -1){
-                self.listeners[event].splice(index,1);
+                self.listeners[eventName].splice(index,1);
             }
         }
     };
@@ -126,19 +126,23 @@
     /**
      *
      * @param image
-     * @param options
-     * @param oncomplete
+     * @param options {object}
+     * @param oncomplete {function}
      */
     Scene.prototype.fadeInGraphic = function (image, options, oncomplete) {
         fade_graphic_effect.apply(this, [image, options, oncomplete, 'positive']);
     };
+
+    /**
+     *
+     * @param image
+     * @param options {object}
+     * @param oncomplete {function}
+     */
     Scene.prototype.fadeOutGraphic = function (image, options, oncomplete) {
         fade_graphic_effect.apply(this, [image, options, oncomplete, 'negative']);
     };
 
-    /**
-     *
-     */
     Scene.prototype.step = function(){
         let self = this;
         step_animations(self);
@@ -150,8 +154,10 @@
      * @param options
      * @param oncomplete
      * @param direction
-     * @returns {{type: string, time: (*|number), image_data: {sx: (options.sx|*|number), sy: (options.sy|*|number), sWidth: (*|Animated_Tile.getGraphic.sWidth|sWidth|root.Graphic.sWidth), sHeight: (*|Animated_Tile.getGraphic.sHeight|sHeight|root.Graphic.sHeight), dx: (*|dx|number), dy: (*|dy|number), dWidth: (*|Animated_Tile.getGraphic.dWidth|dWidth), dHeight: (*|Animated_Tile.getGraphic.dHeight|dHeight), image: *}, animation: root.Animation, oncomplete: *}}
-     */
+     * @returns {object}
+     *
+     * **/
+
     function fade_graphic_effect(image, options, oncomplete, direction) {
         options = options || {};
         let sx = options.sx || 0;
@@ -231,7 +237,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Scene}
      */
     function step_animations(self) {
         let length = self.animation_queue.length;
@@ -328,9 +334,9 @@
 
     /**
      *
-     * @param time
-     * @param oncomplete
-     * @param direction
+     * @param time {number}
+     * @param oncomplete {function}
+     * @param direction {string}
      */
     function fade_screen_effect(time, oncomplete, direction) {
         let self = this;

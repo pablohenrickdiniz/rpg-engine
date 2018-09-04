@@ -13,8 +13,8 @@
 
     /**
      *
-     * @param options
-     * @param tag
+     * @param options {object}
+     * @param tag {string}
      * @constructor
      */
     let Text = function(options,tag){
@@ -29,6 +29,10 @@
     Text.prototype = Object.create(Element.prototype);
     Text.prototype.constructor = Text;
 
+    /**
+     *
+     * @param self {Text}
+     */
     function initialize(self){
         let value = '';
 
@@ -42,7 +46,7 @@
             },
             /**
              *
-             * @param v
+             * @param v {string}
              */
             set:function(v){
                 if(v !== value){

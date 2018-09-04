@@ -23,7 +23,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Window = function(options){
@@ -41,36 +41,41 @@
 
     /**
      *
-     * @param el
+     * @param el {Element}
+     * @returns {Window}
      */
     Window.prototype.add = function(el){
         let self = this;
         self.body.add(el);
+        return self;
     };
 
     /**
      *
      * @param el
+     * @returns {Window}
      */
     Window.prototype.remove = function(el){
         let self = this;
         self.body.remove(el);
+        return self;
     };
 
     /**
      *
-     * @param self
+     * @param self {Window}
      */
     function initialize(self){
         let title = '';
-        let width = 0;
-        let height = 0;
+
         let header = new Element({
             class:'window-header'
         });
+
         let close = new Button({
             class:'button'
         });
+
         close.text = '&times';
         close.addEventListener('leftclick',function(){
             self.visible = false;
@@ -94,7 +99,7 @@
         Object.defineProperty(self,'body',{
             /**
              *
-             * @returns {*|Element}
+             * @returns {Element}
              */
             get:function(){
                 return body;
@@ -111,7 +116,7 @@
             },
             /**
              *
-             * @param t
+             * @param t {string}
              */
             set:function(t){
                 if(t !== title){

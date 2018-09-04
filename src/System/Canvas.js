@@ -19,7 +19,7 @@
         visible: true,
         /**
          *
-         * @param options
+         * @param options {object}
          */
         initialize: function (options) {
             let self = this;
@@ -51,49 +51,49 @@
         },
         /**
          *
-         * @param event
-         * @param callback
+         * @param eventName {string}
+         * @param callback {function}
          */
-        addEventListener:function(event,callback){
-            if(listeners[event] === undefined){
-                listeners[event] = [];
+        addEventListener:function(eventName,callback){
+            if(listeners[eventName] === undefined){
+                listeners[eventName] = [];
             }
-            if(listeners[event].indexOf(callback) === -1){
-                listeners[event].push(callback);
+            if(listeners[eventName].indexOf(callback) === -1){
+                listeners[eventName].push(callback);
             }
         },
         /**
          *
-         * @param event
-         * @param callback
+         * @param eventName {string}
+         * @param callback {function}
          */
-        removeEventListener:function(event,callback){
-            if(listeners[event] !== undefined){
-                let index = listeners[event].indexOf(callback);
+        removeEventListener:function(eventName,callback){
+            if(listeners[eventName] !== undefined){
+                let index = listeners[eventName].indexOf(callback);
                 if(index !== -1){
-                    listeners[event].splice(index,1);
+                    listeners[eventName].splice(index,1);
                 }
             }
         },
         /**
          *
-         * @param event
-         * @param args
+         * @param eventName {string}
+         * @param args {Array}
          */
-        trigger:function(event,args){
-            if(listeners[event] !== undefined){
+        trigger:function(eventName,args){
+            if(listeners[eventName] !== undefined){
                 let self = this;
-                let length = listeners[event].length;
+                let length = listeners[eventName].length;
                 for(let i =0; i < length;i++){
-                    listeners[event][i].apply(self,args);
+                    listeners[eventName][i].apply(self,args);
                 }
             }
         },
         /**
          *
-         * @param type
-         * @param index
-         * @returns {*}
+         * @param type {string}
+         * @param index number}
+         * @returns {CanvasLayer}
          */
         getLayer: function (type, index) {
             let self = this;
@@ -128,7 +128,8 @@
         },
         /**
          *
-         * @param rect
+         * @param rect {object}
+         * @returns {Canvas}
          */
         drawRect: function(rect){
             let self = this;
@@ -136,11 +137,13 @@
             let index = rect.layer || 0;
             let layer = self.getLayer(type,index);
             layer.rect(rect);
+            return self;
         },
         /**
          *
-         * @param image
-         * @param options
+         * @param image {Image}
+         * @param options {object}
+         * @returns {Canvas}
          */
         drawImage: function (image, options) {
             let self = this;
@@ -198,15 +201,17 @@
                 }
             }
             context.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+            return self;
         },
         /**
          *
-         * @param type
-         * @param index
-         * @param x
-         * @param y
-         * @param width
-         * @param height
+         * @param type {string}
+         * @param index {number}
+         * @param x {number}
+         * @param y {number}
+         * @param width {number}
+         * @param height {number}
+         * @returns {Canvas}
          */
         clear: function (type, index, x, y, width, height) {
             let self = this;
@@ -222,6 +227,7 @@
                     layer.clear(x,y,width,height);
                 }
             }
+            return self;
         }
     };
 
@@ -235,7 +241,7 @@
         },
         /**
          *
-         * @param nx
+         * @param nx {number}
          */
         set:function(nx){
             nx = parseFloat(nx);
@@ -255,7 +261,7 @@
         },
         /**
          *
-         * @param ny
+         * @param ny {number}
          */
         set:function(ny){
             ny = parseFloat(ny);
@@ -268,14 +274,14 @@
     Object.defineProperty(Canvas,'width',{
         /**
          *
-         * @returns {*}
+         * @returns {number}
          */
         get:function(){
             return engine.width;
         },
         /**
          *
-         * @param w
+         * @param w {number}
          */
         set:function(w){
             engine.width = w;
@@ -285,14 +291,14 @@
     Object.defineProperty(Canvas,'height',{
         /**
          *
-         * @returns {*}
+         * @returns {number}
          */
         get:function(){
             return engine.height;
         },
         /**
          *
-         * @param h
+         * @param h {number}
          */
         set:function(h){
             engine.height = h;
@@ -302,14 +308,14 @@
     Object.defineProperty(Canvas,'scale',{
         /**
          *
-         * @returns {*}
+         * @returns {number}
          */
         get:function(){
             return engine.scale;
         },
         /**
          *
-         * @param scale
+         * @param scale {number}
          */
         set:function(scale){
             engine.scale = scale;
@@ -317,13 +323,21 @@
     });
 
     Object.defineProperty(Canvas,'engine',{
+        /**
+         *
+         * @returns {CE}
+         */
         get:function(){
             return engine;
         }
     });
 
     Object.defineProperty(root,'Canvas',{
-       get:function(){
+        /**
+         *
+         * @returns {Canvas}
+         */
+        get:function(){
            return Canvas;
        }
     });

@@ -1,6 +1,6 @@
 'use strict';
 (function (root) {
-    if (root.Tile === undefined) {
+    if (!root.Tile) {
         throw "Animated_Tile requires Tile";
     }
 
@@ -9,11 +9,11 @@
     /**
      *
      * @param parent
-     * @param sx
-     * @param sy
-     * @param ex
-     * @param ey
-     * @param speed
+     * @param sx {number}
+     * @param sy {number}
+     * @param ex {number}
+     * @param ey {number}
+     * @param speed {number}
      * @constructor
      */
     let Animated_Tile = function (parent, sx, sy, ex, ey, speed) {
@@ -39,19 +39,29 @@
         self.animation = new Animation(self.animationSpeed, frame_count);
     };
 
+    /**
+     *
+     * @returns {Animated_Tile}
+     */
     Animated_Tile.prototype.run = function () {
         let self = this;
         self.animation.run();
-    };
-
-    Animated_Tile.prototype.stop = function () {
-        let self = this;
-        self.animation.stop();
+        return self;
     };
 
     /**
      *
-     * @returns {{image: *, sx: *, sy: *, sWidth, sHeight, dWidth, dHeight}}
+     * @returns {Animated_Tile}
+     */
+    Animated_Tile.prototype.stop = function () {
+        let self = this;
+        self.animation.stop();
+        return self;
+    };
+
+    /**
+     *
+     * @returns {object}
      */
     Animated_Tile.prototype.getGraphic = function () {
         let self = this;

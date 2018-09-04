@@ -1,21 +1,22 @@
 'use strict';
 (function(root){
-	if(root.Main === undefined){
+	if(!root.Main){
 		throw "Skills requires Main";
 	}
 
-	if(root.Game_Skill === undefined){
+	if(!root.Game_Skill){
 		throw "Skills requires Game_Skill";
 	}
 
 	let Game_Skill = root.Game_Skill,
 		Main = root.Main;
+
 	let skills = [];
 	let Skills = {
         /**
 		 *
          * @param id
-         * @returns {*}
+         * @returns {Game_Skill}
          */
 		get:function(id){
 			if(skills[id] !== undefined){
@@ -25,8 +26,8 @@
 		},
         /**
 		 *
-         * @param id
-         * @param skill
+         * @param id {string}
+         * @param skill {Game_Skill}
          */
 		set:function(id,skill){
 			if(skill instanceof Game_Skill){
@@ -38,7 +39,7 @@
 	Object.defineProperty(Main,'Skills',{
         /**
 		 *
-         * @returns {{get: get, set: set}}
+         * @returns {Skills}
          */
 		get:function(){
 			return Skills;

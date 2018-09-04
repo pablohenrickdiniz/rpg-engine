@@ -16,6 +16,10 @@
         self.listeners = [];
     };
 
+    /**
+     *
+     * @returns {Timer_Ticker}
+     */
     Timer_Ticker.prototype.run = function () {
         let self = this;
         if (!self.running) {
@@ -23,19 +27,26 @@
             self.trigger('start');
             tick(self);
         }
+        return self;
     };
 
+    /**
+     *
+     * @returns {Timer_Ticker}
+     */
     Timer_Ticker.prototype.stop = function () {
         let self = this;
         w.cancelAnimationFrame(self.interval);
         self.last_tick = null;
         self.running = false;
         self.trigger('stop');
+        return self;
     };
     /**
      *
-     * @param eventName
-     * @param callback
+     * @param eventName{string}
+     * @param callback{function}
+     * @returns{Timer_Ticker}
      */
     Timer_Ticker.prototype.addEventListener = function (eventName, callback) {
         let self = this;
@@ -45,25 +56,29 @@
         if(self.listeners[eventName].indexOf(callback) === -1){
             self.listeners[eventName].push(callback);
         }
+        return self;
     };
     /**
      *
-     * @param event
-     * @param callback
+     * @param eventName{string}
+     * @param callback{function}
+     * @returns{Timer_Ticker}
      */
-    Timer_Ticker.prototype.removeEventListener = function (event, callback) {
+    Timer_Ticker.prototype.removeEventListener = function (eventName, callback) {
         let self = this;
-        if(self.listeners[event] !==undefined){
-            let index = self.listeners[event].indexOf(callback);
+        if(self.listeners[eventName] !==undefined){
+            let index = self.listeners[eventName].indexOf(callback);
             if(index !== -1){
-                self.listeners[event].splice(index,1);
+                self.listeners[eventName].splice(index,1);
             }
         }
+        return self;
     };
     /**
      *
-     * @param eventName
-     * @param args
+     * @param eventName{string}
+     * @param args{Array}
+     * @returns{Timer_Ticker}
      */
     Timer_Ticker.prototype.trigger = function (eventName,args) {
         let self = this;
@@ -71,15 +86,16 @@
         if(self.listeners[eventName] !== undefined){
             let length = self.listeners[eventName].length;
             args = args || [];
-            for(var i =0; i < length;i++){
+            for(let i = 0; i < length;i++){
                 self.listeners[eventName][i].apply(self,args);
             }
         }
+        return self;
     };
 
     /**
      *
-     * @param timer
+     * @param timer{Timer_Ticker}
      */
     function tick(timer) {
         if(timer.running){
@@ -98,8 +114,7 @@
         }
     }
 
-    w.Timer_Ticker = Timer_Ticker;
-    Object.defineProperty(w,'Time_Ticker',{
+    Object.defineProperty(w,'Timer_Ticker',{
         /**
          *
          * @returns {Timer_Ticker}

@@ -3,8 +3,8 @@
     let Game_Timer = root.Game_Timer;
     /**
      *
-     * @param fps
-     * @param frame_count
+     * @param fps {number}
+     * @param frame_count {number}
      * @constructor
      */
     let Animation_Time = function (fps, frame_count) {
@@ -62,22 +62,25 @@
 
     /**
      *
-     * @param stop_on_end
-     * @param direction
+     * @param stop_on_end {boolean}
+     * @param direction {string}
+     * @returns {Animation_Time}
      */
     Animation_Time.prototype.start = function (stop_on_end, direction) {
         let self = this;
         if (!self.running) {
             self.running = true;
             self.start_time = Game_Timer.currentTime;
-            self.stop_on_end = stop_on_end === undefined ? false : stop_on_end;
-            self.direction = direction === undefined ? 'positive' : direction;
+            self.stop_on_end = stop_on_end || false;
+            self.direction = direction || 'positive';
         }
+        return self;
     };
 
     /**
      *
-     * @param index
+     * @param index {number}
+     * @returns {Animation_Time}
      */
     Animation_Time.prototype.pauseToFrame = function (index) {
         let self = this;
@@ -86,16 +89,19 @@
             let diff = (index / self.fps) * 1000;
             self.end_time = self.start_time + diff;
         }
+        return self;
     };
 
     /**
      *
-     * @param index
+     * @param index {number}
+     * @returns {Animation_Time}
      */
     Animation_Time.prototype.stop = function (index) {
         index = index || 0;
         let self = this;
         self.pauseToFrame(index);
+        return self;
     };
 
     Object.defineProperty(root,'Animation_Time',{

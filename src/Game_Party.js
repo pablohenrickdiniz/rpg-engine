@@ -6,8 +6,8 @@
 
     let Game_Player = root.Game_Player;
 
-    root.Game_Party = {
-        $player:new Game_Player(),
-        $actors:[]
-    };
+    // root.Game_Party = {
+    //     $player:new Game_Player(),
+    //     $actors:[]
+    // };
 })(RPG);

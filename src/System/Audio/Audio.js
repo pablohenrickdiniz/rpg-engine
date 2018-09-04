@@ -1,10 +1,10 @@
 'use strict';
 (function (root) {
-    if(root.Game_Timer === undefined){
+    if(!root.Game_Timer){
         throw "Audio requires Game_Timer"
     }
 
-    if(root.Audio_File === undefined){
+    if(!root.Audio_File){
         throw "Audio requires AudioInstance"
     }
 
@@ -17,27 +17,37 @@
     let audios = {};
 
     let Audio = {
+        /**
+         *
+         * @returns {Audio}
+         */
         freeze: function () {
             let keys = Object.keys(playing);
             let i;
             for (i = 0; i < keys.length; i++) {
                 playing[keys[i]].pause();
             }
+            return Audio;
         },
+        /**
+         *
+         * @returns {Audio}
+         */
         resume: function () {
             let keys = Object.keys(playing);
             let i;
             for (i = 0; i < keys.length; i++) {
                 playing[keys[i]].play();
             }
+            return Audio;
         },
         /**
          *
-         * @param type
-         * @param name
-         * @param id
-         * @param loop
-         * @returns {*}
+         * @param type {string}
+         * @param name {string}
+         * @param id {string}
+         * @param loop {boolean}
+         * @returns {Audio_Instance}
          */
         play: function (type, name, id,loop) {
             if (audios[type] && audios[type][name]) {
@@ -65,8 +75,8 @@
         },
         /**
          *
-         * @param type
-         * @param id
+         * @param type {string}
+         * @param id {string}
          */
         stop: function (type,id) {
             if(playing[type] && playing[type][id]){
@@ -80,10 +90,10 @@
         },
         /**
          *
-         * @param type
-         * @param id
-         * @param time
-         * @param finish
+         * @param type {string}
+         * @param id {string}
+         * @param time {number}
+         * @param finish {function}
          */
         fade:function(type,id,time,finish){
             if(playing[type] && playing[type][id]){
@@ -123,8 +133,8 @@
         },
         /**
          *
-         * @param type
-         * @param id
+         * @param type {string}
+         * @param id {string}
          */
         pause: function (type,id) {
             if(playing[type] && playing[type][id]){
@@ -138,9 +148,9 @@
         },
         /**
          *
-         * @param type
-         * @param name
-         * @param src
+         * @param type {string}
+         * @param name {string}
+         * @param src {string}
          */
         set: function (type, name, src) {
             if (audios[type] === undefined) {
@@ -153,8 +163,8 @@
         },
         /**
          *
-         * @param type
-         * @param name
+         * @param type {string}
+         * @param name {string}
          */
         unset: function (type, name) {
             if (audios[type] !== undefined) {
@@ -168,7 +178,7 @@
     Object.defineProperty(root,'Audio',{
         /**
          *
-         * @returns {{freeze: freeze, resume: resume, play: play, stop: stop, fade: fade, pause: pause, set: set, unset: unset}}
+         * @returns {Audio}
          */
        get:function(){
            return Audio;

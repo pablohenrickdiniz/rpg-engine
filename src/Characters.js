@@ -20,16 +20,16 @@
     let Characters = {
         /**
          *
-         * @param id
-         * @param character
+         * @param id {string}
+         * @param character {Game_Character}
          */
         set:function(id,character){
             characters[id] = character;
         },
         /**
          *
-         * @param id
-         * @returns {*}
+         * @param id {string}
+         * @returns {Game_Character}
          */
         get:function(id){
             if(characters[id] !== undefined){
@@ -39,12 +39,11 @@
         },
         /**
          *
-         * @param id
-         * @param options
-         * @returns {*}
+         * @param id {string}
+         * @param options {object}
+         * @returns {Game_Character}
          */
         createInstance:function(id,options){
-            let self = this;
             if(characters[id] !== undefined){
                 let graphic = new Character_Graphic(characters[id].graphic);
                 options = options || {};
@@ -62,7 +61,7 @@
     Object.defineProperty(Main,'Characters',{
         /**
          *
-         * @returns {{characters: {}, set: set, get: get, createInstance: createInstance}}
+         * @returns {Characters}
          */
        get:function(){
            return Characters;

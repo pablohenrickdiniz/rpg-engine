@@ -1,14 +1,14 @@
 'use strict';
 (function (root) {
-    if(root.Game_Item === undefined){
+    if(!root.Game_Item){
         throw "Game_Data requires Game_Item";
     }
 
-    if(root.Game_Character === undefined){
+    if(!root.Game_Character){
         throw "Game_Data requires Game_Character";
     }
 
-    if(root.Game_Actor === undefined){
+    if(!root.Game_Actor){
         throw "Game_Data requires Game_Actor";
     }
 
@@ -21,14 +21,14 @@
     let Game_Data = {
         /**
          *
-         * @param url
-         * @param callback
+         * @param url {string}
+         * @param callback {function}
          */
         load: function (url, callback) {
             let req = new XMLHttpRequest();
             req.onload = function () {
                 let data = request.response;
-                for (var key in data) {
+                for (let key in data) {
                     if (database[key]) {
                         database[key] = data[key];
                     }
@@ -41,6 +41,11 @@
             req.responseType = "json";
             req.send();
         },
+        /**
+         *
+         * @param type {string}
+         * @param options {object}
+         */
         createInstance:function(type,options){
             switch(type){
 
@@ -51,7 +56,7 @@
     Object.defineProperty(root,'Game_Data',{
         /**
          *
-         * @returns {{load: load, createInstance: createInstance}}
+         * @returns {Game_Data}
          */
        get:function(){
            return Game_Data;

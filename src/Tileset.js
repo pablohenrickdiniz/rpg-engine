@@ -1,29 +1,23 @@
 'use strict';
 (function (root) {
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Tileset requires Main";
     }
-    else{
-        if(root.Main.Graphics === undefined){
-            throw "Tileset requires Graphics";
-        }
-    }
 
-    if (root.Tile === undefined) {
+    if (!root.Tile) {
         throw "Tileset requires Tile";
     }
 
-    if(root.Game_Graphic === undefined){
+    if(!root.Game_Graphic){
         throw "Tileset requires Game_Graphic";
     }
 
     let Tile= root.Tile,
-        Graphics = root.Main.Graphics,
         Game_Graphic = root.Game_Graphic;
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Tileset = function (options) {
@@ -43,7 +37,7 @@
 
     /**
      *
-     * @returns {{image: (self.src|*|src|Audio.src|Audio_File.src|Image.src), rows: (*|.map.tileset.rows|.charas.char1.rows|Chara.rows|Matrix.rows|null), cols: (*|.map.tileset.cols|.charas.char1.cols|Chara.cols|Matrix.cols|null), width: *, height: *, collision: Array}}
+     * @returns {object}
      */
     Tileset.prototype.toOBJ = function(){
         let self  =this;
@@ -59,7 +53,7 @@
 
     /**
      *
-     * @returns {*[]}
+     * @returns {string}
      */
     Tileset.prototype.toJSON = function(){
         let self  =this;
@@ -76,9 +70,9 @@
 
     /**
      *
-     * @param i
-     * @param j
-     * @returns {*}
+     * @param i {number}
+     * @param j {number}
+     * @returns {Tile}
      */
     Tileset.prototype.get = function (i, j) {
         let self = this;
@@ -102,9 +96,10 @@
 
     /**
      *
-     * @param i
-     * @param j
-     * @param val
+     * @param i {number}
+     * @param j {number}
+     * @param val {boolean}
+     * @returns {Tileset}
      */
     Tileset.prototype.setCollision = function(i,j,val){
         let self = this;
@@ -121,13 +116,14 @@
                 }
             }
         }
+        return self;
     };
 
     /**
      *
      * @param i
      * @param j
-     * @returns {*|boolean}
+     * @returns {boolean}
      */
     Tileset.prototype.isPassable = function(i,j){
         let self = this;
@@ -136,7 +132,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Tileset}
      */
     function initialize(self){
         let rows = 1;
@@ -193,7 +189,7 @@
             },
             /**
              *
-             * @param r
+             * @param r {number}
              */
             set:function(r){
                 if(r !== rows){
@@ -214,7 +210,7 @@
             },
             /**
              *
-             * @param c
+             * @param c {number}
              */
             set:function(c){
                 if(c !== cols){
@@ -228,7 +224,7 @@
 
     /**
      *
-     * @param json
+     * @param json {Array}
      * @returns {Tileset}
      */
     Tileset.fromJSON = function(json){
@@ -261,7 +257,7 @@
 
     /**
      *
-     * @param collision
+     * @param collision{Array[]}
      * @returns {Array}
      */
     function collisiontoJSON(collision){

@@ -1,10 +1,10 @@
 'use strict';
 (function(root){
-    if(root.Game_Graphic === undefined){
+    if(!root.Game_Graphic){
         throw "Item_Graphic requires Game_Graphic";
     }
 
-    if(root.Tile === undefined){
+    if(!root.Tile){
         throw "Item_Graphic requires Tile";
     }
 
@@ -13,7 +13,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Item_Graphic = function(options){
@@ -29,7 +29,7 @@
 
     /**
      *
-     * @returns {null}
+     * @returns {Tile}
      */
     Item_Graphic.prototype.getFrame = function(){
         let self = this;
@@ -49,16 +49,24 @@
 
     /**
      *
-     * @param self
+     * @param self {Item_Graphic}
      */
     function initialize(self){
         Object.defineProperty(self,'width',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.sWidth;
             }
         });
 
         Object.defineProperty(self,'height',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return self.sHeight;
             }

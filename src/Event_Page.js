@@ -1,10 +1,10 @@
 'use strict';
 (function (root) {
-    if(root.Consts === undefined){
+    if(!root.Consts){
         throw "Event_Page requires Consts";
     }
 
-    if(root.Game_Character === undefined){
+    if(!root.Game_Character){
         throw "Event_Page requires Game_Character";
     }
 
@@ -15,7 +15,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Event_Page = function (options) {
@@ -73,7 +73,7 @@
 
     /**
      *
-     * @param name
+     * @param name {string|Array}
      * @returns {Game_Event}
      */
     Event_Page.prototype.enableSwitch = function(name){
@@ -82,7 +82,7 @@
 
     /**
      *
-     * @param name
+     * @param name {string|array}
      * @returns {Game_Event}
      */
     Event_Page.prototype.disableSwitch = function(name){
@@ -91,7 +91,7 @@
 
     /**
      *
-     * @param name
+     * @param name {string|array}
      * @returns {boolean}
      */
     Event_Page.prototype.isSwitchEnabled = function(name){
@@ -100,7 +100,7 @@
 
     /**
      *
-     * @param name
+     * @param name {string|Array}
      * @returns {boolean}
      */
     Event_Page.prototype.isSwitchDisabled = function(name){
@@ -109,8 +109,8 @@
 
     /**
      *
-     * @param names
-     * @returns {*|Game_Event}
+     * @param names {string|Array}
+     * @returns {Game_Event}
      */
     Event_Page.prototype.enableGlobalSwitch = function (names) {
         return this.event.enableGlobalSwitch(names);
@@ -118,8 +118,8 @@
 
     /**
      *
-     * @param names
-     * @returns {*|Game_Event}
+     * @param names {string|Array}
+     * @returns {Game_Event}
      */
     Event_Page.prototype.disableGlobalSwitch = function (names) {
         return this.event.disableGlobalSwitch(names);
@@ -127,7 +127,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {boolean}
      */
     Event_Page.prototype.isGlobalSwitchEnabled = function (names) {
@@ -136,7 +136,7 @@
 
     /**
      *
-     * @param names
+     * @param names {string|Array}
      * @returns {boolean}
      */
     Event_Page.prototype.isGlobalSwitchDisabled = function (names) {
@@ -145,9 +145,9 @@
 
     /**
      *
-     * @param type
-     * @param name
-     * @returns {*}
+     * @param type {string}
+     * @param name {string}
+     * @returns {Game_Event}
      */
     Event_Page.prototype.playAudio = function(type,name){
         return this.event.playAudio(type,name);
@@ -155,16 +155,7 @@
 
     /**
      *
-     * @param name
-     * @returns {*}
-     */
-    Event_Page.prototype.isDisabled = function(name){
-        return this.event.isDisabled(name);
-    };
-
-    /**
-     *
-     * @param condition
+     * @param condition {string}
      * @returns {Event_Page}
      */
     Event_Page.prototype.addCondition = function(condition){
@@ -185,17 +176,17 @@
 
     /**
      *
-     * @param self
+     * @param self {Event_Page}
      */
     let initialize = function(self){
         let conditions = [];
-        let through = null;
+        let through = false;
         let walkingAnimation =false;
 
         Object.defineProperty(self,'conditions',{
             /**
              *
-             * @param cond
+             * @param cond {object}
              */
             set:function(cond){
                 conditions = [];
@@ -216,14 +207,14 @@
         Object.defineProperty(self,'through',{
             /**
              *
-             * @returns {*}
+             * @returns {boolean}
              */
             get:function(){
                 return through;
             },
             /**
              *
-             * @param t
+             * @param t {boolean}
              */
             set:function(t){
                 if(t !== through){
@@ -248,7 +239,7 @@
             },
             /**
              *
-             * @param wa
+             * @param wa {Animation_Time}
              */
             set:function(wa){
                 if(wa !== walkingAnimation){
@@ -268,6 +259,10 @@
     };
 
     Object.defineProperty(root,'Event_Page',{
+        /**
+         *
+         * @returns {Event_Page}
+         */
        get:function(){
            return Event_Page;
        }

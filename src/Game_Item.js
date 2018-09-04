@@ -1,15 +1,15 @@
 'use strict';
 (function (root) {
-    if(root.Main === undefined){
+    if(!root.Main){
         throw "Game_Item requires Main";
     }
     else{
-        if(root.Main.Items === undefined){
+        if(!root.Main.Items){
             throw "Game_Item requires Items";
         }
     }
 
-    if(root.Game_Object === undefined){
+    if(!root.Game_Object){
         throw "Game_Item requires Game_Object";
     }
 
@@ -19,7 +19,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Item = function (options) {
@@ -40,16 +40,24 @@
 
     /**
      *
-     * @param self
+     * @param self {Game_Item}
      */
     function initialize(self){
         Object.defineProperty(self,'item',{
+            /**
+             *
+             * @returns {Item}
+             */
             get:function(){
                 return Items.get(self.itemID)
             }
         });
 
         Object.defineProperty(self,'currentFrame',{
+            /**
+             *
+             * @returns {Item_Graphic}
+             */
             get:function(){
                 return self.item.graphic;
             }

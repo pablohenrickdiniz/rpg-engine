@@ -1,10 +1,10 @@
 'use strict';
 (function(root,w){
-    if(root.Game_Character === undefined){
+    if(!root.Game_Character){
         throw "Game_Actor requires Game_Character";
     }
 
-    if(root.Game_Inventory === undefined){
+    if(!root.Game_Inventory){
         throw "Game_Actor requires Game_Inventory";
     }
 
@@ -15,7 +15,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Actor = function(options){
@@ -34,6 +34,9 @@
     Game_Actor.prototype = Object.create(Game_Character.prototype);
     Game_Actor.prototype.constructor = Game_Actor;
 
+    /**
+     * @returns {void}
+     */
     Game_Actor.prototype.update = function () {
         let self = this;
         if(self.type === 'Player'){
@@ -60,7 +63,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Game_Actor}
      */
     function initialize(self){
         let inventory = new Game_Inventory();
@@ -69,14 +72,14 @@
         Object.defineProperty(self,'inventory',{
             /**
              *
-             * @returns {*}
+             * @returns {Game_Inventory}
              */
             get:function(){
                 return inventory;
             },
             /**
              *
-             * @param inv
+             * @param inv {Game_Inventory}
              */
             set:function(inv){
                 if(inv instanceof Game_Inventory){
@@ -98,7 +101,7 @@
             },
             /**
              *
-             * @param l
+             * @param l {number}
              */
             set:function(l){
                 l = parseInt(l);

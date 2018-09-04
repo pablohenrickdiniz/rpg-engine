@@ -17,7 +17,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Game_Object = function(options){
@@ -46,8 +46,8 @@
 
     /**
      *
-     * @param properties
-     * @returns {*}
+     * @param properties {object}
+     * @returns {object}
      */
     Game_Object.prototype.clone = function(properties){
         properties = properties || {};
@@ -58,28 +58,26 @@
 
     /**
      *
-     * @param group
+     * @param group {string}
      */
     Game_Object.prototype.addCollisionGroup = function(group){
         let self = this;
-        // QuadTree.addGroup(self.bounds,group);
     };
 
     /**
      *
-     * @param name
+     * @param name {string}
      */
     Game_Object.prototype.removeCollisionGroup = function(name){
         let self = this;
-        //QuadTree.removeGroup(self.bounds,name);
     };
 
     Game_Object.prototype.update = function () {};
 
     /**
      *
-     * @param x
-     * @param y
+     * @param x {number}
+     * @param y {number}
      */
     Game_Object.prototype.move = function (x, y) {
         let self = this;
@@ -89,7 +87,7 @@
 
     /**
      *
-     * @param self
+     * @param self {Game_Object}
      */
     function initialize(self){
         let speed = 5;
@@ -105,7 +103,7 @@
         Object.defineProperty(self,'body',{
             /**
              *
-             * @param b
+             * @param b {Body}
              */
             set:function(b){
                 if(body !==  b){
@@ -114,7 +112,7 @@
             },
             /**
              *
-             * @returns {*}
+             * @returns {Body}
              */
             get:function(){
                 if(body == null){
@@ -140,7 +138,7 @@
         Object.defineProperty(self,'x',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(body !== null && body.position.x !== x){
@@ -150,7 +148,7 @@
             },
             /**
              *
-             * @param bx
+             * @param bx {number}
              */
             set:function(bx){
                 if(body !== null && bx !== body.position.x){
@@ -166,7 +164,7 @@
         Object.defineProperty(self,'y',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 if(body !== null && body.position.y !== y){
@@ -176,7 +174,7 @@
             },
             /**
              *
-             * @param by
+             * @param by {number}
              */
             set:function(by){
                 if(by !== self.body.position.y){
@@ -192,14 +190,14 @@
         Object.defineProperty(self,'width',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 return width;
             },
             /**
              *
-             * @param w
+             * @param w {number}
              */
             set:function(w){
                 if(width !== w){
@@ -212,14 +210,14 @@
         Object.defineProperty(self,'height',{
             /**
              *
-             * @returns {*}
+             * @returns {number}
              */
             get:function(){
                 return height;
             },
             /**
              *
-             * @param h
+             * @param h {number}
              */
             set:function(h){
                 if(height !== h){
@@ -239,7 +237,7 @@
             },
             /**
              *
-             * @param s
+             * @param s {number}
              */
             set:function(s){
                 if(s !== speed){
@@ -259,14 +257,14 @@
             configurable:true,
             /**
              *
-             * @returns {*}
+             * @returns {Animation_Time}
              */
             get:function(){
                 return currentAnimation;
             },
             /**
              *
-             * @param ca
+             * @param ca {Animation_Time}
              */
             set:function(ca){
                 if(currentAnimation !== ca){
@@ -285,14 +283,14 @@
             configurable:true,
             /**
              *
-             * @returns {*}
+             * @returns {boolean}
              */
             get:function(){
                 return through;
             },
             /**
              *
-             * @param t
+             * @param t {boolean}
              */
             set:function(t){
                 if(t !== through){
@@ -309,6 +307,10 @@
 
 
         Object.defineProperty(self,'static',{
+            /**
+             *
+             * @param s {boolean}
+             */
             set:function(s){
                 if(body !== null){
                     Body.set(body,'isStatic',!!s);
@@ -317,6 +319,10 @@
                     st = s;
                 }
             },
+            /**
+             *
+             * @returns {boolean}
+             */
             get:function(){
                 if(body != null && body.isStatic !== st){
                     st = body.isStatic;

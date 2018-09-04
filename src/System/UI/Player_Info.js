@@ -33,7 +33,7 @@
 
     /**
      *
-     * @param options
+     * @param options {object}
      * @constructor
      */
     let Player_Info = function(options){
@@ -55,10 +55,9 @@
 
     /**
      *
-     * @param self
+     * @param self {Player_Info}
      */
     function initialize(self){
-        let element = null;
         let face = null;
         let totalMP = 1;
         let totalHP = 1;
@@ -68,13 +67,11 @@
         let ST = 0;
         let name = '';
 
-        /*faceContainer*/
         let faceContainer = new Element({
             parent:self,
             class:"face-container"
         });
 
-        /*Face Image*/
         let faceImage = new Image({
             parent:faceContainer,
             class:"face-image"
@@ -95,9 +92,17 @@
         let hpBar = new Progress_Bar({parent:barContainer,class:'hp-bar'});
 
         Object.defineProperty(self,'face',{
+            /**
+             *
+             * @returns {Game_Face}
+             */
             get:function(){
                 return face;
             },
+            /**
+             *
+             * @param f {Game_Face}
+             */
             set:function(f){
                 if(f !== face && f instanceof Game_Face){
                     face = f;
@@ -107,9 +112,17 @@
         });
 
         Object.defineProperty(self,'totalMP',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return totalMP;
             },
+            /**
+             *
+             * @param tmp {number}
+             */
             set:function(tmp){
                 if(tmp !== totalMP){
                     totalMP = tmp;
@@ -120,9 +133,17 @@
         });
 
         Object.defineProperty(self,'totalHP',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return totalHP;
             },
+            /**
+             *
+             * @param thp {number}
+             */
             set:function(thp){
                 if(thp !== totalHP){
                     totalHP = thp;
@@ -133,9 +154,17 @@
         });
 
         Object.defineProperty(self,'totalST',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return totalST;
             },
+            /**
+             *
+             * @param tst {number}
+             */
             set:function(tst){
                 if(tst !== totalST){
                     totalST = tst;
@@ -146,9 +175,17 @@
         });
 
         Object.defineProperty(self,'MP',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return MP;
             },
+            /**
+             *
+             * @param mp {number}
+             */
             set:function(mp){
                 if(mp !== MP){
                     MP = mp;
@@ -159,9 +196,17 @@
         });
 
         Object.defineProperty(self,'HP',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return HP;
             },
+            /**
+             *
+             * @param hp {number}
+             */
             set:function(hp){
                 if(hp !== HP){
                     HP = hp;
@@ -172,9 +217,17 @@
         });
 
         Object.defineProperty(self,'ST',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
                 return ST;
             },
+            /**
+             *
+             * @param st {number}
+             */
             set:function(st){
                 if(st !== ST){
                     ST = st;
@@ -185,9 +238,17 @@
         });
 
         Object.defineProperty(self,'name',{
+            /**
+             *
+             * @returns {string}
+             */
             get:function(){
                 return name;
             },
+            /**
+             *
+             * @param n {string}
+             */
             set:function(n){
                 if(n !== name){
                     name = n;
