@@ -295,10 +295,10 @@
             let length = self.engine.world.bodies.length;
             for(let i =0; i < length;i++){
                 let body = self.engine.world.bodies[i];
-                let x = body.body.min.x;
-                let y = body.body.min.y;
-                let width = body.body.max.x-x;
-                let height = body.body.max.y-y;
+                let x = body.bounds.min.x;
+                let y = body.bounds.min.y;
+                let width = body.bounds.max.x-x;
+                let height = body.bounds.max.y-y;
                 x = Math.round(x-Canvas.x);
                 y = Math.round(y-Canvas.y);
                 Canvas.drawRect({

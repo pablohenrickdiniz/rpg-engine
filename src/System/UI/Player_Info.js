@@ -106,7 +106,9 @@
             set:function(f){
                 if(f !== face && f instanceof Game_Face){
                     face = f;
-                    faceImage.src = face.image.src;
+                    if(face.image !== null){
+                        faceImage.src = face.image.src;
+                    }
                 }
             }
         });

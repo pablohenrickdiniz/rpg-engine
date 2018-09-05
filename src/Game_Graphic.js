@@ -176,12 +176,14 @@
                     let width = self.width;
                     let height = self.height;
                     let image = self.image;
-                    let canvas = document.createElement('canvas');
-                    canvas.width = width;
-                    canvas.height = height;
-                    let ctx = canvas.getContext('2d');
-                    ctx.drawImage(image,sx,sy,width,height,0,0,width,height);
-                    url = canvas.toDataURL();
+                    if(image !== null && width !== null && height !== null){
+                        let canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        let ctx = canvas.getContext('2d');
+                        ctx.drawImage(image,sx,sy,width,height,0,0,width,height);
+                        url = canvas.toDataURL();
+                    }
                 }
                 return url;
             }
@@ -196,7 +198,10 @@
                 if(sWidth != null){
                     return sWidth;
                 }
-                return self.image.width;
+                else if(self.image !== null){
+                    return self.image.width;
+                }
+                return null;
             }
         });
 
@@ -209,7 +214,10 @@
                 if(sHeight != null){
                     return sHeight;
                 }
-                return self.image.height;
+                else if(self.image !== null){
+                    return self.image.height;
+                }
+                return null;
             }
         });
 
