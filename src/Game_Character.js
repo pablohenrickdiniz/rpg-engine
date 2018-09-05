@@ -21,7 +21,11 @@
     }
 
     if(!root.Main.Tilesets){
-        throw "Game_Character requres Tilesets";
+        throw "Game_Character requires Tilesets";
+    }
+
+    if(!root.Game_Graphic){
+        throw "Game_Character requires Game_Graphic";
     }
 
     let Animation_Time = root.Animation_Time,
@@ -30,7 +34,8 @@
         Game_Object = root.Game_Object,
         Charas = Main.Charas,
         Faces = Main.Faces,
-        Tilesets = Main.Tilesets;
+        Tilesets = Main.Tilesets,
+        Game_Graphic = root.Game_Graphic;
 
     /**
      *
@@ -42,11 +47,13 @@
         Game_Object.call(self,options);
         initialize(self);
         options = options || {};
-        self.direction = options.i || Consts.CHARACTER_DIRECTION_DOWN;
+        self.direction = Consts.CHARACTER_DIRECTION_DOWN;
         self.charaID = options.charaID || null;
         self.tilesetID = options.tilesetID || null;
         self.faceID = options.faceID;
-        self.currentAnimation = options.j || self.animations[Consts.CHARACTER_STOP_DOWN];
+        self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
+        self.tilesetI = options.tilesetI || null;
+        self.tilesetJ = options.tilesetJ || null;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -268,6 +275,49 @@
         let charaID = null;
         let faceID = null;
         let tilesetID = null;
+        let tilesetI = 0;
+        let tilesetJ = 0;
+
+        Object.defineProperty(self,'tilesetI',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return tilesetI;
+            },
+            /**
+             *
+             * @param i {number}
+             */
+            set:function(i){
+                i = parseInt(i);
+                if(!isNaN(i) && i >= 0){
+                    tilesetI = i;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'tilesetJ',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return tilesetJ;
+            },
+            /**
+             *
+             * @param j {number}
+             */
+            set:function(j){
+                j = parseInt(j);
+                if(!isNaN(j) && j >= 0){
+                    tilesetJ = j;
+                }
+            }
+        });
+
 
         Object.defineProperty(self, 'charaID', {
             /**
@@ -377,22 +427,22 @@
              * @returns {Tile}
              */
             get:function(){
-                if(self.currentAnimation !== null && self.graphic !== null){
-                    let animation = self.currentAnimation;
-                    let i = self.direction;
-                    let j;
-                    if(animation instanceof Animation_Time){
+                let graphic = self.graphic;
+                let animation = self.currentAnimation;
+                if(animation !== null && graphic !== null){
+                    let i = 0;
+                    let j = 0;
+
+                    if(charaID !== null){
+                        i = self.direction;
                         j = animation.getIndexFrame();
                     }
-                    else{
-                        j = animation;
+                    else if(tilesetID !== null){
+                        i = self.tilesetI;
+                        j = self.tilesetJ;
                     }
-                    //
-                    //index = self.graphic.startFrame+index;
-                    //while(index > self.graphic.cols){
-                    //    index = index % self.graphic.cols-1;
-                    //}
-                    return self.graphic.get(i,j);
+
+                    return graphic.get(i,j);
                 }
                 return null;
             }
@@ -404,8 +454,8 @@
          *
          * @returns {Game_Character}
          */
-       get:function(){
-           return Game_Character;
-       }
+        get:function(){
+            return Game_Character;
+        }
     });
 })(RPG);

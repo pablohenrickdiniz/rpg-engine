@@ -10,67 +10,66 @@
     let Graphic_Loader = {
         /**
          *
-         * @param urls
-         * @param options
+         * @param urls {Array[]<string>}
+         * @param options {object}
          */
         loadAll: function (urls, options) {
             options = options || {};
             let keys = Object.keys(urls);
             let loaded = [];
             let length = keys.length;
-            let onsuccess = options.onsuccess || null;
-            let onprogress = options.onprogress || null;
-            let onglobalprogress = options.onglobalprogress || null;
+            let success = options.success || null;
+            let progress = options.progress || null;
+            let totalprogress = options.totalprogress || null;
             let globalprogress = options.globalprogress || new GlobalProgress();
-
-            let onerror = options.onerror || null;
+            let error = options.error || null;
 
             if (length > 0) {
                 let q = function(image, id) {
                     loaded[id] = image;
                     length--;
-                    if (length === 0 && onsuccess) {
-                        onsuccess(loaded);
+                    if (typeof success === 'function' && length === 0) {
+                        success(loaded);
                     }
                 };
 
-                for (var k = 0; k < keys.length; k++) {
+                for (let k = 0; k < keys.length; k++) {
                     let key = keys[k];
                     Graphic_Loader.load(urls[key], key, {
-                        onsuccess: q,
-                        onprogress: onprogress,
-                        onerror: onerror,
-                        onglobalprogress: onglobalprogress,
+                        success: q,
+                        progress: progress,
+                        error: error,
+                        totalprogress: totalprogress,
                         globalprogress: globalprogress
                     });
                 }
             }
-            else if (onsuccess) {
-                onsuccess(loaded);
+            else if (typeof success === 'function') {
+                success(loaded);
             }
         },
         /**
          *
-         * @param url
-         * @param id
-         * @param options
+         * @param url {string}
+         * @param id {string}
+         * @param options {object}
          */
         load: function (url, id, options) {
             options = options || {};
-            let onsuccess = options.onsuccess || null;
-            let onprogress = options.onprogress || null;
-            let onerror = options.onerror || null;
+            let success = options.success || null;
+            let progress = options.progress || null;
+            let error = options.error || null;
+            let totalprogress = options.totalprogress || null;
             let globalprogress = options.globalprogress || new GlobalProgress();
-            let onglobalprogress = options.onglobalprogress || null;
 
             let media = null;
 
             if (images[url] === undefined) {
                 let request = new XMLHttpRequest();
-                request.onprogress = function (e) {
+                request.progress = function (e) {
                     let computable = e.lengthComputable;
                     if (computable) {
-                        if(globalprogress){
+                        if(globalprogress instanceof GlobalProgress){
                             if(media == null){
                                 media = {
                                     loaded: e.loaded,
@@ -85,13 +84,13 @@
                         }
 
 
-                        if(onglobalprogress){
-                            onglobalprogress(globalprogress.progress());
+                        if(typeof totalprogress === 'function'){
+                            totalprogress(globalprogress.progress());
                         }
 
-                        let progress = parseInt(e.loaded / e.total * 100);
-                        if (onprogress) {
-                            onprogress(id, progress);
+                        let progress_percent = parseInt(e.loaded / e.total * 100);
+                        if (typeof progress === 'function') {
+                            progress(id, progress_percent);
                         }
                     }
                 };
@@ -107,8 +106,8 @@
                         let onload = function () {
                             image.removeEventListener('load', onload);
                             images[url] = image;
-                            if (onsuccess) {
-                                onsuccess(id,image);
+                            if (typeof success === 'function') {
+                                success(id,image);
                             }
                         };
 
@@ -116,9 +115,9 @@
                     };
                 };
 
-                request.onerror = function () {
-                    if (onerror) {
-                        onerror(id);
+                request.error = function () {
+                    if (typeof error === 'function') {
+                        error(id);
                     }
                 };
 
@@ -126,14 +125,15 @@
                 request.responseType = "blob";
                 request.send();
             }
-            else if (onsuccess) {
-                onsuccess(id,images[url]);
+            else if (typeof success === 'function') {
+                success(id,images[url]);
             }
         },
-        /*
-         toDataURL(Image img, function callback):void
-         Gera uma url para a imagem img e passa para a
-         função callback
+        /**
+         *
+         * @param img {Image}
+         * @param id {string}
+         * @param callback {function}
          */
         toDataURL: function (img, id, callback) {
             let canvas = document.createElement('canvas');
@@ -142,13 +142,13 @@
             canvas.height = img.height;
             context.drawImage(img, 0, 0);
             let dataUrl = canvas.toDataURL();
-            callback(dataUrl, id);
             canvas = null;
+            callback(dataUrl, id);
         },
         /**
          *
-         * @param urls
-         * @param callback
+         * @param urls {Array[]<string>}
+         * @param callback {function}
          */
         toDataURLS: function (urls, callback) {
             Graphic_Loader.loadAll(urls, function (loaded) {
@@ -162,7 +162,7 @@
                         callback(loaded_data);
                     }
                 };
-                for (var k = 0; k < keys.length; k++) {
+                for (let k = 0; k < keys.length; k++) {
                     let key = keys[k];
                     Graphic_Loader.toDataURL(urls[key], key, q);
                 }
@@ -170,28 +170,28 @@
         },
         /**
          *
-         * @param data
-         * @param callback
+         * @param data {string}
+         * @param callback {function}
          */
         fromDataURL: function (data, callback) {
             if (data != null) {
                 let img = new Image();
                 img.src = data;
 
-                let load_callback = function () {
+                let error = function () {
                     this.removeEventListener('load', load_callback);
-                    this.removeEventListener('error', error_callback);
-                    callback(img);
-                };
-
-                let error_callback = function () {
-                    this.removeEventListener('load', load_callback);
-                    this.removeEventListener('error', error_callback);
+                    this.removeEventListener('error', error);
                     callback(null);
                 };
 
-                img.addEventListener('load', load_callback);
-                img.addEventListener('error', error_callback);
+                let load = function () {
+                    this.removeEventListener('load', load);
+                    this.removeEventListener('error', error);
+                    callback(img);
+                };
+
+                img.addEventListener('load', load);
+                img.addEventListener('error', error);
             }
             else {
                 callback(null);
@@ -202,7 +202,7 @@
     Object.defineProperty(w,'Graphic_Loader',{
         /**
          *
-         * @returns {{loadAll: loadAll, load: load, toDataURL: toDataURL, toDataURLS: toDataURLS, fromDataURL: fromDataURL}}
+         * @returns {Graphic_Loader}
          */
         get:function(){
             return Graphic_Loader;

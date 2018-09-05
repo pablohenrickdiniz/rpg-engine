@@ -42,16 +42,16 @@
             self.addEventListener('afterload',options.afterload);
         }
 
-        if(typeof options.onaudioprogress === 'function'){
-            self.addEventListener('onaudioprogress',options.onaudioprogress);
+        if(typeof options.audioprogress === 'function'){
+            self.addEventListener('audioprogress',options.audioprogress);
         }
 
-        if(typeof options.ongraphicprogress === 'function'){
-            self.addEventListener('ongraphicprogress',options.ongraphicprogress);
+        if(typeof options.graphicprogress === 'function'){
+            self.addEventListener('graphicprogress',options.graphicprogress);
         }
 
         if(typeof options.onprogress === 'function'){
-            self.addEventListener('onprogress',options.onprogress);
+            self.addEventListener('progress',options.onprogress);
         }
     };
 

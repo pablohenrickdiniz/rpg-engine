@@ -1,5 +1,5 @@
 'use strict';
-(function (root,w) {
+(function (root) {
     if(!root.Scene){
         throw "Main requires Scene";
     }
@@ -19,18 +19,18 @@
     Object.defineProperty(Main,'currentScene',{
         /**
          *
-         * @returns {*}
+         * @returns {Scene}
          */
         get:function(){
             return current_scene;
         },
         /**
          *
-         * @param c
+         * @param s {Scene}
          */
-        set:function(c){
-            if(c instanceof Scene && c !== current_scene){
-                current_scene = c;
+        set:function(s){
+            if(s instanceof Scene && s !== current_scene){
+                current_scene = s;
             }
         }
     });
@@ -38,14 +38,14 @@
     Object.defineProperty(Main,'currentMap',{
         /**
          *
-         * @returns {*}
+         * @returns {Game_Map}
          */
         get:function(){
             return current_map;
         },
         /**
          *
-         * @param map
+         * @param map {Game_Map}
          */
         set:function(map){
             if(map instanceof Game_Map){
@@ -57,17 +57,17 @@
     Object.defineProperty(Main,'currentPlayerID',{
         /**
          *
-         * @returns {*}
+         * @returns {string}
          */
         get:function(){
             return current_player_id;
         },
         /**
          *
-         * @param player_id
+         * @param id {string}
          */
-        set:function(player_id){
-            if(player_id !== current_player_id){
+        set:function(id){
+            if(id !== current_player_id){
                 if(current_player_id != null){
                     let tmp = Main.Actors.get(current_player_id);
                     if(tmp != null){
@@ -75,9 +75,9 @@
                     }
                 }
 
-                current_player_id = player_id;
+                current_player_id = id;
                 let scene = Main.currentScene;
-                let actor = Main.Actors.get(player_id);
+                let actor = Main.Actors.get(id);
                 if(scene != null && actor != null){
                     actor.type = 'Player';
                     scene.add(actor);
@@ -89,7 +89,7 @@
     Object.defineProperty(Main,'currentPlayer',{
         /**
          *
-         * @returns Actor
+         * @returns {Game_Actor}
          */
         get:function(){
             return Main.Actors.get(current_player_id);
@@ -98,10 +98,10 @@
 
     Object.defineProperty(root,'Main',{
         /**
-         *
-          */
+         * @returns Main
+         */
        get:function(){
            return Main;
        }
     });
-})(RPG,window);
+})(RPG);

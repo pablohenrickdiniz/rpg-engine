@@ -20,6 +20,10 @@
         throw "Scene_Map requires Game_Actor";
     }
 
+    if(!root.Tile){
+        throw "Scene_Map requires Tile";
+    }
+
     if(!root.Main){
         throw "Scene_Map requires Main";
     }
@@ -62,7 +66,8 @@
         Engine = Matter.Engine,
         World = Matter.World,
         Bodies = Matter.Bodies,
-        Events = Matter.Events;
+        Events = Matter.Events,
+        Tile = root.Tile;
 
     let clear_queue = [];
     let bg_refreshed = false;
@@ -283,7 +288,7 @@
         });
 
         for(let i =0; i < objs.length;i++){
-            draw_object(objs[i].x,objs[i].y,objs[i],mw,mh);
+            draw_object(objs[i],mw,mh);
         }
 
         if(RPG.debug){
@@ -459,18 +464,19 @@
 
     /**
      *
-     * @param x {number}
-     * @param y {number}
      * @param object {Game_Object}
      * @param vw {number}
      * @param vh {number}
      */
-    function draw_object(x,y,object,vw,vh){
+    function draw_object(object,vw,vh){
         let frame = object.currentFrame;
-        if (frame != null && frame.image) {
+        if (frame !== null && frame instanceof Tile) {
+            let objx = object.x-Canvas.x;
+            let objy = object.y-Canvas.y;
+
             let image = frame.image;
-            x = Math.round(x-Canvas.x-(frame.dWidth/2));
-            y = Math.round(y-Canvas.y-(frame.dHeight/2));
+            let x = Math.round(objx-(frame.dWidth/2));
+            let y = Math.round(objy-(frame.dHeight/2));
             Canvas.drawImage(image,{
                 dx:x,
                 dy:y,
@@ -491,7 +497,6 @@
                 width:frame.dWidth,
                 height:frame.dHeight
             });
-            // }
         }
     }
 
@@ -649,8 +654,8 @@
          *
          * @returns {Scene_Map}
          */
-       get:function(){
-           return Scene_Map;
-       }
+        get:function(){
+            return Scene_Map;
+        }
     });
 })(RPG,window);

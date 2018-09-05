@@ -215,8 +215,8 @@
                                 height:32,
                                 static:true,
                                 tilesetID:'cavesAndUnderground',
-                                i:15,
-                                j:2,
+                                tilesetI:15,
+                                tilesetJ:2,
                                 script:function(){
 
                                 }
@@ -233,8 +233,8 @@
                                 height:32,
                                 static:true,
                                 tilesetID:'cavesAndUnderground',
-                                i:15,
-                                j:2,
+                                tilesetI:15,
+                                tilesetJ:2,
                                 script:function(){
 
                                 }
@@ -251,8 +251,8 @@
                                 height:32,
                                 static:true,
                                 tilesetID:'cavesAndUnderground',
-                                i:15,
-                                j:2,
+                                tilesetI:15,
+                                tilesetJ:2,
                                 script:function(){
 
                                 }
@@ -511,7 +511,7 @@
 
                     root.Main.currentScene.focus(root.Main.currentPlayer);
                 },
-                onprogress:function(progress){
+                progress:function(progress){
                     let progress_bar = RPG.UI.root.findById('loading-progress');
 
                     if(progress_bar != null){

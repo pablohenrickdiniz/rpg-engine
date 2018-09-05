@@ -312,8 +312,9 @@
              * @param s {boolean}
              */
             set:function(s){
+                s = !!s;
                 if(body !== null){
-                    Body.set(body,'isStatic',!!s);
+                    Body.set(body,'isStatic',s);
                 }
                 if(st !== s){
                     st = s;

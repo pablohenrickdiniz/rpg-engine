@@ -29,170 +29,155 @@
     let Scene_Loader = function () {};
     /**
      *
-     * @param scene
-     * @param callback
+     * @param scene {Scene}
+     * @param callback {function}
      */
     Scene_Loader.prototype.load = function (scene,callback) {
         let count = 0;
         let audios = scene.audios || {};
         let graphics = scene.graphics || {};
-
-        let audio_types = Object.keys(audios);
-        let graphic_types = Object.keys(graphics);
+        let atypes = Object.keys(audios);
+        let gtypes = Object.keys(graphics);
         let total = 0;
-        let i;
+        let old_progress = 0;
 
-        for(i =0; i < audio_types.length;i++){
-            total += Object.keys(audios[audio_types[i]]).length;
+        for(let i =0; i < atypes.length;i++){
+            total += Object.keys(audios[atypes[i]]).length;
         }
 
-        for(i =0; i < graphic_types.length;i++){
-            total += Object.keys(graphics[graphic_types[i]]).length;
+        for(let i =0; i < gtypes.length;i++){
+            total += Object.keys(graphics[gtypes[i]]).length;
         }
 
-        function onsuccess() {
+        let success = function() {
             count++;
             if (count >= total) {
-                if(callback){
+                if(typeof callback === 'function'){
                     callback(scene);
                 }
             }
+        };
+
+        if(total === 0 && typeof success === 'function'){
+            success();
         }
 
-        if(total === 0){
-            onsuccess();
-        }
-
-        let old_progress = 0;
-
-        function onprogress(progress) {
+        let totalprogress = function(progress) {
             if(progress > old_progress){
                 old_progress = progress;
-                scene.trigger('onprogress',[progress]);
+                scene.trigger('progress',[progress]);
             }
-        }
+        };
 
-        function ongraphicprogress(){
-            scene.trigger('ongraphicprogress',arguments);
-        }
+        let graphicprogress = function (){
+            scene.trigger('graphicprogress',arguments);
+        };
 
-        function onaudioprogress(){
-            scene.trigger('onaudioprogress',arguments);
-        }
+        let audioprogress = function(){
+            scene.trigger('audioprogress',arguments);
+        };
 
         let globalprogress = new GlobalProgress();
 
-        let type;
-
-        for(i =0; i < audio_types.length;i++){
-            type = audio_types[i];
+        for(let i = 0; i < atypes.length;i++){
+            let type = atypes[i];
             let audio_urls = audios[type];
             loadAudios(type,audio_urls, {
-                onsuccess: onsuccess,
+                success: success,
                 globalprogress: globalprogress,
-                onglobalprogress: onprogress,
-                onprogress:onaudioprogress
+                totalprogress: totalprogress,
+                progress:audioprogress
             });
         }
 
-
-        for(i =0; i < graphic_types.length;i++){
-            type = graphic_types[i];
+        for(let i = 0; i < gtypes.length;i++){
+            let type = gtypes[i];
             let graphic_urls = graphics[type];
             loadGraphics(type,graphic_urls, {
-                onsuccess: onsuccess,
+                success: success,
                 globalprogress: globalprogress,
-                onglobalprogress: onprogress,
-                onprogress:ongraphicprogress
+                totalprogress: totalprogress,
+                progress:graphicprogress
             })
         }
     };
 
     /**
      *
-     * @param type
-     * @param audios
-     * @param options
+     * @param type {string}
+     * @param audios {Array}
+     * @param options {object}
      */
     function loadAudios(type,audios, options) {
         audios = audios || {};
         options = options || {};
         let names = Object.keys(audios);
-        let onsuccess = options.onsuccess || null;
-        let onglobalprogress = options.onglobalprogress || null;
-        let globalprogress = options.globalprogress || null;
-        let onprogress = options.onprogress || null;
-        loadAudiosHell(type,names,audios,onsuccess,onglobalprogress,globalprogress,onprogress);
+        loadAudiosHell(type,names,audios,options);
     }
 
     /**
      *
-     * @param type
-     * @param graphics
-     * @param options
+     * @param type {string}
+     * @param graphics {Array}
+     * @param options {object}
      */
     function loadGraphics(type,graphics, options) {
         graphics = graphics || {};
         options = options ||{};
         let names = Object.keys(graphics);
-        let onsuccess = options.onsuccess || null;
-        let onglobalprogress = options.onglobalprogress || null;
-        let globalprogress = options.globalprogress || null;
-        let onprogress = options.onprogress || null;
-        loadGraphicsHell(type,names,graphics,onsuccess,onglobalprogress,globalprogress,onprogress);
+        loadGraphicsHell(type,names,graphics,options);
     }
 
     /**
      *
-     * @param type
-     * @param names
-     * @param data
-     * @param q
-     * @param onglobalprogress
-     * @param globalprogress
-     * @param onprogress
+     * @param type {string}
+     * @param names {Array}
+     * @param data {Array}
+     * @param options {object}
      */
-    function loadAudiosHell(type,names,data,q,onglobalprogress,globalprogress,onprogress){
+    function loadAudiosHell(type,names,data,options){
+        options = options || {};
         if(names.length > 0){
             let name = names.pop();
             Audio_Loader.load(data[name],name, {
-                onsuccess: function (id,src) {
+                success: function (id,src) {
                     Audios.set(type,id,src);
-                    if(q){q(id);}
+                    if(typeof options.success === 'function'){
+                        options.success(id);
+                    }
                 },
-                onglobalprogress: onglobalprogress,
-                globalprogress: globalprogress,
-                onprogress: onprogress
+                totalprogress: options.totalprogress,
+                globalprogress: options.globalprogress,
+                progress: options.progress
             });
 
-            loadAudiosHell(type,names,data,q,onglobalprogress,globalprogress,onprogress)
+            loadAudiosHell(type,names,data,options)
         }
     }
 
-
     /**
      *
-     * @param type
-     * @param names
-     * @param data
-     * @param q
-     * @param onglobalprogress
-     * @param globalprogress
-     * @param onprogress
+     * @param type {string}
+     * @param names {Array}
+     * @param data {Array}
+     * @param options {object}
      */
-    function loadGraphicsHell(type,names,data,q,onglobalprogress,globalprogress,onprogress){
+    function loadGraphicsHell(type,names,data,options){
+        options = options || {};
         if(names.length > 0){
             let name = names.pop();
             Graphic_Loader.load(data[name],name, {
-                onsuccess: function (id,image) {
+                success: function (id,image) {
                     Graphics.set(type, id, image);
-                    if(q){q(id);}
+                    if(typeof options.success === 'function'){
+                        options.success(id);
+                    }
                 },
-                onglobalprogress: onglobalprogress,
-                globalprogress: globalprogress,
-                onprogress: onprogress
+                totalprogress: options.totalprogress,
+                globalprogress: options.globalprogress,
+                progress: options.progress
             });
-            loadGraphicsHell(type,names,data,q,onglobalprogress,globalprogress,onprogress)
+            loadGraphicsHell(type,names,data,options)
         }
     }
 
