@@ -420,6 +420,19 @@
             }
         });
 
+        Object.defineProperty(self,'layer',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+               if(currentPage !== null){
+                   return currentPage.layer;
+               }
+               return 0;
+            }
+        });
+
         Events.on('globalSwitchChanged',function(){
             self.updateCurrentPage();
         });
