@@ -67,7 +67,8 @@
         World = Matter.World,
         Bodies = Matter.Bodies,
         Events = Matter.Events,
-        Tile = root.Tile;
+        Tile = root.Tile,
+        Mouse = root.Controls.Mouse;
 
     let clear_queue = [];
     let bg_refreshed = false;

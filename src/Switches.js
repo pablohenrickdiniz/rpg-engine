@@ -4,12 +4,12 @@
         throw "Switches requires RPG Main";
     }
 
-    if(!root.Main.Events){
+    if(!root.Events){
         throw "Switches requires Events";
     }
 
     let Main = root.Main,
-        Events = Main.Events;
+        Events = root.Events;
 
     let switches = [];
     let Switches = {
@@ -30,7 +30,7 @@
                 }
             }
             if(changed.length > 0){
-                Events.emmit('globalSwitchChanged',[changed]);
+                Events.trigger('globalSwitchChanged',[changed]);
             }
         },
         /**
@@ -51,7 +51,7 @@
             }
 
             if(changed.length > 0){
-                Events.emmit('globalSwitchChanged',[changed]);
+                Events.trigger('globalSwitchChanged',[changed]);
             }
         },
 

@@ -1,10 +1,5 @@
 'use strict';
 (function(root){
-    if(!root.Main){
-        throw "Events requires RPG Main";
-    }
-
-    let Main = root.Main;
     let listeners = [];
     let Events = {
         /**
@@ -50,7 +45,7 @@
          * @param eventName{string}
          * @param args{Array}
          */
-        emmit:function(eventName,args){
+        trigger:function(eventName, args){
             if(listeners[eventName] !== undefined){
                 for(let i = 0;i < listeners[eventName].length;i++){
                     listeners[eventName][i].apply(null,args);
@@ -59,7 +54,7 @@
         }
     };
 
-    Object.defineProperty(Main,'Events',{
+    Object.defineProperty(root,'Events',{
         /**
          *
          * @returns {Events}

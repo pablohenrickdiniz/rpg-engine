@@ -66,7 +66,7 @@
     <script type="text/javascript" src="../src/Game_Slot.js"></script>
     <script type="text/javascript" src="../src/Game_Inventory.js"></script>
     <script type="text/javascript" src="../src/Game_Item.js"></script>
-    <script type="text/javascript" src="../src/Events.js"></script>
+    <script type="text/javascript" src="../src/System/Events.js"></script>
     <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
@@ -115,8 +115,7 @@
                 ui_root:ui_root
             });
 
-           // RPG.debug = true;
-
+            RPG.debug = true;
 
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
@@ -168,8 +167,8 @@
                         }
                     ],
                     spriteset:{
-                        width:15,
-                        height:15,
+                        width:100,
+                        height:100,
                         tileWidth:32,
                         tileHeight:32,
                         data:[]
@@ -200,60 +199,6 @@
                                         this.disableSwitch('ON');
                                         this.disableGlobalSwitch('LAMP');
                                     }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        class:'Event',
-                        x:218,
-                        y:200,
-                        pages:[
-                            {
-                                width:32,
-                                height:32,
-                                static:true,
-                                tilesetID:'cavesAndUnderground',
-                                tilesetI:15,
-                                tilesetJ:2,
-                                script:function(){
-
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        class:'Event',
-                        x:186,
-                        y:200,
-                        pages:[
-                            {
-                                width:32,
-                                height:32,
-                                static:true,
-                                tilesetID:'cavesAndUnderground',
-                                tilesetI:15,
-                                tilesetJ:2,
-                                script:function(){
-
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        class:'Event',
-                        x:154,
-                        y:200,
-                        pages:[
-                            {
-                                width:32,
-                                height:32,
-                                static:true,
-                                tilesetID:'cavesAndUnderground',
-                                tilesetI:15,
-                                tilesetJ:2,
-                                script:function(){
-
                                 }
                             }
                         ]

@@ -98,7 +98,7 @@
 
     Object.defineProperty(root,'Main',{
         /**
-         * @returns Main
+         * @returns {Main}
          */
        get:function(){
            return Main;

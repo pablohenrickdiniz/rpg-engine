@@ -12,7 +12,7 @@
         throw "Game_Event requires Switches";
     }
 
-    if(!root.Main.Events){
+    if(!root.Events){
         throw "Game_Event requires Events";
     }
 
@@ -33,7 +33,7 @@
         Matter = w.Matter,
         Body = Matter.Body,
         Audio = root.Audio,
-        Events = root.Main.Events,
+        Events = root.Events,
         Consts = root.Consts;
 
     /**
