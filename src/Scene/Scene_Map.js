@@ -523,10 +523,8 @@
                 let spriteset = self.spriteset;
                 let viewport_width = Math.min(Canvas.width, spriteset.realWidth);
                 let viewport_height = Math.min(Canvas.height, spriteset.realHeight);
-                let viewport_x = (obj.x) - (viewport_width / 2) + (obj.graphic.tileDWidth / 2);
-                let viewport_y = (obj.y) - (viewport_height / 2) + (obj.graphic.tileDHeight / 2);
-
-
+                let viewport_x = (obj.x) - (viewport_width / 2);
+                let viewport_y = (obj.y) - (viewport_height / 2);
                 let max_screen_x = spriteset.realWidth - viewport_width;
                 let max_screen_y = spriteset.realHeight - viewport_height;
 
