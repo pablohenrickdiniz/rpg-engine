@@ -31,27 +31,27 @@
         self.listeners = [];
 
         if(typeof options.start === 'function'){
-            self.addEventListener('start',options.start);
+            self.on('start',options.start);
         }
 
         if(typeof options.beforeload === 'function'){
-            self.addEventListener('beforeload',options.beforeload);
+            self.on('beforeload',options.beforeload);
         }
 
         if(typeof options.afterload === 'function'){
-            self.addEventListener('afterload',options.afterload);
+            self.on('afterload',options.afterload);
         }
 
         if(typeof options.audioprogress === 'function'){
-            self.addEventListener('audioprogress',options.audioprogress);
+            self.on('audioprogress',options.audioprogress);
         }
 
         if(typeof options.graphicprogress === 'function'){
-            self.addEventListener('graphicprogress',options.graphicprogress);
+            self.on('graphicprogress',options.graphicprogress);
         }
 
         if(typeof options.onprogress === 'function'){
-            self.addEventListener('progress',options.onprogress);
+            self.on('progress',options.onprogress);
         }
     };
 
@@ -82,6 +82,7 @@
      *
      * @param eventName {string}
      * @param args {Array}
+     * @returns {Scene}
      */
     Scene.prototype.trigger = function(eventName,args){
         let self = this;
@@ -91,14 +92,16 @@
                 self.listeners[eventName][i].apply(self,args);
             }
         }
+        return self;
     };
 
     /**
      *
      * @param eventName {string}
      * @param callback {function}
+     * @returns {Scene}
      */
-    Scene.prototype.addEventListener = function(eventName,callback){
+    Scene.prototype.on = function(eventName,callback){
         let self = this;
         if(self.listeners[eventName] === undefined){
             self.listeners[eventName] = [];
@@ -106,14 +109,16 @@
         if(self.listeners[eventName].indexOf(callback) === -1){
             self.listeners[eventName].push(callback);
         }
+        return self;
     };
 
     /**
      *
      * @param eventName {string}
      * @param callback {function}
+     * @returns {Scene}
      */
-    Scene.prototype.removeEventListener = function(eventName,callback){
+    Scene.prototype.off = function(eventName,callback){
         let self = this;
         if(self.listeners[eventName] !== undefined){
             let index =self.listeners[eventName].indexOf(callback);
@@ -121,6 +126,7 @@
                 self.listeners[eventName].splice(index,1);
             }
         }
+        return self;
     };
 
     /**

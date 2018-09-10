@@ -159,8 +159,12 @@
         });
 
         Object.defineProperty(self,'image',{
+            /**
+             *
+             * @returns {image}
+             */
             get:function(){
-                return Graphics.get(self.graphicType,self.graphicID);
+                return Graphics.get(self.graphicType,graphicID);
             }
         });
 

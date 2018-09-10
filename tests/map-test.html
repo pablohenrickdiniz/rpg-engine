@@ -65,10 +65,10 @@
     <script type="text/javascript" src="../src/Items.js"></script>
     <script type="text/javascript" src="../src/Game_Slot.js"></script>
     <script type="text/javascript" src="../src/Game_Inventory.js"></script>
-    <script type="text/javascript" src="../src/Game_Item.js"></script>
     <script type="text/javascript" src="../src/System/Events.js"></script>
     <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
+    <script type="text/javascript" src="../src/Game_Item.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
 
@@ -130,11 +130,11 @@
                         lamp:'http://localhost/rpg-engine/tests/graphics/characters/Object%20-%200905.png'
                     },
                     faces:{
-                      //  face01:'http://localhost/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
+                        face01:'http://localhost/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
                     },
                     icons:{
-                    //    icon01:'http://localhost/resources/Icons/Misc%2001%20(1.970)/Misc01%20-%200005.png',
-                      //  icon02:'http://localhost/resources/Icons/zFULL%20LOTS/Lot%200012.png'
+                        icon01:'http://localhost/resources/Icons/Misc%2001%20(1.970)/Misc01%20-%200005.png',
+                        icon02:'http://localhost/resources/Icons/zFULL%20LOTS/Lot%200012.png'
                     }
                 },
                 audios:{
@@ -455,6 +455,17 @@
                     });
 
                     root.Main.currentScene.focus(root.Main.currentPlayer);
+
+                    var item = new root.Game_Item({
+                        itemID:4,
+                        x:300,
+                        y:300,
+                        through:true,
+                        trigger:6
+                    });
+
+
+                    root.Main.currentScene.add(item);
                 },
                 progress:function(progress){
                     let progress_bar = RPG.UI.root.findById('loading-progress');

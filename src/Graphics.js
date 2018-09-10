@@ -17,6 +17,7 @@
             if (graphics[type] && graphics[type][name]) {
                 return graphics[type][name];
             }
+
             return null;
         },
         /**

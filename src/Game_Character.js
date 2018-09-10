@@ -20,10 +20,6 @@
         throw "Game_Character requires Faces";
     }
 
-    if(!root.Main.Tilesets){
-        throw "Game_Character requires Tilesets";
-    }
-
     if(!root.Game_Graphic){
         throw "Game_Character requires Game_Graphic";
     }
@@ -34,7 +30,6 @@
         Game_Object = root.Game_Object,
         Charas = Main.Charas,
         Faces = Main.Faces,
-        Tilesets = Main.Tilesets,
         Game_Graphic = root.Game_Graphic;
 
     /**
@@ -49,11 +44,8 @@
         options = options || {};
         self.direction = Consts.CHARACTER_DIRECTION_DOWN;
         self.charaID = options.charaID || null;
-        self.tilesetID = options.tilesetID || null;
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
-        self.tilesetI = options.tilesetI || null;
-        self.tilesetJ = options.tilesetJ || null;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -274,50 +266,6 @@
     function initialize(self) {
         let charaID = null;
         let faceID = null;
-        let tilesetID = null;
-        let tilesetI = 0;
-        let tilesetJ = 0;
-
-        Object.defineProperty(self,'tilesetI',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return tilesetI;
-            },
-            /**
-             *
-             * @param i {number}
-             */
-            set:function(i){
-                i = parseInt(i);
-                if(!isNaN(i) && i >= 0){
-                    tilesetI = i;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'tilesetJ',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return tilesetJ;
-            },
-            /**
-             *
-             * @param j {number}
-             */
-            set:function(j){
-                j = parseInt(j);
-                if(!isNaN(j) && j >= 0){
-                    tilesetJ = j;
-                }
-            }
-        });
-
 
         Object.defineProperty(self, 'charaID', {
             /**
@@ -371,27 +319,6 @@
             }
         });
 
-
-
-        Object.defineProperty(self, 'tilesetID', {
-            /**
-             *
-             * @param id {string}
-             */
-            set: function (id) {
-                if (id !== tilesetID) {
-                    tilesetID = id;
-                }
-            },
-            /**
-             *
-             * @returns {string}
-             */
-            get: function () {
-                return tilesetID;
-            }
-        });
-
         Object.defineProperty(self,'graphic',{
             configurable:true,
             /**
@@ -401,9 +328,6 @@
             get:function(){
                 if(charaID !== null){
                     return Charas.get(charaID);
-                }
-                else if(tilesetID !== null){
-                    return Tilesets.get(tilesetID);
                 }
 
                 return null;
@@ -436,10 +360,6 @@
                     if(charaID !== null){
                         i = self.direction;
                         j = animation.getIndexFrame();
-                    }
-                    else if(tilesetID !== null){
-                        i = self.tilesetI;
-                        j = self.tilesetJ;
                     }
 
                     return graphic.get(i,j);

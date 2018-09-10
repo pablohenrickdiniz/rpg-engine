@@ -24,6 +24,10 @@
         throw "Scene_Map requires Tile";
     }
 
+    if(!root.Game_Graphic){
+        throw "Scene_Map requires Game_Graphic";
+    }
+
     if(!root.Main){
         throw "Scene_Map requires Main";
     }
@@ -68,7 +72,8 @@
         Bodies = Matter.Bodies,
         Events = Matter.Events,
         Tile = root.Tile,
-        Mouse = root.Controls.Mouse;
+        Mouse = root.Controls.Mouse,
+        Game_Graphic = root.Game_Graphic;
 
     let clear_queue = [];
     let bg_refreshed = false;
@@ -94,7 +99,7 @@
         self.objects = options.objects || [];
         initialize(self);
 
-        self.addEventListener('collisionActive',function(a,b){
+        self.on('collisionActive',function(a,b){
             let page = null;
             let actor = null;
             if(a instanceof Event_Page){
@@ -115,7 +120,7 @@
                 if (typeof page.script === 'function') {
                     if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action)) {
                         self.action = false;
-                        page.script();
+                        page.script(actor);
                     }
                 }
             }
@@ -472,7 +477,7 @@
      */
     function draw_object(object,vw,vh){
         let frame = object.currentFrame;
-        if (frame !== null && frame instanceof Tile) {
+        if (frame !== null && (frame instanceof Tile || frame instanceof Game_Graphic) && frame.image) {
             let objx = object.x-Canvas.x;
             let objy = object.y-Canvas.y;
 

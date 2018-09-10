@@ -9,13 +9,14 @@
         }
     }
 
-    if(!root.Game_Object){
-        throw "Game_Item requires Game_Object";
+    if(!root.Game_Event){
+        throw "Game_Item requires Game_Event";
     }
 
-    let Game_Object = root.Game_Object,
+    let Game_Event = root.Game_Event,
         Consts = root.Consts,
-        Items = root.Main.Items;
+        Main = root.Main,
+        Items = Main.Items;
 
     /**
      *
@@ -26,16 +27,22 @@
         let self = this;
         options = options || {};
         options.type = options.type || 'generic';
-        options.through = options.through === true;
-        Game_Object.call(self,options);
+        Game_Event.call(self,options);
         initialize(self);
         self.amount = options.amount || 1;
-        self.graphic_type = 'icon';
-        self.capture = options.capture || Consts.TRIGGER_PLAYER_TOUCH;
         self.itemID = options.itemID;
+        self.pages = [{
+            through:options.through || true,
+            static: options.static || true,
+            trigger: options.trigger || Consts.TRIGGER_PLAYER_TOUCH,
+            script:function(actor){
+                actor.inventory.addItem(self.item,self.amount);
+                self.trigger('take');
+            }
+        }];
     };
 
-    Game_Item.prototype = Object.create(Game_Object.prototype);
+    Game_Item.prototype = Object.create(Game_Event.prototype);
     Game_Item.prototype.constructor = Game_Item;
 
     /**
@@ -43,13 +50,18 @@
      * @param self {Game_Item}
      */
     function initialize(self){
+        let itemID = null;
+
         Object.defineProperty(self,'item',{
             /**
              *
              * @returns {Item}
              */
             get:function(){
-                return Items.get(self.itemID)
+                if(itemID !== null){
+                    return Items.get(itemID)
+                }
+                return null;
             }
         });
 
@@ -59,8 +71,29 @@
              * @returns {Item_Graphic}
              */
             get:function(){
-                return self.item.graphic;
+                let item = self.item;
+                if(item !== null){
+                    return item.graphic;
+                }
+                return null;
             }
+        });
+
+        Object.defineProperty(self,'itemID',{
+            /**
+             *
+             * @returns {string}
+             */
+           get:function(){
+               return itemID;
+           },
+            /**
+             *
+             * @param i {string}
+             */
+           set:function(i){
+               itemID = i;
+           }
         });
     }
 

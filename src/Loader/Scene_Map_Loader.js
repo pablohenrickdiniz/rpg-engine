@@ -153,7 +153,6 @@
                 }
             }
 
-
             if(scene.faces && scene.faces.constructor === {}.constructor){
                 keys = Object.keys(scene.faces);
                 length = keys.length;

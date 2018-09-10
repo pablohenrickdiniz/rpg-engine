@@ -155,6 +155,36 @@
 
     /**
      *
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Game_Event}
+     */
+    Event_Page.prototype.on = function(eventName,callback){
+        return this.event.on(eventName,callback);
+    };
+
+    /**
+     *
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Game_Event}
+     */
+    Event_Page.prototype.off = function(eventName,callback){
+        return this.event.off(eventName,callback);
+    };
+
+    /**
+     *
+     * @param eventName {string}
+     * @param args {Array}
+     * @returns {Game_Event}
+     */
+    Event_Page.prototype.trigger = function(eventName,args){
+        return this.event.trigger(eventName,args);
+    };
+
+    /**
+     *
      * @param condition {string}
      * @returns {Event_Page}
      */

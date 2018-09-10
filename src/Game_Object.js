@@ -46,6 +46,66 @@
 
     /**
      *
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Game_Object}
+     */
+    Game_Object.prototype.on = function(eventName,callback){
+        let self = this;
+        if(typeof callback === 'function'){
+            if(self.listeners[eventName] === undefined){
+                self.listeners[eventName] = [];
+            }
+            if(self.listeners.indexOf(callback) === -1){
+                self.listeners[eventName].push(callback);
+            }
+        }
+        return self;
+    };
+
+    /**
+     *
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Game_Object}
+     */
+    Game_Object.prototype.off = function(eventName,callback){
+        let self = this;
+        if(self.listeners[eventName] !== undefined){
+            if(typeof callback === 'function'){
+                let index = self.listeners[eventName].indexOf(callback);
+                if(index !== -1){
+                    self.listeners[eventName].splice(index,1);
+                }
+                if(self.listeners[eventName].length === 0){
+                    delete self.listeners[eventName];
+                }
+            }
+            else{
+                delete self.listeners[eventName];
+            }
+        }
+        return self;
+    };
+
+    /**
+     *
+     * @param eventName {string}
+     * @param args {Array}
+     * @returns {Game_Object}
+     */
+    Game_Object.prototype.trigger = function(eventName, args){
+        let self = this;
+        if(self.listeners[eventName] !== undefined){
+            for(let i = 0;i < self.listeners[eventName].length;i++){
+                self.listeners[eventName][i].apply(null,args);
+            }
+        }
+        return self;
+    };
+
+    /**
+     *
      * @param properties {object}
      * @returns {object}
      */
@@ -78,11 +138,13 @@
      *
      * @param x {number}
      * @param y {number}
+     * @returns {Game_Object}
      */
     Game_Object.prototype.move = function (x, y) {
         let self = this;
         let body = self.body;
         Body.applyForce(body,{x:body.position.x,y:body.position.y},{x:x,y:y});
+        return self;
     };
 
     /**

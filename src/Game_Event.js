@@ -49,6 +49,7 @@
         self.x = options.x || 0;
         self.y = options.y || 0;
         self.pages = options.pages || [];
+        self.listeners = [];
     };
 
     /**
@@ -236,6 +237,57 @@
 
     /**
      *
+     * @param eventName {string}
+     * @param args {Array}
+     * @returns {Scene}
+     */
+    Game_Event.prototype.trigger = function(eventName,args){
+        let self = this;
+        if(self.listeners[eventName] !== undefined){
+            let length = self.listeners[eventName].length;
+            for(let i = 0; i < length;i++){
+                self.listeners[eventName][i].apply(self,args);
+            }
+        }
+        return self;
+    };
+
+    /**
+     *
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Scene}
+     */
+    Game_Event.prototype.on = function(eventName,callback){
+        let self = this;
+        if(self.listeners[eventName] === undefined){
+            self.listeners[eventName] = [];
+        }
+        if(self.listeners[eventName].indexOf(callback) === -1){
+            self.listeners[eventName].push(callback);
+        }
+        return self;
+    };
+
+    /**
+     *
+     * @param eventName {string}
+     * @param callback {function}
+     * @returns {Scene}
+     */
+    Game_Event.prototype.off = function(eventName,callback){
+        let self = this;
+        if(self.listeners[eventName] !== undefined){
+            let index =self.listeners[eventName].indexOf(callback);
+            if(index !== -1){
+                self.listeners[eventName].splice(index,1);
+            }
+        }
+        return self;
+    };
+
+    /**
+     *
      * @param self {Game_Event}
      */
     function initialize(self){
@@ -279,6 +331,7 @@
         });
 
         Object.defineProperty(self,'currentFrame',{
+            configurable:true,
             /**
              *
              * @returns {Tile}
