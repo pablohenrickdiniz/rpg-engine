@@ -124,7 +124,7 @@
                         cavesAndUnderground:'http://localhost/rpg-engine/tests/graphics/tilesets/Caves%20&%20Undergrounds%20-%200043.png'
                     },
                     charasets:{
-                        char01:'http://localhost/rpg-engine/tests/graphics/characters/mack_char01.png',
+                        char01:'http://localhost/rpg-engine/tests/graphics/characters/SF_Actor1.png',
                         male:'http://localhost/rpg-engine/tests/graphics/characters/Las2vdS.png',
                         switch:'http://localhost/rpg-engine/tests/graphics/characters/recolored-handle-switches-2.png',
                         lamp:'http://localhost/rpg-engine/tests/graphics/characters/Object%20-%200905.png'
@@ -237,21 +237,20 @@
                 charas:{
                     char1:{
                         graphicID:'char01',
-                        rows:8,
-                        cols:12,
-                        startFrame:1
+                        rows:4,
+                        cols:3,
+                        sWidth:144,
+                        sHeight:192
                     },
                     male1:{
                         graphicID:'male',
                         rows:4,
-                        cols:9,
-                        startFrame:1
+                        cols:9
                     },
                     switch:{
                         graphicID:'switch',
                         rows:8,
-                        cols:12,
-                        startFrame:1
+                        cols:12
                     },
                     lamp:{
                         graphicID:'lamp',
@@ -268,13 +267,14 @@
                     1:{
                         x:300,
                         y:200,
-                        charaID:'male1',
+                        charaID:'char1',
                         faceID:'face01',
                         vSpeed:0.001,
                         hSpeed:0.001,
                         animationSpeed:6,
+                        startFrame:1,
                         type:'Player',
-                        name:'Pablo',
+                        name:'Player 1',
                         inventory:{
                             slots: {
                                 0: {max:99},
@@ -456,16 +456,6 @@
 
                     root.Main.currentScene.focus(root.Main.currentPlayer);
 
-                    var item = new root.Game_Item({
-                        itemID:4,
-                        x:300,
-                        y:300,
-                        through:true,
-                        trigger:6
-                    });
-
-
-                    root.Main.currentScene.add(item);
                 },
                 progress:function(progress){
                     let progress_bar = RPG.UI.root.findById('loading-progress');

@@ -148,7 +148,7 @@
         w.removeEventListener('blur',windowblur);
         w.removeEventListener('focus',windowfocus);
         w.removeEventListener('resize',windowresize);
-        Game_Timer.removeEventListener('tick',tick);
+        Game_Timer.off('tick',tick);
         keyboard.removeShortcutListener('P',pause);
         keyboard.removeShortcutListener('ENTER', action);
         keyboard.removeShortcutListener('PLUS',zoomin);
@@ -165,12 +165,12 @@
         w.addEventListener('blur', windowblur);
         w.addEventListener('focus', windowfocus);
         w.addEventListener('resize',windowresize);
-        Game_Timer.addEventListener('tick', tick);
+        Game_Timer.on('tick', tick);
         keyboard.addShortcutListener('P', pause);
         keyboard.addShortcutListener('ENTER', action);
         keyboard.addShortcutListener('PLUS',zoomin);
         keyboard.addShortcutListener('MINUS',zoomout);
-        Canvas.addEventListener('resize',canvasresize);
+        Canvas.on('resize',canvasresize);
     }
 
     function zoomin(){

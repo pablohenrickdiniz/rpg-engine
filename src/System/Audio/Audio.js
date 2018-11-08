@@ -127,7 +127,7 @@
                             audio_obj.volume = passed_time*volume/time;
                         }
                     };
-                    Game_Timer.addEventListener('tick',callback);
+                    Game_Timer.on('tick',callback);
                 }
             }
         },

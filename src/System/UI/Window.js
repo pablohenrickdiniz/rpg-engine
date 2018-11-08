@@ -77,7 +77,7 @@
         });
 
         close.text = '&times';
-        close.addEventListener('leftclick',function(){
+        close.on('leftclick',function(){
             self.visible = false;
         });
 

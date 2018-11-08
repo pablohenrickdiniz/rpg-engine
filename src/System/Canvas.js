@@ -53,14 +53,16 @@
          *
          * @param eventName {string}
          * @param callback {function}
+         * @returns {Canvas}
          */
-        addEventListener:function(eventName,callback){
+        on:function(eventName,callback){
             if(listeners[eventName] === undefined){
                 listeners[eventName] = [];
             }
             if(listeners[eventName].indexOf(callback) === -1){
                 listeners[eventName].push(callback);
             }
+            return Canvas;
         },
         /**
          *

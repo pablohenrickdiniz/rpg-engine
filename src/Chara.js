@@ -33,7 +33,6 @@
         self.rows = options.rows || 1;
         self.cols = options.cols || 1;
         self.sprites = [];
-        self.startFrame = options.startFrame || 0;
         self.graphicType = 'charasets';
         self.scale = options.scale || 1;
     };

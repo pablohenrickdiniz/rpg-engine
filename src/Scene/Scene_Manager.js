@@ -32,19 +32,15 @@
         Game_Timer = root.Game_Timer;
 
     let Scenes = Main.Scenes;
-    let current_scene = null;
     /**
      *
      * @param scene {Scene}
      */
-    function load_callback(scene){
-        current_scene = scene;
-        Main.currentScene = scene;
+    function load(scene){
         scene.trigger('afterload',[root]);
-        if(!Game_Timer.running){
-            Game_Timer.run();
-        }
         scene.trigger('start',[root]);
+        scene.initialize();
+        Game_Timer.run();
     }
 
     let Scene_Manager = {
@@ -77,14 +73,24 @@
             if(scene == null){
                 throw new Error('Cena '+name+' não existe!');
             }
-            console.log('inicializando cena '+name+'...');
-            if(scene instanceof Scene_Map){
-                scene.trigger('beforeload',[root]);
-                Scene_Map_Loader.load(scene, load_callback);
-            }
-            else{
-                scene.trigger('beforeload',[root]);
-                Scene_Loader.load(scene, load_callback);
+
+            let current_scene = Main.currentScene;
+            if(scene instanceof Scene && current_scene !== scene){
+                if(current_scene !== null){
+                    console.log('finalizando cena...');
+                    current_scene.finalize();
+                }
+                Game_Timer.stop();
+                Main.currentScene = scene;
+                console.log('inicializando cena '+name+'...');
+                if(scene instanceof Scene_Map){
+                    scene.trigger('beforeload',[root]);
+                    Scene_Map_Loader.load(scene, load);
+                }
+                else{
+                    scene.trigger('beforeload',[root]);
+                    Scene_Loader.load(scene, load);
+                }
             }
         }
     };
@@ -94,8 +100,8 @@
          *
          * @returns {Scene_Manager}
          */
-       get:function(){
-           return Scene_Manager;
-       }
+        get:function(){
+            return Scene_Manager;
+        }
     });
 })(RPG);

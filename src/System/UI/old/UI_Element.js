@@ -207,9 +207,9 @@
         return self;
     };
 
-    UI_Element.prototype.addEventListener = function (name, callback) {
+    UI_Element.prototype.on = function (name, callback) {
         let self = this;
-        if (self.listeners[name] == undefined) {
+        if (self.listeners[name] === undefined) {
             self.listeners[name] = [];
         }
 

@@ -2,11 +2,11 @@
  * Created by Pablo Henrick on 24/08/2016.
  */
 (function (root) {
-    if (root.System == undefined) {
+    if (!root.System) {
         throw "UI_Document requires System"
     }
 
-    if (root.Canvas == undefined) {
+    if (!root.Canvas) {
         throw "UI_Document requires Viewport"
     }
 
@@ -15,10 +15,6 @@
 
     let hover = false;
 
-    /**
-     *
-     * @type {{contents: Array, left: number, top: number, width: number, height: number, realLeft: number, realTop: number, absoluteLeft: number, absoluteTop: number, realWidth: number, realHeight: number, borderWidth: number, scrollTop: number, scrollLeft: number, padding: number, visible: boolean, scrolling_data: {element: null, startX: number, startY: number, sign: number, type: string, scrollTop: number}, changed: {}, ui_states: {}, propagating: Array, mousedown: Function, change: Function, initialize: Function, finalize: Function, add: Function, remove: Function, updateScroll: Function, update: Function, addState: Function, removeState: Function, getStates: Function, resetScrollingData: Function}}
-     */
     let Document = {
         contents: [],
         left: 0,
@@ -64,11 +60,11 @@
          */
         change: function (type, level, element) {
             let self = this;
-            if (self.changed[type] == undefined) {
+            if (self.changed[type] === undefined) {
                 self.changed[type] = {};
             }
 
-            if (self.changed[type][level] == undefined) {
+            if (self.changed[type][level] === undefined) {
                 self.changed[type][level] = [];
             }
             self.changed[type][level].push(element);
@@ -93,7 +89,7 @@
          */
         add: function (element) {
             let self = this;
-            if (self.contents.indexOf(element) == -1) {
+            if (self.contents.indexOf(element) === -1) {
                 self.contents.push(element);
             }
         },
@@ -104,7 +100,7 @@
         remove: function (element) {
             let self = this;
             let index = self.contents.indexOf(element);
-            if (index != -1) {
+            if (index !== -1) {
                 self.contents.splice(index, 1);
             }
         },
@@ -158,10 +154,10 @@
          */
         addState: function (state, ui_element) {
             let self = this;
-            if (self.ui_states[state] == undefined) {
+            if (self.ui_states[state] === undefined) {
                 self.ui_states[state] = [];
             }
-            if (self.ui_states[state].indexOf(ui_element) == -1) {
+            if (self.ui_states[state].indexOf(ui_element) === -1) {
                 self.ui_states[state].push(ui_element);
             }
         },
@@ -172,15 +168,15 @@
          */
         removeState: function (state, ui_element) {
             let self = this;
-            if (self.ui_states[state] != undefined) {
+            if (self.ui_states[state] !== undefined) {
                 if (/^[0-9]+$/.test(ui_element)) {
-                    if (self.ui_states[state][ui_element] != undefined) {
+                    if (self.ui_states[state][ui_element] !== undefined) {
                         return self.ui_states[state].splice(ui_element, 1)[0];
                     }
                 }
                 else {
                     let index = self.ui_states[state].indexOf(ui_element);
-                    if (index != -1) {
+                    if (index !== -1) {
                         return self.ui_states[state].splice(index, 1)[0];
                     }
                 }
@@ -193,7 +189,7 @@
          */
         getStates: function (state) {
             let self = this;
-            if (self.ui_states[state] != undefined) {
+            if (self.ui_states[state] !== undefined) {
                 return self.ui_states[state];
             }
 
@@ -215,7 +211,7 @@
             return hover;
         },
         set: function (h) {
-            if (hover != h) {
+            if (hover !== h) {
                 hover = h;
             }
         }
@@ -228,7 +224,7 @@
         let length = contents.length;
         if(length > 0){
             levels.unshift(contents);
-            for(var i =0; i < length;i++){
+            for(let i =0; i < length;i++){
                 get_tree(contents[i],levels);
             }
         }
@@ -261,7 +257,7 @@
                 id = keysB[kB];
                 el = levels[level][id];
                 let bounds = el.visibleBounds;
-                if (inside_bounds(x, y, body.x, body.y, body.width, body.height)) {
+                if (inside_bounds(x, y, bounds.x, bounds.y, bounds.width, bounds.height)) {
                     return el;
                 }
 
@@ -299,7 +295,7 @@
                 let length = ui_states.length;
                 let i;
                 for (i = 0; i < length; i++) {
-                    if (propagated.indexOf(ui_states[i]) == -1) {
+                    if (propagated.indexOf(ui_states[i]) === -1) {
                         let el = Document.removeState('hover', i);
                         el.hover = false;
                         i--;
@@ -348,7 +344,7 @@
             scrollbar = 'horizontal';
         }
 
-        if (sign != 0) {
+        if (sign !== 0) {
             Document.scrolling_data.element = el;
             Document.scrolling_data.scrollbar = scrollbar;
             switch (sign) {
@@ -481,7 +477,6 @@
         }
     };
 
-
     system.addSteplistener(function () {
         Document.update();
     });
@@ -583,7 +578,7 @@
         let length = elements.length;
         let layer = viewport.getLayer('UI', index);
 
-        for(var i =0; i < length;i++){
+        for(let i =0; i < length;i++){
             let el = elements[i];
             el.update(layer, viewport);
             fire_update(el.contents,index+1);

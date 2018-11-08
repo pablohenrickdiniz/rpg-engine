@@ -72,7 +72,6 @@
         Bodies = Matter.Bodies,
         Events = Matter.Events,
         Tile = root.Tile,
-        Mouse = root.Controls.Mouse,
         Game_Graphic = root.Game_Graphic;
 
     let clear_queue = [];
@@ -140,6 +139,9 @@
         if(object.body){
             World.add(self.engine.world,object.body);
         }
+        object.on('remove',function(){
+            self.remove(object);
+        });
     };
 
     /**
@@ -155,6 +157,7 @@
         if(object.body){
             World.remove(self.engine.world,object.body);
         }
+        object.off('remove');
     };
 
     /**
@@ -583,7 +586,7 @@
             Bodies.rectangle(-size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true, friction:0})
         ]);
 
-        Events.on(engine,'collisionStart',function(event){
+        let collisionStart = function(event){
             let pairs = event.pairs;
             // change object colours to show those starting a collision
             for (let i = 0; i < pairs.length; i++) {
@@ -592,9 +595,9 @@
                     self.trigger('collisionStart',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
                 }
             }
-        });
+        };
 
-        Events.on(engine,'collisionActive',function(event){
+        let collisionActive = function(event){
             let pairs = event.pairs;
             // change object colours to show those starting a collision
             for (let i = 0; i < pairs.length; i++) {
@@ -603,9 +606,9 @@
                     self.trigger('collisionActive',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
                 }
             }
-        });
+        };
 
-        Events.on(engine,'collisionEnd',function(event){
+        let collisionEnd = function(event){
             let pairs = event.pairs;
             // change object colours to show those starting a collision
             for (let i = 0; i < pairs.length; i++) {
@@ -614,8 +617,7 @@
                     self.trigger('collisionEnd',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
                 }
             }
-        });
-
+        };
 
         Object.defineProperty(self,'bg_refreshed',{
             /**
@@ -643,7 +645,53 @@
                 return engine;
             }
         });
+
+        Object.defineProperty(self,'collisionStart',{
+            /**
+             *
+             * @returns {collisionStart}
+             */
+            get:function(){
+                return collisionStart;
+            }
+        });
+
+        Object.defineProperty(self,'collisionActive',{
+            /**
+             *
+             * @returns {collisionActive}
+             */
+            get:function(){
+                return collisionActive;
+            }
+        });
+
+        Object.defineProperty(self,'collisionEnd',{
+            /**
+             * 
+             * @returns {collisionEnd}
+             */
+            get:function(){
+                return collisionEnd;
+            }
+        });
     }
+
+    Scene_Map.prototype.initialize = function(){
+        let self = this;
+        let engine = self.engine;
+        Events.on(engine,'collisionStart',self.collisionStart);
+        Events.on(engine,'collisionActive',self.collisionActive);
+        Events.on(engine,'collisionEnd',self.collisionEnd);
+    };
+
+    Scene_Map.prototype.finalize = function(){
+        let self = this;
+        let engine = self.engine;
+        Events.off(engine,'collisionStart',self.collisionStart);
+        Events.off(engine,'collisionActive',self.collisionActive);
+        Events.off(engine,'collisionEnd',self.collisionEnd);
+    };
 
     /**
      *

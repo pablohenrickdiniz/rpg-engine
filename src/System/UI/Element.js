@@ -35,7 +35,7 @@
      * @param callback {function}
      * @returns {Element}
      */
-    Element.prototype.addEventListener = function(eventName,callback){
+    Element.prototype.on = function(eventName,callback){
         let self = this;
         if(!self.listeners[eventName]){
             self.listeners[eventName] = [];

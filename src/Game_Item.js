@@ -36,8 +36,13 @@
             static: options.static || true,
             trigger: options.trigger || Consts.TRIGGER_PLAYER_TOUCH,
             script:function(actor){
-                actor.inventory.addItem(self.item,self.amount);
-                self.trigger('take');
+                let amount = actor.inventory.addItem(self.item,self.amount);
+                if(amount > 0){
+                    self.amount = amount;
+                }
+                else{
+                    self.trigger('remove');
+                }
             }
         }];
     };

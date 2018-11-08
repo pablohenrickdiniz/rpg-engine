@@ -48,7 +48,7 @@
      * @param callback{function}
      * @returns{Timer_Ticker}
      */
-    Timer_Ticker.prototype.addEventListener = function (eventName, callback) {
+    Timer_Ticker.prototype.on = function (eventName, callback) {
         let self = this;
         if(self.listeners[eventName] === undefined){
             self.listeners[eventName] = [];
@@ -64,7 +64,7 @@
      * @param callback{function}
      * @returns{Timer_Ticker}
      */
-    Timer_Ticker.prototype.removeEventListener = function (eventName, callback) {
+    Timer_Ticker.prototype.off = function (eventName, callback) {
         let self = this;
         if(self.listeners[eventName] !==undefined){
             let index = self.listeners[eventName].indexOf(callback);

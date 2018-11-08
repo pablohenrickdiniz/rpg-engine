@@ -82,27 +82,26 @@
             visible:showAmount
         },'span');
 
-
-        itemContainer.addEventListener('dragstart',function(){
+        itemContainer.on('dragstart',function(){
             self.inventory.from = self.index;
         });
 
-        self.addEventListener('drop',function(){
+        self.on('drop',function(){
             self.inventory.to = self.index;
             if(self.inventory.swap()){
                 root.Audio.play('fx','inventory',1);
             }
         });
 
-        itemContainer.addEventListener('dragend',function(){
+        itemContainer.on('dragend',function(){
             self.removeClass('dragover');
         });
 
-        self.addEventListener('dragenter',function(){
+        self.on('dragenter',function(){
             self.addClass('dragover');
         });
 
-        self.addEventListener('dragleave',function(){
+        self.on('dragleave',function(){
             self.removeClass('dragover');
         });
 

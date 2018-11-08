@@ -46,6 +46,7 @@
         self.charaID = options.charaID || null;
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
+        self.startFrame = options.startFrame || 0;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -266,6 +267,7 @@
     function initialize(self) {
         let charaID = null;
         let faceID = null;
+        let startFrame = 0;
 
         Object.defineProperty(self, 'charaID', {
             /**
@@ -355,9 +357,9 @@
                 let animation = self.currentAnimation;
                 if(animation !== null && graphic !== null){
                     let i = 0;
-                    let j = 0;
+                    let j = startFrame;
 
-                    if(charaID !== null){
+                    if(charaID !== null) {
                         i = self.direction;
                         j = animation.getIndexFrame();
                     }
@@ -365,6 +367,17 @@
                     return graphic.get(i,j);
                 }
                 return null;
+            }
+        });
+
+        Object.defineProperty(self,'startFrame',{
+            get:function(){
+                return startFrame;
+            },
+            set:function(s){
+                if(s !== startFrame){
+                    startFrame = s;
+                }
             }
         });
     }

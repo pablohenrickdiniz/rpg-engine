@@ -77,6 +77,7 @@
      *
      * @param eventName {string}
      * @param callback {function}
+     * @returns {Game_Inventory}
      */
     Game_Inventory.prototype.on = function(eventName,callback){
         let self = this;
@@ -86,12 +87,14 @@
         if(self.listeners[eventName].indexOf(callback) === -1){
             self.listeners[eventName].push(callback);
         }
+        return self;
     };
 
     /**
      *
      * @param eventName {string}
      * @param callback {function}
+     * @returns {Game_Inventory}
      */
     Game_Inventory.prototype.off = function(eventName,callback){
         let self = this;
@@ -101,12 +104,14 @@
                 self.listeners[eventName].splice(index,1);
             }
         }
+        return self;
     };
 
     /**
      *
      * @param eventName {string}
      * @param args {Array}
+     * @returns {Game_Inventory}
      */
     Game_Inventory.prototype.trigger = function(eventName,args){
         let self = this;
@@ -116,6 +121,7 @@
                 self.listeners[eventName][i].apply(self,args);
             }
         }
+        return self;
     };
 
     /**

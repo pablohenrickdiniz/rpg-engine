@@ -119,7 +119,7 @@
              * @param callback {function}
              * @returns {Audio}
              */
-            Audio.prototype.addEventListener = function (eventName, callback) {
+            Audio.prototype.on = function (eventName, callback) {
                 let self = this;
                 if (self.listeners[eventName] === undefined) {
                     self.listeners[eventName] = [];
