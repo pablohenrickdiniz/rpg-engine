@@ -1,7 +1,7 @@
 'use strict';
 (function (root) {
-    if (!root.Animation_Time) {
-        throw "Game_Character requires Animation_Time";
+    if (!root.Game_Animation) {
+        throw "Game_Character requires Game_Animation";
     }
 
     if (!root.Consts) {
@@ -24,7 +24,7 @@
         throw "Game_Character requires Game_Graphic";
     }
 
-    let Animation_Time = root.Animation_Time,
+    let Game_Animation = root.Game_Animation,
         Consts = root.Consts,
         Main = root.Main,
         Game_Object = root.Game_Object,
@@ -42,11 +42,9 @@
         Game_Object.call(self,options);
         initialize(self);
         options = options || {};
-        self.direction = Consts.CHARACTER_DIRECTION_DOWN;
         self.charaID = options.charaID || null;
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
-        self.startFrame = options.startFrame || 0;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -55,30 +53,34 @@
     /**
      *
      * @param direction {number}
+     * @param speed {object}
      */
-    Game_Character.prototype.moveTo = function (direction) {
+    Game_Character.prototype.moveTo = function (direction,speed) {
         let self = this;
         if (direction === Consts.CHARACTER_DIRECTION_RANDOM) {
             direction = Math.floor(Math.random() * 4);
         }
+
+        speed = speed || {};
+        speed.x = speed.x || 0;
+        speed.y = speed.y || 0;
         let x = 0;
         let y = 0;
-        self.direction = direction;
         switch (direction) {
             case Consts.CHARACTER_DIRECTION_UP:
-                y = -self.vSpeed;
+                y = -speed.y;
                 self.currentAnimation = self.animations[Consts.CHARACTER_STEP_UP];
                 break;
             case Consts.CHARACTER_DIRECTION_RIGHT:
-                x = self.hSpeed;
+                x = speed.x;
                 self.currentAnimation = self.animations[Consts.CHARACTER_STEP_RIGHT];
                 break;
             case Consts.CHARACTER_DIRECTION_LEFT:
-                x = -self.hSpeed;
+                x = -speed.x;
                 self.currentAnimation = self.animations[Consts.CHARACTER_STEP_LEFT];
                 break;
             case Consts.CHARACTER_DIRECTION_DOWN:
-                y = self.vSpeed;
+                y = speed.y;
                 self.currentAnimation = self.animations[Consts.CHARACTER_STEP_DOWN];
                 break;
         }
@@ -110,67 +112,61 @@
 
     /**
      *
-     * @param times {number}
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveUp = function(times){
+    Game_Character.prototype.moveUp = function(){
         let self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_UP,times);
+        self.moveTo(Consts.CHARACTER_DIRECTION_UP,{x:self.hSpeed,y:self.vSpeed});
         return self;
     };
 
     /**
      *
-     * @param times {number}
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveDown = function(times){
+    Game_Character.prototype.moveDown = function(){
         let self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_DOWN,times);
+        self.moveTo(Consts.CHARACTER_DIRECTION_DOWN,{x:self.hSpeed,y:self.vSpeed});
         return self;
     };
 
     /**
      *
-     * @param times {number}
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveRight = function(times){
+    Game_Character.prototype.moveRight = function(){
         let self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT,times);
+        self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT,{x:self.hSpeed,y:self.vSpeed});
         return self;
     };
 
     /**
      *
-     * @param times {number}
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveLeft = function(times){
+    Game_Character.prototype.moveLeft = function(){
         let self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_LEFT,times);
+        self.moveTo(Consts.CHARACTER_DIRECTION_LEFT,{x:self.hSpeed,y:self.vSpeed});
         return self;
     };
 
     /**
      *
-     * @param times {number}
      * @returns {Game_Character}
      */
-    Game_Character.prototype.stepForward = function (times) {
+    Game_Character.prototype.stepForward = function () {
         let self = this;
-        self.moveTo(self.direction,times);
+        self.moveTo(self.direction,{x:self.hSpeed,y:self.vSpeed});
         return self;
     };
 
     /**
      *
-     * @param times {number}
      * @returns {Game_Character}
      */
-    Game_Character.prototype.stepRandom = function (times) {
+    Game_Character.prototype.stepRandom = function () {
         let self = this;
-        self.moveTo(Consts.CHARACTER_DIRECTION_RANDOM,times);
+        self.moveTo(Consts.CHARACTER_DIRECTION_RANDOM,{x:self.hSpeed,y:self.vSpeed});
         return self;
     };
 
@@ -186,7 +182,6 @@
             case Consts.CHARACTER_DIRECTION_DOWN:
             case Consts.CHARACTER_DIRECTION_RIGHT:
             case Consts.CHARACTER_DIRECTION_LEFT:
-                self.direction = direction;
                 break;
             default:
                 if (direction instanceof Game_Character) {
@@ -195,23 +190,25 @@
 
                     if(Math.abs(d_x) > Math.abs(d_y)){
                         if(d_x > 0){
-                            self.direction = Consts.CHARACTER_DIRECTION_LEFT;
+                            direction = Consts.CHARACTER_DIRECTION_LEFT;
                         }
                         else if(d_x < 0){
-                            self.direction = Consts.CHARACTER_DIRECTION_RIGHT;
+                            direction = Consts.CHARACTER_DIRECTION_RIGHT;
                         }
                     }
                     else{
                         if(d_y > 0){
-                            self.direction = Consts.CHARACTER_DIRECTION_UP;
+                            direction = Consts.CHARACTER_DIRECTION_UP;
                         }
                         else if(d_y < 0){
-                            self.direction = Consts.CHARACTER_DIRECTION_DOWN;
+                            direction = Consts.CHARACTER_DIRECTION_DOWN;
                         }
                     }
 
                 }
+
         }
+        self.moveTo(direction,{x:0.01,y:0.01});
         return self;
     };
 
@@ -267,7 +264,7 @@
     function initialize(self) {
         let charaID = null;
         let faceID = null;
-        let startFrame = 0;
+        let direction = Consts.CHARACTER_DIRECTION_DOWN;
 
         Object.defineProperty(self, 'charaID', {
             /**
@@ -279,14 +276,20 @@
                     charaID = id;
                     let graphic = Charas.get(id);
                     if (graphic != null) {
-                        self.animations[Consts.CHARACTER_STEP_DOWN] = new Animation_Time(self.animationSpeed, graphic.cols);
-                        self.animations[Consts.CHARACTER_STEP_UP] = new Animation_Time(self.animationSpeed, graphic.cols);
-                        self.animations[Consts.CHARACTER_STEP_RIGHT] = new Animation_Time(self.animationSpeed, graphic.cols);
-                        self.animations[Consts.CHARACTER_STEP_LEFT] = new Animation_Time(self.animationSpeed, graphic.cols);
-                        self.animations[Consts.CHARACTER_STOP_DOWN] = new Animation_Time(self.animationSpeed, 1);
-                        self.animations[Consts.CHARACTER_STOP_UP] = new Animation_Time(self.animationSpeed, 1);
-                        self.animations[Consts.CHARACTER_STOP_RIGHT] = new Animation_Time(self.animationSpeed, 1);
-                        self.animations[Consts.CHARACTER_STOP_LEFT] = new Animation_Time(self.animationSpeed, 1);
+                        for(let i = 0; i <= 3;i++){
+                            self.animations[i] = new Game_Animation(graphic,{
+                                fps:self.animationSpeed,
+                                startFrame:graphic.cols*i,
+                                endFrame:graphic.cols*i+(graphic.cols-1)
+                            });
+                        }
+                        for(let i = 0; i <= 3;i++){
+                            self.animations[i+4] = new Game_Animation(graphic,{
+                                fps:self.animationSpeed,
+                                startFrame:graphic.cols*i+1,
+                                endFrame:graphic.cols*i+1
+                            });
+                        }
                     }
                     else {
                         self.animations = [];
@@ -357,11 +360,12 @@
                 let animation = self.currentAnimation;
                 if(animation !== null && graphic !== null){
                     let i = 0;
-                    let j = startFrame;
+                    let j = 0;
 
+                    let index = animation.index;
                     if(charaID !== null) {
-                        i = self.direction;
-                        j = animation.getIndexFrame();
+                        i = Math.floor(animation.index / graphic.cols);
+                        j = animation.index % graphic.cols;
                     }
 
                     return graphic.get(i,j);
@@ -370,13 +374,30 @@
             }
         });
 
-        Object.defineProperty(self,'startFrame',{
+        Object.defineProperty(self,'direction',{
+            /**
+             *
+             * @returns {number}
+             */
             get:function(){
-                return startFrame;
-            },
-            set:function(s){
-                if(s !== startFrame){
-                    startFrame = s;
+                let body = self.body;
+                let vx = body.velocity.x;
+                let vy = body.velocity.y;
+                if(Math.abs(vx) >= Math.abs(vy)){
+                    if(vx >= 0){
+                        return Consts.CHARACTER_DIRECTION_RIGHT;
+                    }
+                    else{
+                        return Consts.CHARACTER_DIRECTION_LEFT;
+                    }
+                }
+                else{
+                    if(vy >= 0){
+                        return Consts.CHARACTER_DIRECTION_DOWN;
+                    }
+                    else{
+                        return Consts.CHARACTER_DIRECTION_UP;
+                    }
                 }
             }
         });

@@ -31,8 +31,9 @@
         self.route = options.route || [];
         self.currentMove = 0;
         self.repeatRoute = options.repeatRoute || false;
-        self.movement_type = options.movement_type || Consts.MOVE_FIXED;
+        self.movementType = options.movementType || Consts.MOVE_FIXED;
         self.walkingAnimation = options.walkingAnimation || false;
+        self.animationType = options.animationType || Consts.ANIMATION_MOVE;
     };
 
     Event_Page.prototype = Object.create(Game_Character.prototype);
@@ -40,7 +41,7 @@
 
     Event_Page.prototype.update = function(){
         let self =this;
-        switch(self.movement_type){
+        switch(self.movementType){
             case Consts.MOVE_ROUTE:
                 if(self.route.length > 0 && self.currentMove !== -1){
                     if(self.route[self.currentMove] === undefined){
@@ -269,7 +270,7 @@
             },
             /**
              *
-             * @param wa {Animation_Time}
+             * @param wa {Game_Animation}
              */
             set:function(wa){
                 if(wa !== walkingAnimation){

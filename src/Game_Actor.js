@@ -42,16 +42,16 @@
         if(self.type === 'Player'){
             let keyboard = root.Controls.Keyboard;
             if (keyboard.state[Keyboard.LEFT]) {
-                self.moveTo(Consts.CHARACTER_DIRECTION_LEFT);
+                self.moveLeft();
             }
             else if (keyboard.state[Keyboard.RIGHT]) {
-                self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT);
+                self.moveRight();
             }
             else if (keyboard.state[Keyboard.DOWN]) {
-                self.moveTo(Consts.CHARACTER_DIRECTION_DOWN);
+                self.moveDown();
             }
             else if (keyboard.state[Keyboard.UP]) {
-                self.moveTo(Consts.CHARACTER_DIRECTION_UP);
+                self.moveUp();
             }
             else{
                 self.stop();

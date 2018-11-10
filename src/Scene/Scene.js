@@ -271,7 +271,7 @@
                         }
                     }
                     else {
-                        opacity = (index / (animation.frame_count - 1));
+                        opacity = (index / (animation.frameCount - 1));
                     }
 
                     ctx = Canvas.getLayer(Consts.EFFECT_LAYER,Consts.FADE_SCREEN_LAYER).getContext();
@@ -306,7 +306,7 @@
                 //        }
                 //    }
                 //    else {
-                //        opacity = (index / (animation.frame_count - 1));
+                //        opacity = (index / (animation.frameCount - 1));
                 //    }
                 //
                 //

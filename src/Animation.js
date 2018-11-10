@@ -3,8 +3,8 @@
 	let Animation = function(options){
 		options = options || {};
 		let self = this;
-	};
 
+	};
 
 	Object.defineProperty(root,'Animation',{
         /**

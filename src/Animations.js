@@ -19,7 +19,7 @@
          * @returns {Animation}
          */
     	get:function(id){
-    		if(animations[id] === undefined){
+    		if(animations[id] !== undefined){
     			return animations[id];
     		}
     		return null;

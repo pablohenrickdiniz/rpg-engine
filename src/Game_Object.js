@@ -5,15 +5,15 @@
         throw "Game_Object requires Matter";
     }
 
-    if(!root.Animation_Time){
-        throw "Game_Object requires Animation_Time";
+    if(!root.Game_Animation){
+        throw "Game_Object requires Game_Animation";
     }
 
     let
         Matter = w.Matter,
         Bodies = Matter.Bodies,
         Body = Matter.Body,
-        Animation_Time = root.Animation_Time;
+        Game_Animation = root.Game_Animation;
 
     /**
      *
@@ -319,22 +319,22 @@
             configurable:true,
             /**
              *
-             * @returns {Animation_Time}
+             * @returns {Game_Animation}
              */
             get:function(){
                 return currentAnimation;
             },
             /**
              *
-             * @param ca {Animation_Time}
+             * @param ca {Game_Animation}
              */
             set:function(ca){
                 if(currentAnimation !== ca){
-                    if(currentAnimation !== null && currentAnimation instanceof Animation_Time){
-                        currentAnimation.stop(self.graphic.startFrame);
+                    if(currentAnimation !== null && currentAnimation instanceof Game_Animation){
+                        currentAnimation.stop();
                     }
                     currentAnimation = ca;
-                    if(currentAnimation !== null && currentAnimation instanceof  Animation_Time){
+                    if(currentAnimation !== null && currentAnimation instanceof  Game_Animation){
                         currentAnimation.start();
                     }
                 }

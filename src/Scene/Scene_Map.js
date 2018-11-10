@@ -507,8 +507,32 @@
                 width:frame.dWidth,
                 height:frame.dHeight
             });
+
+           // light(object);
         }
     }
+
+    function light(object){
+        var radius = 100;
+        var layer = Canvas.getLayer(object.layer,Consts.EVENT_LAYER);
+        var ctx = layer.context;
+        ctx.save();
+        let objx = object.x-Canvas.x;
+        let objy = object.y-Canvas.y;
+        var grd = ctx.createRadialGradient(objx,objy,5,objx,objy,radius);
+        grd.addColorStop(0,"rgba(255,255,224,0.2)");
+        grd.addColorStop(0.2,"rgba(255,255,224,0.1)");
+        grd.addColorStop(0.4,"rgba(255,255,224,0.08)");
+        grd.addColorStop(0.6,"rgba(255,255,224,0.04)");
+        grd.addColorStop(0.8,"rgba(255,255,224,0.02)");
+        grd.addColorStop(1,"transparent");
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(objx,objy,radius,0,2*Math.PI);
+        ctx.fill();
+        ctx.restore();
+    }
+
 
     /**
      *

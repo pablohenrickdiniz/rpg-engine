@@ -26,7 +26,6 @@
         self.dHeight = options.dHeight || null;
         self.sWidth = options.sWidth || null;
         self.sHeight = options.sHeight || null;
-        self.startFrame = 0;
         self.graphicID = options.graphicID;
         self.graphicType = options.graphicType || 'graphic';
         self.scale = options.scale || 1;

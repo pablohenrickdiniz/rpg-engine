@@ -59,6 +59,10 @@
         if(!root.Main.Actors){
             throw "Scene_Map_Loader requires Actors";
         }
+
+        if(!root.Main.Animations){
+            throw "Scene_Map_Loader requires Animations";
+        }
     }
 
     if(!root.Chara){
@@ -92,7 +96,8 @@
         Faces = Main.Faces,
         Items = Main.Items,
         Icons = Main.Icons,
-        Actors = Main.Actors;
+        Actors = Main.Actors,
+        Animations = Main.Animations;
 
     let fields = [
         'image',

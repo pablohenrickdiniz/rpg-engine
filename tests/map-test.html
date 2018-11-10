@@ -26,26 +26,24 @@
     <script type="text/javascript" src="../plugins/Mouse/src/mouse.js"></script>
     <script type="text/javascript" src="../plugins/Keyboard/src/keyboard.js"></script>
     <script type="text/javascript" src="../src/AudioCompat.js"></script>
-
     <!--Main-->
     <script type="text/javascript" src="../src/System/Time/Timer_Ticker.js"></script>
     <script type="text/javascript" src="../src/RPG.js"></script>
-
     <!--Imports-->
     <script type="text/javascript" src="../src/Animation.js"></script>
-    <script type="text/javascript" src="../src/Animation_Time.js"></script>
-    <script type="text/javascript" src="../src/Tile.js"></script>
-    <script type="text/javascript" src="../src/Animated_Tile.js"></script>
-    <script type="text/javascript" src="../src/Spriteset_Map.js"></script>
     <!--Scene-->
     <script type="text/javascript" src="../src/Consts.js"></script>
     <script type="text/javascript" src="../src/System/Canvas.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene.js"></script>
     <script type="text/javascript" src="../src/Game_Map.js"></script>
     <script type="text/javascript" src="../src/Game/Main.js"></script>
-    <script type="text/javascript" src="../src/Game_Object.js"></script>
     <script type="text/javascript" src="../src/Graphics.js"></script>
     <script type="text/javascript" src="../src/Game_Graphic.js"></script>
+    <script type="text/javascript" src="../src/Game_Animation.js"></script>
+    <script type="text/javascript" src="../src/Tile.js"></script>
+    <script type="text/javascript" src="../src/Animated_Tile.js"></script>
+    <script type="text/javascript" src="../src/Spriteset_Map.js"></script>
+    <script type="text/javascript" src="../src/Game_Object.js"></script>
     <script type="text/javascript" src="../src/Chara.js"></script>
     <script type="text/javascript" src="../src/Charas.js"></script>
     <script type="text/javascript" src="../src/Game_Face.js"></script>
@@ -71,7 +69,6 @@
     <script type="text/javascript" src="../src/Game_Item.js"></script>
     <script type="text/javascript" src="../src/Game_Actor.js"></script>
     <script type="text/javascript" src="../src/Scene/Scene_Map.js"></script>
-
     <script type="text/javascript" src="../src/Item_Graphic.js"></script>
     <script type="text/javascript" src="../src/Actors.js"></script>
     <script type="text/javascript" src="../src/Variables.js"></script>
@@ -120,21 +117,21 @@
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
                     tilesets:{
-                        forest2:'./graphics/tilesets/Town_Village-0034.png',
-                        cavesAndUnderground:'./graphics/tilesets/Caves%20&%20Undergrounds%20-%200043.png'
+                        forest2:'./Graphics/Tilesets/Town_Village-0034.png',
+                        cavesAndUnderground:'./Graphics/Tilesets/Caves%20&%20Undergrounds%20-%200043.png'
                     },
                     charasets:{
-                        char01:'./graphics/characters/SF_Actor1.png',
-                        male:'./graphics/characters/Las2vdS.png',
-                        switch:'./graphics/characters/recolored-handle-switches-2.png',
-                        lamp:'./graphics/characters/Object%20-%200905.png'
+                        char01:'./Graphics/Characters/Actor1.png',
+                        male:'./Graphics/Characters/Las2vdS.png',
+                        switch:'./Graphics/Characters/recolored-handle-switches-2.png',
+                        lamp:'./Graphics/Characters/Object%20-%200905.png',
+                        animal:'./Graphics/Characters/Animal.png'
                     },
                     faces:{
-                        face01:'http://localhost/resources/Faces%20&%20Avatars/Faces/Type%20-%20Fire%20Emblem%20T.S.S/0005.png'
+                        face01:'./Graphics/Faces/Actor1.png'
                     },
                     icons:{
-                        icon01:'http://localhost/resources/Icons/Misc%2001%20(1.970)/Misc01%20-%200005.png',
-                        icon02:'http://localhost/resources/Icons/zFULL%20LOTS/Lot%200012.png'
+                        icon01:'./Graphics/Icons/icons1.png'
                     }
                 },
                 audios:{
@@ -232,6 +229,21 @@
                                 }
                             }
                         ]
+                    },
+                    {
+                        class:'Event',
+                        x:300,
+                        y:300,
+                        pages:[
+                            {
+                                width:32,
+                                height:32,
+                                charaID:'butterfly',
+                                script:function(){
+                                //   this.stepRandom();
+                                }
+                            }
+                        ]
                     }
                 ],
                 charas:{
@@ -239,8 +251,8 @@
                         graphicID:'char01',
                         rows:4,
                         cols:3,
-                        sWidth:144,
-                        sHeight:192
+                        sWidth:96,
+                        sHeight:128
                     },
                     male1:{
                         graphicID:'male',
@@ -249,18 +261,31 @@
                     },
                     switch:{
                         graphicID:'switch',
-                        rows:8,
-                        cols:12
+                        rows:4,
+                        cols:3,
+                        sWidth:96,
+                        sHeight:128
                     },
                     lamp:{
                         graphicID:'lamp',
                         rows:4,
                         cols:4
+                    },
+                    butterfly:{
+                        graphicID:'animal',
+                        rows:4,
+                        cols:3,
+                        sx:288,
+                        sy:128,
+                        sWidth:96,
+                        sHeight:128
                     }
                 },
                 faces:{
                     face01:{
-                        graphicID:'face01'
+                        graphicID:'face01',
+                        sWidth:96,
+                        sHeight:96
                     }
                 },
                 actors:{
