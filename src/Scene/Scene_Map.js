@@ -332,6 +332,51 @@
         }
     }
 
+    function draw_effects(self){
+        var now = new Date();
+        var hours = now.getHours();
+        var am = true;
+        if(hours >= 12){
+            am = false;
+            hours -= 12;
+        }
+        let time = (hours*60*60)+now.getSeconds();
+        let percent = 0;
+        percent = (time*100/43200);
+        percent = Math.round(percent);
+        percent = Math.max(percent,0);
+        percent = Math.min(percent,100);
+        if(am){
+            percent = 100-percent;
+        }
+        Canvas.darken({
+            x:0,
+            y:0,
+            width:Canvas.width,
+            height:Canvas.height,
+            percent:percent
+        });
+
+        let flashobjs = self.objs.filter(function(obj){
+            return obj.flashlight;
+        });
+
+        flashobjs = flashobjs.sort(function(a,b){
+            return a.y-b.y;
+        });
+
+        for(let i =0; i < flashobjs.length;i++){
+            let objx = flashobjs[i].x-Canvas.x;
+            let objy = flashobjs[i].y-Canvas.y;
+            Canvas.lighten({
+                x:objx,
+                y:objy,
+                radius:500,
+                percent:100
+            });
+        }
+    }
+
     /**
      *
      * @param self {Scene}
@@ -341,6 +386,9 @@
             Canvas.clear(Consts.BACKGROUND_LAYER);
             Canvas.clear(Consts.FOREGROUND_LAYER);
         }
+
+        Canvas.clear(Consts.EFFECT_LAYER);
+
         while(clear_queue.length > 0){
             let clear = clear_queue.pop();
             Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
@@ -357,6 +405,7 @@
             bg_refreshed = true;
         }
         draw_objects(self);
+        draw_effects(self);
     }
 
     /**
@@ -507,32 +556,8 @@
                 width:frame.dWidth,
                 height:frame.dHeight
             });
-
-           // light(object);
         }
     }
-
-    function light(object){
-        var radius = 100;
-        var layer = Canvas.getLayer(object.layer,Consts.EVENT_LAYER);
-        var ctx = layer.context;
-        ctx.save();
-        let objx = object.x-Canvas.x;
-        let objy = object.y-Canvas.y;
-        var grd = ctx.createRadialGradient(objx,objy,5,objx,objy,radius);
-        grd.addColorStop(0,"rgba(255,255,224,0.2)");
-        grd.addColorStop(0.2,"rgba(255,255,224,0.1)");
-        grd.addColorStop(0.4,"rgba(255,255,224,0.08)");
-        grd.addColorStop(0.6,"rgba(255,255,224,0.04)");
-        grd.addColorStop(0.8,"rgba(255,255,224,0.02)");
-        grd.addColorStop(1,"transparent");
-        ctx.fillStyle = grd;
-        ctx.beginPath();
-        ctx.arc(objx,objy,radius,0,2*Math.PI);
-        ctx.fill();
-        ctx.restore();
-    }
-
 
     /**
      *

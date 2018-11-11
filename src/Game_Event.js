@@ -486,6 +486,15 @@
             }
         });
 
+        Object.defineProperty(self,'flashlight',{
+           get:function(){
+               if(currentPage !== null){
+                   return currentPage.flashlight;
+               }
+               return false;
+           }
+        });
+
         Events.on('globalSwitchChanged',function(){
             self.updateCurrentPage();
         });

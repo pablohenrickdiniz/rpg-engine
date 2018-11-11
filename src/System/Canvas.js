@@ -128,6 +128,42 @@
 
             return null;
         },
+        darken:function(options){
+            let self = this;
+            let type = options.type || Consts.EFFECT_LAYER;
+            let index = options.layer || 0;
+            let percent = options.percent || 50;
+            let layer = self.getLayer(type,index);
+            let ctx = layer.context;
+            let x = options.x || 0;
+            let y = options.y || 0;
+            let width = options.width || self.width;
+            let height = options.height || self.height;
+            ctx.fillStyle = 'rgba(0,0,0,'+percent/100+')';
+            ctx.fillRect(x,y,width,height);
+            return self;
+        },
+        lighten:function(options){
+            let self = this;
+            let type = options.type || Consts.EFFECT_LAYER;
+            let index = options.layer || 0;
+            let percent = options.percent || 50;
+            let layer = self.getLayer(type,index);
+            let ctx = layer.context;
+            ctx.save();
+            let x = options.x || 0;
+            let y = options.y || 0;
+            let radius = options.radius || 100;
+            ctx.globalCompositeOperation = "destination-out";
+            var grd = ctx.createRadialGradient(x,y,1,x,y,radius);
+            grd.addColorStop(0,"rgba(255,255,255,"+percent/100+")");
+            grd.addColorStop(1,"transparent");
+            ctx.fillStyle = grd;
+            ctx.beginPath();
+            ctx.arc(x,y,radius,0,2*Math.PI);
+            ctx.fill();
+            ctx.restore();
+        },
         /**
          *
          * @param rect {object}

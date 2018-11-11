@@ -45,6 +45,8 @@
         self.charaID = options.charaID || null;
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
+        self.flashlight = options.flashlight;
+        self.flashlightRadius = options.flashligthRadius;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -265,6 +267,8 @@
         let charaID = null;
         let faceID = null;
         let direction = Consts.CHARACTER_DIRECTION_DOWN;
+        let flashlight = false;
+        let flashlightRadius = 100;
 
         Object.defineProperty(self, 'charaID', {
             /**
@@ -398,6 +402,43 @@
                     else{
                         return Consts.CHARACTER_DIRECTION_UP;
                     }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'flashligth',{
+            /**
+             *
+             * @returns {boolean}
+             */
+            get:function(){
+                return flashlight;
+            },
+            /**
+             *
+             * @param f {boolean}
+             */
+            set:function(f){
+                flashlight = !!f;
+            }
+        });
+
+        Object.defineProperty(self,'flashligthRadius',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return flashlightRadius;
+            },
+            /**
+             *
+             * @param f {number}
+             */
+            set:function(f){
+                f = parseInt(f);
+                if(!isNaN(f) && f >= 1){
+                   flashlightRadius = f;
                 }
             }
         });

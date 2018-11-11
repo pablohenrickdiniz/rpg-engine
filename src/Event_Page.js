@@ -294,8 +294,8 @@
          *
          * @returns {Event_Page}
          */
-       get:function(){
-           return Event_Page;
-       }
+        get:function(){
+            return Event_Page;
+        }
     });
 })(RPG);
