@@ -362,9 +362,12 @@
                     cp.y = self.y;
                     if(currentPage != null && currentPage.body){
                         cp.body = currentPage.body;
+                        cp.flashlightBody = currentPage.flashlightBody;
                         cp.body.plugin.ref = cp;
                         Body.scale(cp.body,cp.width/currentPage.width,1);
                         Body.scale(cp.body,1,cp.height/currentPage.height);
+                        Body.scale(cp.flashlightBody,cp.flashlightRadius/currentPage.flashlightRadius,cp.flashlightRadius/currentPage.flashlightRadius);
+                        Body.set(cp.flashlightBody,'circleRadius',cp.flashlightRadius);
                     }
                     currentPage = cp;
                     if(typeof cp.script === 'function' && cp.trigger === Consts.TRIGGER_AUTO_RUN){
@@ -493,6 +496,42 @@
                }
                return false;
            }
+        });
+
+        Object.defineProperty(self,'flashlightRadius',{
+            get:function(){
+                if(currentPage !== null){
+                    return currentPage.flashlightRadius;
+                }
+                return false;
+            }
+        });
+
+        Object.defineProperty(self,'flashlightBody',{
+            get:function(){
+                if(currentPage !== null){
+                    return currentPage.flashlightBody;
+                }
+                return null;
+            }
+        });
+
+        Object.defineProperty(self,'flashlightBodyConstraint',{
+            get:function(){
+                if(currentPage !== null){
+                    return currentPage.flashlightBodyConstraint;
+                }
+                return null;
+            }
+        });
+
+        Object.defineProperty(self,'flashlightColor',{
+            get:function(){
+                if(currentPage !== null){
+                    return currentPage.flashlightColor;
+                }
+                return 'rgba(255,255,255,0.1)';
+            }
         });
 
         Events.on('globalSwitchChanged',function(){

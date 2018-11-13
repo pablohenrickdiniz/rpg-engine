@@ -45,8 +45,6 @@
         self.charaID = options.charaID || null;
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
-        self.flashlight = options.flashlight;
-        self.flashlightRadius = options.flashligthRadius;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -116,7 +114,7 @@
      *
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveUp = function(){
+    Game_Character.prototype.stepUp = function(){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_UP,{x:self.hSpeed,y:self.vSpeed});
         return self;
@@ -126,7 +124,7 @@
      *
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveDown = function(){
+    Game_Character.prototype.stepDown = function(){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_DOWN,{x:self.hSpeed,y:self.vSpeed});
         return self;
@@ -136,7 +134,7 @@
      *
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveRight = function(){
+    Game_Character.prototype.stepRight = function(){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_RIGHT,{x:self.hSpeed,y:self.vSpeed});
         return self;
@@ -146,7 +144,7 @@
      *
      * @returns {Game_Character}
      */
-    Game_Character.prototype.moveLeft = function(){
+    Game_Character.prototype.stepLeft = function(){
         let self = this;
         self.moveTo(Consts.CHARACTER_DIRECTION_LEFT,{x:self.hSpeed,y:self.vSpeed});
         return self;
@@ -210,7 +208,7 @@
                 }
 
         }
-        self.moveTo(direction,{x:0.01,y:0.01});
+        self.moveTo(direction,{x:0.0000000001,y:0.0000000001});
         return self;
     };
 
@@ -267,8 +265,6 @@
         let charaID = null;
         let faceID = null;
         let direction = Consts.CHARACTER_DIRECTION_DOWN;
-        let flashlight = false;
-        let flashlightRadius = 100;
 
         Object.defineProperty(self, 'charaID', {
             /**
@@ -402,43 +398,6 @@
                     else{
                         return Consts.CHARACTER_DIRECTION_UP;
                     }
-                }
-            }
-        });
-
-        Object.defineProperty(self,'flashligth',{
-            /**
-             *
-             * @returns {boolean}
-             */
-            get:function(){
-                return flashlight;
-            },
-            /**
-             *
-             * @param f {boolean}
-             */
-            set:function(f){
-                flashlight = !!f;
-            }
-        });
-
-        Object.defineProperty(self,'flashligthRadius',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return flashlightRadius;
-            },
-            /**
-             *
-             * @param f {number}
-             */
-            set:function(f){
-                f = parseInt(f);
-                if(!isNaN(f) && f >= 1){
-                   flashlightRadius = f;
                 }
             }
         });

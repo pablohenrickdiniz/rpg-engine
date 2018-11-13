@@ -211,7 +211,6 @@
      */
     let initialize = function(self){
         let conditions = [];
-        let through = false;
         let walkingAnimation =false;
 
         Object.defineProperty(self,'conditions',{
@@ -232,31 +231,6 @@
              */
             get:function(){
                 return conditions;
-            }
-        });
-
-        Object.defineProperty(self,'through',{
-            /**
-             *
-             * @returns {boolean}
-             */
-            get:function(){
-                return through;
-            },
-            /**
-             *
-             * @param t {boolean}
-             */
-            set:function(t){
-                if(t !== through){
-                    through = t;
-                    if(through){
-                        self.removeCollisionGroup('STEP');
-                    }
-                    else{
-                        self.addCollisionGroup('STEP');
-                    }
-                }
             }
         });
 

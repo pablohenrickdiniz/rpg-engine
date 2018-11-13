@@ -130,17 +130,19 @@
         },
         darken:function(options){
             let self = this;
-            let type = options.type || Consts.EFFECT_LAYER;
-            let index = options.layer || 0;
-            let percent = options.percent || 50;
-            let layer = self.getLayer(type,index);
-            let ctx = layer.context;
-            let x = options.x || 0;
-            let y = options.y || 0;
-            let width = options.width || self.width;
-            let height = options.height || self.height;
-            ctx.fillStyle = 'rgba(0,0,0,'+percent/100+')';
-            ctx.fillRect(x,y,width,height);
+            if(options.percent !== 0){
+                let type = options.type || Consts.EFFECT_LAYER;
+                let index = options.layer || 0;
+                let percent = options.percent || 50;
+                let layer = self.getLayer(type,index);
+                let ctx = layer.context;
+                let x = options.x || 0;
+                let y = options.y || 0;
+                let width = options.width || self.width;
+                let height = options.height || self.height;
+                ctx.fillStyle = 'rgba(0,0,0,'+percent/100+')';
+                ctx.fillRect(x,y,width,height);
+            }
             return self;
         },
         lighten:function(options){

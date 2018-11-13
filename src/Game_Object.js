@@ -9,11 +9,17 @@
         throw "Game_Object requires Game_Animation";
     }
 
+    if(!root.Consts){
+        throw "Game_Object requires Consts"
+    }
+
     let
         Matter = w.Matter,
         Bodies = Matter.Bodies,
         Body = Matter.Body,
-        Game_Animation = root.Game_Animation;
+        Game_Animation = root.Game_Animation,
+        Consts = root.Consts,
+        Constraint = Matter.Constraint;
 
     /**
      *
@@ -39,6 +45,9 @@
         self.currentAnimation = null;
         self.type = options.type || 'Object';
         self.through = options.through || false;
+        self.flashlight = options.flashlight;
+        self.flashlightRadius = options.flashlightRadius || 100;
+        self.flashlightColor = options.flashlightColor || 'rgba(255,255,255,0.1)';
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
@@ -116,22 +125,6 @@
         return Object.assign({object_id:id},properties,this);
     };
 
-    /**
-     *
-     * @param group {string}
-     */
-    Game_Object.prototype.addCollisionGroup = function(group){
-        let self = this;
-    };
-
-    /**
-     *
-     * @param name {string}
-     */
-    Game_Object.prototype.removeCollisionGroup = function(name){
-        let self = this;
-    };
-
     Game_Object.prototype.update = function () {};
 
     /**
@@ -156,11 +149,34 @@
         let currentAnimation = null;
         let through = null;
         let body = null;
+        let objectBody = null;
+        let flashlight = false;
+        let flashlightRadius = 100;
+        let flashlightBody = null;
         let width = 32;
         let height = 32;
         let x = 0;
         let y = 0;
         let st = true;
+
+        Object.defineProperty(self,'objectBody',{
+            get:function(){
+                if(objectBody == null){
+                    objectBody =  Bodies.rectangle(
+                        x,
+                        y,
+                        width,
+                        height,{
+                            plugin:{
+                                ref:self
+                            },
+                            isSensor:through
+                        }
+                    );
+                }
+                return objectBody;
+            }
+        });
 
         Object.defineProperty(self,'body',{
             /**
@@ -178,20 +194,16 @@
              */
             get:function(){
                 if(body == null){
-                    body = Bodies.rectangle(
-                        x,
-                        y,
-                        width,
-                        height,{
-                            frictionAir:0.09,
-                            inertia:Infinity,
-                            friction:0.0001,
-                            isStatic:st,
-                            plugin:{
-                                ref:self
-                            }
+                    body = Body.create({
+                        parts:[self.objectBody,self.flashlightBody],
+                        isStatic:self.static,
+                        friction:0.0001,
+                        frictionAir:0.09,
+                        inertia:Infinity,
+                        plugin:{
+                            ref:self
                         }
-                    );
+                    });
                 }
                 return body;
             }
@@ -357,16 +369,12 @@
             set:function(t){
                 if(t !== through){
                     through = t;
-                    if(through){
-                        self.removeCollisionGroup('STEP');
-                    }
-                    else{
-                        self.addCollisionGroup('STEP');
+                    if(body !== null){
+                        body.isSensor = through;
                     }
                 }
             }
         });
-
 
         Object.defineProperty(self,'static',{
             /**
@@ -392,7 +400,73 @@
                 }
                 return st;
             }
-        })
+        });
+
+        Object.defineProperty(self,'flashlight',{
+            /**
+             *
+             * @returns {boolean}
+             */
+            get:function(){
+                return flashlight;
+            },
+            /**
+             *
+             * @param f {boolean}
+             */
+            set:function(f){
+                flashlight = !!f;
+            }
+        });
+
+        Object.defineProperty(self,'flashlightRadius',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return flashlightRadius;
+            },
+            /**
+             *
+             * @param f {number}
+             */
+            set:function(f){
+                f = parseInt(f);
+                if(!isNaN(f) && f >= 1){
+                    flashlightRadius = f;
+                    if(flashlightBody !== null){
+                        Body.scale(flashlightBody,f/flashlightRadius,f/flashlightRadius);
+                        Body.set(flashlightBody,'circleRadius',flashlightRadius);
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'flashlightBody',{
+            /**
+             *
+             * @param fb {Body}
+             */
+            set:function(fb){
+                if(flashlightBody !==  fb){
+                    flashlightBody = fb;
+                }
+            },
+            /**
+             *
+             * @returns {Body}
+             */
+            get:function(){
+                if(flashlightBody == null){
+                    flashlightBody = Bodies.circle(x,y,flashlightRadius,{
+                        isSensor:true,
+                        density:0
+                    });
+                }
+                return flashlightBody;
+            }
+        });
     }
 
     Object.defineProperty(root,'Game_Object',{

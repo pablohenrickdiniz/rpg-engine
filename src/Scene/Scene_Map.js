@@ -139,6 +139,7 @@
         if(object.body){
             World.add(self.engine.world,object.body);
         }
+
         object.on('remove',function(){
             self.remove(object);
         });
@@ -304,51 +305,78 @@
             let length = self.engine.world.bodies.length;
             for(let i =0; i < length;i++){
                 let body = self.engine.world.bodies[i];
-                let b = body.bounds?body.bounds:body.body;
-                let x = b.min.x;
-                let y = b.min.y;
-                let width = b.max.x-x;
-                let height = b.max.y-y;
-                x = Math.round(x-Canvas.x);
-                y = Math.round(y-Canvas.y);
-                Canvas.drawRect({
-                    x:x,
-                    y:y,
-                    width:width,
-                    height:height,
-                    type: Consts.UI_LAYER,
-                    layer:0,
-                    lineWidth:1
-                });
-                clear_queue.push({
-                    layer_type:Consts.UI_LAYER,
-                    layer:0,
-                    x:x-1,
-                    y:y-1,
-                    width:width+2,
-                    height:height+2
-                });
+                draw_body(body);
             }
         }
     }
 
+    function draw_body(body){
+        let draw = true;
+        for(let i = 0; i < body.parts.length;i++){
+            if(body.parts[i] !== body){
+                draw_body(body.parts[i]);
+                draw = false;
+            }
+        }
+        if(draw){
+            let b = body.bounds?body.bounds:body.body;
+            let x = b.min.x;
+            let y = b.min.y;
+            let width = b.max.x-x;
+            let height = b.max.y-y;
+            var layer = Canvas.getLayer(Consts.UI_LAYER,0);
+            var ctx = layer.context;
+
+            if(body.label == 'Rectangle Body'){
+                x = Math.round(x-Canvas.x);
+                y = Math.round(y-Canvas.y);
+                ctx.save();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'black';
+                ctx.strokeRect(x,y,width,height);
+                ctx.restore();
+            }
+            else if(body.label == 'Circle Body'){
+                x = body.position.x;
+                y = body.position.y;
+                x = Math.round(x-Canvas.x);
+                y = Math.round(y-Canvas.y);
+                ctx.save();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(x, y, body.circleRadius, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.restore();
+                x -= body.circleRadius;
+                y -= body.circleRadius;
+                width = body.circleRadius*2;
+                height = body.circleRadius*2;
+            }
+
+            clear_queue.push({
+                layer_type:Consts.UI_LAYER,
+                layer:0,
+                x:x-1,
+                y:y-1,
+                width:width+2,
+                height:height+2
+            });
+        }
+    }
+
+
     function draw_effects(self){
         var now = new Date();
-        var hours = now.getHours();
-        var am = true;
-        if(hours >= 12){
-            am = false;
-            hours -= 12;
-        }
-        let time = (hours*60*60)+now.getSeconds();
-        let percent = 0;
-        percent = (time*100/43200);
+        var time = now.getHours()*60*60+now.getSeconds();
+        time = time > 43200?86400-time:time;
+        let percent = (time*100/43200);
+        percent = 100 - percent;
         percent = Math.round(percent);
         percent = Math.max(percent,0);
         percent = Math.min(percent,100);
-        if(am){
-            percent = 100-percent;
-        }
+        percent *= 0.5;
+
         Canvas.darken({
             x:0,
             y:0,
@@ -371,8 +399,9 @@
             Canvas.lighten({
                 x:objx,
                 y:objy,
-                radius:500,
-                percent:100
+                percent:100,
+                color:flashobjs[i].flashlightColor,
+                radius:flashobjs[i].flashlightRadius
             });
         }
     }
@@ -717,7 +746,7 @@
 
         Object.defineProperty(self,'collisionEnd',{
             /**
-             * 
+             *
              * @returns {collisionEnd}
              */
             get:function(){
