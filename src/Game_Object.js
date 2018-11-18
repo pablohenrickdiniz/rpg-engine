@@ -226,13 +226,17 @@
              * @param bx {number}
              */
             set:function(bx){
-                if(body !== null && bx !== body.position.x){
-                    Body.setPosition(body,{
-                        x:bx,
-                        y:body.position.y
-                    });
+                bx = parseFloat(bx);
+                if(!isNaN(bx) && bx !== x){
+                    if(body !== null && bx !== body.position.x){
+                        Body.setPosition(body,{
+                            x:bx,
+                            y:body.position.y
+                        });
+                    }
+                    x = bx;
                 }
-                x = bx;
+
             }
         });
 
@@ -252,13 +256,17 @@
              * @param by {number}
              */
             set:function(by){
-                if(by !== self.body.position.y){
-                    Body.setPosition(body,{
-                        x:body.position.x,
-                        y:by
-                    });
+                by = parseFloat(by);
+                if(!isNaN(by) && by !== y){
+                    if(body !== null && by !== body.position.y){
+                        Body.setPosition(body,{
+                            x:body.position.x,
+                            y:by
+                        });
+                    }
+                    y = by;
                 }
-                y = by;
+
             }
         });
 
@@ -275,8 +283,11 @@
              * @param w {number}
              */
             set:function(w){
-                if(width !== w){
-                    Body.scale(body,w/width,1);
+                w = parseInt(w);
+                if(!isNaN(w) && w > 0 && width !== w){
+                    if(body !== null){
+                        Body.scale(body,w/width,1);
+                    }
                     width = w;
                 }
             }
@@ -295,8 +306,11 @@
              * @param h {number}
              */
             set:function(h){
-                if(height !== h){
-                    Body.scale(body,1,h/height);
+                h = parseInt(h);
+                if(!isNaN(h) && h > 0 && height !== h){
+                    if(body !== null){
+                        Body.scale(body,1,h/height);
+                    }
                     height = h;
                 }
             }
@@ -315,7 +329,8 @@
              * @param s {number}
              */
             set:function(s){
-                if(s !== speed){
+                s = parseInt(s);
+                if(!isNaN(s) && s > 0 && s !== speed){
                     speed = s;
                     let keys = Object.keys(self.animations);
                     let length = keys.length;

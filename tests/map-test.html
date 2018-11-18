@@ -175,12 +175,12 @@
                         class:'Event',
                         x:250,
                         y:200,
+                        width:25,
+                        height:15,
+                        static:true,
+                        charaID:'switch',
                         pages:[
                             {
-                                width:32,
-                                height:32,
-                                static:true,
-                                charaID:'switch',
                                 trigger:[
                                     RPG.Consts.TRIGGER_ACTION_BUTTON
                                 ],
@@ -208,10 +208,10 @@
                         class:'Event',
                         x:122,
                         y:400,
+                        width:20,
+                        height:20,
                         pages:[
                             {
-                                width:32,
-                                height:32,
                                 charaID:'lamp',
                                 trigger:RPG.Consts.TRIGGER_AUTO_RUN,
                                 light:false,
@@ -227,8 +227,6 @@
                                 conditions:[
                                     'GLOBAL:LAMP:ON'
                                 ],
-                                width:32,
-                                height:32,
                                 light : true,
                                 lightRadius : 500,
                                 charaID:'lamp',
@@ -491,7 +489,7 @@
                         root.UI.root.findById('fps').visible = true;
                     }
 
-                    root.Controls.Keyboard.on('state,I,active', function () {
+                    root.Controls.Keyboard.on('state,,active', function () {
                         let inventory_ui = root.UI.root.findById('inventory');
                         inventory_ui.visible = !inventory_ui.visible;
                     });

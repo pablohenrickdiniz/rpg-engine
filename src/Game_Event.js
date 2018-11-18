@@ -328,7 +328,10 @@
                     let options = currentPage.options;
                     let properties = Object.keys(options);
                     for(let i = 0; i < properties.length;i++){
-                        self[properties[i]] = options[properties[i]];
+                        let value = options[properties[i]];
+                        if(value !== undefined){
+                            self[properties[i]] = value;
+                        }
                     }
                     let s = cp.initialize;
                     if(s !== null){
