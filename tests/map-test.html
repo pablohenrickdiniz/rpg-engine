@@ -491,7 +491,7 @@
                         root.UI.root.findById('fps').visible = true;
                     }
 
-                    root.Controls.Keyboard.addShortcutListener('i', function () {
+                    root.Controls.Keyboard.on('state,I,active', function () {
                         let inventory_ui = root.UI.root.findById('inventory');
                         inventory_ui.visible = !inventory_ui.visible;
                     });

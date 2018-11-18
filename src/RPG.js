@@ -97,7 +97,7 @@
     Object.defineProperty(RPG,'Game_Timer',{
         /**
          *
-         * @returns {Timer_Ticker}
+         * @returns {w.Timer_Ticker}
          */
         get:function(){
             return Game_Timer;
@@ -106,7 +106,7 @@
 
     Object.defineProperty(RPG,'Controls',{
         /**
-         * @returns{Controls}
+         * @returns {{}}
          */
        get:function(){
            return Controls;
@@ -115,7 +115,7 @@
 
     Object.defineProperty(RPG,'Custom',{
         /**
-         * @returns{Custom}
+         * @returns{{}}
          */
         get:function(){
             return Custom;
@@ -149,10 +149,10 @@
         w.removeEventListener('focus',windowfocus);
         w.removeEventListener('resize',windowresize);
         Game_Timer.off('tick',tick);
-        keyboard.removeShortcutListener('P',pause);
-        keyboard.removeShortcutListener('ENTER', action);
-        keyboard.removeShortcutListener('PLUS',zoomin);
-        keyboard.removeShortcutListener('MINUS',zoomout);
+        keyboard.off('state,P,active',pause);
+        keyboard.off('state,ENTER,active', action);
+        keyboard.off('state,PLUS,active',zoomin);
+        keyboard.off('state,MINUS,active',zoomout);
         Canvas.removeEventListener('resize',canvasresize);
     }
 
@@ -166,10 +166,10 @@
         w.addEventListener('focus', windowfocus);
         w.addEventListener('resize',windowresize);
         Game_Timer.on('tick', tick);
-        keyboard.addShortcutListener('P', pause);
-        keyboard.addShortcutListener('ENTER', action);
-        keyboard.addShortcutListener('PLUS',zoomin);
-        keyboard.addShortcutListener('MINUS',zoomout);
+        keyboard.on('state,P,active', pause);
+        keyboard.on('state,ENTER,active', action);
+        keyboard.on('state,PLUS,active',zoomin);
+        keyboard.on('state,MINUS,active',zoomout);
         Canvas.on('resize',canvasresize);
     }
 
@@ -236,7 +236,7 @@
     Object.defineProperty(w,'RPG',{
         /**
          *
-         * @returns {RPG}
+         * @returns {{}}
          */
        get:function(){
            return RPG;
