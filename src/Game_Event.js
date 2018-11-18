@@ -58,8 +58,6 @@
     Game_Event.prototype = Object.create(Game_Character.prototype);
     Game_Event.prototype.constructor = Game_Event;
 
-
-
     /**
      *
      * @param options {object}
@@ -328,13 +326,13 @@
                 if(cp !== currentPage && cp instanceof Event_Page){
                     currentPage = cp;
                     let options = currentPage.options;
-                    console.log(options);
                     let properties = Object.keys(options);
                     for(let i = 0; i < properties.length;i++){
                         self[properties[i]] = options[properties[i]];
                     }
-                    if(typeof cp.script === 'function' && cp.trigger === Consts.TRIGGER_AUTO_RUN){
-                        cp.script.apply(self);
+                    let s = cp.initialize;
+                    if(s !== null){
+                        s.apply(self);
                     }
                 }
             }

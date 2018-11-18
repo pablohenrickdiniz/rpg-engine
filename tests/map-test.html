@@ -103,7 +103,6 @@
     <script type="text/javascript" src="../src/System/UI/Inventory.js"></script>
     <script type="text/javascript">
         function init() {
-            window.RPG = false;
             let container = document.getElementById('container');
             let ui_root = document.getElementById('ui-root');
 
@@ -182,7 +181,12 @@
                                 height:32,
                                 static:true,
                                 charaID:'switch',
-                                trigger:6,
+                                trigger:[
+                                    RPG.Consts.TRIGGER_ACTION_BUTTON
+                                ],
+                                initialize:function(){
+                                    this.turnDown();
+                                },
                                 script:function(){
                                     if(this.isSwitchDisabled('ON')){
                                         this.turnRight();
@@ -209,11 +213,14 @@
                                 width:32,
                                 height:32,
                                 charaID:'lamp',
-                                trigger:4,
+                                trigger:RPG.Consts.TRIGGER_AUTO_RUN,
+                                light:false,
+                                lightRadius:100,
+                                initialize:function(){
+                                    this.turnLeft();
+                                },
                                 script:function(){
                                     this.turnLeft();
-                                    this.light = false;
-                                    this.lightRadius = 100;
                                 }
                             },
                             {
@@ -222,12 +229,12 @@
                                 ],
                                 width:32,
                                 height:32,
+                                light : true,
+                                lightRadius : 500,
                                 charaID:'lamp',
-                                trigger:4,
+                                trigger:RPG.Consts.TRIGGER_AUTO_RUN,
                                 script:function(){
                                     this.turnDown();
-                                    this.light = true;
-                                    this.lightRadius = 500;
                                 }
                             }
                         ]

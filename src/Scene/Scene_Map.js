@@ -110,8 +110,8 @@
 
         self.on('collisionActive,Game_Actor,Game_Event',function(actor,event){
             let page = event.currentPage;
-            if (typeof page.script === 'function') {
-                if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action)) {
+            if (page.script !== null) {
+                if (page.isTrigger(Consts.TRIGGER_PLAYER_TOUCH) || (page.isTrigger(Consts.TRIGGER_ACTION_BUTTON) && self.action)) {
                     self.action = false;
                     page.executeScript(actor);
                 }

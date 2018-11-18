@@ -34,11 +34,7 @@
         FOREGROUND_LAYER:2,
         EFFECT_LAYER:3,
         UI_LAYER:4,
-        FADE_SCREEN_LAYER : 2,
-        COLLISION_CHARACTER:0x0001,
-        COLLISION_EVENT:0x0002,
-        COLLISION_WALL:0x0003,
-        COLLISION_PLAYER:0x0001
+        FADE_SCREEN_LAYER : 2
     };
 
     Object.freeze(Consts);
