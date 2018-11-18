@@ -362,12 +362,9 @@
                     cp.y = self.y;
                     if(currentPage != null && currentPage.body){
                         cp.body = currentPage.body;
-                        cp.flashlightBody = currentPage.flashlightBody;
+                        cp.lightBody = currentPage.lightBody;
                         cp.body.plugin.ref = cp;
-                        Body.scale(cp.body,cp.width/currentPage.width,1);
-                        Body.scale(cp.body,1,cp.height/currentPage.height);
-                        Body.scale(cp.flashlightBody,cp.flashlightRadius/currentPage.flashlightRadius,cp.flashlightRadius/currentPage.flashlightRadius);
-                        Body.set(cp.flashlightBody,'circleRadius',cp.flashlightRadius);
+                        cp.lightBody.plugin.ref = cp;
                     }
                     currentPage = cp;
                     if(typeof cp.script === 'function' && cp.trigger === Consts.TRIGGER_AUTO_RUN){
@@ -489,46 +486,37 @@
             }
         });
 
-        Object.defineProperty(self,'flashlight',{
+        Object.defineProperty(self,'light',{
            get:function(){
                if(currentPage !== null){
-                   return currentPage.flashlight;
+                   return currentPage.light;
                }
                return false;
            }
         });
 
-        Object.defineProperty(self,'flashlightRadius',{
+        Object.defineProperty(self,'lightRadius',{
             get:function(){
                 if(currentPage !== null){
-                    return currentPage.flashlightRadius;
+                    return currentPage.lightRadius;
                 }
                 return false;
             }
         });
 
-        Object.defineProperty(self,'flashlightBody',{
+        Object.defineProperty(self,'lightBody',{
             get:function(){
                 if(currentPage !== null){
-                    return currentPage.flashlightBody;
+                    return currentPage.lightBody;
                 }
                 return null;
             }
         });
 
-        Object.defineProperty(self,'flashlightBodyConstraint',{
+        Object.defineProperty(self,'lightColor',{
             get:function(){
                 if(currentPage !== null){
-                    return currentPage.flashlightBodyConstraint;
-                }
-                return null;
-            }
-        });
-
-        Object.defineProperty(self,'flashlightColor',{
-            get:function(){
-                if(currentPage !== null){
-                    return currentPage.flashlightColor;
+                    return currentPage.lightColor;
                 }
                 return 'rgba(255,255,255,0.1)';
             }

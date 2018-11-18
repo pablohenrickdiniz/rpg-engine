@@ -364,8 +364,8 @@
 
                     let index = animation.index;
                     if(charaID !== null) {
-                        i = Math.floor(animation.index / graphic.cols);
-                        j = animation.index % graphic.cols;
+                        i = Math.floor(index / graphic.cols);
+                        j = index % graphic.cols;
                     }
 
                     return graphic.get(i,j);

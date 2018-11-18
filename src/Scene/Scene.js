@@ -86,6 +86,7 @@
      */
     Scene.prototype.trigger = function(eventName,args){
         let self = this;
+        console.log(eventName);
         if(self.listeners[eventName] !== undefined){
             let length = self.listeners[eventName].length;
             for(let i = 0; i < length;i++){

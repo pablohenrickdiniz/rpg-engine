@@ -98,29 +98,21 @@
         self.objects = options.objects || [];
         initialize(self);
 
-        self.on('collisionActive',function(a,b){
-            let page = null;
-            let actor = null;
-            if(a instanceof Event_Page){
-                page = a;
+        self.on('collisionActive,objectBody,objectBody',function(a,b){
+            if(a.plugin.object !== undefined && b.plugin.object !== undefined){
+                let eventName = [
+                    'collisionActive',
+                    [a.plugin.object.type,b.plugin.object.type].sort(sortAsc).join()
+                ].join();
+                self.trigger(eventName,[a.plugin.object,b.plugin.object].sort(sortByType));
             }
-            else if(a instanceof Game_Actor){
-                actor = a;
-            }
+        });
 
-            if(b instanceof Event_Page){
-                page = b;
-            }
-            else if(b instanceof Game_Actor){
-                actor = b;
-            }
-
-            if (page !== null && actor !== null) {
-                if (typeof page.script === 'function') {
-                    if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action)) {
-                        self.action = false;
-                        page.script(actor);
-                    }
+        self.on('collisionActive,Event_Page,Game_Actor',function(page,actor){
+            if (typeof page.script === 'function') {
+                if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action)) {
+                    self.action = false;
+                    page.script(actor);
                 }
             }
         });
@@ -180,7 +172,7 @@
         Scene.prototype.step.apply(this);
         Engine.update(self.engine);
         update(self);
-        clear(self);
+        clear();
         draw(self);
     };
 
@@ -382,11 +374,11 @@
             y:0,
             width:Canvas.width,
             height:Canvas.height,
-            percent:percent
+            percent:70
         });
 
         let flashobjs = self.objs.filter(function(obj){
-            return obj.flashlight;
+            return obj.light;
         });
 
         flashobjs = flashobjs.sort(function(a,b){
@@ -400,17 +392,13 @@
                 x:objx,
                 y:objy,
                 percent:100,
-                color:flashobjs[i].flashlightColor,
-                radius:flashobjs[i].flashlightRadius
+                color:flashobjs[i].lightColor,
+                radius:flashobjs[i].lightRadius
             });
         }
     }
 
-    /**
-     *
-     * @param self {Scene}
-     */
-    function clear(self) {
+    function clear() {
         if (!bg_refreshed) {
             Canvas.clear(Consts.BACKGROUND_LAYER);
             Canvas.clear(Consts.FOREGROUND_LAYER);
@@ -669,8 +657,12 @@
             // change object colours to show those starting a collision
             for (let i = 0; i < pairs.length; i++) {
                 let pair = pairs[i];
-                if(pair.bodyA.plugin.ref !== undefined && pair.bodyB.plugin.ref !== undefined){
-                    self.trigger('collisionStart',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
+                if(pair.bodyA.plugin.type  !== undefined && pair.bodyB.plugin.type !== undefined){
+                    let eventName = [
+                        'collisionStart',
+                        [pair.bodyA.plugin.type,pair.bodyB.plugin.type].sort(sortAsc).join()
+                    ].join();
+                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByType));
                 }
             }
         };
@@ -680,8 +672,12 @@
             // change object colours to show those starting a collision
             for (let i = 0; i < pairs.length; i++) {
                 let pair = pairs[i];
-                if(pair.bodyA.plugin.ref !== undefined && pair.bodyB.plugin.ref !== undefined){
-                    self.trigger('collisionActive',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
+                if(pair.bodyA.plugin.type !== undefined && pair.bodyB.plugin.type !== undefined){
+                    let eventName = [
+                        'collisionActive',
+                        [pair.bodyA.plugin.type,pair.bodyB.plugin.type].sort(sortAsc).join()
+                    ].join();
+                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByType));
                 }
             }
         };
@@ -691,8 +687,12 @@
             // change object colours to show those starting a collision
             for (let i = 0; i < pairs.length; i++) {
                 let pair = pairs[i];
-                if(pair.bodyA.plugin.ref !== undefined && pair.bodyB.plugin.ref !== undefined){
-                    self.trigger('collisionEnd',[pair.bodyA.plugin.ref,pair.bodyB.plugin.ref]);
+                if(pair.bodyA.plugin.type !== undefined && pair.bodyB.plugin.type !== undefined){
+                    let eventName = [
+                        'collisionEnd',
+                        [pair.bodyA.plugin.type,pair.bodyB.plugin.type].sort(sortAsc).join()
+                    ].join();
+                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByType));
                 }
             }
         };
@@ -779,6 +779,27 @@
     function clone(obj){
         return Object.assign({},obj);
     }
+
+    /**
+     *
+     * @param a {string}
+     * @param b {string}
+     * @returns {boolean}
+     */
+    function sortAsc(a,b){
+        return a.localeCompare(b);
+    }
+
+    /**
+     *
+     * @param a {Game_Object}
+     * @param b {Game_Object}
+     * @returns {boolean}
+     */
+    function sortByType(a,b){
+        return sortAsc(a.type,b.type);
+    }
+
 
     Object.defineProperty(root,'Scene_Map',{
         /**

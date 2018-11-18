@@ -197,6 +197,7 @@
                 for(let i =0; i < length;i++){
                     key = keys[i];
                     conf = scene.actors[key];
+                    conf.id = key;
                     Actors.set(key,new Game_Actor(conf));
                 }
             }

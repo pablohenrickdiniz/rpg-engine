@@ -206,18 +206,17 @@
                         y:400,
                         pages:[
                             {
-                                flashlightRadius:100,
                                 width:32,
                                 height:32,
                                 charaID:'lamp',
                                 trigger:4,
                                 script:function(){
                                     this.turnLeft();
-                                    this.flashlight = false;
+                                    this.light = false;
+                                    this.lightRadius = 100;
                                 }
                             },
                             {
-                                flashlightRadius:500,
                                 conditions:[
                                     'GLOBAL:LAMP:ON'
                                 ],
@@ -227,7 +226,8 @@
                                 trigger:4,
                                 script:function(){
                                     this.turnDown();
-                                    this.flashlight = true;
+                                    this.light = true;
+                                    this.lightRadius = 500;
                                 }
                             }
                         ]
@@ -242,8 +242,8 @@
 //                                width:32,
 //                                height:32,
 //                                charaID:'butterfly',
-//                                flashlight:true,
-//                                flashlightColor:'rgba(255,100,100,1)',
+//                                light:true,
+//                                lightColor:'rgba(255,100,100,1)',
 //                                through:true,
 //                                script:function(){
 //                                    this.step

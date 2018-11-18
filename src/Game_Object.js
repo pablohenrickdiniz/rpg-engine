@@ -18,8 +18,7 @@
         Bodies = Matter.Bodies,
         Body = Matter.Body,
         Game_Animation = root.Game_Animation,
-        Consts = root.Consts,
-        Constraint = Matter.Constraint;
+        Consts = root.Consts;
 
     /**
      *
@@ -43,11 +42,10 @@
         self.hSpeed = options.hSpeed || 0.02;
         self.vSpeed = options.vSpeed || 0.02;
         self.currentAnimation = null;
-        self.type = options.type || 'Object';
         self.through = options.through || false;
-        self.flashlight = options.flashlight;
-        self.flashlightRadius = options.flashlightRadius || 100;
-        self.flashlightColor = options.flashlightColor || 'rgba(255,255,255,0.1)';
+        self.light = options.light;
+        self.lightRadius = options.lightRadius || 100;
+        self.lightColor = options.lightColor || 'rgba(255,255,255,0.1)';
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
@@ -150,9 +148,9 @@
         let through = null;
         let body = null;
         let objectBody = null;
-        let flashlight = false;
-        let flashlightRadius = 100;
-        let flashlightBody = null;
+        let light = false;
+        let lightRadius = 100;
+        let lightBody = null;
         let width = 32;
         let height = 32;
         let x = 0;
@@ -168,7 +166,8 @@
                         width,
                         height,{
                             plugin:{
-                                ref:self
+                                object:self,
+                                type:'objectBody'
                             },
                             isSensor:through
                         }
@@ -195,13 +194,13 @@
             get:function(){
                 if(body == null){
                     body = Body.create({
-                        parts:[self.objectBody,self.flashlightBody],
+                        parts:[self.objectBody,self.lightBody],
                         isStatic:self.static,
                         friction:0.0001,
                         frictionAir:0.09,
                         inertia:Infinity,
                         plugin:{
-                            ref:self
+                            type:'body'
                         }
                     });
                 }
@@ -402,30 +401,30 @@
             }
         });
 
-        Object.defineProperty(self,'flashlight',{
+        Object.defineProperty(self,'light',{
             /**
              *
              * @returns {boolean}
              */
             get:function(){
-                return flashlight;
+                return light;
             },
             /**
              *
              * @param f {boolean}
              */
             set:function(f){
-                flashlight = !!f;
+                light = !!f;
             }
         });
 
-        Object.defineProperty(self,'flashlightRadius',{
+        Object.defineProperty(self,'lightRadius',{
             /**
              *
              * @returns {number}
              */
             get:function(){
-                return flashlightRadius;
+                return lightRadius;
             },
             /**
              *
@@ -434,23 +433,23 @@
             set:function(f){
                 f = parseInt(f);
                 if(!isNaN(f) && f >= 1){
-                    flashlightRadius = f;
-                    if(flashlightBody !== null){
-                        Body.scale(flashlightBody,f/flashlightRadius,f/flashlightRadius);
-                        Body.set(flashlightBody,'circleRadius',flashlightRadius);
+                    lightRadius = f;
+                    if(lightBody !== null){
+                        Body.scale(lightBody,f/lightRadius,f/lightRadius);
+                        Body.set(lightBody,'circleRadius',lightRadius);
                     }
                 }
             }
         });
 
-        Object.defineProperty(self,'flashlightBody',{
+        Object.defineProperty(self,'lightBody',{
             /**
              *
              * @param fb {Body}
              */
             set:function(fb){
-                if(flashlightBody !==  fb){
-                    flashlightBody = fb;
+                if(lightBody !==  fb){
+                    lightBody = fb;
                 }
             },
             /**
@@ -458,13 +457,27 @@
              * @returns {Body}
              */
             get:function(){
-                if(flashlightBody == null){
-                    flashlightBody = Bodies.circle(x,y,flashlightRadius,{
+                if(lightBody == null){
+                    lightBody = Bodies.circle(x,y,lightRadius,{
                         isSensor:true,
-                        density:0
+                        density:0,
+                        plugin:{
+                            object:self,
+                            type:'light'
+                        }
                     });
                 }
-                return flashlightBody;
+                return lightBody;
+            }
+        });
+
+        Object.defineProperty(self,'type',{
+            /**
+             *
+             * @returns {string}
+             */
+            get:function(){
+                return self.constructor.name;
             }
         });
     }

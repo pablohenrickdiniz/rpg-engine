@@ -8,10 +8,14 @@
         throw "Game_Actor requires Game_Inventory";
     }
 
+    if(!root.Main){
+        throw "Game_Actor requires Main"
+    }
+
     let Game_Character = root.Game_Character,
-        Consts = root.Consts,
         Keyboard = w.Keyboard,
-        Game_Inventory = root.Game_Inventory;
+        Game_Inventory = root.Game_Inventory,
+        Main = root.Main;
 
     /**
      *
@@ -27,8 +31,8 @@
         self.MP = options.HP || 100;
         self.HP = options.MP || 100;
         self.skills = [];
-        self.type = options.type || 'Actor';
         self.inventory = options.inventory;
+        self.id = options.id;
     };
 
     Game_Actor.prototype = Object.create(Game_Character.prototype);
@@ -39,7 +43,7 @@
      */
     Game_Actor.prototype.update = function () {
         let self = this;
-        if(self.type === 'Player'){
+        if(Main.currentPlayerID == self.id){
             let keyboard = root.Controls.Keyboard;
             if (keyboard.state[Keyboard.LEFT]) {
                 self.stepLeft();

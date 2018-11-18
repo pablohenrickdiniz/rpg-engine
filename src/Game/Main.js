@@ -12,7 +12,7 @@
         Game_Map = root.Game_Map,
         current_scene = null,
         current_map = null,
-        current_player_id = null;
+        currentPlayerID = null;
 
     let Main = {};
 
@@ -60,26 +60,18 @@
          * @returns {string}
          */
         get:function(){
-            return current_player_id;
+            return currentPlayerID;
         },
         /**
          *
          * @param id {string}
          */
         set:function(id){
-            if(id !== current_player_id){
-                if(current_player_id != null){
-                    let tmp = Main.Actors.get(current_player_id);
-                    if(tmp != null){
-                        tmp.type = 'Actor';
-                    }
-                }
-
-                current_player_id = id;
+            if(id !== currentPlayerID){
+                currentPlayerID = id;
                 let scene = Main.currentScene;
                 let actor = Main.Actors.get(id);
                 if(scene != null && actor != null){
-                    actor.type = 'Player';
                     scene.add(actor);
                 }
             }
@@ -92,7 +84,7 @@
          * @returns {Game_Actor}
          */
         get:function(){
-            return Main.Actors.get(current_player_id);
+            return Main.Actors.get(currentPlayerID);
         }
     });
 
