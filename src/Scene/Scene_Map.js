@@ -108,13 +108,29 @@
             }
         });
 
-        self.on('collisionActive,Event_Page,Game_Actor',function(page,actor){
+        self.on('collisionActive,Game_Actor,Game_Event',function(actor,event){
+            let page = event.currentPage;
             if (typeof page.script === 'function') {
                 if (page.trigger === Consts.TRIGGER_PLAYER_TOUCH || (page.trigger === Consts.TRIGGER_ACTION_BUTTON && self.action)) {
                     self.action = false;
-                    page.script(actor);
+                    page.executeScript(actor);
                 }
             }
+        });
+
+        self.on('collisionActive,light,objectBody',function(light,objectBody){
+            let object = objectBody.plugin.object;
+            if(object.light){
+                let frame = objectBody.plugin.object.currentFrame;
+                if(frame !== null){
+                    let vec = {
+                        x:light.position.x-objectBody.position.x,
+                        y:light.position.y-objectBody.position.y
+                    };
+                    console.log(vec);
+                }
+            }
+
         });
     };
 

@@ -28,13 +28,17 @@
         throw "Game_Event requires Consts";
     }
 
+    if(!root.Game_Character){
+        throw "Game_Event requires Game_Character"
+    }
+
     let Event_Page = root.Event_Page,
         Switches = root.Main.Switches,
         Matter = w.Matter,
-        Body = Matter.Body,
         Audio = root.Audio,
         Events = root.Events,
-        Consts = root.Consts;
+        Consts = root.Consts,
+        Game_Character = root.Game_Character;
 
     /**
      *
@@ -43,19 +47,23 @@
      */
     let Game_Event = function (options) {
         let self = this;
+        Game_Character.call(self, options);
         self.switches = [];
         initialize(self);
         options = options || {};
-        self.x = options.x || 0;
-        self.y = options.y || 0;
         self.pages = options.pages || [];
         self.listeners = [];
     };
 
+    Game_Event.prototype = Object.create(Game_Character.prototype);
+    Game_Event.prototype.constructor = Game_Event;
+
+
+
     /**
      *
      * @param options {object}
-     * @returns {Event_Page}
+     * @returns {root.Event_Page}
      */
     Game_Event.prototype.newPage = function(options) {
         options = options || {};
@@ -229,61 +237,36 @@
     };
 
     Game_Event.prototype.update = function(){
-        let self = this;
-        if(self.currentPage !== null){
-            self.currentPage.update();
-        }
-    };
+        let self =this;
+        switch(self.movementType){
+            case Consts.MOVE_ROUTE:
+                if(self.route.length > 0 && self.currentMove !== -1){
+                    if(self.route[self.currentMove] === undefined){
+                        self.currentMove = self.repeatRoute?0:-1;
+                    }
+                    if(self.currentMove !== -1){
+                        let move = self.route[self.currentMove];
+                        self.currentMove++;
 
-    /**
-     *
-     * @param eventName {string}
-     * @param args {Array}
-     * @returns {Scene}
-     */
-    Game_Event.prototype.trigger = function(eventName,args){
-        let self = this;
-        if(self.listeners[eventName] !== undefined){
-            let length = self.listeners[eventName].length;
-            for(let i = 0; i < length;i++){
-                self.listeners[eventName][i].apply(self,args);
-            }
+                        switch(move){
+                            case 'MOVE_UP':
+                                self.stepUp();
+                                break;
+                            case 'MOVE_DOWN':
+                                self.stepDown();
+                                break;
+                            case 'MOVE_LEFT':
+                                self.stepLeft();
+                                break;
+                            case 'MOVE_RIGHT':
+                                self.stepRight();
+                                break;
+                        }
+                    }
+                }
         }
-        return self;
-    };
 
-    /**
-     *
-     * @param eventName {string}
-     * @param callback {function}
-     * @returns {Scene}
-     */
-    Game_Event.prototype.on = function(eventName,callback){
-        let self = this;
-        if(self.listeners[eventName] === undefined){
-            self.listeners[eventName] = [];
-        }
-        if(self.listeners[eventName].indexOf(callback) === -1){
-            self.listeners[eventName].push(callback);
-        }
-        return self;
-    };
-
-    /**
-     *
-     * @param eventName {string}
-     * @param callback {function}
-     * @returns {Scene}
-     */
-    Game_Event.prototype.off = function(eventName,callback){
-        let self = this;
-        if(self.listeners[eventName] !== undefined){
-            let index =self.listeners[eventName].indexOf(callback);
-            if(index !== -1){
-                self.listeners[eventName].splice(index,1);
-            }
-        }
-        return self;
+        Game_Character.prototype.update.call(self);
     };
 
     /**
@@ -293,8 +276,7 @@
     function initialize(self){
         let currentPage = null;
         let pages = [];
-        let x = 0;
-        let y = 0;
+        let walkingAnimation =false;
 
         Object.defineProperty(self,'pages',{
             /**
@@ -330,20 +312,6 @@
             }
         });
 
-        Object.defineProperty(self,'currentFrame',{
-            configurable:true,
-            /**
-             *
-             * @returns {Tile}
-             */
-            get:function(){
-                if(currentPage != null){
-                    return currentPage.currentFrame;
-                }
-                return null;
-            }
-        });
-
         Object.defineProperty(self,'currentPage',{
             /**
              *
@@ -358,167 +326,43 @@
              */
             set:function(cp){
                 if(cp !== currentPage && cp instanceof Event_Page){
-                    cp.x = self.x;
-                    cp.y = self.y;
-                    if(currentPage != null && currentPage.body){
-                        cp.body = currentPage.body;
-                        cp.lightBody = currentPage.lightBody;
-                        cp.body.plugin.ref = cp;
-                        cp.lightBody.plugin.ref = cp;
-                    }
                     currentPage = cp;
+                    let options = currentPage.options;
+                    console.log(options);
+                    let properties = Object.keys(options);
+                    for(let i = 0; i < properties.length;i++){
+                        self[properties[i]] = options[properties[i]];
+                    }
                     if(typeof cp.script === 'function' && cp.trigger === Consts.TRIGGER_AUTO_RUN){
-                        cp.script();
+                        cp.script.apply(self);
                     }
                 }
             }
         });
 
-        Object.defineProperty(self,'through',{
+        Object.defineProperty(self,'walkingAnimation',{
             /**
              *
              * @returns {boolean}
              */
             get:function(){
-                if(currentPage != null){
-                    return currentPage.through;
-                }
-                return true;
-            }
-        });
-
-        Object.defineProperty(self,'x',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                if(currentPage !== null && currentPage.x !== x){
-                    x = currentPage.x;
-                }
-                return x;
+                return walkingAnimation;
             },
             /**
              *
-             * @param px {number}
+             * @param wa {Game_Animation}
              */
-            set:function(px){
-                if(currentPage !== null){
-                    currentPage.x = px;
+            set:function(wa){
+                if(wa !== walkingAnimation){
+                    walkingAnimation = wa;
+                    let currentAnimation = self.currentAnimation;
+                    if(walkingAnimation && !currentAnimation.running){
+                        currentAnimation.start();
+                    }
+                    else if(!walkingAnimation && currentAnimation.running){
+                        currentAnimation.stop();
+                    }
                 }
-                x = px;
-            }
-        });
-
-        Object.defineProperty(self,'y',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                if(currentPage !== null && currentPage.y !== y){
-                    y = currentPage.y;
-                }
-                return y;
-            },
-            /**
-             *
-             * @param py {number}
-             */
-            set:function(py){
-                if(currentPage !== null){
-                    currentPage.y = py;
-                }
-                y = py;
-            }
-        });
-
-        Object.defineProperty(self,'body',{
-            /**
-             *
-             * @returns {Body}
-             */
-            get:function(){
-                if(currentPage !== null){
-                    return currentPage.body;
-                }
-                return null;
-            }
-        });
-
-
-        Object.defineProperty(self,'width',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                if(currentPage !== null){
-                    return currentPage.width;
-                }
-                return 0;
-            }
-        });
-
-        Object.defineProperty(self,'height',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                if(currentPage !== null){
-                    return currentPage.height;
-                }
-                return 0;
-            }
-        });
-
-        Object.defineProperty(self,'layer',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-               if(currentPage !== null){
-                   return currentPage.layer;
-               }
-               return 0;
-            }
-        });
-
-        Object.defineProperty(self,'light',{
-           get:function(){
-               if(currentPage !== null){
-                   return currentPage.light;
-               }
-               return false;
-           }
-        });
-
-        Object.defineProperty(self,'lightRadius',{
-            get:function(){
-                if(currentPage !== null){
-                    return currentPage.lightRadius;
-                }
-                return false;
-            }
-        });
-
-        Object.defineProperty(self,'lightBody',{
-            get:function(){
-                if(currentPage !== null){
-                    return currentPage.lightBody;
-                }
-                return null;
-            }
-        });
-
-        Object.defineProperty(self,'lightColor',{
-            get:function(){
-                if(currentPage !== null){
-                    return currentPage.lightColor;
-                }
-                return 'rgba(255,255,255,0.1)';
             }
         });
 

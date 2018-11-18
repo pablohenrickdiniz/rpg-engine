@@ -49,6 +49,7 @@
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
+        self.shadows = [];
     };
 
     /**
@@ -156,6 +157,7 @@
         let x = 0;
         let y = 0;
         let st = true;
+        let shadows = [];
 
         Object.defineProperty(self,'objectBody',{
             get:function(){
@@ -340,6 +342,7 @@
              * @param ca {Game_Animation}
              */
             set:function(ca){
+                ca = ca || null;
                 if(currentAnimation !== ca){
                     if(currentAnimation !== null && currentAnimation instanceof Game_Animation){
                         currentAnimation.stop();
@@ -366,11 +369,9 @@
              * @param t {boolean}
              */
             set:function(t){
-                if(t !== through){
-                    through = t;
-                    if(body !== null){
-                        body.isSensor = through;
-                    }
+                through = !!t;
+                if(body !== null){
+                    body.isSensor = through;
                 }
             }
         });
@@ -480,6 +481,25 @@
                 return self.constructor.name;
             }
         });
+
+        Object.defineProperty(self,'shadows',{
+            /**
+             *
+             * @returns {Array}
+             */
+            get:function(){
+                return shadows;
+            },
+            /**
+             *
+             * @param sdw {Array}
+             */
+            set:function(sdw){
+                if(sdw instanceof Array){
+                    shadows = sdw;
+                }
+            }
+        });
     }
 
     Object.defineProperty(root,'Game_Object',{
@@ -487,8 +507,8 @@
          *
          * @returns {Game_Object}
          */
-       get:function(){
-           return Game_Object;
-       }
+        get:function(){
+            return Game_Object;
+        }
     });
 })(RPG,window);
