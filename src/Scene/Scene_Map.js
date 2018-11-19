@@ -119,9 +119,10 @@
         });
 
         self.on('collisionActive,light,objectBody',function(light,objectBody){
+
             let object = objectBody.plugin.object;
             let lightSourceObject = light.plugin.object;
-            if(object !== lightSourceObject && lightSourceObject.light){
+            if(object !== lightSourceObject && lightSourceObject.light && !object.light){
                 object.lights.push(light);
             }
 
@@ -145,12 +146,16 @@
                 };
                 let vec = Math.vmv(vb,va);
                 let distance = Math.distance(va,vb);
+                let radius = parseFloat(light.circleRadius);
+                if(isNaN(radius)){
+                    radius = distance;
+                }
 
                 shadows.push({
                     radians:Math.clockWiseRadiansFromVec(vec),
                     frame:frame,
                     distance:distance,
-                    alpha:Math.max(1-(distance/light.circleRadius),0)
+                    alpha:Math.max(1-(distance/radius),0)*0.6
                 });
             }
         }
@@ -325,7 +330,6 @@
         });
 
         for(let i =0; i < objs.length;i++){
-            draw_shadows(objs[i]);
             draw_object(objs[i]);
         }
 
@@ -428,6 +432,29 @@
                 percent:100,
                 color:flashobjs[i].lightColor,
                 radius:flashobjs[i].lightRadius
+            });
+        }
+
+        let objs = self.objs.filter(function(obj){
+            return !obj.light;
+        });
+
+        objs = objs.sort(function(a,b){
+            return a.y-b.y;
+        });
+
+        for(let i = 0;  i < objs.length;i++){
+            draw_shadows(objs[i]);
+        }
+        for(let i =0; i < flashobjs.length;i++){
+            let objx = flashobjs[i].x-Canvas.x;
+            let objy = flashobjs[i].y-Canvas.y;
+            Canvas.lighten({
+                x:objx,
+                y:objy,
+                percent:100,
+                color:flashobjs[i].lightColor,
+                radius:100
             });
         }
     }
@@ -611,14 +638,15 @@
     function draw_shadows(object){
         let objx = object.x-Canvas.x;
         let objy = object.y-Canvas.y;
-        let layer = Canvas.getLayer(Consts.EVENT_LAYER,object.layer);
+        let layer = Canvas.getLayer(Consts.EFFECT_LAYER,0);
         let ctx = layer.context;
         let shadows = get_shadows(object);
         for(let i = 0; i < shadows.length;i++){
             let shadow = shadows[i];
             let frame = shadow.frame;
             let height = frame.dHeight;
-            let scale = shadow.distance/height;
+            let scaleY = shadow.distance/height;
+            let scaleX = shadow.radians > 1.5708 && shadow.radians < 4.71239?-1:1;
             let hw = Math.round(frame.dWidth/2);
             let hh = Math.round(height/2);
             let dx = objx-hw;
@@ -628,7 +656,7 @@
             ctx.save();
             ctx.translate(objx,objy+hh);
             ctx.rotate(shadow.radians);
-            ctx.scale(1,scale);
+            ctx.scale(scaleX,scaleY);
             ctx.globalAlpha = shadow.alpha;
             ctx.drawImage(
                 frame.shadow,

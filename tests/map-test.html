@@ -236,6 +236,42 @@
                             }
                         ]
                     },
+                    {
+                        class:'Event',
+                        x:500,
+                        y:400,
+                        width:20,
+                        height:20,
+                        pages:[
+                            {
+                                charaID:'lamp',
+                                trigger:RPG.Consts.TRIGGER_AUTO_RUN,
+                                light:false,
+                                lightRadius:500,
+                                initialize:function(){
+                                    this.turnLeft();
+                                },
+                                script:function(){
+                                    this.turnLeft();
+                                }
+                            },
+                            {
+                                conditions:[
+                                    'GLOBAL:LAMP:ON'
+                                ],
+                                light : true,
+                                lightRadius : 500,
+                                charaID:'lamp',
+                                trigger:RPG.Consts.TRIGGER_AUTO_RUN,
+                                initialize:function(){
+                                    this.turnDown();
+                                },
+                                script:function(){
+                                    this.turnDown();
+                                }
+                            }
+                        ]
+                    },
 //                    {
 //                        class:'Event',
 //                        x:300,
