@@ -38,6 +38,7 @@
     function initialize(self){
         let graphicID = null;
         let url = null;
+        let shadow = null;
         let sx = 0;
         let sy = 0;
         let sWidth = null;
@@ -79,7 +80,7 @@
              */
             set:function(sxn){
                 sxn = parseInt(sxn);
-                if(!isNaN(sxn) && sxn !== sx){
+                if(!isNaN(sxn) && sxn >= 0 && sxn !== sx){
                     sx = sxn;
                     url = null;
                 }
@@ -100,9 +101,10 @@
              */
             set:function(syn){
                 syn = parseInt(syn);
-                if(!isNaN(syn) && syn !== sy){
+                if(!isNaN(syn) && syn >= 0 && syn !== sy){
                     sy = syn;
                     url = null;
+                    shadow = null;
                 }
             }
         });
@@ -128,6 +130,7 @@
                 if(!isNaN(sw) && sw >= 0 && sw !== sWidth){
                     sWidth = sw;
                     url = null;
+                    shadow = null;
                 }
             }
         });
@@ -153,6 +156,7 @@
                 if(!isNaN(sh) && sh >= 0 && sh !== sHeight){
                     sHeight = sh;
                     url = null;
+                    shadow = null;
                 }
             }
         });
@@ -189,6 +193,36 @@
                     }
                 }
                 return url;
+            }
+        });
+
+        Object.defineProperty(self,'shadow',{
+            /**
+             *
+             * @returns {string}
+             */
+            get:function(){
+                if(shadow == null){
+                    let canvas = document.createElement('canvas');
+                    let width = self.width;
+                    let height = self.height;
+                    canvas.width = width;
+                    canvas.height = height;
+                    let ctx = canvas.getContext('2d');
+                    let image = self.image;
+                    ctx.drawImage(image,sx,sy,width,height,0,0,width,height);
+                    var imageData = ctx.getImageData(0, 0, width, height);
+                    var pixels = imageData.data;
+                    for(var i = 0; i < pixels.length; i += 4) {
+                        pixels[i] = pixels[i] = 0;
+                        pixels[i+1] = pixels[i+1] = 0;
+                        pixels[i+2] = pixels[i+2] = 0;
+                    }
+                    ctx.putImageData(imageData, 0, 0);
+                    shadow = new Image();
+                    shadow.src = canvas.toDataURL();
+                }
+                return shadow;
             }
         });
 

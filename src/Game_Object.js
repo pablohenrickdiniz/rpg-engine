@@ -44,7 +44,7 @@
         self.currentAnimation = null;
         self.through = options.through || false;
         self.light = options.light;
-        self.lightRadius = options.lightRadius || 100;
+        self.lightRadius = options.lightRadius || 16;
         self.lightColor = options.lightColor || 'rgba(255,255,255,0.1)';
         self.focused = false;
         self.name = options.name || '';
@@ -150,14 +150,14 @@
         let body = null;
         let objectBody = null;
         let light = false;
-        let lightRadius = 100;
+        let lightRadius = 16;
         let lightBody = null;
         let width = 32;
         let height = 32;
         let x = 0;
         let y = 0;
         let st = true;
-        let shadows = [];
+        let lights = [];
 
         Object.defineProperty(self,'objectBody',{
             get:function(){
@@ -497,21 +497,21 @@
             }
         });
 
-        Object.defineProperty(self,'shadows',{
+        Object.defineProperty(self,'lights',{
             /**
              *
              * @returns {Array}
              */
             get:function(){
-                return shadows;
+                return lights;
             },
             /**
              *
-             * @param sdw {Array}
+             * @param lgs {Array}
              */
-            set:function(sdw){
-                if(sdw instanceof Array){
-                    shadows = sdw;
+            set:function(lgs){
+                if(lgs instanceof Array){
+                    lights = lgs;
                 }
             }
         });

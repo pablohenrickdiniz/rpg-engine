@@ -120,19 +120,42 @@
 
         self.on('collisionActive,light,objectBody',function(light,objectBody){
             let object = objectBody.plugin.object;
-            if(object.light){
-                let frame = objectBody.plugin.object.currentFrame;
-                if(frame !== null){
-                    let vec = {
-                        x:light.position.x-objectBody.position.x,
-                        y:light.position.y-objectBody.position.y
-                    };
-                    console.log(vec);
-                }
+            let lightSourceObject = light.plugin.object;
+            if(object !== lightSourceObject && lightSourceObject.light){
+                object.lights.push(light);
             }
 
         });
     };
+
+    function get_shadows(object){
+        let frame = object.currentFrame;
+        let shadows = [];
+        if(frame !== null){
+            let objectBody = object.objectBody;
+            for(let i = 0; i < object.lights.length;i++){
+                let light = object.lights[i];
+                let va = {
+                    x:light.position.x,
+                    y:light.position.y
+                };
+                let vb = {
+                    x:objectBody.position.x,
+                    y:objectBody.position.y
+                };
+                let vec = Math.vmv(vb,va);
+                let distance = Math.distance(va,vb);
+
+                shadows.push({
+                    radians:Math.clockWiseRadiansFromVec(vec),
+                    frame:frame,
+                    distance:distance,
+                    alpha:Math.max(1-(distance/light.circleRadius),0)
+                });
+            }
+        }
+        return shadows;
+    }
 
     Scene_Map.prototype = Object.create(Scene.prototype);
     Scene_Map.prototype.constructor = Scene_Map;
@@ -297,16 +320,13 @@
      * @param self {Scene_Map}
      */
     function draw_objects(self){
-        let spriteset = self.spriteset;
-        let mw = spriteset.realWidth;
-        let mh = spriteset.realHeight;
-
         let objs = self.objs.sort(function(a,b){
             return a.y-b.y;
         });
 
         for(let i =0; i < objs.length;i++){
-            draw_object(objs[i],mw,mh);
+            draw_shadows(objs[i]);
+            draw_object(objs[i]);
         }
 
         if(RPG.debug){
@@ -373,7 +393,6 @@
         }
     }
 
-
     function draw_effects(self){
         var now = new Date();
         var time = now.getHours()*60*60+now.getSeconds();
@@ -383,14 +402,13 @@
         percent = Math.round(percent);
         percent = Math.max(percent,0);
         percent = Math.min(percent,100);
-        percent *= 0.5;
 
         Canvas.darken({
             x:0,
             y:0,
             width:Canvas.width,
             height:Canvas.height,
-            percent:70
+            percent:80
         });
 
         let flashobjs = self.objs.filter(function(obj){
@@ -421,6 +439,7 @@
         }
 
         Canvas.clear(Consts.EFFECT_LAYER);
+        Canvas.clear(Consts.EVENT_LAYER);
 
         while(clear_queue.length > 0){
             let clear = clear_queue.pop();
@@ -557,15 +576,12 @@
     /**
      *
      * @param object {Game_Object}
-     * @param vw {number}
-     * @param vh {number}
      */
-    function draw_object(object,vw,vh){
+    function draw_object(object){
         let frame = object.currentFrame;
         if (frame !== null && (frame instanceof Tile || frame instanceof Game_Graphic) && frame.image) {
             let objx = object.x-Canvas.x;
             let objy = object.y-Canvas.y;
-
             let image = frame.image;
             let x = Math.round(objx-(frame.dWidth/2));
             let y = Math.round(objy-(frame.dHeight/2));
@@ -590,6 +606,44 @@
                 height:frame.dHeight
             });
         }
+    }
+
+    function draw_shadows(object){
+        let objx = object.x-Canvas.x;
+        let objy = object.y-Canvas.y;
+        let layer = Canvas.getLayer(Consts.EVENT_LAYER,object.layer);
+        let ctx = layer.context;
+        let shadows = get_shadows(object);
+        for(let i = 0; i < shadows.length;i++){
+            let shadow = shadows[i];
+            let frame = shadow.frame;
+            let height = frame.dHeight;
+            let scale = shadow.distance/height;
+            let hw = Math.round(frame.dWidth/2);
+            let hh = Math.round(height/2);
+            let dx = objx-hw;
+            let dy = objy-hh;
+            dx = Math.round(dx);
+            dy = Math.round(dy);
+            ctx.save();
+            ctx.translate(objx,objy+hh);
+            ctx.rotate(shadow.radians);
+            ctx.scale(1,scale);
+            ctx.globalAlpha = shadow.alpha;
+            ctx.drawImage(
+                frame.shadow,
+                frame.sx,
+                frame.sy,
+                frame.sWidth,
+                frame.sHeight,
+                -hw,
+                -frame.dHeight,
+                frame.dWidth,
+                frame.dHeight
+            );
+            ctx.restore();
+        }
+        object.lights = [];
     }
 
     /**

@@ -107,7 +107,6 @@
             }
         });
 
-
         Object.defineProperty(self,'image',{
             /**
              *
@@ -115,6 +114,16 @@
              */
             get:function(){
                 return self.tileset?self.tileset.image:null;
+            }
+        });
+
+        Object.defineProperty(self,'shadow',{
+            /**
+             *
+             * @returns {null}
+             */
+            get:function(){
+                return self.tileset?self.tileset.shadow:null;
             }
         });
 

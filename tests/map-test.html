@@ -111,8 +111,7 @@
                 ui_root:ui_root
             });
 
-            RPG.debug = true;
-
+            RPG.debug = false;
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
                     tilesets:{
@@ -215,7 +214,7 @@
                                 charaID:'lamp',
                                 trigger:RPG.Consts.TRIGGER_AUTO_RUN,
                                 light:false,
-                                lightRadius:100,
+                                lightRadius:500,
                                 initialize:function(){
                                     this.turnLeft();
                                 },

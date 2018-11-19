@@ -192,7 +192,8 @@
              * @param r {number}
              */
             set:function(r){
-                if(r !== rows){
+                r = parseInt(r);
+                if(!isNaN(r) && r >= 1 && r !== rows){
                     rows = r;
                     self.sprites = [];
                     self.collision = [];
@@ -213,7 +214,8 @@
              * @param c {number}
              */
             set:function(c){
-                if(c !== cols){
+                c = parseInt(c);
+                if(!isNaN(c) && c>= 1 && c !== cols){
                     cols = c;
                     self.sprites = [];
                     self.collision = [];
