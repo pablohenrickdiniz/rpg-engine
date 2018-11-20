@@ -173,7 +173,7 @@
                     {
                         class:'Event',
                         x:250,
-                        y:200,
+                        y:300,
                         width:25,
                         height:15,
                         static:true,
@@ -217,9 +217,6 @@
                                 lightRadius:500,
                                 initialize:function(){
                                     this.turnLeft();
-                                },
-                                script:function(){
-                                    this.turnLeft();
                                 }
                             },
                             {
@@ -230,7 +227,7 @@
                                 lightRadius : 500,
                                 charaID:'lamp',
                                 trigger:RPG.Consts.TRIGGER_AUTO_RUN,
-                                script:function(){
+                                initialize:function(){
                                     this.turnDown();
                                 }
                             }
@@ -250,9 +247,6 @@
                                 lightRadius:500,
                                 initialize:function(){
                                     this.turnLeft();
-                                },
-                                script:function(){
-                                    this.turnLeft();
                                 }
                             },
                             {
@@ -264,9 +258,6 @@
                                 charaID:'lamp',
                                 trigger:RPG.Consts.TRIGGER_AUTO_RUN,
                                 initialize:function(){
-                                    this.turnDown();
-                                },
-                                script:function(){
                                     this.turnDown();
                                 }
                             }
@@ -530,7 +521,7 @@
                     });
 
                     root.Main.currentScene.focus(root.Main.currentPlayer);
-
+                    root.Main.Switches.enable('LAMP')
                 },
                 progress:function(progress){
                     let progress_bar = RPG.UI.root.findById('loading-progress');

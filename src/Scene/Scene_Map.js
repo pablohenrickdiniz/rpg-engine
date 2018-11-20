@@ -152,10 +152,11 @@
                 }
 
                 shadows.push({
-                    radians:Math.clockWiseRadiansFromVec(vec),
+                    degree:Math.degreeFromVec(va,vb),
                     frame:frame,
                     distance:distance,
-                    alpha:Math.max(1-(distance/radius),0)*0.6
+                    alpha:Math.max(1-(distance/radius),0)*0.6,
+                    vector:Math.normalize(vec)
                 });
             }
         }
@@ -644,9 +645,12 @@
         for(let i = 0; i < shadows.length;i++){
             let shadow = shadows[i];
             let frame = shadow.frame;
+            let vector = shadow.vector;
             let height = frame.dHeight;
             let scaleY = shadow.distance/height;
-            let scaleX = shadow.radians > 1.5708 && shadow.radians < 4.71239?-1:1;
+            if(vector.y > 0){
+                scaleY = -scaleY;
+            }
             let hw = Math.round(frame.dWidth/2);
             let hh = Math.round(height/2);
             let dx = objx-hw;
@@ -654,9 +658,24 @@
             dx = Math.round(dx);
             dy = Math.round(dy);
             ctx.save();
-            ctx.translate(objx,objy+hh);
-            ctx.rotate(shadow.radians);
-            ctx.scale(scaleX,scaleY);
+           // ctx.translate(objx,objy+hh);
+            let skewX = 0;
+            let skewY = 45;
+
+            if(vector.y < 0){
+                if(vector.x > 0){
+                    skewY *= -1;
+                }
+            }
+            else{
+                if(vector.x < 0){
+                    skewY *= -1;
+                }
+            }
+
+
+            ctx.transform(1,Math.degreeToRadians(skewX),Math.degreeToRadians(skewY),1,objx,objy+hh);
+            ctx.scale(1,scaleY);
             ctx.globalAlpha = shadow.alpha;
             ctx.drawImage(
                 frame.shadow,
@@ -760,7 +779,7 @@
                         'collisionStart',
                         [pair.bodyA.plugin.type,pair.bodyB.plugin.type].sort(sortAsc).join()
                     ].join();
-                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByType));
+                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByPlugin));
                 }
             }
         };
@@ -775,7 +794,7 @@
                         'collisionActive',
                         [pair.bodyA.plugin.type,pair.bodyB.plugin.type].sort(sortAsc).join()
                     ].join();
-                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByType));
+                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByPlugin));
                 }
             }
         };
@@ -790,7 +809,7 @@
                         'collisionEnd',
                         [pair.bodyA.plugin.type,pair.bodyB.plugin.type].sort(sortAsc).join()
                     ].join();
-                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByType));
+                    self.trigger(eventName,[pair.bodyA,pair.bodyB].sort(sortByPlugin));
                 }
             }
         };
@@ -896,6 +915,16 @@
      */
     function sortByType(a,b){
         return sortAsc(a.type,b.type);
+    }
+
+    /**
+     *
+     * @param a
+     * @param b
+     * @returns {boolean}
+     */
+    function sortByPlugin(a,b){
+        return sortByType(a.plugin,b.plugin);
     }
 
 
