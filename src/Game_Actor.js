@@ -33,6 +33,7 @@
         self.skills = [];
         self.inventory = options.inventory;
         self.id = options.id;
+        self.shadow = options.shadow || true;
     };
 
     Game_Actor.prototype = Object.create(Game_Character.prototype);

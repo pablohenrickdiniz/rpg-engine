@@ -44,12 +44,12 @@
         self.currentAnimation = null;
         self.through = options.through || false;
         self.light = options.light;
+        self.shadow = options.shadow || false;
         self.lightRadius = options.lightRadius || 16;
         self.lightColor = options.lightColor || 'rgba(255,255,255,0.1)';
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
-        self.shadows = [];
     };
 
     /**
@@ -158,6 +158,24 @@
         let y = 0;
         let st = true;
         let lights = [];
+        let shadow = false;
+
+        Object.defineProperty(self,'shadow',{
+            /**
+             *
+             * @returns {boolean}
+             */
+            get:function(){
+                return shadow;
+            },
+            /**
+             *
+             * @param s {boolean}
+             */
+            set:function(s){
+                shadow = !!s;
+            }
+        });
 
         Object.defineProperty(self,'objectBody',{
             get:function(){

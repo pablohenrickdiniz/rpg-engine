@@ -119,10 +119,9 @@
         });
 
         self.on('collisionActive,light,objectBody',function(light,objectBody){
-
             let object = objectBody.plugin.object;
             let lightSourceObject = light.plugin.object;
-            if(object !== lightSourceObject && lightSourceObject.light && !object.light){
+            if(object !== lightSourceObject && lightSourceObject.light && !object.light && object.shadow){
                 object.lights.push(light);
             }
 
@@ -152,7 +151,7 @@
                 }
 
                 shadows.push({
-                    degree:Math.degreeFromVec(va,vb),
+                    degree:Math.clockWiseDegreeFromVec(vec),
                     frame:frame,
                     distance:distance,
                     alpha:Math.max(1-(distance/radius),0)*0.6,
@@ -659,20 +658,22 @@
             dy = Math.round(dy);
             ctx.save();
            // ctx.translate(objx,objy+hh);
+
             let skewX = 0;
-            let skewY = 45;
+            let skewY = 0;
 
-            if(vector.y < 0){
-                if(vector.x > 0){
-                    skewY *= -1;
-                }
+            if(shadow.degree >= 270 && shadow.degree <= 360){
+                skewY = 360-shadow.degree;
             }
-            else{
-                if(vector.x < 0){
-                    skewY *= -1;
-                }
+            else if(shadow.degree >= 0 && shadow.degree <= 90){
+                skewY = -shadow.degree;
             }
-
+            else if(shadow.degree >= 90 && shadow.degree <= 180){
+                skewY = 180-shadow.degree;
+            }
+            else if(shadow.degree > 180 && shadow.degree <= 270){
+                skewY = -(shadow.degree-180);
+            }
 
             ctx.transform(1,Math.degreeToRadians(skewX),Math.degreeToRadians(skewY),1,objx,objy+hh);
             ctx.scale(1,scaleY);
