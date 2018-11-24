@@ -150,12 +150,40 @@
                     radius = distance;
                 }
 
+                let scaleY = distance/frame.dHeight;
+                let vector = Math.normalize(vec);
+                if(vector.y > 0){
+                    scaleY = -scaleY;
+                }
+                let degree = Math.clockWiseDegreeFromVec(vec);
+                let skewX = 0;
+                let skewY = 0;
+                let alpha = Math.max(1-(distance/radius),0)*0.6;
+
+                if(degree >= 270 && degree <= 360){
+                    skewY = 360-degree
+                }
+                else if(degree >= 0 && degree <= 90){
+                    skewY = -degree;
+                }
+                else if(degree >= 90 && degree <= 180){
+                    skewY = 180-degree;
+                }
+                else if(degree > 180 && degree <= 270){
+                    skewY = -(degree-180);
+                }
+
                 shadows.push({
-                    degree:Math.clockWiseDegreeFromVec(vec),
+                    degree:degree,
                     frame:frame,
                     distance:distance,
-                    alpha:Math.max(1-(distance/radius),0)*0.6,
-                    vector:Math.normalize(vec)
+                    alpha:alpha,
+                    skewX:Math.degreeToRadians(skewX),
+                    skewY:Math.degreeToRadians(skewY),
+                    scaleX:1,
+                    scaleY:scaleY,
+                    translateX:object.x-Canvas.x,
+                    translateY: object.y-Canvas.y+Math.round(frame.dHeight/2)
                 });
             }
         }
@@ -636,47 +664,15 @@
     }
 
     function draw_shadows(object){
-        let objx = object.x-Canvas.x;
-        let objy = object.y-Canvas.y;
         let layer = Canvas.getLayer(Consts.EFFECT_LAYER,0);
         let ctx = layer.context;
         let shadows = get_shadows(object);
         for(let i = 0; i < shadows.length;i++){
             let shadow = shadows[i];
             let frame = shadow.frame;
-            let vector = shadow.vector;
-            let height = frame.dHeight;
-            let scaleY = shadow.distance/height;
-            if(vector.y > 0){
-                scaleY = -scaleY;
-            }
-            let hw = Math.round(frame.dWidth/2);
-            let hh = Math.round(height/2);
-            let dx = objx-hw;
-            let dy = objy-hh;
-            dx = Math.round(dx);
-            dy = Math.round(dy);
             ctx.save();
-           // ctx.translate(objx,objy+hh);
-
-            let skewX = 0;
-            let skewY = 0;
-
-            if(shadow.degree >= 270 && shadow.degree <= 360){
-                skewY = 360-shadow.degree;
-            }
-            else if(shadow.degree >= 0 && shadow.degree <= 90){
-                skewY = -shadow.degree;
-            }
-            else if(shadow.degree >= 90 && shadow.degree <= 180){
-                skewY = 180-shadow.degree;
-            }
-            else if(shadow.degree > 180 && shadow.degree <= 270){
-                skewY = -(shadow.degree-180);
-            }
-
-            ctx.transform(1,Math.degreeToRadians(skewX),Math.degreeToRadians(skewY),1,objx,objy+hh);
-            ctx.scale(1,scaleY);
+            ctx.transform(1,shadow.skewX,shadow.skewY,1,shadow.translateX,shadow.translateY);
+            ctx.scale(shadow.scaleX,shadow.scaleY);
             ctx.globalAlpha = shadow.alpha;
             ctx.drawImage(
                 frame.shadow,
@@ -684,7 +680,7 @@
                 frame.sy,
                 frame.sWidth,
                 frame.sHeight,
-                -hw,
+                -Math.round(frame.dWidth/2),
                 -frame.dHeight,
                 frame.dWidth,
                 frame.dHeight
