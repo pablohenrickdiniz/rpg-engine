@@ -149,11 +149,12 @@
                 if(isNaN(radius)){
                     radius = distance;
                 }
-
+                let scaleX = 1;
                 let scaleY = distance/frame.dHeight;
                 let vector = Math.normalize(vec);
                 if(vector.y > 0){
-                    scaleY = -scaleY;
+                    //scaleY = -scaleY;
+                 //   scaleX *= -1;
                 }
                 let degree = Math.clockWiseDegreeFromVec(vec);
                 let skewX = 0;
@@ -161,29 +162,81 @@
                 let alpha = Math.max(1-(distance/radius),0)*0.6;
 
                 if(degree >= 270 && degree <= 360){
-                    skewY = 360-degree
+                    //skewY = Math.min(360-degree,45);
                 }
                 else if(degree >= 0 && degree <= 90){
-                    skewY = -degree;
+                    //skewY = -Math.min(degree,45);
                 }
                 else if(degree >= 90 && degree <= 180){
-                    skewY = 180-degree;
+                    //skewY = Math.min(180-degree,45);
                 }
                 else if(degree > 180 && degree <= 270){
-                    skewY = -(degree-180);
+                    //skewY = -Math.min(degree-180,45);
+                }
+
+                let f = frame;
+
+
+                if(degree > 45 && degree <= 135){
+                    switch(frame.i){
+                        case Consts.CHARACTER_DIRECTION_DOWN:
+                            f = object.rightFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_RIGHT:
+                            f = object.downFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_LEFT:
+                            f = object.upFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_UP:
+                            f = object.leftFrame;
+                            break;
+                    }
+                }
+                else if(degree > 225 && degree <= 270){
+                    switch(frame.i){
+                        case Consts.CHARACTER_DIRECTION_DOWN:
+                            f = object.leftFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_RIGHT:
+                            f = object.upFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_LEFT:
+                            f = object.downFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_UP:
+                            f = object.rightFrame;
+                            break;
+                    }
+                }
+                else if((degree > 270 && degree <= 45) || (degree > 135 && degree <= 225)){
+                    switch(frame.i){
+                        case Consts.CHARACTER_DIRECTION_DOWN:
+                            f = object.upFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_RIGHT:
+                            f = object.leftFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_LEFT:
+                            f = object.rightFrame;
+                            break;
+                        case Consts.CHARACTER_DIRECTION_UP:
+                            f = object.downFrame;
+                            break;
+                    }
                 }
 
                 shadows.push({
                     degree:degree,
-                    frame:frame,
+                    frame:f,
                     distance:distance,
                     alpha:alpha,
                     skewX:Math.degreeToRadians(skewX),
                     skewY:Math.degreeToRadians(skewY),
-                    scaleX:1,
+                    scaleX:scaleX,
                     scaleY:scaleY,
                     translateX:object.x-Canvas.x,
-                    translateY: object.y-Canvas.y+Math.round(frame.dHeight/2)
+                    translateY: object.y-Canvas.y+Math.round(f.dHeight/2)
                 });
             }
         }
@@ -671,9 +724,17 @@
             let shadow = shadows[i];
             let frame = shadow.frame;
             ctx.save();
-            ctx.transform(1,shadow.skewX,shadow.skewY,1,shadow.translateX,shadow.translateY);
-            ctx.scale(shadow.scaleX,shadow.scaleY);
+            ctx.translate(shadow.translateX,shadow.translateY);
             ctx.globalAlpha = shadow.alpha;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 8, 4, Math.degreeToRadians(0), 0, Math.degreeToRadians(360));
+            ctx.fill();
+
+            if(shadow.degree !== 0){
+                ctx.rotate(Math.degreeToRadians(shadow.degree));
+            }
+            ctx.transform(1,shadow.skewX,shadow.skewY,1,0,0);
+            ctx.scale(shadow.scaleX,shadow.scaleY);
             ctx.drawImage(
                 frame.shadow,
                 frame.sx,

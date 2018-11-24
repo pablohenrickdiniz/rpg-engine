@@ -441,6 +441,28 @@
             }
         });
 
+        Object.defineProperty(self,'upFrame',{
+            configurable:false,
+            /**
+             *
+             * @returns {Tile}
+             */
+            get:function(){
+                let graphic = self.graphic;
+                let animation = self.currentAnimation;
+                if(animation !== null && graphic !== null){
+                    let j = 0;
+                    let index = animation.index;
+                    if(charaID !== null) {
+                        j = index % graphic.cols;
+                    }
+
+                    return graphic.get(Consts.CHARACTER_DIRECTION_UP,j);
+                }
+                return null;
+            }
+        });
+
         Object.defineProperty(self,'direction',{
             /**
              *
