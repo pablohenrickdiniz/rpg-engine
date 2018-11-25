@@ -10,7 +10,7 @@
         options = options || {};
         self.fps = options.fps || 60;
         self.currentTime = 0;
-        self.interval = null;
+        self.id = null;
         self.last_tick = null;
         self.running = false;
         self.listeners = [];
@@ -36,10 +36,10 @@
      */
     Timer_Ticker.prototype.stop = function () {
         let self = this;
-        w.cancelAnimationFrame(self.interval);
+        w.cancelAnimationFrame(self.id);
         self.last_tick = null;
         self.running = false;
-        self.trigger('stop');
+        self.trigger('stop',[]);
         return self;
     };
     /**
@@ -82,7 +82,6 @@
      */
     Timer_Ticker.prototype.trigger = function (eventName,args) {
         let self = this;
-
         if(self.listeners[eventName] !== undefined){
             let length = self.listeners[eventName].length;
             args = args || [];
@@ -95,12 +94,52 @@
 
     /**
      *
+     * @param callback {function}
+     * @param time {number}
+     * @returns {Function}
+     */
+    Timer_Ticker.prototype.timeout = function(callback,time){
+        let self = this;
+        let endTime = self.currentTime+time;
+        let call = function(){
+            if(self.currentTime >= endTime){
+                callback.apply(self);
+                self.off('tick',call);
+            }
+        };
+        self.on('tick',call);
+        return call;
+    };
+
+    /**
+     *
+     * @param callback {function}
+     * @param time {number}
+     * @returns {Function}
+     */
+    Timer_Ticker.prototype.interval = function(callback,time){
+        let self = this;
+        let endTime = self.currentTime+time;
+        let call = function(){
+            if(self.currentTime >= endTime){
+                while(endTime <= self.currentTime){
+                    callback.apply(self);
+                    endTime += time;
+                }
+            }
+        };
+        self.on('tick',call);
+        return call;
+    };
+
+    /**
+     *
      * @param timer{Timer_Ticker}
      */
     function tick(timer) {
         if(timer.running){
-            timer.interval = w.requestAnimationFrame(function () {
-                clearInterval(timer.interval);
+            timer.id = w.requestAnimationFrame(function () {
+                clearInterval(timer.id);
                 tick(timer);
             });
             let passed = 0;

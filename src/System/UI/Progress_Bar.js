@@ -36,14 +36,14 @@
         Object.defineProperty(self,'progress',{
             /**
              *
-             * @returns {float}
+             * @returns {Number}
              */
             get:function(){
                 return parseFloat(self.element.value);
             },
             /**
              *
-             * @param p {float}
+             * @param p
              */
             set:function(p){
                 p = parseFloat(p);
@@ -57,14 +57,14 @@
         Object.defineProperty(self,'total',{
             /**
              *
-             * @returns {float}
+             * @returns {*}
              */
             get:function(){
                 return self.element.max;
             },
             /**
              *
-             * @param total {float}
+             * @param total
              */
             set:function(total){
                 total = parseFloat(total);

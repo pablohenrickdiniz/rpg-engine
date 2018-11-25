@@ -226,17 +226,23 @@
                     }
                 }
 
+
+                let objx = object.x-Canvas.x;
+                let objy = object.y-Canvas.y;
+                let x = Math.round(objx-(frame.dWidth/2));
+                let y = Math.round(objy-(frame.dHeight/2));
+
                 shadows.push({
                     degree:degree,
                     frame:f,
                     distance:distance,
                     alpha:alpha,
-                    skewX:Math.degreeToRadians(skewX),
-                    skewY:Math.degreeToRadians(skewY),
+                   // skewX:Math.degreeToRadians(skewX),
+                    //skewY:Math.degreeToRadians(skewY),
                     scaleX:scaleX,
                     scaleY:scaleY,
-                    translateX:object.x-Canvas.x,
-                    translateY: object.y-Canvas.y+Math.round(f.dHeight/2)
+                    translateX:objx,
+                    translateY:objy+(object.height/2)
                 });
             }
         }
@@ -535,7 +541,8 @@
                 y:objy,
                 percent:100,
                 color:flashobjs[i].lightColor,
-                radius:100
+                radius:100,
+                type: Consts.EVENT_LAYER
             });
         }
     }
@@ -717,7 +724,7 @@
     }
 
     function draw_shadows(object){
-        let layer = Canvas.getLayer(Consts.EFFECT_LAYER,0);
+        let layer = Canvas.getLayer(Consts.EVENT_LAYER,0);
         let ctx = layer.context;
         let shadows = get_shadows(object);
         for(let i = 0; i < shadows.length;i++){

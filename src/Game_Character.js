@@ -24,13 +24,23 @@
         throw "Game_Character requires Game_Graphic";
     }
 
+    if(!root.Game_Inventory){
+        throw "Game_Character requires Game_Inventory"
+    }
+
+    if(!root.Formulas){
+        throw "Game_Character requires Formulas"
+    }
+
     let Game_Animation = root.Game_Animation,
         Consts = root.Consts,
         Main = root.Main,
         Game_Object = root.Game_Object,
         Charas = Main.Charas,
         Faces = Main.Faces,
-        Game_Graphic = root.Game_Graphic;
+        Game_Graphic = root.Game_Graphic,
+        Game_Inventory = root.Game_Inventory,
+        Formulas = root.Formulas;
 
     /**
      *
@@ -42,9 +52,17 @@
         Game_Object.call(self,options);
         initialize(self);
         options = options || {};
+        self.level = options.level || 1;
+        self.maxLevel = options.maxLevel || 200;
+        self.MP = options.HP || 100;
+        self.HP = options.MP || 100;
+        self.skills = [];
+        self.inventory = options.inventory;
+        self.shadow = options.shadow || true;
         self.charaID = options.charaID || null;
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
+        self.invulnerable = options.invulnerable || true;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -250,12 +268,29 @@
 
     /**
      *
+     * @param options
+     */
+    Game_Character.prototype.dammage = function(options){
+        options = options || {};
+
+    };
+
+    /**
+     *
      * @returns {Game_Character}
      */
     Game_Character.prototype.lookToPlayer = function () {
         let self = this;
         return self.turn(Main.Player);
     };
+
+    function maxHP(self){
+        return Math.round(Formulas.yellow(self.level,self.maxLevel,9999));
+    }
+
+    function maxMP(self){
+        return Math.round(Formulas.yellow(self.level,self.maxLevel,9999));
+    }
 
     /**
      *
@@ -265,6 +300,190 @@
         let charaID = null;
         let faceID = null;
         let direction = Consts.CHARACTER_DIRECTION_DOWN;
+        let inventory = new Game_Inventory();
+        let level = 1;
+        let maxLevel = 100;
+
+        let points = {
+            HP:100,
+            MP:100,
+            maxHP:null,
+            maxMP:null
+        };
+
+        let attributes = {
+            strength:5,
+            vitality:5,
+            defense:5,
+            agility:5,
+            intelligence:5,
+            charisma:5,
+            luck:0
+        };
+
+        Object.defineProperty(self,'vitality',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return attributes.vitality;
+            }
+        });
+
+        Object.defineProperty(self,'intelligence',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return attributes.intelligence;
+            }
+        });
+
+        Object.defineProperty(self,'maxMP',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                if(points.maxMP == null){
+                    points.maxMP = maxMP(self);
+                }
+                return points.maxMP;
+            }
+        });
+
+        Object.defineProperty(self,'maxHP',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                if(points.maxHP == null){
+                    points.maxHP = maxHP(self);
+                }
+                return points.maxHP;
+            }
+        });
+
+        Object.defineProperty(self,'attributes',{
+            /**
+             *
+             * @returns {{}}
+             */
+            get:function(){
+                return attributes;
+            }
+        });
+
+        Object.defineProperty(self,'HP',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return points.HP;
+            },
+            /**
+             *
+             * @param hp {number}
+             */
+            set:function(hp){
+                hp = parseInt(hp);
+                if(!isNaN(hp) && hp >= 0 && hp !== points.HP){
+                    points.HP = hp;
+                    self.trigger('HPChange',[hp]);
+                    if(points.HP === 0){
+                        self.trigger('die');
+                    }
+                }
+            }
+        });
+
+        Object.defineProperty(self,'MP',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return points.MP;
+            },
+            /**
+             *
+             * @param mp {number}
+             */
+            set:function(mp){
+                mp = parseInt(mp);
+                if(!isNaN(mp) && mp >= 0 && mp !== points.MP){
+                    points.MP = mp;
+                    self.trigger('MPChange',[mp]);
+                }
+            }
+        });
+
+        Object.defineProperty(self,'inventory',{
+            /**
+             *
+             * @returns {root.Game_Inventory}
+             */
+            get:function(){
+                return inventory;
+            },
+            /**
+             *
+             * @param inv
+             */
+            set:function(inv){
+                if(inv instanceof Game_Inventory){
+                    inventory = inv;
+                }
+                else if(inv && inv.constructor === {}.constructor){
+                    inventory = new Game_Inventory(inv);
+                }
+            }
+        });
+
+        Object.defineProperty(self,'maxLevel',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return maxLevel;
+            },
+            /**
+             *
+             * @param ml
+             */
+            set:function(ml){
+                ml = parseInt(ml);
+                if(!isNaN(ml) && ml > 0 && ml !== maxLevel){
+                    maxLevel = ml;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'level',{
+            /**
+             *
+             * @returns {number}
+             */
+            get:function(){
+                return level;
+            },
+            /**
+             *
+             * @param l {number}
+             */
+            set:function(l){
+                l = parseInt(l);
+                if(!isNaN(l) && l > 0 && l !== level){
+                    level = l;
+                    self.trigger('levelChange',[level]);
+                }
+            }
+        });
 
         Object.defineProperty(self, 'charaID', {
             /**
@@ -489,6 +708,27 @@
                     }
                 }
             }
+        });
+
+        self.on('levelChange',function(){
+            let mHP = maxHP(self);
+            let mMP = maxMP(self);
+            if(points.maxHP !== mHP){
+                points.maxHP = mHP;
+                self.trigger('maxHPChange',[mHP]);
+            }
+            if(points.maxMP !== mMP){
+                points.maxMP = mMP;
+                self.trigger('maxMPChange',[mMP]);
+            }
+        });
+
+        self.on('maxHPChange',function(maxHP){
+            self.HP = Math.min(points.HP,maxHP);
+        });
+
+        self.on('maxMPChange',function(maxMP){
+            self.MP = Math.min(points.MP,maxMP);
         });
     }
 

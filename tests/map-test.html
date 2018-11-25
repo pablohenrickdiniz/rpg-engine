@@ -50,6 +50,13 @@
     <script type="text/javascript" src="../src/Faces.js"></script>
     <script type="text/javascript" src="../src/Tileset.js"></script>
     <script type="text/javascript" src="../src/Tilesets.js"></script>
+    <script type="text/javascript" src="../src/Game_Icon.js"></script>
+    <script type="text/javascript" src="../src/Icons.js"></script>
+    <script type="text/javascript" src="../src/Item.js"></script>
+    <script type="text/javascript" src="../src/Items.js"></script>
+    <script type="text/javascript" src="../src/Game_Slot.js"></script>
+    <script type="text/javascript" src="../src/Game_Inventory.js"></script>
+    <script type="text/javascript" src="../src/Formulas.js"></script>
     <script type="text/javascript" src="../src/Game_Character.js"></script>
     <script type="text/javascript" src="../src/Event_Page.js"></script>
     <script type="text/javascript" src="../src/Game_Skill.js"></script>
@@ -57,12 +64,6 @@
     <!-- System-->
     <script type="text/javascript" src="../src/System/Audio/Audio_File.js"></script>
     <script type="text/javascript" src="../src/System/Audio/Audio.js"></script>
-    <script type="text/javascript" src="../src/Game_Icon.js"></script>
-    <script type="text/javascript" src="../src/Icons.js"></script>
-    <script type="text/javascript" src="../src/Item.js"></script>
-    <script type="text/javascript" src="../src/Items.js"></script>
-    <script type="text/javascript" src="../src/Game_Slot.js"></script>
-    <script type="text/javascript" src="../src/Game_Inventory.js"></script>
     <script type="text/javascript" src="../src/System/Events.js"></script>
     <script type="text/javascript" src="../src/Switches.js"></script>
     <script type="text/javascript" src="../src/Game_Event.js"></script>
@@ -76,7 +77,6 @@
     <script type="text/javascript" src="../src/Maps.js"></script>
     <script type="text/javascript" src="../src/Animations.js"></script>
     <script type="text/javascript" src="../src/Skills.js"></script>
-
     <!-- Loader-->
     <script type="text/javascript" src="../src/Loader/Global_Progress.js"></script>
     <script type="text/javascript" src="../src/Loader/Graphic_Loader.js"></script>
@@ -84,10 +84,8 @@
     <script type="text/javascript" src="../src/Loader/Scene_Loader.js"></script>
     <script type="text/javascript" src="../src/Loader/Scene_Map_Loader.js"></script>
     <script type="text/javascript" src="../src/Loader/Tileset_Loader.js"></script>
-
     <!-- Scene-->
     <script type="text/javascript" src="../src/Scene/Scene_Manager.js"></script>
-
     <!-- UI-->
     <script type="text/javascript" src="../src/System/UI/UI.js"></script>
     <script type="text/javascript" src="../src/System/UI/Element.js"></script>
@@ -111,7 +109,7 @@
                 ui_root:ui_root
             });
 
-            RPG.debug = false;
+           // RPG.debug = true;
             RPG.Scene_Manager.new('map','intro',{
                 graphics:{
                     tilesets:{
@@ -173,7 +171,7 @@
                     {
                         class:'Event',
                         x:200,
-                        y:400,
+                        y:200,
                         width:25,
                         height:15,
                         static:true,
@@ -334,9 +332,11 @@
                         vSpeed:0.001,
                         hSpeed:0.001,
                         animationSpeed:6,
-                        startFrame:1,
+                        startFrame:0,
                         type:'Player',
                         name:'Player 1',
+                        height:32,
+                        width:32,
                         inventory:{
                             slots: {
                                 0: {max:99},
@@ -505,27 +505,22 @@
                 },
                 start:function(root){
                     if(root.Main.currentPlayer){
+                        let player = root.Main.currentPlayer;
                         let info = root.UI.root.findById('player-info');
-                        info.face = root.Main.currentPlayer.face;
-                        info.totalMP = 500;
-                        info.MP = 400;
-                        info.name = root.Main.currentPlayer.name;
+                        info.player = player;
                         info.visible = true;
-                        root.UI.root.findById('inventory').inventory = root.Main.currentPlayer.inventory;
+                        root.UI.root.findById('inventory').inventory = player.inventory;
                         root.UI.root.findById('fps').visible = true;
                     }
-
                     root.Controls.Keyboard.on('state,,active', function () {
                         let inventory_ui = root.UI.root.findById('inventory');
                         inventory_ui.visible = !inventory_ui.visible;
                     });
-
                     root.Main.currentScene.focus(root.Main.currentPlayer);
-                    root.Main.Switches.enable('LAMP')
+                    root.Main.Switches.enable('LAMP');
                 },
                 progress:function(progress){
                     let progress_bar = RPG.UI.root.findById('loading-progress');
-
                     if(progress_bar != null){
                         progress_bar.progress = progress;
                     }

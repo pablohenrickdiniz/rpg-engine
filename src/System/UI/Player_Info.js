@@ -4,10 +4,6 @@
         throw "Player_Info requires UI";
     }
 
-    if(!root.Game_Face){
-        throw "Player_Info requires Game_Face";
-    }
-
     if(!root.UI.Progress_Bar){
         throw  "Player_Info requires Progress_Bar";
     }
@@ -24,12 +20,16 @@
         throw "Player_Info requires Text";
     }
 
+    if(!root.Game_Character){
+        throw "Player_Info requires Game_Character"
+    }
+
     let UI = root.UI,
-        Game_Face = root.Game_Face,
         Progress_Bar = UI.Progress_Bar,
         Element = UI.Element,
         Image = UI.Image,
-        Text = UI.Text;
+        Text = UI.Text,
+        Game_Character = root.Game_Character;
 
     /**
      *
@@ -41,13 +41,7 @@
         options = options || {};
         Element.call(self,options);
         initialize(self);
-        self.totalMP = options.totalMP || 100;
-        self.totalHP = options.totalHP || 100;
-        self.totalST = options.totalST || 100;
-        self.MP = options.MP || 100;
-        self.HP = options.HP || 100;
-        self.ST = options.ST || 100;
-        self.name = options.playerName || 'player1';
+        self.player = options.player || null;
     };
 
     Player_Info.prototype = Object.create(Element.prototype);
@@ -58,18 +52,12 @@
      * @param self {Player_Info}
      */
     function initialize(self){
-        let face = null;
-        let totalMP = 1;
-        let totalHP = 1;
-        let totalST = 1;
-        let MP = 0;
-        let HP = 0;
-        let ST = 0;
-        let name = '';
+        let player = null;
 
         let faceContainer = new Element({
             parent:self,
-            class:"face-container"
+            class:"face-container",
+            visible:false
         });
 
         let faceImage = new Image({
@@ -79,184 +67,100 @@
 
         let nameContainer = new Text({
             parent:self,
-            class:"name-container"
+            class:"name-container",
+            visible:false
         });
 
         let barContainer = new Element({
             parent:self,
-            class:"bar-container"
+            class:"bar-container",
+            visible:false
         });
 
-        let stBar = new Progress_Bar({parent:barContainer,class:'stamina-bar'});
-        let mpBar = new Progress_Bar({parent:barContainer,class:'mp-bar'});
-        let hpBar = new Progress_Bar({parent:barContainer,class:'hp-bar'});
+        let stBar = new Progress_Bar({
+            parent:barContainer,
+            class:'stamina-bar',
+            visible:false
+        });
 
-        Object.defineProperty(self,'face',{
+        let mpBar = new Progress_Bar({
+            parent:barContainer,
+            class:'mp-bar',
+            visible:false
+        });
+
+        let hpBar = new Progress_Bar({
+            parent:barContainer,
+            class:'hp-bar',
+            visible:false
+        });
+
+        let mpChange  = function(){
+            let self = this;
+            mpBar.total = self.maxMP;
+            mpBar.progress = self.maxMP*100/self.maxMP;
+            mpBar.text = [self.MP,'/',self.maxMP].join('');
+        };
+
+        let hpChange  = function(){
+            let self = this;
+            hpBar.total = self.maxHP;
+            hpBar.progress = self.maxHP*100/self.maxHP;
+            hpBar.text = [self.HP,'/',self.maxHP].join('');
+        };
+
+        Object.defineProperty(self,'player',{
             /**
              *
-             * @returns {Game_Face}
+             * @returns {Game_Character}
              */
-            get:function(){
-                return face;
-            },
+           get:function(){
+               return player;
+           },
             /**
              *
-             * @param f {Game_Face}
+             * @param p {Game_Character || null}
              */
-            set:function(f){
-                if(f !== face && f instanceof Game_Face){
-                    face = f;
-                    if(face.image !== null){
-                        faceImage.src = face.url;
+           set:function(p){
+               if(p !== player && (p == null || p instanceof Game_Character)){
+                   if(player !== null){
+                       player.off('mpChange',mpChange);
+                       player.off('hpChange',hpChange);
+                       player.off('maxMPChange',mpChange);
+                       player.off('maxHPChange',hpChange);
+                   }
+                    player = p;
+                    if(player !== null){
+                        player.on('mpChange',mpChange);
+                        player.on('hpChange',hpChange);
+                        player.on('maxMPChange',mpChange);
+                        player.on('maxHPChange',hpChange);
+                        hpBar.total = player.maxHP;
+                        hpBar.progress = player.HP*100/player.maxHP;
+                        hpBar.text = [player.HP,'/',player.maxHP].join('');
+                        mpBar.total = player.maxMP;
+                        mpBar.progress = player.maxMP*100/player.maxMP;
+                        mpBar.text = [player.MP,'/',player.maxMP].join('');
+                        nameContainer.value = player.name;
+                        if(player.face){
+                            if(player.face.image !== null){
+                                faceImage.src = player.face.url;
+                            }
+                        }
+                        mpBar.visible = true;
+                        hpBar.visible = true;
+                        barContainer.visible = true;
+                        faceContainer.visible = true;
+                        nameContainer.visible = true;
                     }
-                }
-            }
-        });
-
-        Object.defineProperty(self,'totalMP',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return totalMP;
-            },
-            /**
-             *
-             * @param tmp {number}
-             */
-            set:function(tmp){
-                if(tmp !== totalMP){
-                    totalMP = tmp;
-                    mpBar.progress = MP*100/totalMP;
-                    mpBar.text = MP+'/'+totalMP;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'totalHP',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return totalHP;
-            },
-            /**
-             *
-             * @param thp {number}
-             */
-            set:function(thp){
-                if(thp !== totalHP){
-                    totalHP = thp;
-                    hpBar.progress = HP*100/totalHP;
-                    hpBar.text = HP+'/'+totalHP;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'totalST',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return totalST;
-            },
-            /**
-             *
-             * @param tst {number}
-             */
-            set:function(tst){
-                if(tst !== totalST){
-                    totalST = tst;
-                    stBar.progress = ST*100/totalST;
-                    stBar.text = ST+'/'+totalST;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'MP',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return MP;
-            },
-            /**
-             *
-             * @param mp {number}
-             */
-            set:function(mp){
-                if(mp !== MP){
-                    MP = mp;
-                    mpBar.progress = MP*100/totalMP;
-                    mpBar.text = MP+'/'+totalMP;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'HP',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return HP;
-            },
-            /**
-             *
-             * @param hp {number}
-             */
-            set:function(hp){
-                if(hp !== HP){
-                    HP = hp;
-                    hpBar.progress = HP*100/totalHP;
-                    hpBar.text = HP+"/"+totalHP;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'ST',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                return ST;
-            },
-            /**
-             *
-             * @param st {number}
-             */
-            set:function(st){
-                if(st !== ST){
-                    ST = st;
-                    stBar.progress = ST*100/totalST;
-                    stBar.text = ST+"/"+totalST;
-                }
-            }
-        });
-
-        Object.defineProperty(self,'name',{
-            /**
-             *
-             * @returns {string}
-             */
-            get:function(){
-                return name;
-            },
-            /**
-             *
-             * @param n {string}
-             */
-            set:function(n){
-                if(n !== name){
-                    name = n;
-                    nameContainer.value = name;
-                }
-            }
+                    else{
+                        mpBar.visible = false;
+                        barContainer.visible = false;
+                        faceContainer.visible = false;
+                        nameContainer.visible = false;
+                    }
+               }
+           }
         });
     }
 

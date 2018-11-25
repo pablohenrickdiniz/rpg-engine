@@ -106,7 +106,7 @@
         let self = this;
         if(self.listeners[eventName] !== undefined){
             for(let i = 0;i < self.listeners[eventName].length;i++){
-                self.listeners[eventName][i].apply(null,args);
+                self.listeners[eventName][i].apply(self,args);
             }
         }
         return self;
