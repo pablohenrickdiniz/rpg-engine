@@ -63,6 +63,7 @@
         self.faceID = options.faceID;
         self.currentAnimation = self.animations[Consts.CHARACTER_STOP_DOWN];
         self.invulnerable = options.invulnerable || true;
+        self.steps = 0;
     };
 
     Game_Character.prototype = Object.create(Game_Object.prototype);
@@ -188,6 +189,18 @@
         return self;
     };
 
+    Game_Character.prototype.update = function(){
+        let self = this;
+        if(self.steps < 60){
+            self.steps++;
+        }
+        else{
+            self.steps = 0;
+            self.HP += self.regenHPRate;
+            self.MP += self.regenMPRate;
+        }
+    };
+
     /**
      *
      * @param direction {number}
@@ -285,11 +298,23 @@
     };
 
     function maxHP(self){
-        return Math.round(Formulas.yellow(self.level,self.maxLevel,9999));
+        let baseHP = Formulas.yellow(self.level,self.maxLevel,9999);
+        let pointHP = self.vitality*10;
+        return Math.round(baseHP+pointHP);
+    }
+
+    function regenHPRate(self){
+        return Math.max(Math.round(Math.sqrt(self.vitality*self.level)),1);
+    }
+
+    function regenMPRate(self){
+        return Math.max(Math.round(Math.sqrt(self.intelligence*self.level)),1);
     }
 
     function maxMP(self){
-        return Math.round(Formulas.yellow(self.level,self.maxLevel,9999));
+        let baseMP = Formulas.yellow(self.level,self.maxLevel,9999);
+        let pointMP = self.intelligence*10;
+        return Math.round(baseMP+pointMP);
     }
 
     /**
@@ -308,16 +333,17 @@
             HP:100,
             MP:100,
             maxHP:null,
-            maxMP:null
+            maxMP:null,
+            regenHPRate:null
         };
 
         let attributes = {
-            strength:5,
-            vitality:5,
-            defense:5,
-            agility:5,
-            intelligence:5,
-            charisma:5,
+            strength:1,
+            vitality:22,
+            defense:1,
+            agility:1,
+            intelligence:2,
+            charisma:1,
             luck:0
         };
 
@@ -367,6 +393,32 @@
             }
         });
 
+        Object.defineProperty(self,'regenHPRate',{
+            /**
+             *
+             * @returns {null}
+             */
+           get:function(){
+                if(points.regenHPRate == null){
+                    points.regenHPRate = regenHPRate(self);
+                }
+               return points.regenHPRate;
+           }
+        });
+
+        Object.defineProperty(self,'regenMPRate',{
+            /**
+             *
+             * @returns {null}
+             */
+            get:function(){
+                if(points.regenMPRate == null){
+                    points.regenMPRate = regenMPRate(self);
+                }
+                return points.regenMPRate;
+            }
+        });
+
         Object.defineProperty(self,'attributes',{
             /**
              *
@@ -391,7 +443,7 @@
              */
             set:function(hp){
                 hp = parseInt(hp);
-                if(!isNaN(hp) && hp >= 0 && hp !== points.HP){
+                if(!isNaN(hp) && hp >= 0 && hp <= self.maxHP && hp !== points.HP){
                     points.HP = hp;
                     self.trigger('HPChange',[hp]);
                     if(points.HP === 0){
@@ -415,7 +467,7 @@
              */
             set:function(mp){
                 mp = parseInt(mp);
-                if(!isNaN(mp) && mp >= 0 && mp !== points.MP){
+                if(!isNaN(mp) && mp >= 0 && mp <= self.maxMP && mp !== points.MP){
                     points.MP = mp;
                     self.trigger('MPChange',[mp]);
                 }
@@ -711,16 +763,10 @@
         });
 
         self.on('levelChange',function(){
-            let mHP = maxHP(self);
-            let mMP = maxMP(self);
-            if(points.maxHP !== mHP){
-                points.maxHP = mHP;
-                self.trigger('maxHPChange',[mHP]);
-            }
-            if(points.maxMP !== mMP){
-                points.maxMP = mMP;
-                self.trigger('maxMPChange',[mMP]);
-            }
+             points.maxHP = null;
+             points.maxMP = null;
+             points.regenHPRate = null;
+             points.regenMPRate = null;
         });
 
         self.on('maxHPChange',function(maxHP){

@@ -50,6 +50,8 @@
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
+        self.steps = 0;
+
     };
 
     /**

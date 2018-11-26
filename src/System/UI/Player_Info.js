@@ -98,14 +98,14 @@
         let mpChange  = function(){
             let self = this;
             mpBar.total = self.maxMP;
-            mpBar.progress = self.maxMP*100/self.maxMP;
+            mpBar.progress = self.MP;
             mpBar.text = [self.MP,'/',self.maxMP].join('');
         };
 
         let hpChange  = function(){
             let self = this;
             hpBar.total = self.maxHP;
-            hpBar.progress = self.maxHP*100/self.maxHP;
+            hpBar.progress = self.HP;
             hpBar.text = [self.HP,'/',self.maxHP].join('');
         };
 
@@ -124,22 +124,22 @@
            set:function(p){
                if(p !== player && (p == null || p instanceof Game_Character)){
                    if(player !== null){
-                       player.off('mpChange',mpChange);
-                       player.off('hpChange',hpChange);
+                       player.off('MPChange',mpChange);
+                       player.off('HPChange',hpChange);
                        player.off('maxMPChange',mpChange);
                        player.off('maxHPChange',hpChange);
                    }
                     player = p;
                     if(player !== null){
-                        player.on('mpChange',mpChange);
-                        player.on('hpChange',hpChange);
+                        player.on('MPChange',mpChange);
+                        player.on('HPChange',hpChange);
                         player.on('maxMPChange',mpChange);
                         player.on('maxHPChange',hpChange);
                         hpBar.total = player.maxHP;
-                        hpBar.progress = player.HP*100/player.maxHP;
+                        hpBar.progress = player.HP;
                         hpBar.text = [player.HP,'/',player.maxHP].join('');
                         mpBar.total = player.maxMP;
-                        mpBar.progress = player.maxMP*100/player.maxMP;
+                        mpBar.progress = player.MP;
                         mpBar.text = [player.MP,'/',player.maxMP].join('');
                         nameContainer.value = player.name;
                         if(player.face){
