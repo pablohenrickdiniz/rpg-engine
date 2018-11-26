@@ -297,24 +297,53 @@
         return self.turn(Main.Player);
     };
 
+    /**
+     *
+     * @param self
+     * @returns {number}
+     */
     function maxHP(self){
         let baseHP = Formulas.yellow(self.level,self.maxLevel,9999);
         let pointHP = self.vitality*10;
         return Math.round(baseHP+pointHP);
     }
 
+    /**
+     *
+     * @param self
+     * @returns {number}
+     */
     function regenHPRate(self){
         return Math.max(Math.round(Math.sqrt(self.vitality*self.level)),1);
     }
 
+    /**
+     *
+     * @param self
+     * @returns {number}
+     */
     function regenMPRate(self){
         return Math.max(Math.round(Math.sqrt(self.intelligence*self.level)),1);
     }
 
+    /**
+     *
+     * @param self
+     * @returns {number}
+     */
     function maxMP(self){
         let baseMP = Formulas.yellow(self.level,self.maxLevel,9999);
         let pointMP = self.intelligence*10;
         return Math.round(baseMP+pointMP);
+    }
+
+    /**
+     *
+     * @param self
+     * @returns {number}
+     */
+    function nextLevelExperience(self){
+        return Math.round(Formulas.yellow(self.level,self.maxLevel,99999));
     }
 
     /**
@@ -329,15 +358,21 @@
         let level = 1;
         let maxLevel = 100;
 
+        let vars = {
+            maxHP:null,
+            maxMP:null,
+            regenHPRate:null,
+            regenMPRate:null,
+            nextLevelExperience:null
+        };
+
         let points = {
             HP:100,
             MP:100,
-            maxHP:null,
-            maxMP:null,
-            regenHPRate:null
+            experience:0
         };
 
-        let attributes = {
+        let stats = {
             strength:1,
             vitality:22,
             defense:1,
@@ -353,7 +388,7 @@
              * @returns {number}
              */
             get:function(){
-                return attributes.vitality;
+                return stats.vitality;
             }
         });
 
@@ -363,7 +398,7 @@
              * @returns {number}
              */
             get:function(){
-                return attributes.intelligence;
+                return stats.intelligence;
             }
         });
 
@@ -373,10 +408,10 @@
              * @returns {number}
              */
             get:function(){
-                if(points.maxMP == null){
-                    points.maxMP = maxMP(self);
+                if(vars.maxMP === null){
+                    vars.maxMP = maxMP(self);
                 }
-                return points.maxMP;
+                return vars.maxMP;
             }
         });
 
@@ -386,46 +421,59 @@
              * @returns {number}
              */
             get:function(){
-                if(points.maxHP == null){
-                    points.maxHP = maxHP(self);
+                if(vars.maxHP === null){
+                    vars.maxHP = maxHP(self);
                 }
-                return points.maxHP;
+                return vars.maxHP;
             }
         });
 
         Object.defineProperty(self,'regenHPRate',{
             /**
              *
-             * @returns {null}
+             * @returns {Number}
              */
-           get:function(){
-                if(points.regenHPRate == null){
-                    points.regenHPRate = regenHPRate(self);
+            get:function(){
+                if(vars.regenHPRate === null){
+                    vars.regenHPRate = regenHPRate(self);
                 }
-               return points.regenHPRate;
-           }
+                return vars.regenHPRate;
+            }
         });
 
         Object.defineProperty(self,'regenMPRate',{
             /**
              *
-             * @returns {null}
+             * @returns {Number}
              */
             get:function(){
-                if(points.regenMPRate == null){
-                    points.regenMPRate = regenMPRate(self);
+                if(vars.regenMPRate === null){
+                    vars.regenMPRate = regenMPRate(self);
                 }
-                return points.regenMPRate;
+                return vars.regenMPRate;
             }
         });
 
-        Object.defineProperty(self,'attributes',{
+        Object.defineProperty(self,'nextLevelExperience',{
+            /**
+             *
+             * @returns {Number}
+             */
+            get:function(){
+                if(vars.nextLevelExperience === null){
+                    vars.nextLevelExperience = nextLevelExperience(self);
+                }
+                return vars.nextLevelExperience;
+            }
+        });
+
+        Object.defineProperty(self,'stats',{
             /**
              *
              * @returns {{}}
              */
             get:function(){
-                return attributes;
+                return stats;
             }
         });
 
@@ -443,11 +491,11 @@
              */
             set:function(hp){
                 hp = parseInt(hp);
-                if(!isNaN(hp) && hp >= 0 && hp <= self.maxHP && hp !== points.HP){
-                    points.HP = hp;
-                    self.trigger('HPChange',[hp]);
-                    if(points.HP === 0){
-                        self.trigger('die');
+                if(!isNaN(hp) && hp >= 0){
+                    hp = Math.min(hp,self.maxHP);
+                    if(hp !== points.HP){
+                        points.HP = hp;
+                        self.trigger('HPChange',[hp]);
                     }
                 }
             }
@@ -467,9 +515,26 @@
              */
             set:function(mp){
                 mp = parseInt(mp);
-                if(!isNaN(mp) && mp >= 0 && mp <= self.maxMP && mp !== points.MP){
-                    points.MP = mp;
-                    self.trigger('MPChange',[mp]);
+                if(!isNaN(mp) && mp >= 0){
+                    mp = Math.min(mp,self.maxMP);
+                    if(mp !== points.MP){
+                        points.MP = mp;
+                        self.trigger('MPChange',[mp]);
+                    }
+                }
+            }
+        });
+
+
+        Object.defineProperty(self,'experience',{
+            get:function(){
+                return points.experience;
+            },
+            set:function(exp){
+                exp = parseInt(exp);
+                if(!isNaN(exp) && exp >= 0 && exp !== points.experience){
+                    points.experience = exp;
+                    self.trigger('experienceChange',[exp]);
                 }
             }
         });
@@ -763,10 +828,9 @@
         });
 
         self.on('levelChange',function(){
-             points.maxHP = null;
-             points.maxMP = null;
-             points.regenHPRate = null;
-             points.regenMPRate = null;
+            Object.keys(vars).forEach(function(key){
+                vars[key] = null;
+            });
         });
 
         self.on('maxHPChange',function(maxHP){
@@ -775,6 +839,20 @@
 
         self.on('maxMPChange',function(maxMP){
             self.MP = Math.min(points.MP,maxMP);
+        });
+
+        self.on('HPChange',function(hp){
+            if(hp === 0){
+                self.trigger('die');
+            }
+        });
+
+        self.on('experienceChange',function(exp){
+            if(exp >= self.nextLevelExperience){
+                exp -= self.nextLevelExperience;
+                self.level++;
+                self.experience = exp;
+            }
         });
     }
 

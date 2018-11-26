@@ -109,6 +109,13 @@
             hpBar.text = [self.HP,'/',self.maxHP].join('');
         };
 
+        let experienceChange = function(){
+            let self = this;
+            stBar.total = self.nextLevelExperience;
+            stBar.progress = self.experience;
+            stBar.text = [self.experience,'/',self.nextLevelExperience].join('');
+        };
+
         Object.defineProperty(self,'player',{
             /**
              *
@@ -128,6 +135,7 @@
                        player.off('HPChange',hpChange);
                        player.off('maxMPChange',mpChange);
                        player.off('maxHPChange',hpChange);
+                       player.off('experienceChange',experienceChange);
                    }
                     player = p;
                     if(player !== null){
@@ -135,12 +143,16 @@
                         player.on('HPChange',hpChange);
                         player.on('maxMPChange',mpChange);
                         player.on('maxHPChange',hpChange);
+                        player.on('experienceChange',experienceChange);
                         hpBar.total = player.maxHP;
                         hpBar.progress = player.HP;
                         hpBar.text = [player.HP,'/',player.maxHP].join('');
                         mpBar.total = player.maxMP;
                         mpBar.progress = player.MP;
                         mpBar.text = [player.MP,'/',player.maxMP].join('');
+                        stBar.total = player.nextLevelExperience;
+                        stBar.progress = player.experience;
+                        stBar.text = [player.experience,'/',player.nextLevelExperience].join('');
                         nameContainer.value = player.name;
                         if(player.face){
                             if(player.face.image !== null){
@@ -152,6 +164,7 @@
                         barContainer.visible = true;
                         faceContainer.visible = true;
                         nameContainer.visible = true;
+                        stBar.visible = true;
                     }
                     else{
                         mpBar.visible = false;
