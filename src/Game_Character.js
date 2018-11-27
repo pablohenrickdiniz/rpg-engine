@@ -299,55 +299,6 @@
 
     /**
      *
-     * @param self
-     * @returns {number}
-     */
-    function maxHP(self){
-        let baseHP = Formulas.yellow(self.level,self.maxLevel,9999);
-        let pointHP = self.vitality*10;
-        return Math.round(baseHP+pointHP);
-    }
-
-    /**
-     *
-     * @param self
-     * @returns {number}
-     */
-    function regenHPRate(self){
-        return Math.max(Math.round(Math.sqrt(self.vitality*self.level)),1);
-    }
-
-    /**
-     *
-     * @param self
-     * @returns {number}
-     */
-    function regenMPRate(self){
-        return Math.max(Math.round(Math.sqrt(self.intelligence*self.level)),1);
-    }
-
-    /**
-     *
-     * @param self
-     * @returns {number}
-     */
-    function maxMP(self){
-        let baseMP = Formulas.yellow(self.level,self.maxLevel,9999);
-        let pointMP = self.intelligence*10;
-        return Math.round(baseMP+pointMP);
-    }
-
-    /**
-     *
-     * @param self
-     * @returns {number}
-     */
-    function nextLevelExperience(self){
-        return Math.round(Formulas.yellow(self.level,self.maxLevel,99999));
-    }
-
-    /**
-     *
      * @param self {Game_Character}
      */
     function initialize(self) {
@@ -358,12 +309,22 @@
         let level = 1;
         let maxLevel = 100;
 
-        let vars = {
+        let stats = {
             maxHP:null,
             maxMP:null,
             regenHPRate:null,
             regenMPRate:null,
-            nextLevelExperience:null
+            nextLevelExperience:null,
+            attack:null,
+            defense:null,
+            magicAttack:null,
+            magicDefense:null,
+            strength:null,
+            vitality:null,
+            agility:null,
+            intelligence:null,
+            charisma:null,
+            luck:null
         };
 
         let points = {
@@ -372,108 +333,76 @@
             experience:0
         };
 
-        let stats = {
+        let baseStats = {
             strength:1,
-            vitality:22,
-            defense:1,
+            vitality:1,
             agility:1,
-            intelligence:2,
-            charisma:1,
+            intelligence:1,
+            charisma:0,
             luck:0
         };
 
-        Object.defineProperty(self,'vitality',{
+        let keys = Object.keys(stats);
+        for(let i = 0; i < keys.length;i++){
+            let key = keys[i];
+            Object.defineProperty(self,key,{
+                get:function(){
+                    if(typeof Formulas[key] == 'function' && stats[key] === null){
+                        stats[key] = Formulas[key](self);
+                    }
+                    return stats[key];
+                }
+            })
+        }
+
+        Object.defineProperty(self,'baseVitality',{
+            set:function(bv){
+                bv = parseInt(bv);
+                if(!isNaN(bv) && bv >= 1 && bv !== baseStats.vitality){
+                    baseStats.vitality = bv;
+                    self.trigger('baseVitalityChange',[bv]);
+                }
+            },
             /**
              *
              * @returns {number}
              */
             get:function(){
-                return stats.vitality;
+                return baseStats.vitality;
             }
         });
 
-        Object.defineProperty(self,'intelligence',{
+        Object.defineProperty(self,'baseIntelligence',{
+            set:function(bi){
+                bi = parseInt(bi);
+                if(!isNaN(bi) && bi >= 1 && bi !== baseStats.intelligence){
+                    baseStats.intelligence = bi;
+                    self.trigger('baseIntelligenceChange',[bi]);
+                }
+            },
             /**
              *
              * @returns {number}
              */
             get:function(){
-                return stats.intelligence;
+               return baseStats.intelligence;
             }
         });
 
-        Object.defineProperty(self,'maxMP',{
+        Object.defineProperty(self,'baseStrength',{
+            set:function(bs){
+                bs = parseInt(bs);
+                if(!isNaN(bs) && bs >= 1 && bs !== baseStats.strength){
+                    baseStats.strength = bs;
+                    self.trigger('baseStrengthChange',[bs]);
+                }
+            },
             /**
              *
              * @returns {number}
              */
             get:function(){
-                if(vars.maxMP === null){
-                    vars.maxMP = maxMP(self);
-                }
-                return vars.maxMP;
-            }
-        });
-
-        Object.defineProperty(self,'maxHP',{
-            /**
-             *
-             * @returns {number}
-             */
-            get:function(){
-                if(vars.maxHP === null){
-                    vars.maxHP = maxHP(self);
-                }
-                return vars.maxHP;
-            }
-        });
-
-        Object.defineProperty(self,'regenHPRate',{
-            /**
-             *
-             * @returns {Number}
-             */
-            get:function(){
-                if(vars.regenHPRate === null){
-                    vars.regenHPRate = regenHPRate(self);
-                }
-                return vars.regenHPRate;
-            }
-        });
-
-        Object.defineProperty(self,'regenMPRate',{
-            /**
-             *
-             * @returns {Number}
-             */
-            get:function(){
-                if(vars.regenMPRate === null){
-                    vars.regenMPRate = regenMPRate(self);
-                }
-                return vars.regenMPRate;
-            }
-        });
-
-        Object.defineProperty(self,'nextLevelExperience',{
-            /**
-             *
-             * @returns {Number}
-             */
-            get:function(){
-                if(vars.nextLevelExperience === null){
-                    vars.nextLevelExperience = nextLevelExperience(self);
-                }
-                return vars.nextLevelExperience;
-            }
-        });
-
-        Object.defineProperty(self,'stats',{
-            /**
-             *
-             * @returns {{}}
-             */
-            get:function(){
-                return stats;
+                return baseStats.strength;
             }
         });
 
@@ -827,9 +756,14 @@
             }
         });
 
-        self.on('levelChange',function(){
-            Object.keys(vars).forEach(function(key){
-                vars[key] = null;
+        self.on([
+            'levelChange',
+            'baseVitalityChange',
+            'baseStrengthChange',
+            'baseIntelligenceChange'
+        ],function(){
+            Object.keys(stats).forEach(function(key){
+                stats[key] = null;
             });
         });
 

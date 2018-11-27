@@ -193,7 +193,7 @@
                             break;
                     }
                 }
-                else if(degree > 225 && degree <= 270){
+                else if(degree > 225 && degree <= 315){
                     switch(frame.i){
                         case Consts.CHARACTER_DIRECTION_DOWN:
                             f = object.leftFrame;
@@ -209,7 +209,7 @@
                             break;
                     }
                 }
-                else if((degree > 270 && degree <= 45) || (degree > 135 && degree <= 225)){
+                else if((degree > 315 && degree <= 45) || (degree > 135 && degree <= 225)){
                     switch(frame.i){
                         case Consts.CHARACTER_DIRECTION_DOWN:
                             f = object.upFrame;

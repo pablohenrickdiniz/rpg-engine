@@ -63,11 +63,21 @@
     Game_Object.prototype.on = function(eventName,callback){
         let self = this;
         if(typeof callback === 'function'){
-            if(self.listeners[eventName] === undefined){
-                self.listeners[eventName] = [];
+            let events = [];
+            if(typeof eventName == 'string'){
+                events.push(eventName);
             }
-            if(self.listeners.indexOf(callback) === -1){
-                self.listeners[eventName].push(callback);
+            else if(eventName instanceof  Array){
+                events = eventName;
+            }
+            for(let i = 0; i < events.length;i++){
+                eventName = events[i];
+                if(self.listeners[eventName] === undefined){
+                    self.listeners[eventName] = [];
+                }
+                if(self.listeners.indexOf(callback) === -1){
+                    self.listeners[eventName].push(callback);
+                }
             }
         }
         return self;
@@ -81,20 +91,31 @@
      */
     Game_Object.prototype.off = function(eventName,callback){
         let self = this;
-        if(self.listeners[eventName] !== undefined){
-            if(typeof callback === 'function'){
-                let index = self.listeners[eventName].indexOf(callback);
-                if(index !== -1){
-                    self.listeners[eventName].splice(index,1);
+        let events = [];
+        if(typeof eventName == 'string'){
+            events.push(eventName);
+        }
+        else if(eventName instanceof  Array){
+            events = eventName;
+        }
+        for(let i = 0; i < events.length;i++){
+            eventName = events[i];
+            if(self.listeners[eventName] !== undefined){
+                if(typeof callback === 'function'){
+                    let index = self.listeners[eventName].indexOf(callback);
+                    if(index !== -1){
+                        self.listeners[eventName].splice(index,1);
+                    }
+                    if(self.listeners[eventName].length === 0){
+                        delete self.listeners[eventName];
+                    }
                 }
-                if(self.listeners[eventName].length === 0){
+                else{
                     delete self.listeners[eventName];
                 }
             }
-            else{
-                delete self.listeners[eventName];
-            }
         }
+
         return self;
     };
 
@@ -106,9 +127,19 @@
      */
     Game_Object.prototype.trigger = function(eventName, args){
         let self = this;
-        if(self.listeners[eventName] !== undefined){
-            for(let i = 0;i < self.listeners[eventName].length;i++){
-                self.listeners[eventName][i].apply(self,args);
+        let events = [];
+        if(typeof eventName == 'string'){
+            events.push(eventName);
+        }
+        else if(eventName instanceof  Array){
+            events = eventName;
+        }
+        for(let i = 0; i < events.length;i++){
+            eventName = events[i];
+            if(self.listeners[eventName] !== undefined){
+                for(let j = 0;j < self.listeners[eventName].length;j++){
+                    self.listeners[eventName][j].apply(self,args);
+                }
             }
         }
         return self;
