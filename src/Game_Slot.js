@@ -13,17 +13,19 @@
 
     /**
      *
-     * @param options {object}
+     * @param inventory {Game_Inventory}
+     * @param options
      * @constructor
      */
-    let Game_Slot = function(options){
+    let Game_Slot = function(inventory,options){
         let self = this;
         initialize(self);
-
         self.type = options.type || 'generic';
         self.disabled = options.disabled || false;
         self.max = options.max || 99;
         self.amount = options.amount || 0;
+        self.equipable = options.equipable || false;
+        self.inventory = inventory;
 
         if(options.item === 0){
             self.item = options.item
@@ -50,6 +52,17 @@
         let amount = 0;
         let max = 99;
         let item = null;
+        let equipable = false;
+        let inventory = null;
+
+        Object.defineProperty(self,'inventory',{
+            get:function(){
+                return inventory;
+            },
+            set:function(inv){
+                inventory = inv;
+            }
+        });
 
         Object.defineProperty(self,'freeAmount',{
             /**
@@ -79,7 +92,7 @@
                     a = Math.min(a,max);
                     amount = a;
                     if(amount === 0){
-                        item = null;
+                        self.item = null;
                     }
                 }
             }
@@ -122,12 +135,35 @@
                     if(/^[0-9]+$/.test(i)){
                         i = Items.get(i);
                     }
-
+                    let t = item;
                     item = i;
+                    if(inventory !== null && t !== null && self.equipable){
+                        inventory.trigger('unequip',[t]);
+                    }
+                    if(inventory !== null && item !== null && self.equipable){
+                        inventory.trigger('equip',[item]);
+                    }
                     if(i == null){
                         amount = 0;
                     }
                 }
+            }
+        });
+
+        Object.defineProperty(self,'equipable',{
+            /**
+             *
+             * @returns {boolean}
+             */
+            get:function(){
+                return equipable;
+            },
+            /**
+             *
+             * @param e
+             */
+            set:function(e){
+                equipable = !!e;
             }
         });
     }
@@ -137,8 +173,8 @@
          *
          * @returns {Game_Slot}
          */
-       get:function(){
-           return Game_Slot;
-       }
+        get:function(){
+            return Game_Slot;
+        }
     });
 })(RPG,window);

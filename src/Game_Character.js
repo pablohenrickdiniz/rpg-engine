@@ -305,7 +305,7 @@
         let charaID = null;
         let faceID = null;
         let direction = Consts.CHARACTER_DIRECTION_DOWN;
-        let inventory = new Game_Inventory();
+        let inventory = new Game_Inventory(self);
         let level = 1;
         let maxLevel = 100;
 
@@ -485,7 +485,7 @@
                     inventory = inv;
                 }
                 else if(inv && inv.constructor === {}.constructor){
-                    inventory = new Game_Inventory(inv);
+                    inventory = new Game_Inventory(self,inv);
                 }
             }
         });

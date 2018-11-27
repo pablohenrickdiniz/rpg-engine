@@ -7,16 +7,16 @@
     let Game_Slot = root.Game_Slot;
     /**
      *
-     * @param options {object}
+     * @param actor
+     * @param options
      * @constructor
      */
-    let Game_Inventory = function(options){
+    let Game_Inventory = function(actor,options){
         let self = this;
         initialize(self);
         options = options || {};
         self.slots = options.slots || {};
-        self.actor = options.actor || null;
-        self.listeners = [];
+        self.actor = actor;
     };
 
     /**
@@ -81,7 +81,7 @@
      */
     Game_Inventory.prototype.on = function(eventName,callback){
         let self = this;
-        if(!self.listeners[eventName]){
+        if(self.listeners[eventName] === undefined){
             self.listeners[eventName] = [];
         }
         if(self.listeners[eventName].indexOf(callback) === -1){
@@ -98,7 +98,7 @@
      */
     Game_Inventory.prototype.off = function(eventName,callback){
         let self = this;
-        if(self.listeners[eventName]){
+        if(self.listeners[eventName] !== undefined){
             let index = self.listeners[eventName].indexOf(callback);
             if(index !== -1){
                 self.listeners[eventName].splice(index,1);
@@ -115,7 +115,7 @@
      */
     Game_Inventory.prototype.trigger = function(eventName,args){
         let self = this;
-        if(self.listeners[eventName]){
+        if(self.listeners[eventName] !== undefined){
             let length = self.listeners[eventName].length;
             for(let i =0; i < length;i++){
                 self.listeners[eventName][i].apply(self,args);
@@ -130,7 +130,7 @@
      * @param amount {number}
      * @returns {number}
      */
-    Game_Inventory.prototype.addItem = function(item,amount){
+    Game_Inventory.prototype.add = function(item,amount){
         let self = this;
         let keys = Object.keys(self.slots);
         let length = keys.length;
@@ -150,7 +150,7 @@
                 slot.item = item;
                 slot.amount += add;
                 amount-=add;
-                self.trigger('addItem',[item,add]);
+                self.trigger('add',[item,add]);
             }
         }
         return amount;
@@ -164,7 +164,7 @@
      */
     Game_Inventory.prototype.addSlot = function(id,options){
         let self = this;
-        self.slots[id] = new Game_Slot(options);
+        self.slots[id] = new Game_Slot(self,options);
         return self;
     };
 
@@ -188,6 +188,19 @@
      */
     function initialize(self){
         let slots = {};
+        let actor = null;
+        let listeners = [];
+
+        Object.defineProperty(self,'actor',{
+            get:function(){
+                return actor;
+            },
+            set:function(a){
+                if(a == null || a !== actor){
+                    actor = a;
+                }
+            }
+        });
 
         Object.defineProperty(self,'slots',{
             get:function(){
@@ -203,6 +216,24 @@
                         self.addSlot(id,config);
                     }
                 }
+            }
+        });
+
+        Object.defineProperty(self,'listeners',{
+           get:function(){
+               return listeners;
+           }
+        });
+
+        self.on('equip',function(item){
+            if(actor !== null){
+                actor.trigger('equip',[item]);
+            }
+        });
+
+        self.on('unequip',function(item){
+            if(actor !== null){
+                actor.trigger('unequip',[item]);
             }
         });
     }

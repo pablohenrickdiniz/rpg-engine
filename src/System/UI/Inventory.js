@@ -118,13 +118,13 @@
                 if((i == null || i instanceof Game_Inventory) && i !== inventory){
                     let callback = function(){self.render(slots)};
                     if(inventory != null){
-                        inventory.off('addItem',callback);
-                        inventory.off('dropItem',callback);
+                        inventory.off('add',callback);
+                        inventory.off('drop',callback);
                     }
                     inventory = i;
                     if(inventory != null){
-                        inventory.on('addItem',callback);
-                        inventory.on('addItem',callback);
+                        inventory.on('add',callback);
+                        inventory.on('drop',callback);
                         self.render(slots);
                     }
                 }
