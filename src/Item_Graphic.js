@@ -1,13 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game_Graphic.js
+ * @requires Tile.js
+ */
 (function(root){
-    if(!root.Game_Graphic){
-        throw "Item_Graphic requires Game_Graphic";
-    }
-
-    if(!root.Tile){
-        throw "Item_Graphic requires Tile";
-    }
-
     let Game_Graphic = root.Game_Graphic,
         Tile = root.Tile;
 

@@ -1,14 +1,12 @@
-'use strict';
+/**
+ * @requires ../RPG.js
+ * @requires ../Scene/Scene.js
+ * @requires ../Game_Map.js
+ * @requires ../System/Events.js
+ */
 (function (root) {
-    if(!root.Scene){
-        throw "Main requires Scene";
-    }
-
-    if(!root.Game_Map){
-        throw "Main requires Game_Map";
-    }
-
     let Scene = root.Scene,
+        Events = root.Events,
         Game_Map = root.Game_Map,
         current_scene = null,
         current_map = null,
@@ -71,6 +69,7 @@
                 currentPlayerID = id;
                 let scene = Main.currentScene;
                 let actor = Main.Actors.get(id);
+                Events.trigger('playerChanged',[actor]);
                 if(scene != null && actor != null){
                     scene.add(actor);
                 }

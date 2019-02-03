@@ -1,4 +1,6 @@
-'use strict';
+/**
+ * @requires RPG.js
+ */
 (function(root){
     let Consts = {
         UP:38,

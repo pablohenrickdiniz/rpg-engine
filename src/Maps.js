@@ -1,13 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game/Main.js
+ * @requires Game_Map.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Maps requires Main";
-    }
-
-    if(!root.Game_Map){
-        throw "Maps requires Game_Map";
-    }
-
     let Main = root.Main,
         Game_Map = root.Game_Map;
 

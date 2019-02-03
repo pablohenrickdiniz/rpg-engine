@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires Game/Main.js
+ * @requires System/Events.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Switches requires RPG Main";
-    }
-
-    if(!root.Events){
-        throw "Switches requires Events";
-    }
-
     let Main = root.Main,
         Events = root.Events;
 

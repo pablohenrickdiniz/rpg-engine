@@ -1,68 +1,24 @@
-'use strict';
+/**
+ * @requires ../RPG.js
+ * @requires Scene.js
+ * @requires ../System/Canvas.js
+ * @requires ../Consts.js
+ * @requires ../Game/Main.js
+ * @requires ../Spriteset_Map.js
+ * @requires ../Game_Object.js
+ * @requires ../Tilesets.js
+ * @requires ../Tile.js
+ * @requires ../Game_Graphic.js
+ */
 (function (root,w) {
-    if (!root.Scene) {
-        throw "Scene_Map requires Scene";
-    }
-
-    if (!root.Canvas) {
-        throw "Scene_Map requires Canvas";
-    }
-
-    if (!root.Game_Item) {
-        throw "Scene_Map requires Game_Item";
-    }
-
-    if (!root.Event_Page) {
-        throw "Scene_Map requires Event_Page";
-    }
-
-    if(!root.Game_Actor){
-        throw "Scene_Map requires Game_Actor";
-    }
-
-    if(!root.Tile){
-        throw "Scene_Map requires Tile";
-    }
-
-    if(!root.Game_Graphic){
-        throw "Scene_Map requires Game_Graphic";
-    }
-
-    if(!root.Main){
-        throw "Scene_Map requires Main";
-    }
-    else{
-        if (!root.Main.Graphics) {
-            throw "Scene_Map requires Graphics";
-        }
-
-        if(!root.Main.Tilesets){
-            throw "Scene_Map requires Tilesets";
-        }
-    }
-
-    if(!root.Spriteset_Map){
-        throw "Scene_Map requires Spriteset_Map";
-    }
-
-    if(!root.Game_Object){
-        throw "Scene_Map requires Game_Object";
-    }
-
     if(!w.Matter){
         throw "Scene_Map requires Matter";
-    }
-
-    if(!root.Canvas){
-        throw "Scene_Map requires Canvas";
     }
 
     let Scene = root.Scene,
         Canvas = root.Canvas,
         Consts = root.Consts,
         Main = root.Main,
-        Event_Page = root.Event_Page,
-        Game_Actor = root.Game_Actor,
         Spriteset_Map = root.Spriteset_Map,
         Game_Object = root.Game_Object,
         Tilesets = Main.Tilesets,
@@ -96,6 +52,7 @@
         self.items = options.items || {};
         self.icons = options.icons || {};
         self.objects = options.objects || [];
+        self.shadows = options.shadows || false;
         initialize(self);
 
         self.on('collisionActive,objectBody,objectBody',function(a,b){
@@ -118,14 +75,15 @@
             }
         });
 
-        self.on('collisionActive,light,objectBody',function(light,objectBody){
-            let object = objectBody.plugin.object;
-            let lightSourceObject = light.plugin.object;
-            if(object !== lightSourceObject && lightSourceObject.light && !object.light && object.shadow){
-                object.lights.push(light);
-            }
-
-        });
+        if(self.shadows){
+            self.on('collisionActive,light,objectBody',function(light,objectBody){
+                let object = objectBody.plugin.object;
+                let lightSourceObject = light.plugin.object;
+                if(object !== lightSourceObject && lightSourceObject.light && !object.light && object.shadow){
+                    object.lights.push(light);
+                }
+            });
+        }
     };
 
     function get_shadows(object){
@@ -446,7 +404,7 @@
             var layer = Canvas.getLayer(Consts.UI_LAYER,0);
             var ctx = layer.context;
 
-            if(body.label == 'Rectangle Body'){
+            if(body.label === 'Rectangle Body'){
                 x = Math.round(x-Canvas.x);
                 y = Math.round(y-Canvas.y);
                 ctx.save();
@@ -455,7 +413,7 @@
                 ctx.strokeRect(x,y,width,height);
                 ctx.restore();
             }
-            else if(body.label == 'Circle Body'){
+            else if(body.label === 'Circle Body'){
                 x = body.position.x;
                 y = body.position.y;
                 x = Math.round(x-Canvas.x);

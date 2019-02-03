@@ -1,19 +1,8 @@
-'use strict';
+/**
+ * @requires Game_Character.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Characters requires Main";
-    }
-
-    if(!root.Game_Character){
-        throw "Characters requires Game_Character";
-    }
-
-    if(!root.Character_Graphic){
-        throw "Characters requires Character_Graphic";
-    }
-
     let Game_Character = root.Game_Character,
-        Character_Graphic = root.Character_Graphic,
         Main = root.Main,
         characters = {};
 

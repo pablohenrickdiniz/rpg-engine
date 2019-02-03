@@ -1,21 +1,9 @@
-'use strict';
-(function(root,w){
-    if(!root.UI){
-        throw "Window requires UI";
-    }
-
-    if(!root.UI.Element){
-        throw "Window requires Element";
-    }
-
-    if(!root.UI.Button){
-        throw "Window requires Button";
-    }
-
-    if(!root.UI.Text){
-        throw "Window requires Text";
-    }
-
+/**
+ * @requires Element.js
+ * @requires Button.js
+ * @requires Text.js
+ */
+(function(root){
     let UI = root.UI,
         Element = UI.Element,
         Button = UI.Button,
@@ -77,7 +65,8 @@
         });
 
         close.text = '&times';
-        close.on('leftclick',function(){
+        close.on('leftclick',function(e){
+            e.stopPropagation();
             self.visible = false;
         });
 
@@ -136,4 +125,4 @@
             return Window;
         }
     });
-})(RPG,window);
+})(window);

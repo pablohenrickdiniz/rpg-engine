@@ -1,13 +1,7 @@
-'use strict';
+/**
+ * @requires Element.js
+ */
 (function(root){
-    if(!root.UI){
-        throw "Text requires UI";
-    }
-
-    if(!root.UI.Element){
-        throw "Text requires Element";
-    }
-
     let UI = root.UI,
         Element = UI.Element;
 
@@ -66,4 +60,4 @@
             return Text;
         }
     });
-})(RPG);
+})(window);

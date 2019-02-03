@@ -1,16 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Graphics.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Game_Graphic requires Main";
-    }
-    else{
-        if(!root.Main.Graphics){
-            throw "Game_Graphic requires Graphics";
-        }
-    }
-
     let Graphics = root.Main.Graphics;
-
     /**
      *
      * @param options {object}

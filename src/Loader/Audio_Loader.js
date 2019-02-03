@@ -1,4 +1,3 @@
-'use strict';
 (function (w) {
     if (!w.Audio) {
         throw "Audio_Loader requires Audio support";

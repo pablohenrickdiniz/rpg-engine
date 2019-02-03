@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires Animation.js
+ * @requires Game/Main.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Animations requires Main";
-    }
-
-    if(!root.Animation){
-        throw "Animations requires Animation";
-    }
-
     let Animation = root.Animation,
     	Main = root.Main;
 

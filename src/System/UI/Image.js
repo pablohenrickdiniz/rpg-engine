@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires UI.js
+ * @requires Element.js
+ */
 (function(root){
-    if(!root.UI){
-        throw "Image requires UI";
-    }
-
-    if(!root.UI.Element){
-        throw "Image requires Element";
-    }
-
     let UI = root.UI,
         Element = UI.Element;
 
@@ -63,4 +58,4 @@
            return Image;
        }
     });
-})(RPG);
+})(window);

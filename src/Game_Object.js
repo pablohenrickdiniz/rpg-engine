@@ -1,24 +1,15 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game_Animation.js
+ * @requires ../plugins/Matter/build/matter.min.js
+ */
 (function(root,w){
     let ID = 0;
-    if(!w.Matter){
-        throw "Game_Object requires Matter";
-    }
-
-    if(!root.Game_Animation){
-        throw "Game_Object requires Game_Animation";
-    }
-
-    if(!root.Consts){
-        throw "Game_Object requires Consts"
-    }
-
     let
         Matter = w.Matter,
         Bodies = Matter.Bodies,
         Body = Matter.Body,
-        Game_Animation = root.Game_Animation,
-        Consts = root.Consts;
+        Game_Animation = root.Game_Animation;
 
     /**
      *

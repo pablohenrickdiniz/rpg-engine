@@ -1,4 +1,6 @@
-'use strict';
+/**
+ * @requires RPG.js
+ */
 (function (root) {
     /**
      *
@@ -75,5 +77,5 @@
            return Game_Map;
        }
     });
-})(RPG,window);
+})(RPG);
 

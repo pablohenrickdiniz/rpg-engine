@@ -1,9 +1,8 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game/Main.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Variables requires RPG Main";
-    }
-
     let Main = root.Main;
     let variables = [];
     let Variables = {

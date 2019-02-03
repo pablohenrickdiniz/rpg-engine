@@ -1,13 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game/Main.js
+ * @requires Game_Icon.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Icons requires Main";
-    }
-
-    if(!root.Game_Icon){
-        throw "Icons requires Game_Icon";
-    }
-
     let Main = root.Main;
     let Game_Icon = root.Game_Icon;
     let icons = [];

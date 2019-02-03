@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires Game_Skill.js
+ * @requries Game/Main.js
+ */
 (function(root){
-	if(!root.Main){
-		throw "Skills requires Main";
-	}
-
-	if(!root.Game_Skill){
-		throw "Skills requires Game_Skill";
-	}
-
 	let Game_Skill = root.Game_Skill,
 		Main = root.Main;
 

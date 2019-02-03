@@ -1,14 +1,8 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Icons.js
+ */
 (function (root) {
-    if(!root.Main){
-        throw "Item requires Main";
-    }
-    else{
-        if(!root.Main.Icons){
-            throw "Item requires Icons";
-        }
-    }
-
     let Icons = root.Main.Icons;
 
     /**
@@ -22,6 +16,7 @@
         options = options || {};
         self.durability = options.durability || 'INDESTRUCTIBLE';
         self.effects = options.effects || [];
+        self.requirements = options.requirements || [];
         self.unique = options.unique || false;
         self.icon = options.icon;
         self.type = options.type || 'generic';

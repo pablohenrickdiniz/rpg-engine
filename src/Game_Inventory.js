@@ -1,9 +1,7 @@
-'use strict';
+/**
+ * @requires Game_Slot.js
+ */
 (function(root){
-    if(!root.Game_Slot){
-        throw "Game_Inventory requires Game_Slot";
-    }
-
     let Game_Slot = root.Game_Slot;
     /**
      *
@@ -21,6 +19,15 @@
 
     /**
      *
+     * @param item {Game_Item}
+     */
+    Game_Inventory.prototype.canEquip = function(item){
+        let self = this;
+        return self.actor.canEquip(item);
+    };
+
+    /**
+     *
      * @param slotA {Game_Slot}
      * @param slotB {Game_Slot}
      * @returns {boolean}
@@ -32,7 +39,7 @@
             let to = self.slots[slotB];
 
             if (from.hasItem()) {
-                if (to.type === 'generic' || from.item.type === to.type) {
+                if (to.type === 'generic' || (from.item.type === to.type && to.canEquip(from.item))) {
                     if (to.hasItem()) {
                         let swap = false;
                         if(from.item === to.item){
@@ -142,7 +149,7 @@
 
             let slot = self.slots[keys[i]];
 
-            if((item.type === slot.type || slot.type === 'generic') && (!slot.hasItem() || slot.item === item) && slot.freeAmount > 0){
+            if(((item.type === slot.type && slot.canEquip(item)) || slot.type === 'generic') && (!slot.hasItem() || slot.item === item) && slot.freeAmount > 0){
                 let add = amount;
                 if(slot.freeAmount < amount){
                     add = slot.freeAmount;

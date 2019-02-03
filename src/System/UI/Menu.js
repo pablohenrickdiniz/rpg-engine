@@ -1,17 +1,8 @@
-'use strict';
+/**
+ * @requires Element.js
+ * @requires Menu_Item.js
+ */
 (function(root){
-    if(!root.UI){
-        throw "Menu requires UI";
-    }
-
-    if(!root.UI.Element){
-        throw "Menu requires Element";
-    }
-
-    if(!root.UI.Menu_Item){
-        throw "Menu requires Menu_Item";
-    }
-
     let UI = root.UI,
         Element = UI.Element,
         Menu_Item = UI.Menu_Item;
@@ -106,4 +97,4 @@
            return Menu;
        }
     });
-})(RPG);
+})(window);

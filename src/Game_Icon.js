@@ -1,11 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game_Graphic
+ */
 (function (root) {
-    if(!root.Game_Graphic){
-        throw "Game_Icon requires Game_Graphic";
-    }
-
     let Game_Graphic = root.Game_Graphic;
-
     /**
      *
      * @param options {object}

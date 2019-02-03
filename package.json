@@ -1,0 +1,31 @@
+{
+  "name": "rpg-engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pablohenrickdiniz/rpg-engine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pablohenrickdiniz/rpg-engine/issues"
+  },
+  "homepage": "https://github.com/pablohenrickdiniz/rpg-engine#readme",
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-resolve-dependencies": "^3.0.1",
+    "gulp-terser": "^1.1.7"
+  },
+  "resolutions": {
+    "terser": "3.14.1"
+  }
+}

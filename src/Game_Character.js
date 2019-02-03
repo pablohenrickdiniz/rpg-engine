@@ -1,37 +1,16 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Consts.js
+ * @requires Game/Main.js
+ * @requires Game_Object.js
+ * @requires Charas.js
+ * @requires Faces.js
+ * @requires Game_Graphic.js
+ * @requires Game_Inventory.js
+ * @requires Formulas.js
+ */
+
 (function (root) {
-    if (!root.Game_Animation) {
-        throw "Game_Character requires Game_Animation";
-    }
-
-    if (!root.Consts) {
-        throw "Game_Character requires Consts";
-    }
-
-    if(!root.Game_Object){
-        throw "Game_Character requires Game_Object";
-    }
-
-    if(!root.Main.Charas){
-        throw "Game_Character requires Charas";
-    }
-
-    if(!root.Main.Faces){
-        throw "Game_Character requires Faces";
-    }
-
-    if(!root.Game_Graphic){
-        throw "Game_Character requires Game_Graphic";
-    }
-
-    if(!root.Game_Inventory){
-        throw "Game_Character requires Game_Inventory"
-    }
-
-    if(!root.Formulas){
-        throw "Game_Character requires Formulas"
-    }
-
     let Game_Animation = root.Game_Animation,
         Consts = root.Consts,
         Main = root.Main,
@@ -53,9 +32,12 @@
         initialize(self);
         options = options || {};
         self.level = options.level || 1;
-        self.maxLevel = options.maxLevel || 200;
+        self.maxLevel = options.maxLevel || 100;
         self.MP = options.HP || 100;
         self.HP = options.MP || 100;
+        self.baseStrength = options.baseStrength || 1;
+        self.baseIntelligence = options.baseIntelligence || 1;
+        self.baseVitality = options.baseVitality || 1;
         self.skills = [];
         self.inventory = options.inventory;
         self.shadow = options.shadow || true;
@@ -297,6 +279,49 @@
         return self.turn(Main.Player);
     };
 
+    Game_Character.prototype.canEquip = function(item){
+        let self = this;
+        for(let i = 0; i < item.requirements.length;i++){
+            let stat = item.requirements[i].stat;
+            let value = item.requirements[i].value;
+            let statvalue = self[stat];
+            switch(item.requirements[i].type){
+                case '=':
+                    if(statvalue !== value){
+                        return false;
+                    }
+                    break;
+                case '>=':
+                    if(statvalue < value){
+                        return false;
+                    }
+                    break;
+                case '>':
+                    if(statvalue <= value){
+                        return false;
+                    }
+                    break;
+                case '<=':
+                    if(statvalue > value){
+                        return false;
+                    }
+                    break;
+                case '<':
+                    if(statvalue >= value){
+                        return false;
+                    }
+                    break;
+                case '!=':
+                case '<>':
+                    if(statvalue === value){
+                        return false;
+                    }
+                    break;
+            }
+        }
+        return true;
+    };
+
     /**
      *
      * @param self {Game_Character}
@@ -349,6 +374,7 @@
                 get:function(){
                     if(typeof Formulas[key] == 'function' && stats[key] === null){
                         stats[key] = Formulas[key](self);
+                        self.trigger('statsChange',[key,stats[key]]);
                     }
                     return stats[key];
                 }
@@ -404,6 +430,18 @@
             get:function(){
                 return baseStats.strength;
             }
+        });
+
+        Object.defineProperty(self,'stats',{
+           get:function(){
+               let tmp = {};
+               let keys = Object.keys(stats);
+               for(let i = 0; i < keys.length;i++){
+                   let key = keys[i];
+                   tmp[key] = self[key];
+               }
+               return tmp;
+           }
         });
 
         Object.defineProperty(self,'HP',{
@@ -524,9 +562,12 @@
              */
             set:function(l){
                 l = parseInt(l);
-                if(!isNaN(l) && l > 0 && l !== level){
-                    level = l;
-                    self.trigger('levelChange',[level]);
+                if(!isNaN(l) && l > 0){
+                    l = Math.min(l,self.maxLevel);
+                    if(l !== level){
+                        level = l;
+                        self.trigger('levelChange',[level]);
+                    }
                 }
             }
         });

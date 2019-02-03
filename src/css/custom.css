@@ -299,6 +299,41 @@
     font-weight:600;
 }
 
+.level-container{
+    width:20px;
+    height:20px;
+    border-radius: 50%;
+    position: absolute;
+    left:50px;
+    top:-20px;
+    z-index:99;
+    background-color: rgba(25,25,25,1);
+    color:white;
+    text-align: center;
+    font-weight: bolder;
+    font-size:12px;
+    line-height: 22px;
+}
+
+.stats-table{
+    width:100%;
+    color:white;
+    text-align: left;
+    padding:5px;
+    font-size:12px;
+}
+
+.stats-table td{
+    background-color: rgba(25,25,25,1);
+    padding:3px;
+}
+
+.stats-table b{
+    padding-right:5px;
+}
+
+
+
 
 
 

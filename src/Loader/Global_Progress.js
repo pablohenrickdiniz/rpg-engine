@@ -1,4 +1,3 @@
-'use strict';
 (function(w){
     let GlobalProgress = function () {
         this.media = [];

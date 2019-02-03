@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires Game_Face.js
+ * @requires Game/Main.js
+ */
 (function(root){
-    if(!root.Game_Face){
-        throw "Faces requires Game_Face";
-    }
-
-    if(!root.Main){
-        throw "Faces requires Main";
-    }
-
     let Game_Face = root.Game_Face,
         Main = root.Main;
 

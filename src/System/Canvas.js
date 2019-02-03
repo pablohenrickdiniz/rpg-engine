@@ -1,13 +1,10 @@
-'use strict';
+/**
+ * @requires ../RPG.js
+ * @requires ../Consts.js
+ * @requires ../../plugins/canvas-engine/src/dist/js/CanvasEngine.js
+ * @requires ../../plugins/canvas-engine/src/dist/js/CanvasLayer.js
+ */
 (function (root,w) {
-    if (!w.CE) {
-        throw "Viewport requires Canvas Engine";
-    }
-
-    if(!root.Consts){
-        throw "Canvas requires Consts";
-    }
-
     let Consts = root.Consts;
     let x = 0;
     let y = 0;

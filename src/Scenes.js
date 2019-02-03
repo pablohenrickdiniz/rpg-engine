@@ -1,13 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game/Main.js
+ * @requires Scene/Scene.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Scenes requires RPG Main";
-    }
-
-    if(!root.Scene){
-        throw "Scenes requires Scene";
-    }
-
     let Main = root.Main,
         Scene = root.Scene;
 

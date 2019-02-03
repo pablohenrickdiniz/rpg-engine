@@ -1,13 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game/Main.js
+ * @requires Item.js
+ */
 (function(root){
-    if(!root.Item){
-        throw "Items requires Item";
-    }
-
-    if(!root.Main){
-        throw "Items requires Main";
-    }
-
     let Item = root.Item,
         Main = root.Main;
 

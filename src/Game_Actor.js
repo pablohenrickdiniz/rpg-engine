@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game_Character.js
+ */
 (function(root,w){
-    if(!root.Game_Character){
-        throw "Game_Actor requires Game_Character";
-    }
-
-    if(!root.Main){
-        throw "Game_Actor requires Main"
-    }
-
     let Game_Character = root.Game_Character,
         Keyboard = w.Keyboard,
         Main = root.Main;
@@ -34,7 +29,7 @@
     Game_Actor.prototype.update = function () {
         let self = this;
         if(Main.currentPlayerID == self.id){
-            let keyboard = root.Controls.Keyboard;
+            let keyboard = root.Keyboard;
             if (keyboard.state[Keyboard.LEFT]) {
                 self.stepLeft();
             }

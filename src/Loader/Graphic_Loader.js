@@ -1,9 +1,7 @@
-'use strict';
+/**
+ * @requires Global_Progress.js
+ */
 (function (w) {
-    if(!w.GlobalProgress){
-        throw "Graphic_Loader requires GlobalProgress";
-    }
-
     let GlobalProgress = w.GlobalProgress;
     let images = {};
 

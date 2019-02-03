@@ -1,9 +1,7 @@
-'use strict';
+/**
+ * @requires Consts.js
+ */
 (function (root) {
-    if(!root.Consts){
-        throw "Event_Page requires Consts";
-    }
-
     let Consts = root.Consts;
     let SWITCH_CONDITION_REGEX = /^(LOCAL|GLOBAL):([A-Za-z0-9]+):(ON|OFF)$/;
     let triggers = [

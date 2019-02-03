@@ -1,4 +1,3 @@
-'use strict';
 (function(root){
     let ui_root = null;
     let UI = {};
@@ -72,4 +71,4 @@
             return UI;
         }
     });
-})(RPG);
+})(window);

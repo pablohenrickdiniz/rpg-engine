@@ -1,40 +1,14 @@
-'use strict';
+/**
+ * @requires Event_Page.js
+ * @requires Switches.js
+ * @requires System/Audio/Audio.js
+ * @requires System/Events.js
+ * @requires Consts.js
+ * @requires Game_Character.js
+ */
 (function (root,w) {
-    if(!root.Event_Page){
-        throw "Game_Event requires Event_Page";
-    }
-
-    if(!root.Main){
-        throw "Game_Event requires Main";
-    }
-
-    if(!root.Main.Switches){
-        throw "Game_Event requires Switches";
-    }
-
-    if(!root.Events){
-        throw "Game_Event requires Events";
-    }
-
-    if(!w.Matter){
-        throw "Game_Event requires Matter";
-    }
-
-    if(!root.Audio){
-        throw "Game_Event requires Audio";
-    }
-
-    if(!root.Consts){
-        throw "Game_Event requires Consts";
-    }
-
-    if(!root.Game_Character){
-        throw "Game_Event requires Game_Character"
-    }
-
     let Event_Page = root.Event_Page,
         Switches = root.Main.Switches,
-        Matter = w.Matter,
         Audio = root.Audio,
         Events = root.Events,
         Consts = root.Consts,

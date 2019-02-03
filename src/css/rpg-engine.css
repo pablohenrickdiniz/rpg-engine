@@ -64,11 +64,11 @@ progress::after{
     transition-duration: 250ms;
 }
 
-#ui-root:focus{
+.game-ui:focus{
     outline: none;
 }
 
-#ui-root{
+.game-ui{
     position: absolute;
     left:0;
     top:0;

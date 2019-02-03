@@ -1,17 +1,4 @@
-'use strict';
 (function (root) {
-    if(!root.Game_Item){
-        throw "Game_Data requires Game_Item";
-    }
-
-    if(!root.Game_Character){
-        throw "Game_Data requires Game_Character";
-    }
-
-    if(!root.Game_Actor){
-        throw "Game_Data requires Game_Actor";
-    }
-
     let database = {
         actors: {},
         characters: {},

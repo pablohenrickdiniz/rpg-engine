@@ -1,13 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game_Actor.js
+ * @requires Game/Main.js
+ */
 (function(root){
-    if(!root.Game_Actor){
-        throw "Actors requires Game_Actor";
-    }
-
-    if(!root.Main){
-        throw "Actors requires RPG Main";
-    }
-
     let Main = root.Main;
     let Game_Actor = root.Game_Actor;
     let actors = [];

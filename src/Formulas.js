@@ -1,7 +1,7 @@
 /**
  * Created by pablo on 25/11/18.
+ * @requires RPG.js
  */
-'use strict';
 (function(root){
     let Formulas = {
         red:function(level,maxlevel,maxvalue){
@@ -22,7 +22,7 @@
         maxHP:function(chrt){
             let baseHP = this.yellow(chrt.level,chrt.maxLevel,9999);
             let pointHP = chrt.vitality*10;
-            return Math.round(baseHP+pointHP);
+            return Math.min(Math.round(baseHP+pointHP),9999);
         },
         regenHPRate:function(chrt){
             return Math.max(Math.round(Math.sqrt(chrt.vitality*chrt.level)),1);
@@ -33,7 +33,7 @@
         maxMP:function(chrt){
             let baseMP = this.yellow(chrt.level,chrt.maxLevel,9999);
             let pointMP = chrt.intelligence*10;
-            return Math.round(baseMP+pointMP);
+            return Math.min(Math.round(baseMP+pointMP),9999);
         },
         nextLevelExperience:function(chrt){
             return Math.round(this.yellow(chrt.level,chrt.maxLevel,99999));

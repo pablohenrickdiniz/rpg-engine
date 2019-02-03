@@ -1,18 +1,11 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game_Event.js
+ * @requires Consts.js
+ * @requires Game/Main.js
+ * @requires Items.js
+ */
 (function (root) {
-    if(!root.Main){
-        throw "Game_Item requires Main";
-    }
-    else{
-        if(!root.Main.Items){
-            throw "Game_Item requires Items";
-        }
-    }
-
-    if(!root.Game_Event){
-        throw "Game_Item requires Game_Event";
-    }
-
     let Game_Event = root.Game_Event,
         Consts = root.Consts,
         Main = root.Main,
@@ -67,6 +60,19 @@
                     return Items.get(itemID)
                 }
                 return null;
+            }
+        });
+
+        Object.defineProperty(self,'requirements',{
+            /**
+             *
+             * @returns {*}
+             */
+            get:function(){
+                if(self.item !== null){
+                    return self.item.requirements;
+                }
+                return  [];
             }
         });
 

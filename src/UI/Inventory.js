@@ -1,28 +1,13 @@
-'use strict';
-(function(root){
-    if(!root.UI){
-        throw "Inveontory requires UI";
-    }
-
-    if(!root.UI.Window){
-        throw "Inventory requires Window";
-    }
-
-    if(!root.UI.Element){
-        throw "Inventory requires Element";
-    }
-
-    if(!root.Game_Inventory){
-        throw "Inventory requires Game_Inventory";
-    }
-
-    if(!root.UI.Slot){
-        throw "Inventory requires Slot";
-    }
-
+/**
+ * @requires ../System/UI/Window.js
+ * @requires ../Game_Inventory.js
+ * @requires ../System/UI/Element.js
+ * @requires Slot.js
+ */
+(function(root,rpg){
     let UI = root.UI,
         Window = UI.Window,
-        Game_Inventory = root.Game_Inventory,
+        Game_Inventory = rpg.Game_Inventory,
         Element = UI.Element,
         Slot = root.UI.Slot;
 
@@ -192,4 +177,4 @@
             return Inventory;
         }
     });
-})(RPG);
+})(window,RPG);

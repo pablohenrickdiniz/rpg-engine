@@ -1,13 +1,7 @@
-'use strict';
+/**
+ * @requires Element.js
+ */
 (function(root){
-    if(!root.UI){
-        throw "Progress_Bar requires UI";
-    }
-
-    if(!root.UI.Element){
-        throw "Progress_Bar requires Element";
-    }
-
     let UI = root.UI,
         Element = UI.Element;
 
@@ -101,4 +95,4 @@
            return Progress_Bar;
        }
     });
-})(RPG);
+})(window);

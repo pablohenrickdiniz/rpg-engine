@@ -1,4 +1,6 @@
-'use strict';
+/**
+ * @requires ../../RPG.js
+ */
 (function(root){
     if(!root.Game_Timer){
         throw "Audio_File requires Game_Timer"

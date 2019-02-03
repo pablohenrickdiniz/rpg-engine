@@ -1,13 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Item.js
+ * @requires Items.js
+ */
 (function(root){
-    if(!root.Item){
-        throw "Game_Slot requires Item";
-    }
-
-    if(!root.Main.Items){
-        throw "Game_Slot requires Items";
-    }
-
     let Item = root.Item,
         Items = root.Main.Items;
 
@@ -42,6 +38,15 @@
     Game_Slot.prototype.hasItem = function(){
         let self = this;
         return self.item != null;
+    };
+
+    /**
+     *
+     * @param item {Game_Item}
+     */
+    Game_Slot.prototype.canEquip = function(item){
+        let self = this;
+        return self.inventory.canEquip(item);
     };
 
     /**

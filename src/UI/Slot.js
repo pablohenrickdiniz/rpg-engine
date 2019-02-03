@@ -1,28 +1,14 @@
-'use strict';
-(function(root){
-    if(!root.UI){
-        throw "Slot requires UI";
-    }
-    if(!root.UI.Element){
-        throw "Slot requires Element";
-    }
-
-    if(!root.UI.Image){
-        throw "Slot requires Image";
-    }
-
-    if(!root.UI.Text){
-        throw "Slot requires Text";
-    }
-
-    if(!root.Item){
-        throw "Slot requires Item";
-    }
-
+/**
+ * @requires ../System/UI/Element.js
+ * @requires ../System/UI/Image.js
+ * @requires ../Item.js
+ * @requires ../System/UI/Text.js
+ */
+(function(root,rpg){
     let UI = root.UI,
         Element = UI.Element,
         Image = UI.Image,
-        Item = root.Item,
+        Item = rpg.Item,
         Text = UI.Text;
 
     /**
@@ -165,4 +151,4 @@
             return Slot;
         }
     });
-})(RPG);
+})(window,RPG);

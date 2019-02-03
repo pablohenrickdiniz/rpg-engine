@@ -1,11 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Tile.js
+ */
 (function (root) {
-    if (!root.Tile) {
-        throw "Animated_Tile requires Tile";
-    }
-
     let Tile = root.Tile;
-
     /**
      *
      * @param parent

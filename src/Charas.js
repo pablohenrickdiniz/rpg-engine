@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Chara.js
+ */
 (function(root){
-    if(!root.Chara){
-        throw "Charas requires Chara";
-    }
-
-    if(!root.Main){
-        throw "Charas requires Main";
-    }
-
     let Chara = root.Chara,
         Main = root.Main;
     let charas = [];

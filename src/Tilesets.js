@@ -1,18 +1,9 @@
-'use strict';
+/**
+ * @requires RPG.js
+ * @requires Game/Main.js
+ * @requires Tileset.js
+ */
 (function(root){
-    if(!root.Main){
-        throw "Tilesets requires Main";
-    }
-    else{
-        if(!root.Main.Graphics){
-            throw "Tilesets requires Graphics";
-        }
-    }
-
-    if(!root.Tileset){
-        throw "Tilesets requires Tileset";
-    }
-
     let Tileset = root.Tileset,
         Main = root.Main;
 

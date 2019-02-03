@@ -1,11 +1,10 @@
-'use strict';
+/**
+ * @requires ../../RPG.js
+ * @requires Audio_File.js
+ */
 (function (root) {
     if(!root.Game_Timer){
         throw "Audio requires Game_Timer"
-    }
-
-    if(!root.Audio_File){
-        throw "Audio requires AudioInstance"
     }
 
     let Game_Timer = root.Game_Timer;

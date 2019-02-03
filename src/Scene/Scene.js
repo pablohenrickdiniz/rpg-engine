@@ -1,17 +1,10 @@
-'use strict';
+/**
+ * @requires ../RPG.js
+ * @requires ../Animation.js
+ * @requires ../System/Canvas.js
+ * @requires ../Consts.js
+ */
 (function (root) {
-    if(!root.Animation){
-        throw "Scene requires Animation"
-    }
-
-    if(!root.Canvas){
-        throw "Scene requires Canvas"
-    }
-
-    if(!root.Consts){
-        throw "Scene requires Consts"
-    }
-
     let Animation = root.Animation,
         Canvas = root.Canvas,
         Consts = root.Consts;

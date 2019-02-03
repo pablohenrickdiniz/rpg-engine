@@ -1,13 +1,8 @@
-'use strict';
+/**
+ * @requires ../RPG.js
+ * @requires Graphic_Loader.js
+ */
 (function (root,w) {
-    if (!w.Graphic_Loader) {
-        throw "TilesetLoader requires Graphic_Loader";
-    }
-
-    if (!root.Tileset) {
-        throw "TilesetLoader requires Tileset";
-    }
-
     let Tileset = root.Tileset,
         Graphic_Loader = w.Graphic_Loader;
 

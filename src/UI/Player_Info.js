@@ -1,35 +1,17 @@
-'use strict';
-(function(root){
-    if(!root.UI){
-        throw "Player_Info requires UI";
-    }
-
-    if(!root.UI.Progress_Bar){
-        throw  "Player_Info requires Progress_Bar";
-    }
-
-    if(!root.UI.Element){
-        throw "Player_Info requires Element";
-    }
-
-    if(!root.UI.Image){
-        throw "Player_Info requires Image";
-    }
-
-    if(!root.UI.Text){
-        throw "Player_Info requires Text";
-    }
-
-    if(!root.Game_Character){
-        throw "Player_Info requires Game_Character"
-    }
-
+/**
+ * @requires ../System/UI/Progress_Bar.js
+ * @requires ../System/UI/Element.js
+ * @requires ../System/UI/Image.js
+ * @requires ../System/UI/Text.js
+ * @requires ../Game_Character.js
+ */
+(function(root,rpg){
     let UI = root.UI,
         Progress_Bar = UI.Progress_Bar,
         Element = UI.Element,
         Image = UI.Image,
         Text = UI.Text,
-        Game_Character = root.Game_Character;
+        Game_Character = rpg.Game_Character;
 
     /**
      *
@@ -95,6 +77,12 @@
             visible:false
         });
 
+        let levelContainer = new Text({
+            parent:self,
+            class:"level-container",
+            visible:false
+        });
+
         let mpChange  = function(){
             let self = this;
             mpBar.total = self.maxMP;
@@ -107,6 +95,11 @@
             hpBar.total = self.maxHP;
             hpBar.progress = self.HP;
             hpBar.text = [self.HP,'/',self.maxHP].join('');
+        };
+
+        let levelChange = function(){
+            let self = this;
+            levelContainer.value = self.level;
         };
 
         let experienceChange = function(){
@@ -136,6 +129,7 @@
                        player.off('maxMPChange',mpChange);
                        player.off('maxHPChange',hpChange);
                        player.off('experienceChange',experienceChange);
+                       player.off('levelChange',levelChange);
                    }
                     player = p;
                     if(player !== null){
@@ -144,6 +138,7 @@
                         player.on('maxMPChange',mpChange);
                         player.on('maxHPChange',hpChange);
                         player.on('experienceChange',experienceChange);
+                        player.on('levelChange',levelChange);
                         hpBar.total = player.maxHP;
                         hpBar.progress = player.HP;
                         hpBar.text = [player.HP,'/',player.maxHP].join('');
@@ -159,18 +154,21 @@
                                 faceImage.src = player.face.url;
                             }
                         }
+                        levelContainer.value = player.level;
                         mpBar.visible = true;
                         hpBar.visible = true;
                         barContainer.visible = true;
                         faceContainer.visible = true;
                         nameContainer.visible = true;
                         stBar.visible = true;
+                        levelContainer.visible = true;
                     }
                     else{
                         mpBar.visible = false;
                         barContainer.visible = false;
                         faceContainer.visible = false;
                         nameContainer.visible = false;
+                        levelContainer.visible = false;
                     }
                }
            }
@@ -186,4 +184,4 @@
            return Player_Info;
        }
     });
-})(RPG);
+})(window,RPG);

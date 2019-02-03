@@ -1,11 +1,8 @@
-'use strict';
+/**
+ * @requires Game_Graphic.js
+ */
 (function(root){
-    if(!root.Game_Graphic){
-        throw "Game_Face requires Game_Graphic";
-    }
-
     let Game_Graphic = root.Game_Graphic;
-
     /**
      *
      * @param options {object}

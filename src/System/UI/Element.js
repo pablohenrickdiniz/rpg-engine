@@ -1,10 +1,8 @@
-'use strict';
-(function(root,w){
-    if(!root.UI){
-        throw "Element requires UI";
-    }
-
-    let UI = root.UI;
+/**
+ * @requires UI.js
+ */
+(function(w){
+    let UI = w.UI;
     /**
      *
      * @param options {object}
@@ -18,7 +16,7 @@
         initialize(self);
         self.element = options.element || null;
         self.parent = options.parent || null;
-        self.id = options.id;
+        self.id = options.id || null;
         self.listeners = [];
         self.class = options.class || '';
         self.draggable = options.draggable || false;
@@ -52,7 +50,7 @@
      * @param callback {function}
      * @returns {Element}
      */
-    Element.prototype.removeEventListener = function(eventName,callback){
+    Element.prototype.off = function(eventName,callback){
         let self = this;
         if(self.listeners[eventName]){
             let index = self.listeners[eventName].indexOf(callback);
@@ -295,9 +293,17 @@
              * @param i {string}
              */
             set:function(i){
+                if(typeof id !== 'string'){
+                    id = null;
+                }
                 if(i !== id){
                     id = i;
-                    self.element.id = i;
+                    if(id !== null){
+                        self.element.id = i;
+                    }
+                    else{
+                        self.element.removeAttribute('id');
+                    }
                 }
             }
         });
@@ -556,7 +562,7 @@
             w.removeEventListener('mousemove',self.mousemove,false);
             w.removeEventListener('mouseup',self.mouseup,false);
         }
-    };
+    }
 
     function bind(self){
         unbind(self);
@@ -665,13 +671,13 @@
                         self.mousemove(e);
                         self.trigger('dragstart',[e]);
                     }
-                    self.trigger('leftclick');
+                    self.trigger('leftclick',[e]);
                     break;
                 case 2:
-                    self.trigger('middleclick');
+                    self.trigger('middleclick',[e]);
                     break;
                 case 3:
-                    self.trigger('rightclick');
+                    self.trigger('rightclick',[e]);
                     break;
             }
         };
@@ -722,4 +728,4 @@
             return Element;
         }
     })
-})(RPG,window);
+})(window);
