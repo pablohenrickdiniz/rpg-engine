@@ -58,7 +58,7 @@
             if(typeof eventName == 'string'){
                 events.push(eventName);
             }
-            else if(eventName instanceof  Array){
+            else if(eventName instanceof Array){
                 events = eventName;
             }
             for(let i = 0; i < events.length;i++){

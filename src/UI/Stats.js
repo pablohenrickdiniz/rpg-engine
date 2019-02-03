@@ -22,6 +22,20 @@
         Window.call(self,options);
         initialize(self);
         self.title = 'Stats';
+        self.statsMap = {
+            maxHP:'Máx. HP',
+            maxMP:'Máx. MP',
+            regenHPRate:'HP Regen Rate',
+            regenMPRate:'MP Regen Rate',
+            nextLevelExperience:'Next Level Exp.',
+            attack:'Attack',
+            defense:'Defense',
+            magicAttack:'Magic Attack',
+            magicDefense:'Magic Defense',
+            strength:'Strength',
+            vitality:'Vitality',
+            agility:'Agility'
+        };
     };
 
     Stats.prototype = Object.create(Window.prototype);
@@ -45,7 +59,8 @@
         },'tbody');
 
         let statsChange = function(){
-            let stats = self.stats;
+            let chr = this;
+            let stats = chr.stats;
             let keys = Object.keys(stats);
             for(let i = 0; i < keys.length;i++){
                 let key = keys[i];
@@ -53,22 +68,31 @@
                     let element = new Element({
                         parent:statsTbody
                     },'tr');
-                    let td = new Element({
+                    let title = new Text({
+                        value:self.statsMap[key]?self.statsMap[key]:key,
                         parent:element
                     },'td');
-                    let title = new Text({
-                        value:key,
-                        parent:td
-                    },'b');
                     let value = new Text({
                         value:stats[key],
-                        parent:td
-                    },'span');
+                        parent:element
+                    },'td');
                     elements[key] = element;
+                }
+                else{
+                    elements[key].children[0].value = self.statsMap[key]?self.statsMap[key]:key;
+                    elements[key].children[1].value = stats[key];
+                }
+            }
+
+            let ks = Object.keys(elements);
+            for(let i = 0; i < ks.length;i++){
+                let key = ks[i];
+                if(keys.indexOf(key) === -1){
+                    elements[key].remove();
+                    delete elements[key];
                 }
             }
         };
-
 
         Object.defineProperty(self,'character',{
            get:function(){

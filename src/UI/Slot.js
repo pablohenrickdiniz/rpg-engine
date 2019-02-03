@@ -3,13 +3,15 @@
  * @requires ../System/UI/Image.js
  * @requires ../Item.js
  * @requires ../System/UI/Text.js
+ * @requires ../System/Audio/Audio.js
  */
 (function(root,rpg){
     let UI = root.UI,
         Element = UI.Element,
         Image = UI.Image,
         Item = rpg.Item,
-        Text = UI.Text;
+        Text = UI.Text,
+        Audio = rpg.Audio;
 
     /**
      *
@@ -75,7 +77,7 @@
         self.on('drop',function(){
             self.inventory.to = self.index;
             if(self.inventory.swap()){
-                root.Audio.play('fx','inventory',1);
+                Audio.play('fx','inventory',1);
             }
         });
 

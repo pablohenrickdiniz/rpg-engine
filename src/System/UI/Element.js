@@ -629,9 +629,9 @@
                 w.removeEventListener('mousemove',self.mousemove,false);
                 w.removeEventListener('mouseup',self.mouseup,false);
                 self.trigger('dragend',[e]);
-                let overlaps =  root.UI.root.findOverlaps(self);
+                let overlaps =  UI.root.findOverlaps(self);
                 self.element.style.position = oldposition;
-                root.UI.root.remove(self);
+                UI.root.remove(self);
                 if(oldparent){
                     oldparent.add(self);
                 }
@@ -667,7 +667,7 @@
                         if(self.parent){
                             self.parent.remove(self);
                         }
-                        root.UI.root.add(self);
+                        UI.root.add(self);
                         self.mousemove(e);
                         self.trigger('dragstart',[e]);
                     }

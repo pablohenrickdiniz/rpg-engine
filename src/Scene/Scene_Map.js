@@ -52,7 +52,7 @@
         self.items = options.items || {};
         self.icons = options.icons || {};
         self.objects = options.objects || [];
-        self.shadows = options.shadows || false;
+
         initialize(self);
 
         self.on('collisionActive,objectBody,objectBody',function(a,b){
@@ -75,6 +75,7 @@
             }
         });
 
+        /*
         if(self.shadows){
             self.on('collisionActive,light,objectBody',function(light,objectBody){
                 let object = objectBody.plugin.object;
@@ -84,128 +85,8 @@
                 }
             });
         }
+        */
     };
-
-    function get_shadows(object){
-        let frame = object.currentFrame;
-        let shadows = [];
-        if(frame !== null){
-            let objectBody = object.objectBody;
-            for(let i = 0; i < object.lights.length;i++){
-                let light = object.lights[i];
-                let va = {
-                    x:light.position.x,
-                    y:light.position.y
-                };
-                let vb = {
-                    x:objectBody.position.x,
-                    y:objectBody.position.y
-                };
-                let vec = Math.vmv(vb,va);
-                let distance = Math.distance(va,vb);
-                let radius = parseFloat(light.circleRadius);
-                if(isNaN(radius)){
-                    radius = distance;
-                }
-                let scaleX = 1;
-                let scaleY = distance/frame.dHeight;
-                let vector = Math.normalize(vec);
-                if(vector.y > 0){
-                    //scaleY = -scaleY;
-                 //   scaleX *= -1;
-                }
-                let degree = Math.clockWiseDegreeFromVec(vec);
-                let skewX = 0;
-                let skewY = 0;
-                let alpha = Math.max(1-(distance/radius),0)*0.6;
-
-                if(degree >= 270 && degree <= 360){
-                    //skewY = Math.min(360-degree,45);
-                }
-                else if(degree >= 0 && degree <= 90){
-                    //skewY = -Math.min(degree,45);
-                }
-                else if(degree >= 90 && degree <= 180){
-                    //skewY = Math.min(180-degree,45);
-                }
-                else if(degree > 180 && degree <= 270){
-                    //skewY = -Math.min(degree-180,45);
-                }
-
-                let f = frame;
-
-
-                if(degree > 45 && degree <= 135){
-                    switch(frame.i){
-                        case Consts.CHARACTER_DIRECTION_DOWN:
-                            f = object.rightFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_RIGHT:
-                            f = object.downFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_LEFT:
-                            f = object.upFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_UP:
-                            f = object.leftFrame;
-                            break;
-                    }
-                }
-                else if(degree > 225 && degree <= 315){
-                    switch(frame.i){
-                        case Consts.CHARACTER_DIRECTION_DOWN:
-                            f = object.leftFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_RIGHT:
-                            f = object.upFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_LEFT:
-                            f = object.downFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_UP:
-                            f = object.rightFrame;
-                            break;
-                    }
-                }
-                else if((degree > 315 && degree <= 45) || (degree > 135 && degree <= 225)){
-                    switch(frame.i){
-                        case Consts.CHARACTER_DIRECTION_DOWN:
-                            f = object.upFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_RIGHT:
-                            f = object.leftFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_LEFT:
-                            f = object.rightFrame;
-                            break;
-                        case Consts.CHARACTER_DIRECTION_UP:
-                            f = object.downFrame;
-                            break;
-                    }
-                }
-
-
-                let objx = object.x-Canvas.x;
-                let objy = object.y-Canvas.y;
-                let x = Math.round(objx-(frame.dWidth/2));
-                let y = Math.round(objy-(frame.dHeight/2));
-
-                shadows.push({
-                    degree:degree,
-                    frame:f,
-                    distance:distance,
-                    alpha:alpha,
-                   // skewX:Math.degreeToRadians(skewX),
-                    //skewY:Math.degreeToRadians(skewY),
-                    scaleX:scaleX,
-                    scaleY:scaleY,
-                    translateX:objx,
-                    translateY:objy+(object.height/2)
-                });
-            }
-        }
-        return shadows;
-    }
 
     Scene_Map.prototype = Object.create(Scene.prototype);
     Scene_Map.prototype.constructor = Scene_Map;
@@ -214,7 +95,7 @@
      *
      * @param object {Game_Object}
      */
-    Scene_Map.prototype.add= function(object){
+    Scene_Map.prototype.add = function(object){
         let self = this;
         self.objs.push(object);
         if(object.body){
@@ -387,6 +268,10 @@
         }
     }
 
+    /**
+     *
+     * @param body
+     */
     function draw_body(body){
         let draw = true;
         for(let i = 0; i < body.parts.length;i++){
@@ -442,69 +327,6 @@
         }
     }
 
-    function draw_effects(self){
-        var now = new Date();
-        var time = now.getHours()*60*60+now.getSeconds();
-        time = time > 43200?86400-time:time;
-        let percent = (time*100/43200);
-        percent = 100 - percent;
-        percent = Math.round(percent);
-        percent = Math.max(percent,0);
-        percent = Math.min(percent,100);
-
-        Canvas.darken({
-            x:0,
-            y:0,
-            width:Canvas.width,
-            height:Canvas.height,
-            percent:80
-        });
-
-        let flashobjs = self.objs.filter(function(obj){
-            return obj.light;
-        });
-
-        flashobjs = flashobjs.sort(function(a,b){
-            return a.y-b.y;
-        });
-
-        for(let i =0; i < flashobjs.length;i++){
-            let objx = flashobjs[i].x-Canvas.x;
-            let objy = flashobjs[i].y-Canvas.y;
-            Canvas.lighten({
-                x:objx,
-                y:objy,
-                percent:100,
-                color:flashobjs[i].lightColor,
-                radius:flashobjs[i].lightRadius
-            });
-        }
-
-        let objs = self.objs.filter(function(obj){
-            return !obj.light;
-        });
-
-        objs = objs.sort(function(a,b){
-            return a.y-b.y;
-        });
-
-        for(let i = 0;  i < objs.length;i++){
-            draw_shadows(objs[i]);
-        }
-        for(let i =0; i < flashobjs.length;i++){
-            let objx = flashobjs[i].x-Canvas.x;
-            let objy = flashobjs[i].y-Canvas.y;
-            Canvas.lighten({
-                x:objx,
-                y:objy,
-                percent:100,
-                color:flashobjs[i].lightColor,
-                radius:100,
-                type: Consts.EVENT_LAYER
-            });
-        }
-    }
-
     function clear() {
         if (!bg_refreshed) {
             Canvas.clear(Consts.BACKGROUND_LAYER);
@@ -530,120 +352,6 @@
             bg_refreshed = true;
         }
         draw_objects(self);
-        draw_effects(self);
-    }
-
-    /**
-     *
-     * @param o {object}
-     * @param vw {number}
-     * @returns {Array}
-     */
-    function splith(o,vw){
-        let frames = [];
-
-        let dxw = o.dx+o.dWidth;
-
-        if(o.dx >= vw){
-            frames[0] = clone(o);
-            Object.assign(frames[0],{dx:o.dx-vw});
-        }
-        else if(dxw > vw){
-            frames[0] = clone(o);
-            frames[1] = clone(o);
-            let d = vw-o.dx;
-            let ds = d*(o.sWidth/o.dWidth);
-
-            Object.assign(frames[0],{dWidth:d,sWidth:ds});
-            Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
-        }
-        else if(o.dx < 0){
-            if(dxw > 0){
-                frames[0] = clone(o);
-                frames[1] = clone(o);
-                let d = Math.abs(o.dx);
-                let ds = d*(o.sWidth/o.dWidth);
-
-                Object.assign(frames[0],{dWidth:d,sWidth:ds,dx:vw-d});
-                Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
-            }
-            else{
-                frames[0] = clone(o);
-                Object.assign(frames[0],{dx:vw+o.dx});
-            }
-        }
-        else{
-            frames[0] = clone(o);
-        }
-
-        return frames;
-    }
-
-    /**
-     *
-     * @param o {object}
-     * @param vh {number}
-     * @returns {Array}
-     */
-    function splitv(o,vh){
-        let frames = [];
-        let dxh = o.dy+o.dHeight;
-        if(o.dy >= vh){
-            frames[0] = clone(o);
-            Object.assign(frames[0],{dy:o.dy-vh});
-        }
-        else if(dxh > vh){
-            frames[0] = clone(o);
-            frames[1] = clone(o);
-            let d = vh-o.dy;
-            let ds = d*(o.sHeight/o.dHeight);
-
-            Object.assign(frames[0],{dHeight:d,sHeight:ds});
-            Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
-        }
-        else if(o.dy < 0){
-            if(dxh > 0){
-                frames[0] = clone(o);
-                frames[1] = clone(o);
-                let d = Math.abs(o.dy);
-                let ds = d*(o.sHeight/o.dHeight);
-
-                Object.assign(frames[0],{dHeight:d,sHeight:ds,dy:vh-d});
-                Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
-            }
-            else{
-                frames[0] = clone(o);
-                Object.assign(frames[0],{dy:vh+o.dy});
-            }
-        }
-        else{
-            frames[0] = clone(o);
-        }
-
-        return frames;
-    }
-
-    /**
-     *
-     * @param obj {object}
-     * @param vw {number}
-     * @param vh {number}
-     * @returns {Array}
-     */
-    function split(obj,vw,vh){
-        let frames = [];
-        let tmp = splith(obj,vw);
-        let length = tmp.length;
-
-        for(let i =0; i < length;i++){
-            let tmp2 = splitv(tmp[i],vh);
-            let length2 = tmp2.length;
-            for(let j = 0; j < length2;j++){
-                frames.push(tmp2[j]);
-            }
-        }
-
-        return frames;
     }
 
     /**
@@ -679,41 +387,6 @@
                 height:frame.dHeight
             });
         }
-    }
-
-    function draw_shadows(object){
-        let layer = Canvas.getLayer(Consts.EVENT_LAYER,0);
-        let ctx = layer.context;
-        let shadows = get_shadows(object);
-        for(let i = 0; i < shadows.length;i++){
-            let shadow = shadows[i];
-            let frame = shadow.frame;
-            ctx.save();
-            ctx.translate(shadow.translateX,shadow.translateY);
-            ctx.globalAlpha = shadow.alpha;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, 8, 4, Math.degreeToRadians(0), 0, Math.degreeToRadians(360));
-            ctx.fill();
-
-            if(shadow.degree !== 0){
-                ctx.rotate(Math.degreeToRadians(shadow.degree));
-            }
-            ctx.transform(1,shadow.skewX,shadow.skewY,1,0,0);
-            ctx.scale(shadow.scaleX,shadow.scaleY);
-            ctx.drawImage(
-                frame.shadow,
-                frame.sx,
-                frame.sy,
-                frame.sWidth,
-                frame.sHeight,
-                -Math.round(frame.dWidth/2),
-                -frame.dHeight,
-                frame.dWidth,
-                frame.dHeight
-            );
-            ctx.restore();
-        }
-        object.lights = [];
     }
 
     /**
@@ -960,4 +633,128 @@
             return Scene_Map;
         }
     });
+
+
+    /**
+     *
+     * @param o {object}
+     * @param vw {number}
+     * @returns {Array}
+     */
+
+
+    /*
+    function splith(o,vw){
+        let frames = [];
+
+        let dxw = o.dx+o.dWidth;
+
+        if(o.dx >= vw){
+            frames[0] = clone(o);
+            Object.assign(frames[0],{dx:o.dx-vw});
+        }
+        else if(dxw > vw){
+            frames[0] = clone(o);
+            frames[1] = clone(o);
+            let d = vw-o.dx;
+            let ds = d*(o.sWidth/o.dWidth);
+
+            Object.assign(frames[0],{dWidth:d,sWidth:ds});
+            Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
+        }
+        else if(o.dx < 0){
+            if(dxw > 0){
+                frames[0] = clone(o);
+                frames[1] = clone(o);
+                let d = Math.abs(o.dx);
+                let ds = d*(o.sWidth/o.dWidth);
+
+                Object.assign(frames[0],{dWidth:d,sWidth:ds,dx:vw-d});
+                Object.assign(frames[1],{dx:0,sx:o.sx+ds,sWidth:o.sWidth-ds,dWidth:o.dWidth-d});
+            }
+            else{
+                frames[0] = clone(o);
+                Object.assign(frames[0],{dx:vw+o.dx});
+            }
+        }
+        else{
+            frames[0] = clone(o);
+        }
+
+        return frames;
+    }*/
+
+    /**
+     *
+     * @param o {object}
+     * @param vh {number}
+     * @returns {Array}
+     */
+
+    /*
+    function splitv(o,vh){
+        let frames = [];
+        let dxh = o.dy+o.dHeight;
+        if(o.dy >= vh){
+            frames[0] = clone(o);
+            Object.assign(frames[0],{dy:o.dy-vh});
+        }
+        else if(dxh > vh){
+            frames[0] = clone(o);
+            frames[1] = clone(o);
+            let d = vh-o.dy;
+            let ds = d*(o.sHeight/o.dHeight);
+
+            Object.assign(frames[0],{dHeight:d,sHeight:ds});
+            Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
+        }
+        else if(o.dy < 0){
+            if(dxh > 0){
+                frames[0] = clone(o);
+                frames[1] = clone(o);
+                let d = Math.abs(o.dy);
+                let ds = d*(o.sHeight/o.dHeight);
+
+                Object.assign(frames[0],{dHeight:d,sHeight:ds,dy:vh-d});
+                Object.assign(frames[1],{dy:0,sy:o.sy+ds,sHeight:o.sHeight-ds,dHeight:o.dHeight-d});
+            }
+            else{
+                frames[0] = clone(o);
+                Object.assign(frames[0],{dy:vh+o.dy});
+            }
+        }
+        else{
+            frames[0] = clone(o);
+        }
+
+        return frames;
+    }
+
+    */
+
+    /**
+     *
+     * @param obj {object}
+     * @param vw {number}
+     * @param vh {number}
+     * @returns {Array}
+     */
+
+    /*
+    function split(obj,vw,vh){
+        let frames = [];
+        let tmp = splith(obj,vw);
+        let length = tmp.length;
+
+        for(let i =0; i < length;i++){
+            let tmp2 = splitv(tmp[i],vh);
+            let length2 = tmp2.length;
+            for(let j = 0; j < length2;j++){
+                frames.push(tmp2[j]);
+            }
+        }
+
+        return frames;
+    }
+    */
 })(RPG,window);

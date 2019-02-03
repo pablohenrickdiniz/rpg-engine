@@ -23,6 +23,7 @@
     "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-resolve-dependencies": "^3.0.1",
+    "gulp-strip-comments": "^2.5.2",
     "gulp-terser": "^1.1.7"
   },
   "resolutions": {
