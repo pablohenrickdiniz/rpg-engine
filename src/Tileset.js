@@ -69,11 +69,11 @@
     Tileset.prototype.get = function (i, j) {
         let self = this;
         if (i >= 0 && i < self.rows && j >= 0 && j < self.cols) {
-            if (self.sprites[i] === undefined) {
+            if (!self.sprites[i]) {
                 self.sprites[i] = [];
             }
 
-            if (self.sprites[i][j] === undefined) {
+            if (!self.sprites[i][j]) {
                 self.sprites[i][j] = new Tile({
                     tileset:self,
                     i:i,
@@ -97,7 +97,7 @@
         let self = this;
         if(i >= 0 && i < self.rows && j >= 0 && j < self.cols){
             if(val){
-                if(self.collision[i] === undefined){
+                if(!self.collision[i]){
                     self.collision[i] = [];
                 }
                 self.collision[i][j] = 1;

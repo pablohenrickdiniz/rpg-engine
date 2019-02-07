@@ -1,7 +1,9 @@
 /**
  * @requires RPG.js
+ * @requires Tilesets.js
  */
 (function (root) {
+    let Tilesets = root.Main.Tilesets;
     /**
      *
      * @param options {object}
@@ -11,13 +13,13 @@
         let self = this;
         initialize(self);
         options = options || {};
-        self.width = options.width || 20;
-        self.height = options.height || 20;
+        self.width = options.width || 10;
+        self.height = options.height || 10;
         self.tileWidth = options.tileWidth || 32;
         self.tileHeight = options.tileHeight || 32;
         self.data =  options.data || [];
+        self.cache = [];
     };
-
     /**
      *
      * @param i {number}
@@ -30,18 +32,69 @@
         let self = this;
 
         if (i < self.height && j < self.width) {
-            if (self.data[i] === undefined) {
+            if (!self.data[i]) {
                 self.data[i] = [];
             }
 
-            if(self.data[i][j] === undefined){
+            if(!self.data[i][j]){
                 self.data[i][j] = [];
             }
 
             self.data[i][j][k] = tile;
+            setCache(self,i,j,k,tile);
         }
 
         return self;
+    };
+
+    function setCache(self,i,j,k,t){
+        if(self.cache[k] === undefined){
+            let canvas = document.createElement('canvas');
+            canvas.width = self.realWidth;
+            canvas.height  = self.realHeight;
+            self.cache[k] = canvas;
+        }
+        let ctx = self.cache[k].getContext('2d');
+        let tileset = Tilesets.get(t[0]);
+        let tile = tileset.get(t[1],t[2]);
+        if(tile != null){
+            let tw = self.tileWidth;
+            let th = self.tileHeight;
+            let dx = j * tw;
+            let dy = i * th;
+            dx = parseInt(dx);
+            dy = parseInt(dy);
+            ctx.drawImage(tile.image, tile.sx, tile.sy,tw,th, dx, dy, tw,th);
+        }
+    }
+    
+    function updateCache(self){
+        if(self.data){
+            let keysA = Object.keys(self.data);
+            for(let i = 0; i < keysA.length;i++){
+                let keyA = keysA[i];
+                let keysB = Object.keys(self.data[keyA]);
+                for(let j = 0; j < keysB.length;j++){
+                    let keyB = keysB[j];
+                    let keysC = Object.keys(self.data[keyA][keyB]);
+                    for(let k = 0; k < keysC.length;k++){
+                        let keyC = keysC[k];
+                        setCache(self,keyA,keyB,keyC,self.data[keyA][keyB][keyC]);
+                    }
+                }
+            }
+        }
+    }
+
+    Spriteset_Map.prototype.getArea = function(x,y,width,height){
+        let self = this;
+        let images = [];
+        let layers = Object.keys(self.cache);
+
+        for(let i = 0; i < layers.length;i++){
+            images[layers[i]] = self.cache[layers[i]].getContext('2d').getImageData(x,y,width,height);
+        }
+        return images;
     };
 
     /**
@@ -53,11 +106,7 @@
      */
     Spriteset_Map.prototype.get = function (i, j, k) {
         let self = this;
-        if (self.data[i] !== undefined && self.data[i][j] !== undefined && self.data[i][j][k] !== undefined) {
-            return self.data[i][j][k];
-        }
-
-        return null;
+        return self.data[i] && self.data[i][j] && self.data[i][j][k]?self.data[i][j][k]:null;
     };
 
     /**
@@ -68,7 +117,7 @@
      */
     Spriteset_Map.prototype.unset = function (i, j, k) {
         let self = this;
-        if (self.data[i] !== undefined && self.data[i][j] !== undefined && self.data[i][j][k] !== undefined) {
+        if (self.data[i]  && self.data[i][j]  && self.data[i][j][k]) {
             delete self.data[i][j][k];
         }
     };
@@ -95,6 +144,38 @@
     function initialize(self){
         let width = 0;
         let height = 0;
+        let tileWidth  = 32;
+        let tileHeight = 32;
+        let cache = [];
+
+        Object.defineProperty(self,'tileWidth',{
+            get:function(){
+                return tileWidth;
+            },
+            set:function(tw){
+                tw = parseInt(tw);
+                if(!isNaN(tw) && tw >= 0 && tw !== tileWidth){
+                    tileWidth = tw;
+                    cache = [];
+                    updateCache(self);
+                }
+            }
+        });
+
+        Object.defineProperty(self,'tileHeight',{
+            get:function(){
+                return tileHeight;
+            },
+            set:function(th){
+                th = parseInt(th);
+                if(!isNaN(th) && th >= 0 && th !== tileHeight){
+                    tileHeight = th;
+                    cache = [];
+                    updateCache(self);
+                }
+            }
+        });
+
         Object.defineProperty(self,'width',{
             /**
              *
@@ -111,6 +192,7 @@
                 w = parseInt(w);
                 if(!isNaN(w) && w >= 0 && w !== width){
                     width = w;
+                    updateCache(self);
                 }
             }
         });
@@ -131,6 +213,7 @@
                 h = parseInt(h);
                 if(!isNaN(h) && h >= 0 && h !== height){
                     height = h;
+                    updateCache(self);
                 }
             }
         });
@@ -141,7 +224,7 @@
              * @returns {number}
              */
             get:function(){
-                return width * self.tileWidth;
+                return width * tileWidth;
             }
         });
 
@@ -151,7 +234,7 @@
              * @returns {number}
              */
             get:function(){
-                return height * self.tileHeight;
+                return height * tileHeight;
             }
         });
 
@@ -162,8 +245,8 @@
          *
          * @returns {Spriteset_Map}
          */
-       get:function(){
-           return Spriteset_Map;
-       }
+        get:function(){
+            return Spriteset_Map;
+        }
     });
 })(RPG);

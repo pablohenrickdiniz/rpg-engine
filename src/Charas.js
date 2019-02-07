@@ -1,10 +1,8 @@
 /**
  * @requires RPG.js
- * @requires Chara.js
  */
 (function(root){
-    let Chara = root.Chara,
-        Main = root.Main;
+    let Main = root.Main;
     let charas = [];
 
     let Charas = {
@@ -14,10 +12,7 @@
          * @returns {Chara}
          */
         get:function(id){
-            if(charas[id] !== undefined){
-                return charas[id];
-            }
-            return null;
+            return charas[id]?charas[id]:null;
         },
         /**
          *
@@ -25,9 +20,7 @@
          * @param chara {Chara}
          */
         set:function(id,chara){
-            if(chara instanceof Chara){
-                charas[id] = chara;
-            }
+            charas[id] = chara;
         }
     };
 

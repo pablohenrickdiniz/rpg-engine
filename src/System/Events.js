@@ -11,13 +11,11 @@
          * @returns {Events}
          */
         on:function(eventName,callback){
-            if(typeof callback === 'function'){
-                if(listeners[eventName] === undefined){
-                    listeners[eventName] = [];
-                }
-                if(listeners.indexOf(callback) === -1){
-                    listeners[eventName].push(callback);
-                }
+            if(!listeners[eventName]){
+                listeners[eventName] = [];
+            }
+            if(listeners.indexOf(callback) === -1){
+                listeners[eventName].push(callback);
             }
             return Events;
         },
@@ -27,8 +25,8 @@
          * @param callback{function}
          */
         off:function(eventName,callback){
-            if(listeners[eventName] !== undefined){
-                if(typeof callback === 'function'){
+            if(listeners[eventName]){
+                if(callback){
                     let index = listeners[eventName].indexOf(callback);
                     if(index !== -1){
                         listeners[eventName].splice(index,1);
@@ -48,7 +46,7 @@
          * @param args{Array}
          */
         trigger:function(eventName, args){
-            if(listeners[eventName] !== undefined){
+            if(listeners[eventName]){
                 for(let i = 0;i < listeners[eventName].length;i++){
                     listeners[eventName][i].apply(null,args);
                 }
@@ -61,8 +59,8 @@
          *
          * @returns {Events}
          */
-       get:function(){
-           return Events;
-       }
+        get:function(){
+            return Events;
+        }
     });
 })(RPG);

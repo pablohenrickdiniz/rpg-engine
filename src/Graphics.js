@@ -13,11 +13,7 @@
          * @returns {Game_Graphic}
          */
         get: function (type, name) {
-            if (graphics[type] && graphics[type][name]) {
-                return graphics[type][name];
-            }
-
-            return null;
+            return graphics[type] && graphics[type][name]?graphics[type][name]:null;
         },
         /**
          *
@@ -26,7 +22,7 @@
          * @param graphic {Game_Graphic}
          */
         set: function (type, name, graphic) {
-            if (graphics[type] === undefined) {
+            if (!graphics[type]) {
                 graphics[type] = {};
             }
             graphics[type][name] = graphic;
@@ -37,8 +33,8 @@
          * @param name {Game_Graphic}
          */
         unset: function (type, name) {
-            if (graphics[type] !== undefined) {
-                if (graphics[type][name] !== undefined) {
+            if (graphics[type]) {
+                if (graphics[type][name]) {
                     delete graphics[type][name];
                 }
             }

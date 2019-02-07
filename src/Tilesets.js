@@ -1,11 +1,9 @@
 /**
  * @requires RPG.js
  * @requires Game/Main.js
- * @requires Tileset.js
  */
 (function(root){
-    let Tileset = root.Tileset,
-        Main = root.Main;
+    let Main = root.Main;
 
     let tilesets = [];
     let Tilesets = {
@@ -15,10 +13,7 @@
          * @returns {Tileset}
          */
         get:function(id){
-            if(tilesets[id] !== undefined){
-                return tilesets[id];
-            }
-            return null;
+            return tilesets[id]?tilesets[id]:null;
         },
         /**
          *
@@ -26,9 +21,7 @@
          * @param tileset {Tileset}
          */
         set:function(id,tileset){
-            if(tileset instanceof Tileset){
-                tilesets[id] = tileset;
-            }
+            tilesets[id] = tileset;
         }
     };
 

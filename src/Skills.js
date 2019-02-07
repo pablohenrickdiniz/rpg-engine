@@ -1,10 +1,8 @@
 /**
- * @requires Game_Skill.js
  * @requries Game/Main.js
  */
 (function(root){
-	let Game_Skill = root.Game_Skill,
-		Main = root.Main;
+	let Main = root.Main;
 
 	let skills = [];
 	let Skills = {
@@ -14,10 +12,7 @@
          * @returns {Game_Skill}
          */
 		get:function(id){
-			if(skills[id] !== undefined){
-				return skills[id];
-			}	
-			return null;
+			return skills[id]?skills[id]:null;
 		},
         /**
 		 *
@@ -25,9 +20,7 @@
          * @param skill {Game_Skill}
          */
 		set:function(id,skill){
-			if(skill instanceof Game_Skill){
-				skills[id] = skill;	
-			}	
+			skills[id] = skill;
 		}
 	};
 

@@ -8,15 +8,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body onload="init()" style="padding:0;margin:0;overflow:hidden;">
-<div id="game-content"></div>
+<div id="game-content">
+    <div id="ui-root"></div>
+    <div id="canvas-container"></div>
+</div>
 <footer>
+    <script type="text/javascript" src="../node_modules/gpu.js/bin/gpu.min.js"></script>
     <script type="text/javascript" src="../RPG.js"></script>
+    <script type="text/javascript" src="../plugins/Mouse/src/mouse.js"></script>
+    <script type="text/javascript" src="../plugins/Keyboard/src/keyboard.js"></script>
     <script type="text/javascript" src="Database/ui.js"></script>
-    <script type="text/javascript" src="Database/keyboard.js"></script>
+    <script type="text/javascript" src="Database/render.js"></script>
+    <script type="text/javascript" src="Database/mouse.js"></script>
+    <script type="text/javascript" src="Database/events.js"></script>
     <script type="text/javascript" src="Database/Scenes/intro.js"></script>
     <script type="text/javascript">
         function init() {
-            RPG.initialize('game-content');
+            RPG.initialize();
             RPG.Events.on('sceneLoaded',function(name){
                 if(name === 'intro'){
                     let Main = RPG.Main;
@@ -33,7 +41,6 @@
                     RPG.Game_Timer.interval(function(){
                         player.level += 1;
                     },1000);
-                    Main.currentScene.focus(player);
                     Main.Switches.enable('LAMP');
                 }
             });

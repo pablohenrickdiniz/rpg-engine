@@ -176,7 +176,7 @@
                     let width = self.width;
                     let height = self.height;
                     let image = self.image;
-                    if(image !== null && width !== null && height !== null){
+                    if(image && width  && height){
                         let canvas = document.createElement('canvas');
                         canvas.width = width;
                         canvas.height = height;
@@ -204,9 +204,9 @@
                     let ctx = canvas.getContext('2d');
                     let image = self.image;
                     ctx.drawImage(image,sx,sy,width,height,0,0,width,height);
-                    var imageData = ctx.getImageData(0, 0, width, height);
-                    var pixels = imageData.data;
-                    for(var i = 0; i < pixels.length; i += 4) {
+                    let imageData = ctx.getImageData(0, 0, width, height);
+                    let pixels = imageData.data;
+                    for(let i = 0; i < pixels.length; i += 4) {
                         pixels[i] = pixels[i] = 0;
                         pixels[i+1] = pixels[i+1] = 0;
                         pixels[i+2] = pixels[i+2] = 0;

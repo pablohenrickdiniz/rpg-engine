@@ -88,7 +88,7 @@
      */
     Game_Inventory.prototype.on = function(eventName,callback){
         let self = this;
-        if(self.listeners[eventName] === undefined){
+        if(!self.listeners[eventName]){
             self.listeners[eventName] = [];
         }
         if(self.listeners[eventName].indexOf(callback) === -1){
@@ -105,7 +105,7 @@
      */
     Game_Inventory.prototype.off = function(eventName,callback){
         let self = this;
-        if(self.listeners[eventName] !== undefined){
+        if(self.listeners[eventName]){
             let index = self.listeners[eventName].indexOf(callback);
             if(index !== -1){
                 self.listeners[eventName].splice(index,1);
@@ -122,7 +122,7 @@
      */
     Game_Inventory.prototype.trigger = function(eventName,args){
         let self = this;
-        if(self.listeners[eventName] !== undefined){
+        if(self.listeners[eventName]){
             let length = self.listeners[eventName].length;
             for(let i =0; i < length;i++){
                 self.listeners[eventName][i].apply(self,args);
@@ -183,10 +183,7 @@
     Game_Inventory.prototype.getSlot = function(id){
         let self = this;
         let slots = self.slots;
-        if(slots[id]){
-            return slots[id];
-        }
-        return null;
+        return slots[id]?slots[id]:null;
     };
 
     /**

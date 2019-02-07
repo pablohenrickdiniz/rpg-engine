@@ -1,11 +1,9 @@
 /**
  * @requires RPG.js
- * @requires Game_Actor.js
  * @requires Game/Main.js
  */
 (function(root){
     let Main = root.Main;
-    let Game_Actor = root.Game_Actor;
     let actors = [];
     let Actors = {
         /**
@@ -14,9 +12,7 @@
          * @param actor {Game_Actor}
          */
         set:function(id,actor){
-            if(actor instanceof Game_Actor){
-                actors[id] = actor;
-            }
+            actors[id] = actor;
         },
         /**
          *
@@ -24,10 +20,7 @@
          * @returns {Game_Actor}
          */
         get:function(id){
-            if(actors[id] !== undefined){
-               return actors[id];
-            }
-            return null;
+            return actors[id]?actors[id]:null;
         }
     };
 

@@ -5,8 +5,7 @@
  */
 (function(root,w){
     let ID = 0;
-    let
-        Matter = w.Matter,
+    let Matter = w.Matter,
         Bodies = Matter.Bodies,
         Body = Matter.Body,
         Game_Animation = root.Game_Animation;
@@ -53,7 +52,7 @@
      */
     Game_Object.prototype.on = function(eventName,callback){
         let self = this;
-        if(typeof callback === 'function'){
+
             let events = [];
             if(typeof eventName == 'string'){
                 events.push(eventName);
@@ -70,7 +69,7 @@
                     self.listeners[eventName].push(callback);
                 }
             }
-        }
+
         return self;
     };
 
@@ -92,7 +91,7 @@
         for(let i = 0; i < events.length;i++){
             eventName = events[i];
             if(self.listeners[eventName] !== undefined){
-                if(typeof callback === 'function'){
+                if(callback){
                     let index = self.listeners[eventName].indexOf(callback);
                     if(index !== -1){
                         self.listeners[eventName].splice(index,1);
@@ -401,11 +400,11 @@
             set:function(ca){
                 ca = ca || null;
                 if(currentAnimation !== ca){
-                    if(currentAnimation !== null && currentAnimation instanceof Game_Animation){
+                    if(currentAnimation !== null){
                         currentAnimation.stop();
                     }
                     currentAnimation = ca;
-                    if(currentAnimation !== null && currentAnimation instanceof  Game_Animation){
+                    if(currentAnimation !== null){
                         currentAnimation.start();
                     }
                 }

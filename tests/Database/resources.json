@@ -1,0 +1,231 @@
+{
+  "graphics":{
+    "tilesets":{
+      "forest2":"./Graphics/Tilesets/Town_Village-0034.png",
+      "cavesAndUnderground":"./Graphics/Tilesets/Caves%20&%20Undergrounds%20-%200043.png"
+    },
+    "charasets":{
+      "char01":"./Graphics/Characters/Actor1.png",
+      "male":"./Graphics/Characters/Las2vdS.png",
+      "switch":"./Graphics/Characters/recolored-handle-switches-2.png",
+      "lamp":"./Graphics/Characters/Object%20-%200905.png",
+      "animal":"./Graphics/Characters/Animal.png"
+    },
+    "faces":{
+      "face01":"./Graphics/Faces/Actor1.png"
+    },
+    "icons":{
+      "icon01":"./Graphics/Icons/icons1.png"
+    }
+  },
+  "audios":{
+    "fx":{
+      "switch1":"./audio/fx/SWITCH_3.ogg",
+      "switch2":"./audio/fx/SWITCH_4.ogg"
+    }
+  },
+  "charas":{
+    "char1":{
+      "graphicID":"char01",
+      "rows":4,
+      "cols":3,
+      "sWidth":96,
+      "sHeight":128
+    },
+    "male1":{
+      "graphicID":"male",
+      "rows":4,
+      "cols":9
+    },
+    "switch":{
+      "graphicID":"switch",
+      "rows":4,
+      "cols":3,
+      "sWidth":96,
+      "sHeight":128
+    },
+    "lamp":{
+      "graphicID":"lamp",
+      "rows":4,
+      "cols":4
+    },
+    "butterfly":{
+      "graphicID":"animal",
+      "rows":4,
+      "cols":3,
+      "sx":288,
+      "sy":128,
+      "sWidth":96,
+      "sHeight":128
+    }
+  },
+  "faces":{
+    "face01":{
+      "graphicID":"face01",
+      "sWidth":96,
+      "sHeight":96
+    }
+  },
+  "actors":{
+    "1":{
+      "x":300,
+      "y":200,
+      "charaID":"char1",
+      "faceID":"face01",
+      "vSpeed":0.001,
+      "hSpeed":0.001,
+      "animationSpeed":6,
+      "startFrame":0,
+      "type":"Player",
+      "name":"Player 1",
+      "height":32,
+      "width":32,
+      "level":5,
+      "baseStrength":5,
+      "inventory":{
+        "slots": {
+          "0": {"max":99},
+          "1": {"max":99},
+          "2": {"max":99},
+          "3": {"max":99},
+          "4": {"max":99},
+          "5": {"max":99},
+          "6": {"max":99},
+          "7": {"max":99},
+          "8": {"max":99},
+          "9": {"max":99},
+          "10": {"max":99},
+          "11": {"max":99},
+          "12": {"max":99},
+          "13": {"max":99},
+          "14": {"max":99},
+          "15": {"max":99},
+          "16": {"max":99},
+          "17": {"max":99},
+          "18": {"max":99},
+          "19": {"max":99},
+          "20": {"max":99},
+          "21": {"max":99,"item":5,"amount":1},
+          "22": {"max":99,"item":4,"amount":1},
+          "23": {"max":99,"item":3,"amount":1},
+          "armor":{
+            "max":1,
+            "type":"armor",
+            "equipable":true
+          },
+          "boots":{
+            "max":1,
+            "type":"boots",
+            "equipable":true
+          },
+          "pants":{
+            "max":1,
+            "type":"pants",
+            "equipable":true
+          },
+          "glooves":{
+            "max":1,
+            "type":"gloves",
+            "equipable":true
+          },
+          "elm":{
+            "max":1,
+            "type":"elm",
+            "equipable":true
+          }
+        }
+      }
+    }
+  },
+  "icons":{
+    "icon01":{
+      "graphicID":"icon01",
+      "sx":24,
+      "sy":48,
+      "sWidth":24,
+      "sHeight":24
+    },
+    "apple":{
+      "graphicID":"icon02",
+      "sx":98,
+      "sy":0,
+      "sWidth":32,
+      "sHeight":32
+    },
+    "grape":{
+      "graphicID":"icon02",
+      "sx":0,
+      "sy":0,
+      "sWidth":32,
+      "sHeight":32
+    },
+    "armor":{
+      "graphicID":"icon01",
+      "sx":120,
+      "sy":96,
+      "sWidth":24,
+      "sHeight":24
+    },
+    "boots":{
+      "graphicID":"icon01",
+      "sx":192,
+      "sy":72,
+      "sWidth":24,
+      "sHeight":24
+    },
+    "elm":{
+      "graphicID":"icon01",
+      "sx":120,
+      "sy":24,
+      "sWidth":24,
+      "sHeight":24
+    }
+  },
+  "items":{
+    "0":{
+      "name":"sword1",
+      "icon":"icon01"
+    },
+    "1":{
+      "name":"apple",
+      "icon":"apple"
+    },
+    "2":{
+      "name":"grape",
+      "icon":"grape"
+    },
+    "3":{
+      "name":"armor",
+      "icon":"armor",
+      "type":"armor",
+      "effects":[
+        {"type":"+","stat":"defense","value":10}
+      ],
+      "requirements":[
+        {"stat":"strength","type":">=","value":5}
+      ]
+    },
+    "4":{
+      "name":"elm",
+      "icon":"elm",
+      "type":"elm",
+      "effects":[
+        {"type":"+", "stat":"defense", "value":3}
+      ],
+      "requirements":[
+        {"stat":"strength","type":">=","value":2}
+      ]
+    },
+    "5":{
+      "name":"boots",
+      "icon":"boots",
+      "type":"boots",
+      "effects":[
+        {"stat":"defense", "type":"+","value":5}
+      ],
+      "requirements":[
+        {"stat":"level","type":">=","value":5}
+      ]
+    }
+  }
+}

@@ -1,11 +1,9 @@
 /**
  * @requires RPG.js
  * @requires Game/Main.js
- * @requires Game_Icon.js
  */
 (function(root){
     let Main = root.Main;
-    let Game_Icon = root.Game_Icon;
     let icons = [];
     let Icons = {
         /**
@@ -14,9 +12,7 @@
          * @param icon {Game_Icon}
          */
         set:function(id,icon){
-            if(icon instanceof Game_Icon){
-                icons[id] = icon;
-            }
+            icons[id] = icon;
         },
         /**
          *
@@ -24,10 +20,7 @@
          * @returns {Game_Icon}
          */
         get:function(id){
-            if(icons[id] !== undefined){
-               return icons[id];
-            }
-            return null;
+            return icons[id]?icons[id]:null;
         }
     };
 

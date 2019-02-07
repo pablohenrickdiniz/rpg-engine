@@ -51,7 +51,7 @@
         play: function (type, name, id,loop) {
             if (audios[type] && audios[type][name]) {
                 let src =audios[type][name];
-                if(playing[type] === undefined){
+                if(!playing[type]){
                     playing[type] = {};
                 }
 
@@ -96,7 +96,7 @@
          */
         fade:function(type,id,time,finish){
             if(playing[type] && playing[type][id]){
-                if(fade[type] === undefined){
+                if(!fade[type]){
                     fade[type] = {};
                 }
 
@@ -152,7 +152,7 @@
          * @param src {string}
          */
         set: function (type, name, src) {
-            if (audios[type] === undefined) {
+            if (!audios[type]) {
                 audios[type] = {};
             }
 
@@ -166,10 +166,8 @@
          * @param name {string}
          */
         unset: function (type, name) {
-            if (audios[type] !== undefined) {
-                if (audios[type][name] !== undefined) {
-                    delete audios[type][name];
-                }
+            if (audios[type] && audios[type][name]) {
+                delete audios[type][name];
             }
         }
     };

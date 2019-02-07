@@ -13,7 +13,6 @@
         self.audios = options.audios || {};
         self.graphics = options.graphics || {};
         self.fps = options.fps || 60;
-        self.filters = options.filters || false;
         self.listeners = [];
 
         if(typeof options.start === 'function'){
@@ -40,24 +39,6 @@
             self.on('progress',options.onprogress);
         }
     };
-
-    Scene.prototype.addFilter = function(filter){
-        let self = this;
-        if(typeof filter == 'function' && self.filters.indexOf(filter) === -1) {
-            self.filters.push(filter);
-        }
-        return self;
-    };
-
-    Scene.prototype.removeFilter = function(filter){
-        let self = this;
-        let index = self.filters.indexOf(filter);
-        if(index !== -1){
-            self.filters.splice(index,1);
-        }
-        return self;
-    };
-
     /**
      *
      * @param eventName {string}
@@ -111,20 +92,7 @@
         return self;
     };
 
-    Scene.prototype.step = function(){
-        let self = this;
-        filters(self);
-    };
-
-    /**
-     *
-     * @param self
-     */
-    function filters(self){
-        for(let i = 0; i < self.filters.length;i++){
-            self.filters[i].apply(self);
-        }
-    }
+    Scene.prototype.step = function(){};
 
     Object.defineProperty(root,'Scene',{
         /**

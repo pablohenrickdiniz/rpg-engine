@@ -1,10 +1,8 @@
 /**
- * @requires Animation.js
  * @requires Game/Main.js
  */
 (function(root){
-    let Animation = root.Animation,
-    	Main = root.Main;
+    let Main = root.Main;
 
     let animations = [];
     let Animations = {
@@ -14,10 +12,7 @@
          * @returns {Animation}
          */
     	get:function(id){
-    		if(animations[id] !== undefined){
-    			return animations[id];
-    		}
-    		return null;
+    		return animations[id]?animations[id]:null;
     	},
         /**
 		 *
@@ -25,9 +20,7 @@
          * @param animation {Animation}
          */
     	set:function(id,animation){
-    		if(animation instanceof Animation){
-    			animations[id] = animation;		
-    		}		
+    		animations[id] = animation;
     	}		
     };
 

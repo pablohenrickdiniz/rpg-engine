@@ -37,7 +37,7 @@
      */
     Inventory.prototype.swap = function(){
         let self = this;
-        if(self.inventory != null && self.from != null && self.to != null && self.from !== self.to){
+        if(self.inventory  && self.from && self.to && self.from !== self.to){
             let from = self.from, to = self.to;
             self.from = null;
             self.top = null;
@@ -102,12 +102,12 @@
             set:function(i){
                 if((i == null || i instanceof Game_Inventory) && i !== inventory){
                     let callback = function(){self.render(slots)};
-                    if(inventory != null){
+                    if(inventory){
                         inventory.off('add',callback);
                         inventory.off('drop',callback);
                     }
                     inventory = i;
-                    if(inventory != null){
+                    if(inventory){
                         inventory.on('add',callback);
                         inventory.on('drop',callback);
                         self.render(slots);
@@ -161,7 +161,7 @@
         length = old_keys.length;
         for(i =0 ; i < length;i++){
             id = old_keys[i];
-            if(inventory.slots[id] === undefined && slots[id]){
+            if(!inventory.slots[id] && slots[id]){
                 slots[id].destroy();
                 delete slots[id];
             }

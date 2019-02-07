@@ -21,11 +21,16 @@
         initialize: function (options) {
             let self = this;
             options = options || {};
-            let container = options.container;
             let width = options.width;
             let height = options.height;
             let scale = options.scale | 1;
-            engine = CE.create(container, {
+            let element = document.getElementById(options.container);
+            while(element.children.length > 0){
+                element.removeChild(element.firstChild);
+            }
+            element.setAttribute('class','game-container');
+
+            engine = CE.create(element, {
                 width: width,
                 height: height,
                 scale:scale,
@@ -53,12 +58,13 @@
          * @returns {Canvas}
          */
         on:function(eventName,callback){
-            if(listeners[eventName] === undefined){
+            if(!listeners[eventName]){
                 listeners[eventName] = [];
             }
             if(listeners[eventName].indexOf(callback) === -1){
                 listeners[eventName].push(callback);
             }
+
             return Canvas;
         },
         /**
@@ -66,8 +72,8 @@
          * @param eventName {string}
          * @param callback {function}
          */
-        removeEventListener:function(eventName,callback){
-            if(listeners[eventName] !== undefined){
+        off:function(eventName,callback){
+            if(listeners[eventName]){
                 let index = listeners[eventName].indexOf(callback);
                 if(index !== -1){
                     listeners[eventName].splice(index,1);
@@ -80,7 +86,7 @@
          * @param args {Array}
          */
         trigger:function(eventName,args){
-            if(listeners[eventName] !== undefined){
+            if(listeners[eventName]){
                 let self = this;
                 let length = listeners[eventName].length;
                 for(let i =0; i < length;i++){
@@ -102,7 +108,7 @@
             let s_index = 0;
             let key;
 
-            if(index !== undefined){
+            if(index === 0 || index){
                 for(i =0; i < length;i++){
                     key = parseInt(keys[i]);
                     if(type !== key){
@@ -119,7 +125,7 @@
                     }
                 }
             }
-            else if(layers[type] !== undefined){
+            else if(layers[type]){
                 return layers[type];
             }
 
@@ -253,7 +259,7 @@
         clear: function (type, index, x, y, width, height) {
             let self = this;
             let layer = self.getLayer(type,index);
-            if(layer != null){
+            if(layer){
                 if(layer instanceof Array){
                     let length = layer.length;
                     for(let i =0; i < length;i++){
@@ -281,9 +287,10 @@
          * @param nx {number}
          */
         set:function(nx){
-            nx = parseFloat(nx);
+            nx = parseInt(nx);
             if(!isNaN(nx) && nx !== x){
                 x = nx;
+                Canvas.trigger('changeX',[x]);
             }
         }
     });
@@ -301,9 +308,10 @@
          * @param ny {number}
          */
         set:function(ny){
-            ny = parseFloat(ny);
+            ny = parseInt(ny);
             if(!isNaN(ny) && ny !== y){
                 y = ny;
+                Canvas.trigger('changeY',[y]);
             }
         }
     });
@@ -358,7 +366,7 @@
             engine.scale = scale;
         }
     });
-
+    
     Object.defineProperty(Canvas,'engine',{
         /**
          *
@@ -369,13 +377,13 @@
         }
     });
 
-    Object.defineProperty(root,'Canvas',{
+    Object.defineProperty(w,'Canvas',{
         /**
          *
          * @returns {Canvas}
          */
         get:function(){
-           return Canvas;
-       }
+            return Canvas;
+        }
     });
 })(RPG,window);

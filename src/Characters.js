@@ -1,9 +1,8 @@
 /**
- * @requires Game_Character.js
+ * @requires RPG.js
  */
 (function(root){
-    let Game_Character = root.Game_Character,
-        Main = root.Main,
+    let Main = root.Main,
         characters = {};
 
     let Characters = {
@@ -21,10 +20,7 @@
          * @returns {Game_Character}
          */
         get:function(id){
-            if(characters[id] !== undefined){
-                return characters[id];
-            }
-            return null;
+            return characters[id]?characters[id]:null;
         },
         /**
          *
@@ -33,7 +29,7 @@
          * @returns {Game_Character}
          */
         createInstance:function(id,options){
-            if(characters[id] !== undefined){
+            if(characters[id]){
                 let graphic = new Character_Graphic(characters[id].graphic);
                 options = options || {};
                 options.id = id;

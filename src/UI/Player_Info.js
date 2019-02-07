@@ -123,7 +123,7 @@
              */
            set:function(p){
                if(p !== player && (p == null || p instanceof Game_Character)){
-                   if(player !== null){
+                   if(player){
                        player.off('MPChange',mpChange);
                        player.off('HPChange',hpChange);
                        player.off('maxMPChange',mpChange);
@@ -132,7 +132,7 @@
                        player.off('levelChange',levelChange);
                    }
                     player = p;
-                    if(player !== null){
+                    if(player){
                         player.on('MPChange',mpChange);
                         player.on('HPChange',hpChange);
                         player.on('maxMPChange',mpChange);

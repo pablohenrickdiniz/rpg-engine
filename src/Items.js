@@ -1,11 +1,9 @@
 /**
  * @requires RPG.js
  * @requires Game/Main.js
- * @requires Item.js
  */
 (function(root){
-    let Item = root.Item,
-        Main = root.Main;
+    let Main = root.Main;
 
     let items = [];
     let Items = {
@@ -15,10 +13,7 @@
          * @returns {Item}
          */
         get:function(id){
-            if(items[id] !== undefined){
-                return items[id];
-            }
-            return null;
+            return items[id]?items[id]:null;
         },
         /**
          *
@@ -26,9 +21,7 @@
          * @param item {Item}
          */
         set:function(id,item){
-            if(item instanceof Item){
-                items[id] = item;
-            }
+            items[id] = item;
         }
     };
 

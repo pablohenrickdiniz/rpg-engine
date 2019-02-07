@@ -1,11 +1,9 @@
 /**
  * @requires RPG.js
  * @requires Game/Main.js
- * @requires Game_Map.js
  */
 (function(root){
-    let Main = root.Main,
-        Game_Map = root.Game_Map;
+    let Main = root.Main;
 
     let maps = [];
     let Maps = {
@@ -15,9 +13,7 @@
          * @param map {Game_Map}
          */
         set:function(id,map){
-            if(map instanceof Game_Map){
-                maps[id] = map;
-            }
+            maps[id] = map;
         },
         /**
          *
@@ -25,10 +21,7 @@
          * @returns {Game_Map}
          */
         get:function(id){
-            if(maps[id] !== undefined){
-                return maps[id];
-            }
-            return null;
+            return maps[id]?maps[id]:null;
         }
     };
 

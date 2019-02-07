@@ -64,15 +64,15 @@
             let keys = Object.keys(stats);
             for(let i = 0; i < keys.length;i++){
                 let key = keys[i];
-                if(elements[key] === undefined){
+                if(!elements[key]){
                     let element = new Element({
                         parent:statsTbody
                     },'tr');
-                    let title = new Text({
+                    new Text({
                         value:self.statsMap[key]?self.statsMap[key]:key,
                         parent:element
                     },'td');
-                    let value = new Text({
+                    new Text({
                         value:stats[key],
                         parent:element
                     },'td');

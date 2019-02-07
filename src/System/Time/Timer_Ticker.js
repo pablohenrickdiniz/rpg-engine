@@ -49,7 +49,7 @@
      */
     Timer_Ticker.prototype.on = function (eventName, callback) {
         let self = this;
-        if(self.listeners[eventName] === undefined){
+        if(!self.listeners[eventName]){
             self.listeners[eventName] = [];
         }
         if(self.listeners[eventName].indexOf(callback) === -1){
@@ -65,7 +65,7 @@
      */
     Timer_Ticker.prototype.off = function (eventName, callback) {
         let self = this;
-        if(self.listeners[eventName] !==undefined){
+        if(self.listeners[eventName]){
             let index = self.listeners[eventName].indexOf(callback);
             if(index !== -1){
                 self.listeners[eventName].splice(index,1);
@@ -81,7 +81,7 @@
      */
     Timer_Ticker.prototype.trigger = function (eventName,args) {
         let self = this;
-        if(self.listeners[eventName] !== undefined){
+        if(self.listeners[eventName]){
             let length = self.listeners[eventName].length;
             args = args || [];
             for(let i = 0; i < length;i++){
@@ -143,7 +143,7 @@
             });
             let passed = 0;
             let current_time = new Date().getTime();
-            if (timer.last_tick != null) {
+            if (timer.last_tick) {
                 passed = current_time - timer.last_tick;
             }
             timer.currentTime += passed;

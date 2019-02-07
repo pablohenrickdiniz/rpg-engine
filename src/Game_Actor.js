@@ -3,10 +3,7 @@
  * @requires Game_Character.js
  */
 (function(root,w){
-    let Game_Character = root.Game_Character,
-        Keyboard = w.Keyboard,
-        Main = root.Main;
-
+    let Game_Character = root.Game_Character;
     /**
      *
      * @param options {object}
@@ -22,33 +19,6 @@
 
     Game_Actor.prototype = Object.create(Game_Character.prototype);
     Game_Actor.prototype.constructor = Game_Actor;
-
-    /**
-     * @returns {void}
-     */
-    Game_Actor.prototype.update = function () {
-        let self = this;
-        if(Main.currentPlayerID == self.id){
-            let keyboard = root.Keyboard;
-            if (keyboard.state[Keyboard.LEFT]) {
-                self.stepLeft();
-            }
-            else if (keyboard.state[Keyboard.RIGHT]) {
-                self.stepRight();
-            }
-            else if (keyboard.state[Keyboard.DOWN]) {
-                self.stepDown();
-            }
-            else if (keyboard.state[Keyboard.UP]) {
-                self.stepUp();
-            }
-            else{
-                self.stop();
-            }
-        }
-
-        Game_Character.prototype.update.call(self);
-    };
 
     Object.defineProperty(root,'Game_Actor',{
         /**

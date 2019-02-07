@@ -20,10 +20,7 @@
          * @returns {*}
          */
         get:function(id){
-            if(variables[id] !== undefined){
-                return variables[id];
-            }
-            return null;
+            return variables[id]?variables[id]:null;
         }
     };
 

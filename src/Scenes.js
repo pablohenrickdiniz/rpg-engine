@@ -1,11 +1,9 @@
 /**
  * @requires RPG.js
  * @requires Game/Main.js
- * @requires Scene/Scene.js
  */
 (function(root){
-    let Main = root.Main,
-        Scene = root.Scene;
+    let Main = root.Main;
 
     let scenes = [];
 
@@ -16,9 +14,7 @@
          * @param scene {Scene}
          */
         set:function(id,scene){
-            if(scene instanceof Scene){
-                scenes[id] = scene;
-            }
+            scenes[id] = scene;
         },
         /**
          *
@@ -26,10 +22,7 @@
          * @returns {Scene}
          */
         get:function(id){
-            if(scenes[id] !== undefined){
-                return scenes[id];
-            }
-            return null;
+            return scenes[id]?scenes[id]:null;
         }
     };
 
