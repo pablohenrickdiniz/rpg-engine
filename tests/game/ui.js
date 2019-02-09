@@ -67,6 +67,11 @@
         sceneLoadProgress.visible = false;
     });
 
+    root.Events.on('sceneProgress',function(progress){
+        sceneLoadProgress.progress = progress;
+        console.log(progress);
+    });
+
     root.Events.on('playerChanged',function(actor){
         if(actor != null){
             playerInfo.player = actor;

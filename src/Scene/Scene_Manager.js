@@ -38,7 +38,7 @@
             };
 
             let progress = function(progress){
-                Events.trigger('sceneProgress',progress);
+                Events.trigger('sceneProgress',[progress]);
             };
 
             let current_scene = Main.currentScene;

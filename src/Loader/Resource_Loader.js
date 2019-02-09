@@ -54,6 +54,7 @@
                     success();
                 }
 
+
                 let totalprogress = function(progress) {
                     if(progress > old_progress){
                         old_progress = progress;

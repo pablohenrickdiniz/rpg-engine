@@ -59,12 +59,11 @@
             let error = options.error || null;
             let totalprogress = options.totalprogress || null;
             let globalprogress = options.globalprogress || new GlobalProgress();
-
             let media = null;
 
             if (images[url] === undefined) {
                 let request = new XMLHttpRequest();
-                request.progress = function (e) {
+                request.onprogress = function (e) {
                     let computable = e.lengthComputable;
                     if (computable) {
                         if(globalprogress instanceof GlobalProgress){
@@ -112,7 +111,7 @@
                     };
                 };
 
-                request.error = function () {
+                request.onerror = function () {
                     if (error) {
                         error(id);
                     }

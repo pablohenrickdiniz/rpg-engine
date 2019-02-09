@@ -5,6 +5,7 @@
     let Timer_Ticker = w.Timer_Ticker,
         Game_Timer = new Timer_Ticker(),
         debug = false;
+
     let Custom = {};
 
     let RPG = {
