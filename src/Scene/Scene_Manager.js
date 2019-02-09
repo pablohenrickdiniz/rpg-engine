@@ -23,7 +23,7 @@
          */
         call: function (name) {
             let scene = Scenes.get(name);
-            if(scene == null){
+            if(!scene){
                 throw new Error('Cena '+name+' não existe!');
             }
 
@@ -38,15 +38,12 @@
             };
 
             let progress = function(progress){
-                let progress_bar = RPG.UI.root.findById('loading-progress');
-                if(progress_bar != null){
-                    progress_bar.progress = progress;
-                }
+                Events.trigger('sceneProgress',progress);
             };
 
             let current_scene = Main.currentScene;
             if(scene instanceof Scene && current_scene !== scene){
-                if(current_scene !== null){
+                if(current_scene){
                     current_scene.finalize();
                 }
                 Game_Timer.stop();

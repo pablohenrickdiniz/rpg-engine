@@ -23,7 +23,7 @@
                 let q = function (tileset, id) {
                     tilesets[id] = tileset;
                     length--;
-                    if (length === 0 && typeof options.success === 'function') {
+                    if (length === 0 && options.success) {
                         options.success(tilesets);
                     }
                 };
@@ -31,10 +31,10 @@
                 let self = this;
                 for (let k = 0; k < keys.length; k++) {
                     let key = keys[k];
-                    self.load(urls[key], key, q, options.progress, onerror);
+                    self.load(urls[key], key, {success:q});
                 }
             }
-            else if (typeof options.success === 'function') {
+            else if (options.success) {
                 options.success(tilesets);
             }
         },
@@ -49,12 +49,12 @@
             if (tilesets[url] === undefined) {
                 Graphic_Loader.load(url, id, function (image, id) {
                     tilesets[url] = new Tileset(image);
-                    if(typeof options.success === 'function'){
+                    if(options.success){
                         options.success(tilesets[url], id);
                     }
                 }, options.progress, onerror);
             }
-            else if (typeof options.success === 'function') {
+            else if (options.success) {
                 options.success(tilesets[url], id);
             }
         }

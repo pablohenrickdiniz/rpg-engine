@@ -45,9 +45,7 @@
     Scene_Map_Loader.prototype = Object.create(Resource_Loader.prototype);
     Scene_Map_Loader.prototype.constructor = Scene_Map_Loader;
 
-
-    var load = Resource_Loader.prototype.load;
-
+    let load = Resource_Loader.prototype.load;
 
     /**
      *
@@ -101,7 +99,6 @@
                     }
                 }
 
-
                 if(data.charas && data.charas.constructor === {}.constructor){
                     keys = Object.keys(data.charas);
                     length = keys.length;
@@ -150,7 +147,7 @@
                     }
                 }
 
-                if(typeof options.complete === 'function'){
+                if(options.complete){
                     options.complete(scene);
                 }
             }

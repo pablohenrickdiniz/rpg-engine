@@ -1,8 +1,7 @@
+/**
+ * @requires ../System/Audio/Audio.js
+ */
 (function (w) {
-    if (!w.Audio) {
-        throw "Audio_Loader requires Audio support";
-    }
-
     /**
      *
      * @param aud
@@ -50,7 +49,7 @@
                 let q = function(audio, id) {
                     loaded[id] = audio;
                     length--;
-                    if (typeof options.success === 'function' && length === 0) {
+                    if (toptions.success && length === 0) {
                         options.success(loaded);
                     }
                 };
@@ -66,7 +65,7 @@
                     });
                 }
             }
-            else if (typeof options.success === 'function') {
+            else if (options.success) {
                 options.success(loaded);
             }
         },
@@ -90,14 +89,14 @@
 
                 let error = function() {
                     unbind();
-                    if (typeof options.error === 'function') {
+                    if (options.error) {
                         options.error(id);
                     }
                 };
 
                 let success = function() {
                     unbind();
-                    if (typeof options.success === 'function') {
+                    if (options.success) {
                         options.success(id,url);
                     }
                 };
@@ -132,11 +131,11 @@
                                 }
                             }
 
-                            if(typeof options.totalprogress === 'function'){
+                            if(options.totalprogress){
                                 options.totalprogress(globalprogress.progress());
                             }
 
-                            if (typeof options.progress === 'function') {
+                            if (options.progress) {
                                 options.progress(id, progress);
                             }
                         }
@@ -167,7 +166,7 @@
                 audio.addEventListener('canplaythrough', canplay);
                 audio.load();
             }
-            else if (typeof options.success === 'function') {
+            else if (options.success) {
                 options.success(id,url);
             }
         }

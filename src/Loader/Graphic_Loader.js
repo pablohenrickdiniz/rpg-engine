@@ -26,7 +26,7 @@
                 let q = function(image, id) {
                     loaded[id] = image;
                     length--;
-                    if (typeof success === 'function' && length === 0) {
+                    if (success && length === 0) {
                         success(loaded);
                     }
                 };
@@ -42,7 +42,7 @@
                     });
                 }
             }
-            else if (typeof success === 'function') {
+            else if (success) {
                 success(loaded);
             }
         },
@@ -81,13 +81,12 @@
                             }
                         }
 
-
-                        if(typeof totalprogress === 'function'){
+                        if(totalprogress){
                             totalprogress(globalprogress.progress());
                         }
 
                         let progress_percent = parseInt(e.loaded / e.total * 100);
-                        if (typeof progress === 'function') {
+                        if (progress) {
                             progress(id, progress_percent);
                         }
                     }
@@ -104,7 +103,7 @@
                         let onload = function () {
                             image.removeEventListener('load', onload);
                             images[url] = image;
-                            if (typeof success === 'function') {
+                            if (success) {
                                 success(id,image);
                             }
                         };
@@ -114,7 +113,7 @@
                 };
 
                 request.error = function () {
-                    if (typeof error === 'function') {
+                    if (error) {
                         error(id);
                     }
                 };
@@ -123,7 +122,7 @@
                 request.responseType = "blob";
                 request.send();
             }
-            else if (typeof success === 'function') {
+            else if (success) {
                 success(id,images[url]);
             }
         },
@@ -177,7 +176,7 @@
                 img.src = data;
 
                 let error = function () {
-                    this.removeEventListener('load', load_callback);
+                    this.removeEventListener('load', load);
                     this.removeEventListener('error', error);
                     callback(null);
                 };

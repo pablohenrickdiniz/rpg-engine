@@ -68,6 +68,7 @@
         keyboard.on('state,ENTER,active', action);
         keyboard.on('state,PLUS,active',Canvas.zoomIn);
         keyboard.on('state,MINUS,active',Canvas.zoomOut);
+        root.Events.trigger('keyboardCreate',[keyboard]);
         w.addEventListener('blur', windowblur);
         w.addEventListener('focus', windowfocus);
         w.addEventListener('resize',windowresize);
@@ -81,8 +82,8 @@
             keyboard.off('state,PLUS,active',Canvas.zoomIn);
             keyboard.off('state,MINUS,active',Canvas.zoomOut);
             keyboard.unbind();
+            root.Events.trigger('keyboardDestroy',[keyboard]);
         }
-
         w.removeEventListener('blur',windowblur);
         w.removeEventListener('focus',windowfocus);
         w.removeEventListener('resize',windowresize);

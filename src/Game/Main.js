@@ -1,13 +1,11 @@
 /**
  * @requires ../RPG.js
- * @requires ../Game_Map.js
  * @requires ../System/Events.js
  */
 (function (root) {
     let Events = root.Events,
-        Game_Map = root.Game_Map,
-        current_scene = null,
-        current_map = null,
+        currentScene = null,
+        currentMap = null,
         currentPlayerID = null;
 
     let Main = {};
@@ -18,15 +16,16 @@
          * @returns {Scene}
          */
         get:function(){
-            return current_scene;
+            return currentScene;
         },
         /**
          *
          * @param s {Scene}
          */
         set:function(s){
-            if(s !== current_scene){
-                current_scene = s;
+            if(s !== currentScene){
+                currentScene = s;
+                Events.trigger('sceneChanged',[currentScene]);
             }
         }
     });
@@ -37,15 +36,16 @@
          * @returns {Game_Map}
          */
         get:function(){
-            return current_map;
+            return currentMap;
         },
         /**
          *
          * @param map {Game_Map}
          */
         set:function(map){
-            if(map !== current_map){
-                current_map = map;
+            if(map !== currentMap){
+                currentMap = map;
+                Events.trigger('mapChanged',[currentMap]);
             }
         }
     });

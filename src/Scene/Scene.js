@@ -15,27 +15,27 @@
         self.fps = options.fps || 60;
         self.listeners = [];
 
-        if(typeof options.start === 'function'){
+        if(options.start){
             self.on('start',options.start);
         }
 
-        if(typeof options.beforeload === 'function'){
+        if(options.beforeload){
             self.on('beforeload',options.beforeload);
         }
 
-        if(typeof options.afterload === 'function'){
+        if(options.afterload){
             self.on('afterload',options.afterload);
         }
 
-        if(typeof options.audioprogress === 'function'){
+        if(options.audioprogress){
             self.on('audioprogress',options.audioprogress);
         }
 
-        if(typeof options.graphicprogress === 'function'){
+        if(options.graphicprogress){
             self.on('graphicprogress',options.graphicprogress);
         }
 
-        if(typeof options.onprogress === 'function'){
+        if(options.onprogress){
             self.on('progress',options.onprogress);
         }
     };
@@ -47,7 +47,7 @@
      */
     Scene.prototype.trigger = function(eventName,args){
         let self = this;
-        if(self.listeners[eventName] !== undefined){
+        if(self.listeners[eventName]){
             let length = self.listeners[eventName].length;
             for(let i = 0; i < length;i++){
                 self.listeners[eventName][i].apply(self,args);
@@ -64,14 +64,14 @@
      */
     Scene.prototype.on = function(eventName,callback){
         let self = this;
-        if(typeof callback === 'function'){
-            if(self.listeners[eventName] === undefined){
-                self.listeners[eventName] = [];
-            }
-            if(self.listeners[eventName].indexOf(callback) === -1){
-                self.listeners[eventName].push(callback);
-            }
+
+        if(!self.listeners[eventName]){
+            self.listeners[eventName] = [];
         }
+        if(self.listeners[eventName].indexOf(callback) === -1){
+            self.listeners[eventName].push(callback);
+        }
+
         return self;
     };
 
@@ -83,7 +83,7 @@
      */
     Scene.prototype.off = function(eventName,callback){
         let self = this;
-        if(self.listeners[eventName] !== undefined){
+        if(self.listeners[eventName]){
             let index =self.listeners[eventName].indexOf(callback);
             if(index !== -1){
                 self.listeners[eventName].splice(index,1);
@@ -99,8 +99,8 @@
          *
          * @returns {Scene}
          */
-       get:function(){
-           return Scene;
-       }
+        get:function(){
+            return Scene;
+        }
     });
 })(RPG);

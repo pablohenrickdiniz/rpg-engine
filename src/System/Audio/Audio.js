@@ -1,12 +1,9 @@
 /**
  * @requires ../../RPG.js
  * @requires Audio_File.js
+ * @requires ../Time/Timer_Ticker.js
  */
 (function (root) {
-    if(!root.Game_Timer){
-        throw "Audio requires Game_Timer"
-    }
-
     let Game_Timer = root.Game_Timer;
     let Audio_Instance  = root.Audio_File;
 

@@ -22,7 +22,7 @@
     Resource_Loader.prototype.load = function (url,options) {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
+            if (this.readyState === 4 && this.status === 200) {
                 let data = JSON.parse(this.responseText);
                 let count = 0;
                 let audios = data.audios || {};
@@ -44,33 +44,33 @@
                 let success = function() {
                     count++;
                     if (count >= total) {
-                        if(typeof options.complete === 'function'){
+                        if(options.complete){
                             options.complete(data);
                         }
                     }
                 };
 
-                if(total === 0 && typeof success === 'function'){
+                if(total === 0 && success){
                     success();
                 }
 
                 let totalprogress = function(progress) {
                     if(progress > old_progress){
                         old_progress = progress;
-                        if(typeof options.progress === 'function'){
+                        if(options.progress){
                             options.progress(progress);
                         }
                     }
                 };
 
                 let graphicprogress = function (){
-                    if(typeof options.graphicprogress === 'function'){
+                    if(options.graphicprogress){
                         options.graphicprogress.apply(null,arguments);
                     }
                 };
 
                 let audioprogress = function(){
-                    if(typeof options.audioprogress === 'function'){
+                    if(audioprogress){
                         options.audioprogress.apply(null,arguments);
                     }
                 };
@@ -144,7 +144,7 @@
             Audio_Loader.load(data[name],name, {
                 success: function (id,src) {
                     Audios.set(type,id,src);
-                    if(typeof options.success === 'function'){
+                    if(options.success){
                         options.success(id);
                     }
                 },
@@ -171,7 +171,7 @@
             Graphic_Loader.load(data[name],name, {
                 success: function (id,image) {
                     Graphics.set(type, id, image);
-                    if(typeof options.success === 'function'){
+                    if(options.success){
                         options.success(id);
                     }
                 },

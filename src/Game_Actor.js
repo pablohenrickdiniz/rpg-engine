@@ -2,7 +2,7 @@
  * @requires RPG.js
  * @requires Game_Character.js
  */
-(function(root,w){
+(function(root){
     let Game_Character = root.Game_Character;
     /**
      *
@@ -29,4 +29,4 @@
             return Game_Actor;
         }
     });
-})(RPG,window);
+})(RPG);
