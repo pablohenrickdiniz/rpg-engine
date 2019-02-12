@@ -21,6 +21,14 @@
          */
         set:function(id,chara){
             charas[id] = chara;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!charas[id];
         }
     };
 

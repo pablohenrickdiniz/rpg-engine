@@ -1,6 +1,8 @@
 (function(root,w){
     let UI = w.UI;
 
+    let requiredInteractCallbacks = [];
+
     let sceneLoadProgress = new UI.Progress_Bar({
         id:'loading-progress'
     });
@@ -32,13 +34,19 @@
         top:300
     });
 
-    let fps = new UI.Text({
-        id:'fps',
-        width:100,
-        height:30,
-        visible:true,
-        class:'fps',
-        value:20
+    let continueButton = new UI.Button({
+        id:'continue',
+        class:'dom-interact',
+        text:'CLICK TO CONTINUE',
+        visible:false
+    });
+
+    continueButton.on('leftclick',function(){
+        while(requiredInteractCallbacks.length > 0){
+            requiredInteractCallbacks.pop()();
+        }
+        continueButton.visible = false;
+        sceneLoadProgress.visible = true;
     });
 
     function windowresize(){
@@ -53,7 +61,7 @@
         ui.add(playerInfo);
         ui.add(playerInventory);
         ui.add(stats);
-        ui.add(fps);
+        ui.add(continueButton);
         UI.width = w.innerWidth;
         UI.height = w.innerHeight;
         w.addEventListener('resize',windowresize);
@@ -69,7 +77,6 @@
 
     root.Events.on('sceneProgress',function(progress){
         sceneLoadProgress.progress = progress;
-        console.log(progress);
     });
 
     root.Events.on('playerChanged',function(actor){
@@ -95,5 +102,11 @@
         keyboard.on('state,S,active', function () {
             stats.visible = !stats.visible;
         });
+    });
+
+    root.Events.on('requireDOMInteraction',function(callback){
+        requiredInteractCallbacks.push(callback);
+        continueButton.visible = true;
+        sceneLoadProgress.visible = false;
     });
 })(RPG,window);

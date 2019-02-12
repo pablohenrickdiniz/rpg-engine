@@ -65,12 +65,8 @@
         set:function(id){
             if(id !== currentPlayerID){
                 currentPlayerID = id;
-                let scene = Main.currentScene;
                 let actor = Main.Actors.get(id);
                 Events.trigger('playerChanged',[actor]);
-                if(scene && actor){
-                    scene.add(actor);
-                }
             }
         }
     });
@@ -89,8 +85,8 @@
         /**
          * @returns {Main}
          */
-       get:function(){
-           return Main;
-       }
+        get:function(){
+            return Main;
+        }
     });
 })(RPG);

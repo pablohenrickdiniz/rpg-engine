@@ -3,7 +3,7 @@
  * @requires ../System/UI/Element.js
  * @requires ../System/UI/Image.js
  * @requires ../System/UI/Text.js
- * @requires ../Game_Character.js
+ * @requires ../Game_Actor.js
  */
 (function(root,rpg){
     let UI = root.UI,
@@ -11,7 +11,7 @@
         Element = UI.Element,
         Image = UI.Image,
         Text = UI.Text,
-        Game_Character = rpg.Game_Character;
+        Game_Actor = rpg.Game_Actor;
 
     /**
      *
@@ -112,17 +112,17 @@
         Object.defineProperty(self,'player',{
             /**
              *
-             * @returns {Game_Character}
+             * @returns {Game_Actor}
              */
            get:function(){
                return player;
            },
             /**
              *
-             * @param p {Game_Character || null}
+             * @param p {Game_Actor || null}
              */
            set:function(p){
-               if(p !== player && (p == null || p instanceof Game_Character)){
+               if(p !== player && (p == null || p instanceof Game_Actor)){
                    if(player){
                        player.off('MPChange',mpChange);
                        player.off('HPChange',hpChange);

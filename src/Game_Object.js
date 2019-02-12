@@ -2,13 +2,15 @@
  * @requires RPG.js
  * @requires Game_Animation.js
  * @requires ../plugins/Matter/build/matter.min.js
+ * @requires Charas.js
  */
 (function(root,w){
     let ID = 0;
     let Matter = w.Matter,
         Bodies = Matter.Bodies,
         Body = Matter.Body,
-        Game_Animation = root.Game_Animation;
+        Game_Animation = root.Game_Animation,
+        Charas = root.Main.Charas;
 
     /**
      *
@@ -21,7 +23,6 @@
         options = options || {};
         self.object_id = ID;
         ID++;
-        self.animations = [];
         self.animationSpeed = options.animationSpeed || 4;
         self.static = options.static || false;
         self.x = options.x || 0;
@@ -41,7 +42,7 @@
         self.name = options.name || '';
         self.listeners = [];
         self.steps = 0;
-
+        self.charaID = options.charaID || null;
     };
 
     /**
@@ -162,6 +163,11 @@
         return self;
     };
 
+    Game_Object.prototype.playAnimation = function(id,charaID,options){
+        let self = this;
+        self.currentAnimation = new Game_Animation(id,Charas.get(charaID),options);
+    };
+
     /**
      *
      * @param self {Game_Object}
@@ -169,6 +175,7 @@
     function initialize(self){
         let speed = 5;
         let currentAnimation = null;
+        let defaultAnimation = null;
         let through = null;
         let body = null;
         let objectBody = null;
@@ -182,6 +189,7 @@
         let st = true;
         let lights = [];
         let shadow = false;
+        let charaID = null;
 
         Object.defineProperty(self,'shadow',{
             /**
@@ -391,15 +399,22 @@
              * @returns {Game_Animation}
              */
             get:function(){
-                return currentAnimation;
+                if(currentAnimation){
+                    if(currentAnimation.finished){
+                        currentAnimation = null;
+                    }
+                    else{
+                        return currentAnimation;
+                    }
+                }
+                return defaultAnimation;
             },
             /**
              *
              * @param ca {Game_Animation}
              */
             set:function(ca){
-                ca = ca || null;
-                if(currentAnimation !== ca){
+                if(ca === null || currentAnimation === null || ca.id !== currentAnimation.id){
                     if(currentAnimation !== null){
                         currentAnimation.stop();
                     }
@@ -554,6 +569,52 @@
                 if(lgs instanceof Array){
                     lights = lgs;
                 }
+            }
+        });
+
+        Object.defineProperty(self,'graphic',{
+            /**
+             *
+             * @returns {Game_Graphic}
+             */
+            get:function(){
+                if(charaID !== null){
+                    return Charas.get(charaID);
+                }
+
+                return null;
+            }
+        });
+
+        Object.defineProperty(self,'currentFrame',{
+            /**
+             *
+             * @returns {Tile}
+             */
+            get:function(){
+                return self.currentAnimation.currentFrame;
+            }
+        });
+
+        Object.defineProperty(self, 'charaID', {
+            /**
+             *
+             * @param id {string}
+             */
+            set: function (id) {
+                if (id !== charaID) {
+                    charaID = id;
+                    let graphic = Charas.get(charaID);
+                    defaultAnimation = new Game_Animation('default',graphic,{startFrame:0,endFrame:graphic.cols*graphic.rows-1,fps:self.animationSpeed});
+                    defaultAnimation.start();
+                }
+            },
+            /**
+             *
+             * @returns {string}
+             */
+            get: function () {
+                return charaID;
             }
         });
     }

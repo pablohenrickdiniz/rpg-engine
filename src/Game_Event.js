@@ -4,15 +4,15 @@
  * @requires System/Audio/Audio.js
  * @requires System/Events.js
  * @requires Consts.js
- * @requires Game_Character.js
+ * @requires Game_Object.js
  */
-(function (root,w) {
+(function (root) {
     let Event_Page = root.Event_Page,
         Switches = root.Main.Switches,
         Audio = root.Audio,
         Events = root.Events,
         Consts = root.Consts,
-        Game_Character = root.Game_Character;
+        Game_Object = root.Game_Object;
 
     /**
      *
@@ -21,7 +21,7 @@
      */
     let Game_Event = function (options) {
         let self = this;
-        Game_Character.call(self, options);
+        Game_Object.call(self, options);
         self.switches = [];
         initialize(self);
         options = options || {};
@@ -29,7 +29,7 @@
         self.listeners = [];
     };
 
-    Game_Event.prototype = Object.create(Game_Character.prototype);
+    Game_Event.prototype = Object.create(Game_Object.prototype);
     Game_Event.prototype.constructor = Game_Event;
 
     /**
@@ -238,7 +238,7 @@
                 }
         }
 
-        Game_Character.prototype.update.call(self);
+        Game_Object.prototype.update.call(self);
     };
 
     /**
@@ -398,4 +398,4 @@
             return Game_Event;
         }
     })
-})(RPG,window);
+})(RPG);

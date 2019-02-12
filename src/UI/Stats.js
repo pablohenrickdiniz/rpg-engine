@@ -2,14 +2,14 @@
  * @requires ../System/UI/Window.js
  * @requires ../System/UI/Element.js
  * @requires ../System/UI/Text.js
- * @requires ../Game_Character.js
+ * @requires ../Game_Actor.js
  */
 (function(root,rpg){
     let UI = root.UI,
         Window = UI.Window,
         Element = UI.Element,
         Text = UI.Text,
-        Game_Character = rpg.Game_Character;
+        Game_Actor = rpg.Game_Actor;
 
     /**
      *
@@ -99,7 +99,7 @@
                return character;
            },
            set:function(chr){
-               if((chr === null || chr instanceof Game_Character) && chr !== character){
+               if((chr === null || chr instanceof Game_Actor) && chr !== character){
                    if(character !== null){
                        character.off('statsChange',statsChange);
                    }

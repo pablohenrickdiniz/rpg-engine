@@ -20,10 +20,11 @@
         options = options || {};
         initialize(self);
         self.conditions = options.conditions || [];
-        self.script = options.script;
+        self.autoRun = options.autoRun || null;
+        self.touch = options.touch || null;
+        self.action = options.action || null;
         self.initialize = options.initialize;
         self.event = options.event || null;
-        self.trigger = options.trigger || [Consts.TRIGGER_AUTO_RUN];
         self.options = {
             through :options.through || false,
             route : options.route || [],
@@ -61,19 +62,6 @@
         return self;
     };
 
-    Event_Page.prototype.executeScript = function(){
-        let self = this;
-        if(self.script !== null){
-            self.script.apply(self.event,arguments);
-        }
-        return self;
-    };
-
-    Event_Page.prototype.isTrigger = function(tgr){
-        let self = this;
-        return self.trigger.indexOf(tgr) !== -1;
-    };
-
     /**
      *
      * @param self {Event_Page}
@@ -81,17 +69,18 @@
     let initialize = function(self){
         let conditions = [];
         let options = {};
-        let trigger = [];
-        let script = null;
+        let autoRun = null;
+        let touch = null;
+        let action = null;
         let initialize = null;
 
-        Object.defineProperty(self,'script',{
+        Object.defineProperty(self,'autoRun',{
             /**
              *
              * @returns {function}
              */
             get:function(){
-                return script;
+                return autoRun;
             },
             /**
              *
@@ -99,7 +88,45 @@
              */
             set:function(s){
                 if(s === null || typeof s === 'function'){
-                    script = s;
+                    autoRun = s;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'touch',{
+            /**
+             *
+             * @returns {function}
+             */
+            get:function(){
+                return touch;
+            },
+            /**
+             *
+             * @param s {function}
+             */
+            set:function(s){
+                if(s === null || typeof s === 'function'){
+                    touch = s;
+                }
+            }
+        });
+
+        Object.defineProperty(self,'action',{
+            /**
+             *
+             * @returns {function}
+             */
+            get:function(){
+                return action;
+            },
+            /**
+             *
+             * @param s {function}
+             */
+            set:function(s){
+                if(s === null || typeof s === 'function'){
+                    action = s;
                 }
             }
         });
@@ -159,21 +186,6 @@
                 return conditions;
             }
         });
-
-        Object.defineProperty(self,'trigger',{
-            get:function(){
-                return trigger;
-            },
-            set:function(tgr){
-                if(!(tgr instanceof  Array)){
-                    tgr = [tgr];
-                }
-                tgr.filter(function(t){
-                    return triggers.indexOf(t) !== -1;
-                });
-                trigger = tgr;
-            }
-        })
     };
 
     Object.defineProperty(root,'Event_Page',{

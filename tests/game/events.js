@@ -1,5 +1,5 @@
 (function(root,w){
-    let Canvas = w.Canvas,
+    let Screen = w.Screen,
         Game_Timer = root.Game_Timer,
         Main = root.Main,
         Keyboard = w.Keyboard;
@@ -21,8 +21,8 @@
     }
 
     function windowresize(){
-        Canvas.height = w.innerHeight;
-        Canvas.width = w.innerWidth;
+        Screen.height = w.innerHeight;
+        Screen.width = w.innerWidth;
     }
 
     let keyboard = null;
@@ -66,8 +66,8 @@
         });
         keyboard.on('state,P,active', pause);
         keyboard.on('state,ENTER,active', action);
-        keyboard.on('state,PLUS,active',Canvas.zoomIn);
-        keyboard.on('state,MINUS,active',Canvas.zoomOut);
+        keyboard.on('state,PLUS,active',Screen.zoomIn);
+        keyboard.on('state,MINUS,active',Screen.zoomOut);
         root.Events.trigger('keyboardCreate',[keyboard]);
         w.addEventListener('blur', windowblur);
         w.addEventListener('focus', windowfocus);
@@ -79,8 +79,8 @@
         if(keyboard != null){
             keyboard.off('state,P,active',pause);
             keyboard.off('state,ENTER,active', action);
-            keyboard.off('state,PLUS,active',Canvas.zoomIn);
-            keyboard.off('state,MINUS,active',Canvas.zoomOut);
+            keyboard.off('state,PLUS,active',Screen.zoomIn);
+            keyboard.off('state,MINUS,active',Screen.zoomOut);
             keyboard.unbind();
             root.Events.trigger('keyboardDestroy',[keyboard]);
         }

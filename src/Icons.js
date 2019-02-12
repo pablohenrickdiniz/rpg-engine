@@ -21,6 +21,14 @@
          */
         get:function(id){
             return icons[id]?icons[id]:null;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!icons[id];
         }
     };
 

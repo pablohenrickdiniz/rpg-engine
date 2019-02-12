@@ -34,7 +34,7 @@
         Items = Main.Items,
         Icons = Main.Icons,
         Actors = Main.Actors;
-
+    
     /**
      *
      * @constructor
@@ -54,7 +54,7 @@
      */
     Scene_Map_Loader.prototype.load = function (scene, options) {
         let url = options.url || 'resources.json';
-        load.apply(this,[url,{
+        load.apply(this,[url+'?=t'+(new Date()).getMilliseconds(),{
             progress:options.progress,
             complete:function(data){
                 let map = scene.map;
@@ -65,16 +65,20 @@
 
                 if(map.tileset && map.tileset.graphicID){
                     let id = map.tileset.graphicID;
-                    let tileset = new Tileset(map.tileset);
-                    Tilesets.set(id,tileset);
+                    if(!Tileset.has(id)){
+                        let tileset = new Tileset(map.tileset);
+                        Tilesets.set(id,tileset);
+                    }
                 }
 
                 if(map.tilesets && map.tilesets instanceof Array){
                     for(let i =0; i < map.tilesets.length;i++){
                         if(map.tilesets[i].graphicID){
                             let id = map.tilesets[i].graphicID;
-                            let tileset = new Tileset(map.tilesets[i]);
-                            Tilesets.set(id,tileset);
+                            if(!Tilesets.has(id)){
+                                let tileset = new Tileset(map.tilesets[i]);
+                                Tilesets.set(id,tileset);
+                            }
                         }
                     }
                 }
@@ -84,8 +88,10 @@
                     length = keys.length;
                     for(let i =0; i < length;i++){
                         key = keys[i];
-                        conf = data.icons[key];
-                        Icons.set(key,new Game_Icon(conf));
+                        if(!Icons.has(key)){
+                            conf = data.icons[key];
+                            Icons.set(key,new Game_Icon(conf));
+                        }
                     }
                 }
 
@@ -94,8 +100,10 @@
                     length = keys.length;
                     for(let i =0; i < length;i++){
                         key = keys[i];
-                        conf = data.faces[key];
-                        Faces.set(key,new Game_Face(conf));
+                        if(!Faces.has(key)){
+                            conf = data.faces[key];
+                            Faces.set(key,new Game_Face(conf));
+                        }
                     }
                 }
 
@@ -104,9 +112,11 @@
                     length = keys.length;
                     for(let i =0; i < length;i++){
                         key = keys[i];
-                        conf = data.charas[key];
-                        let chara = new Chara(conf);
-                        Charas.set(key,chara);
+                        if(!Charas.has(key)){
+                            conf = data.charas[key];
+                            let chara = new Chara(conf);
+                            Charas.set(key,chara);
+                        }
                     }
                 }
 
@@ -115,9 +125,11 @@
                     length = keys.length;
                     for(let i =0; i < length;i++){
                         key = keys[i];
-                        conf = data.items[key];
-                        conf = Object.assign({id:key},conf);
-                        Items.set(key,new Item(conf));
+                        if(!Items.has(key)){
+                            conf = data.items[key];
+                            conf = Object.assign({id:key},conf);
+                            Items.set(key,new Item(conf));
+                        }
                     }
                 }
 
@@ -126,9 +138,13 @@
                     length = keys.length;
                     for(let i =0; i < length;i++){
                         key = keys[i];
-                        conf = data.actors[key];
-                        conf.id = key;
-                        Actors.set(key,new Game_Actor(conf));
+                        let actor = null;
+                        if(!Actors.has(key)){
+                            conf = data.actors[key];
+                            conf.id = key;
+                            actor = new Game_Actor(conf);
+                            Actors.set(key,actor);
+                        }
                     }
                 }
 

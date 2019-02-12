@@ -1,5 +1,5 @@
 (function(root,w){
-    let Canvas = w.Canvas,
+    let Screen = w.Screen,
         Consts = root.Consts,
         Tile = root.Tile,
         Game_Graphic = root.Game_Graphic,
@@ -18,11 +18,11 @@
         percent = Math.max(percent,0);
         percent = Math.min(percent,100);
 
-        Canvas.darken({
+        Screen.darken({
             x:0,
             y:0,
-            width:Canvas.width,
-            height:Canvas.height,
+            width:Screen.width,
+            height:Screen.height,
             percent:percent
         });
     }
@@ -38,9 +38,9 @@
         });
 
         for(let i =0; i < objs.length;i++){
-            let objx = objs[i].x-Canvas.x;
-            let objy = objs[i].y-Canvas.y;
-            Canvas.lighten({
+            let objx = objs[i].x-Screen.x;
+            let objy = objs[i].y-Screen.y;
+            Screen.lighten({
                 x:objx,
                 y:objy,
                 percent:100,
@@ -56,11 +56,11 @@
      */
     function draw(scene){
         if(!bg_refreshed){
-            let sx = Canvas.x;
-            let sy = Canvas.y;
+            let sx = Screen.x;
+            let sy = Screen.y;
             let spriteset = scene.spriteset;
-            let width = Math.min(Canvas.width,spriteset.realWidth);
-            let height = Math.min(Canvas.height,spriteset.realHeight);
+            let width = Math.min(Screen.width,spriteset.realWidth);
+            let height = Math.min(Screen.height,spriteset.realHeight);
             let map = scene.map;
 
             if(!map.loop_x){
@@ -78,7 +78,7 @@
 
 
 
-                Canvas.getLayer(layer > 1?Consts.FOREGROUND_LAYER:Consts.BACKGROUND_LAYER, layer).context.putImageData(images[layer],0,0,0,0,width,height);
+                Screen.getLayer(layer > 1?Consts.FOREGROUND_LAYER:Consts.BACKGROUND_LAYER, layer).context.putImageData(images[layer],0,0,0,0,width,height);
             }
 
             bg_refreshed = true;
@@ -91,14 +91,14 @@
         for(let i =0; i < objs.length;i++){
             draw_object(objs[i]);
         }
-        //
-        // if(root.debug){
-        //     let length = scene.engine.world.bodies.length;
-        //     for(let i =0; i < length;i++){
-        //         let body = scene.engine.world.bodies[i];
-        //         draw_body(body);
-        //     }
-        // }
+
+        if(root.debug){
+            let length = scene.engine.world.bodies.length;
+            for(let i =0; i < length;i++){
+                let body = scene.engine.world.bodies[i];
+                draw_body(body);
+            }
+        }
     }
 
     /**
@@ -119,12 +119,12 @@
             let y = b.min.y;
             let width = b.max.x-x;
             let height = b.max.y-y;
-            let layer = Canvas.getLayer(Consts.UI_LAYER,0);
+            let layer = Screen.getLayer(Consts.UI_LAYER,0);
             let ctx = layer.context;
 
             if(body.label === 'Rectangle Body'){
-                x = Math.round(x-Canvas.x);
-                y = Math.round(y-Canvas.y);
+                x = Math.round(x-Screen.x);
+                y = Math.round(y-Screen.y);
                 ctx.save();
                 ctx.lineWidth = 1;
                 ctx.strokeStyle = 'black';
@@ -134,8 +134,8 @@
             else if(body.label === 'Circle Body'){
                 x = body.position.x;
                 y = body.position.y;
-                x = Math.round(x-Canvas.x);
-                y = Math.round(y-Canvas.y);
+                x = Math.round(x-Screen.x);
+                y = Math.round(y-Screen.y);
                 ctx.save();
                 ctx.lineWidth = 1;
                 ctx.strokeStyle = 'black';
@@ -162,17 +162,17 @@
 
     function clear() {
         if (!bg_refreshed) {
-            Canvas.clear(Consts.BACKGROUND_LAYER);
-            Canvas.clear(Consts.FOREGROUND_LAYER);
+            Screen.clear(Consts.BACKGROUND_LAYER);
+            Screen.clear(Consts.FOREGROUND_LAYER);
         }
 
-        Canvas.clear(Consts.EFFECT_LAYER);
-        Canvas.clear(Consts.EVENT_LAYER);
+        Screen.clear(Consts.EFFECT_LAYER);
+        Screen.clear(Consts.EVENT_LAYER);
 
-        // while(clear_queue.length > 0){
-        //     let clear = clear_queue.pop();
-        //     Canvas.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
-        // }
+        while(clear_queue.length > 0){
+            let clear = clear_queue.pop();
+            Screen.clear(clear.layer_type, clear.layer, clear.x, clear.y, clear.width, clear.height);
+        }
     }
 
     /**
@@ -182,19 +182,14 @@
     function draw_object(object){
         let frame = object.currentFrame;
         if (frame && (frame instanceof Tile || frame instanceof Game_Graphic) && frame.image) {
-            let objx = object.x-Canvas.x;
-            let objy = object.y-Canvas.y;
+            let objx = object.x-Screen.x;
+            let objy = object.y-Screen.y;
             let image = frame.image;
             let dWidth = frame.dWidth, dHeight = frame.dHeight;
             let x = Math.round(objx-(dWidth/2));
             let y = Math.round(objy-(dHeight/2));
 
-
-
-
-
-            Canvas.getLayer(Consts.EVENT_LAYER,object.layer).context.drawImage(image,frame.sx,frame.sy,frame.sWidth,frame.sHeight,x,y,dWidth,dHeight);
-
+            Screen.getLayer(Consts.EVENT_LAYER,object.layer).context.drawImage(image,frame.sx,frame.sy,frame.sWidth,frame.sHeight,x,y,dWidth,dHeight);
 
             clear_queue.push({
                 layer_type:Consts.EVENT_LAYER,
@@ -209,6 +204,14 @@
 
     function set_bg_refreshed_false(){
         bg_refreshed = false;
+    }
+
+    function refresh(){
+        set_bg_refreshed_false();
+        let scene = Main.currentScene;
+        if(scene){
+            root.Events.trigger('sceneUpdate',[scene]);
+        }
     }
 
     function get_shadows(object){
@@ -262,56 +265,56 @@
 
                 if(degree > 45 && degree <= 135){
                     switch(frame.i){
-                        case Consts.CHARACTER_DIRECTION_DOWN:
+                        case Consts.ACTOR_DIRECTION_DOWN:
                             f = object.rightFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_RIGHT:
+                        case Consts.ACTOR_DIRECTION_RIGHT:
                             f = object.downFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_LEFT:
+                        case Consts.ACTOR_DIRECTION_LEFT:
                             f = object.upFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_UP:
+                        case Consts.ACTOR_DIRECTION_UP:
                             f = object.leftFrame;
                             break;
                     }
                 }
                 else if(degree > 225 && degree <= 315){
                     switch(frame.i){
-                        case Consts.CHARACTER_DIRECTION_DOWN:
+                        case Consts.ACTOR_DIRECTION_DOWN:
                             f = object.leftFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_RIGHT:
+                        case Consts.ACTOR_DIRECTION_RIGHT:
                             f = object.upFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_LEFT:
+                        case Consts.ACTOR_DIRECTION_LEFT:
                             f = object.downFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_UP:
+                        case Consts.ACTOR_DIRECTION_UP:
                             f = object.rightFrame;
                             break;
                     }
                 }
                 else if((degree > 315 && degree <= 45) || (degree > 135 && degree <= 225)){
                     switch(frame.i){
-                        case Consts.CHARACTER_DIRECTION_DOWN:
+                        case Consts.ACTOR_DIRECTION_DOWN:
                             f = object.upFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_RIGHT:
+                        case Consts.ACTOR_DIRECTION_RIGHT:
                             f = object.leftFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_LEFT:
+                        case Consts.ACTOR_DIRECTION_LEFT:
                             f = object.rightFrame;
                             break;
-                        case Consts.CHARACTER_DIRECTION_UP:
+                        case Consts.ACTOR_DIRECTION_UP:
                             f = object.downFrame;
                             break;
                     }
                 }
 
 
-                let objx = object.x-Canvas.x;
-                let objy = object.y-Canvas.y;
+                let objx = object.x-Screen.x;
+                let objy = object.y-Screen.y;
                 let x = Math.round(objx-(frame.dWidth/2));
                 let y = Math.round(objy-(frame.dHeight/2));
 
@@ -333,7 +336,7 @@
     }
 
     function draw_shadows(object){
-        let layer = Canvas.getLayer(Consts.EVENT_LAYER,0);
+        let layer = Screen.getLayer(Consts.EVENT_LAYER,0);
         let ctx = layer.context;
         let shadows = get_shadows(object);
         for(let i = 0; i < shadows.length;i++){
@@ -380,9 +383,9 @@
             draw_shadows(objs[i]);
         }
         for(let i =0; i < objs.length;i++){
-            let objx = objs[i].x-Canvas.x;
-            let objy = objs[i].y-Canvas.y;
-            Canvas.lighten({
+            let objx = objs[i].x-Screen.x;
+            let objy = objs[i].y-Screen.y;
+            Screen.lighten({
                 x:objx,
                 y:objy,
                 percent:100,
@@ -402,8 +405,8 @@
         let graphic = obj.graphic;
         if(graphic){
             let spriteset = scene.spriteset;
-            let viewport_width = Math.min(Canvas.width, spriteset.realWidth);
-            let viewport_height = Math.min(Canvas.height, spriteset.realHeight);
+            let viewport_width = Math.min(Screen.width, spriteset.realWidth);
+            let viewport_height = Math.min(Screen.height, spriteset.realHeight);
             let viewport_x = (obj.x) - (viewport_width / 2);
             let viewport_y = (obj.y) - (viewport_height / 2);
             let max_screen_x = spriteset.realWidth - viewport_width;
@@ -427,13 +430,13 @@
                 }
             }
 
-            Canvas.x = viewport_x;
-            Canvas.y = viewport_y;
+            Screen.x = viewport_x;
+            Screen.y = viewport_y;
         }
     }
 
     root.Events.on('initialize',function(){
-        Canvas.initialize({
+        Screen.initialize({
             container: 'canvas-container',
             width: w.innerWidth,
             height: w.innerHeight
@@ -448,9 +451,9 @@
         draw(scene);
     });
 
-    Canvas.on('changeX',set_bg_refreshed_false);
-    Canvas.on('changeY',set_bg_refreshed_false);
-    Canvas.on('resize',set_bg_refreshed_false);
+    Screen.on('changeX',set_bg_refreshed_false);
+    Screen.on('changeY',set_bg_refreshed_false);
+    Screen.on('resize',refresh);
 
     /**
      *

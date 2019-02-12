@@ -1,23 +1,23 @@
 /**
  * @requires ../RPG.js
  * @requires Scene.js
- * @requires ../Consts.js
  * @requires ../Spriteset_Map.js
  * @requires ../Game_Object.js
  * @requires ../Tile.js
  * @requires ../Game_Graphic.js
+ * @requires ../Game_Event.js
  * @requires ../../plugins/Matter/build/matter.js
  */
 (function (root,w) {
     let Scene = root.Scene,
-        Consts = root.Consts,
         Spriteset_Map = root.Spriteset_Map,
         Game_Object = root.Game_Object,
         Matter = w.Matter,
         Engine = Matter.Engine,
         World = Matter.World,
         Bodies = Matter.Bodies,
-        Events = Matter.Events;
+        Events = Matter.Events,
+        Game_Event = root.Game_Event;
 
     /**
      *
@@ -31,35 +31,8 @@
         self.action = false;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
         self.objs = [];
-        self.charas = options.charas || {};
-        self.actors = options.actors || {};
-        self.faces = options.faces || {};
-        self.items = options.items || {};
-        self.icons = options.icons || {};
         self.objects = options.objects || [];
-
         initialize(self);
-        self.on('collisionActive,objectBody,objectBody',function(a,b){
-            let objectA = a.plugin.object, objectB = b.plugin.object;
-            if(objectA && objectB){
-                let typeA = objectA.type, typeB = objectB.type;
-                let eventName = [
-                    'collisionActive',
-                    [typeA,typeB].sort(sortAsc).join()
-                ].join();
-                self.trigger(eventName,[objectA,objectB].sort(sortByType));
-            }
-        });
-
-        self.on('collisionActive,Game_Actor,Game_Event',function(actor,event){
-            let page = event.currentPage;
-            if (page.script !== null) {
-                if (page.isTrigger(Consts.TRIGGER_PLAYER_TOUCH) || (page.isTrigger(Consts.TRIGGER_ACTION_BUTTON) && self.action)) {
-                    self.action = false;
-                    page.executeScript(actor);
-                }
-            }
-        });
     };
 
     Scene_Map.prototype = Object.create(Scene.prototype);
@@ -74,6 +47,12 @@
         self.objs.push(object);
         if(object.body){
             World.add(self.engine.world,object.body);
+            if(object instanceof Game_Event){
+                let page = object.currentPage;
+                if(page.autoRun){
+                    page.autoRun.apply(object);
+                }
+            }
         }
 
         object.on('remove',function(){
@@ -224,20 +203,46 @@
         });
     }
 
-    Scene_Map.prototype.initialize = function(){
+    Scene_Map.prototype.start = function(){
         let self = this;
         let engine = self.engine;
         Events.on(engine,'collisionStart',self.collisionStart);
         Events.on(engine,'collisionActive',self.collisionActive);
         Events.on(engine,'collisionEnd',self.collisionEnd);
+        self.on('collisionActive,objectBody,objectBody',function(a,b){
+            let objectA = a.plugin.object, objectB = b.plugin.object;
+            if(objectA && objectB){
+                let typeA = objectA.type, typeB = objectB.type;
+                let eventName = [
+                    'collisionActive',
+                    [typeA,typeB].sort(sortAsc).join()
+                ].join();
+                self.trigger(eventName,[objectA,objectB].sort(sortByType));
+            }
+        });
+
+        self.on('collisionActive,Game_Actor,Game_Event',function(actor,event){
+            let page = event.currentPage;
+            if (page.touch !== null) {
+                page.touch.apply(event,[actor]);
+            }
+            if(page.action && self.action){
+                page.action.apply(event,[actor]);
+                self.action = false;
+            }
+        });
+        self.running = true;
     };
 
-    Scene_Map.prototype.finalize = function(){
+    Scene_Map.prototype.end = function(){
         let self = this;
+        self.running = false;
         let engine = self.engine;
         Events.off(engine,'collisionStart',self.collisionStart);
         Events.off(engine,'collisionActive',self.collisionActive);
         Events.off(engine,'collisionEnd',self.collisionEnd);
+        self.off();
+        self.objs = [];
     };
     
     /**

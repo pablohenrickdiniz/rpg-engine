@@ -34,12 +34,22 @@
                             spriteset.set(i,j,0,['forest2',0,0]);
                         }
                     }
+                    for(i = 0; i < 50;i++){
+                        spriteset.set(Math.floor(Math.random()*spriteset.height),Math.floor(Math.random()*spriteset.width),0,['forest2',7,7]);
+                    }
                     Main.currentPlayerID = 1;
-                    let player =Main.currentPlayer;
-                    RPG.Game_Timer.interval(function(){
-                        player.level += 1;
-                    },1000);
-                    Main.Switches.enable('LAMP');
+                }
+                else if(name === 'map02'){
+                    let Main = RPG.Main;
+                    let spriteset = Main.currentScene.spriteset;
+                    let i;
+                    let j;
+                    for(i =0; i < spriteset.height;i++){
+                        for(j = 0; j < spriteset.width;j++){
+                            spriteset.set(i,j,0,['forest2',1,1]);
+                        }
+                    }
+                    Main.currentPlayerID = 1;
                 }
             });
             RPG.Scene_Manager.call('intro');

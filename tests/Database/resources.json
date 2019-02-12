@@ -9,7 +9,9 @@
       "male":"./Graphics/Characters/Las2vdS.png",
       "switch":"./Graphics/Characters/recolored-handle-switches-2.png",
       "lamp":"./Graphics/Characters/Object%20-%200905.png",
-      "animal":"./Graphics/Characters/Animal.png"
+      "animal":"./Graphics/Characters/Animal.png",
+      "darkness": "./Graphics/Animations/Darkness1.png",
+      "cristal": "./Graphics/Characters/!Crystal.png"
     },
     "faces":{
       "face01":"./Graphics/Faces/Actor1.png"
@@ -57,6 +59,21 @@
       "sy":128,
       "sWidth":96,
       "sHeight":128
+    },
+    "darkness": {
+      "graphicID": "darkness",
+      "rows": 1,
+      "cols": 4,
+      "sWidth": 768,
+      "sHeight": 192
+    },
+    "cristal": {
+      "graphicID": "cristal",
+      "rows": 2,
+      "cols": 3,
+      "sWidth": 96,
+      "sHeight": 128,
+      "sy": 256
     }
   },
   "faces":{

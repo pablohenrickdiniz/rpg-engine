@@ -22,6 +22,14 @@
          */
         set:function(id,tileset){
             tilesets[id] = tileset;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!tilesets[id];
         }
     };
 

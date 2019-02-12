@@ -74,3 +74,25 @@ progress::after{
     top:0;
     z-index: 2;
 }
+
+.dom-interact{
+    position: absolute;
+    width: 25%;
+    top: 50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -12.5%;
+    z-index: 2;
+    height: 50px;
+    background-color: cornflowerblue;
+    border: none;
+    color: white;
+    font-size: 1em;
+    font-weight: bolder;
+}
+
+.dom-interact:hover{
+    cursor: pointer;
+    background-color: darkslateblue;
+    outline: none;
+}

@@ -5,15 +5,19 @@
 (function (root) {
     let Game_Timer = root.Game_Timer,
         Game_Graphic = root.Game_Graphic;
+
     /**
-     * @param graphic {Game_Graphic}
-     * @param options {object}
+     * 
+     * @param id
+     * @param graphic
+     * @param options
      * @constructor
      */
-    let Game_Animation = function (graphic,options) {
+    let Game_Animation = function (id,graphic,options) {
         options = options || {};
         let self = this;
         initialize(self);
+        self.id = id;
         self.fps = options.fps;
         self.stopOnEnd = options.stopOnEnd;
         self.direction = options.direction;
@@ -59,6 +63,7 @@
         let graphic = null;
         let startFrame = 0;
         let endFrame = 0;
+        let id = null;
 
         Object.defineProperty(self,'startTime',{
             /**
@@ -281,7 +286,26 @@
 
         Object.defineProperty(self,'currentFrame',{
             get:function(){
-                return graphic.get(i,j);
+                let index = self.index;
+                return graphic.get(Math.floor(index / graphic.cols),index % graphic.cols);
+            }
+        });
+        
+        Object.defineProperty(self,'finished',{
+           get:function(){
+               let index = self.index;
+               return stopOnEnd && ((direction === 'negative' && index === 0) || index === endFrame);
+           }
+        });
+        
+        Object.defineProperty(self,'id',{
+            get:function(){
+                return id;
+            },
+            set:function(i){
+                if(i !== id){
+                    id = i;
+                }
             }
         });
     }

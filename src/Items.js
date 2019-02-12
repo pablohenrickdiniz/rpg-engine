@@ -22,6 +22,14 @@
          */
         set:function(id,item){
             items[id] = item;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!items[id];
         }
     };
 

@@ -11,16 +11,22 @@
     let RPG = {
         initialize: function () {
             let self = this;
+            self.finalize();
+            Game_Timer.on('tick',tick);
+            Game_Timer.run();
+            self.Events.trigger('initialize',[self]);
+        },
+        finalize:function(){
+            let self = this;
+            Game_Timer.stop();
             Game_Timer.off('tick',tick);
             self.Events.trigger('finalize',[self]);
-            Game_Timer.on('tick',tick);
-            self.Events.trigger('initialize',[self]);
         }
     };
 
     function tick(){
         let currentScene = RPG.Main.currentScene;
-        if (currentScene) {
+        if (currentScene && currentScene.running) {
             currentScene.step();
             RPG.Events.trigger('sceneUpdate',[currentScene]);
         }

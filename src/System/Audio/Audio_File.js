@@ -16,6 +16,8 @@
         self.src = options.src;
         self.volume = options.volume || 1;
         self.loop = options.loop || false;
+        self.autoPlay = options.autoPlay || false;
+        self.muted = options.muted || false;
     };
 
     /**

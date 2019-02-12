@@ -1,18 +1,28 @@
 /**
  * @requires ../RPG.js
+ * @requires Time/Timer_Ticker.js
  * @requires ../Consts.js
  * @requires ../../plugins/canvas-engine/src/dist/js/CanvasEngine.js
  * @requires ../../plugins/canvas-engine/src/dist/js/CanvasLayer.js
  */
 (function (root,w) {
-    let Consts = root.Consts;
+    let Consts = root.Consts,
+        Game_Timer = root.Game_Timer;
+
     let x = 0;
     let y = 0;
     let engine = null;
     let layers = [[], [], [], [], []];
     let listeners = [];
+    let fade = 0;
+    let fadding = false;
+    let fadeStart = null;
+    let fadeEnd = null;
+    let fadeCallback = null;
+    let fadeType = null;
+    let fadeTime = null;
 
-    let Canvas = {
+    let Screen = {
         visible: true,
         /**
          *
@@ -41,6 +51,12 @@
                 resizeLayers:true
             });
 
+            for(let i = 0; i < layers.length;i++){
+                for(let j = 0; j < 3;j++){
+                    layers[i].push(engine.createLayer());
+                }
+            }
+
             engine.addEventListener('resize',function(){
                 self.trigger('resize');
             });
@@ -51,11 +67,31 @@
         zoomOut:function(){
             engine.scale -= 0.1;
         },
+        fadeIn:function(time,callback){
+            if(!fadding){
+                fadding = true;
+                fadeStart = Game_Timer.currentTime;
+                fadeTime = time;
+                fadeEnd = fadeStart+fadeTime;
+                fadeCallback = callback;
+                fadeType = 'in';
+            }
+        },
+        fadeOut:function(time,callback){
+            if(!fadding){
+                fadding = true;
+                fadeStart = Game_Timer.currentTime;
+                fadeTime = time;
+                fadeEnd = fadeStart+fadeTime;
+                fadeCallback = callback;
+                fadeType = 'out';
+            }
+        },
         /**
          *
          * @param eventName {string}
          * @param callback {function}
-         * @returns {Canvas}
+         * @returns {Screen}
          */
         on:function(eventName,callback){
             if(!listeners[eventName]){
@@ -65,7 +101,7 @@
                 listeners[eventName].push(callback);
             }
 
-            return Canvas;
+            return Screen;
         },
         /**
          *
@@ -96,37 +132,20 @@
         },
         /**
          *
-         * @param type {string}
+         * @param type {number}
          * @param index number}
          * @returns {CanvasLayer}
          */
         getLayer: function (type, index) {
-            let self = this;
-            let keys = Object.keys(layers);
-            let i;
-            let length = keys.length;
-            let s_index = 0;
-            let key;
-
-            if(index === 0 || index){
-                for(i =0; i < length;i++){
-                    key = parseInt(keys[i]);
-                    if(type !== key){
-                        s_index+=layers[key].length;
-                    }
-                    else{
-                        while(index > layers[key].length-1){
-                            let layer = self.engine.createLayer({
-                                zIndex:s_index+layers[key].length
-                            });
-                            layers[key].push(layer);
-                        }
-                        return layers[key][index];
+            if(layers[type]){
+                if(index === 0 || index){
+                    if(layers[type][index]){
+                        return layers[type][index];
                     }
                 }
-            }
-            else if(layers[type]){
-                return layers[type];
+                else{
+                    return layers[type];
+                }
             }
 
             return null;
@@ -172,7 +191,7 @@
         /**
          *
          * @param rect {object}
-         * @returns {Canvas}
+         * @returns {Screen}
          */
         drawRect: function(rect){
             let self = this;
@@ -186,7 +205,7 @@
          *
          * @param image {Image}
          * @param options {object}
-         * @returns {Canvas}
+         * @returns {Screen}
          */
         drawImage: function (image, options) {
             let self = this;
@@ -254,7 +273,7 @@
          * @param y {number}
          * @param width {number}
          * @param height {number}
-         * @returns {Canvas}
+         * @returns {Screen}
          */
         clear: function (type, index, x, y, width, height) {
             let self = this;
@@ -274,7 +293,46 @@
         }
     };
 
-    Object.defineProperty(Canvas,'x',{
+    function fadeUpdate(){
+        if(fadding){
+            let now = Game_Timer.currentTime;
+            let fade =  Math.max(0,Math.min(1,(now-fadeStart)/fadeTime));
+            Screen.fade = fadeType === 'in'?fade:1-fade;
+            if(now >= fadeEnd){
+                if(fadeCallback){
+                    fadeCallback();
+                    fadeCallback = null;
+                }
+                fadding = false;
+            }
+        }
+    }
+
+    Game_Timer.on('tick',fadeUpdate);
+
+    Object.defineProperty(Screen,'fade',{
+        set:function(f){
+            if(f !== fade){
+                fade = f;
+                let elements = document.getElementsByClassName('game-ui');
+                for(let i = 0; i < elements.length;i++){
+                    elements[i].style.backgroundColor = 'rgba(0,0,0,'+fade+')';
+                }
+
+                /*
+                let ctx = Screen.getLayer(Consts.FADE_SCREEN_LAYER,0).context;
+                ctx.clearRect(0,0,engine.width,engine.height);
+                if(fade > 0){
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(0,0,0,'+fade+')';
+                    ctx.fillRect(0,0,engine.width,engine.height);
+                    ctx.restore();
+                }*/
+            }
+        }
+    });
+
+    Object.defineProperty(Screen,'x',{
         /**
          *
          * @returns {number}
@@ -290,12 +348,12 @@
             nx = parseInt(nx);
             if(!isNaN(nx) && nx !== x){
                 x = nx;
-                Canvas.trigger('changeX',[x]);
+                Screen.trigger('changeX',[x]);
             }
         }
     });
 
-    Object.defineProperty(Canvas,'y',{
+    Object.defineProperty(Screen,'y',{
         /**
          *
          * @returns {number}
@@ -311,12 +369,12 @@
             ny = parseInt(ny);
             if(!isNaN(ny) && ny !== y){
                 y = ny;
-                Canvas.trigger('changeY',[y]);
+                Screen.trigger('changeY',[y]);
             }
         }
     });
 
-    Object.defineProperty(Canvas,'width',{
+    Object.defineProperty(Screen,'width',{
         /**
          *
          * @returns {number}
@@ -333,7 +391,7 @@
         }
     });
 
-    Object.defineProperty(Canvas,'height',{
+    Object.defineProperty(Screen,'height',{
         /**
          *
          * @returns {number}
@@ -350,7 +408,7 @@
         }
     });
 
-    Object.defineProperty(Canvas,'scale',{
+    Object.defineProperty(Screen,'scale',{
         /**
          *
          * @returns {number}
@@ -366,8 +424,8 @@
             engine.scale = scale;
         }
     });
-    
-    Object.defineProperty(Canvas,'engine',{
+
+    Object.defineProperty(Screen,'engine',{
         /**
          *
          * @returns {CE}
@@ -377,13 +435,13 @@
         }
     });
 
-    Object.defineProperty(w,'Canvas',{
+    Object.defineProperty(w,'Screen',{
         /**
          *
-         * @returns {Canvas}
+         * @returns {Screen}
          */
         get:function(){
-            return Canvas;
+            return Screen;
         }
     });
 })(RPG,window);

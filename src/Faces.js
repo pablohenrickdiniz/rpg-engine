@@ -21,6 +21,14 @@
          */
         get:function(id){
             return faces[id]?faces[id]:null;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!faces[id];
         }
     };
 

@@ -1,7 +1,9 @@
 /**
  * @requires ../System/Audio/Audio.js
+ * @requires ../System/Events.js
  */
-(function (w) {
+(function (root,w) {
+    let Events = root.Events;
     /**
      *
      * @param aud
@@ -83,7 +85,7 @@
                 let audio = new Audio();
                 //img.crossOrigin = "Anonymous";
                 audio.src = url;
-                audio.volume = 0;
+                audio.muted = true;
                 audio.currentTime = loaded_audio(audio);
                 audios[url] = audio;
 
@@ -109,7 +111,7 @@
 
                     if(loaded === audio.duration){
                         audio.pause();
-                        audio.volume = 1;
+                        audio.muted = false;
                         audio.playbackRate = audio.defaultPlaybackRate;
                         audio.currentTime = 0;
                         success();
@@ -152,7 +154,13 @@
 
                 let canplay = function() {
                     audio.playbackRate = Math.min(audio.duration,16);
-                    audio.play();
+                    let promisse = audio.play();
+                    if(promisse){
+                        promisse
+                            .catch(function(){
+                                Events.trigger('requireDOMInteraction',[canplay]);
+                            });
+                    }
                 };
 
                 let unbind = function() {
@@ -181,4 +189,4 @@
             return Audio_Loader;
         }
     });
-})(window);
+})(RPG,window);

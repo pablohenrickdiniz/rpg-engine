@@ -1,0 +1,119 @@
+{
+  "class": "Scene_Map",
+  "map": {
+    "loop_x":false,
+    "loop_y":false,
+    "tilesets":[
+      {
+        "graphicID":"forest2",
+        "cols":8,
+        "rows":149,
+        "width":256,
+        "height":4768
+      },
+      {
+        "graphicID":"cavesAndUnderground",
+        "cols":8,
+        "rows":17,
+        "width":256,
+        "height":544
+      }
+    ],
+    "spriteset":{
+      "width":100,
+      "height":100,
+      "tileWidth":32,
+      "tileHeight":32,
+      "data":[]
+    }
+  },
+  "objects": [
+    {
+      "class":"Event",
+      "x":200,
+      "y":200,
+      "width":25,
+      "height":15,
+      "static":true,
+      "charaID":"Switch",
+      "pages":[
+        {
+          "trigger":[
+            "TRIGGER_ACTION_BUTTON"
+          ],
+          "initialize":[
+            "TURN_DOWN"
+          ],
+          "script": {
+            "SWITCH:ON:ENABLED": [
+              "TURN_RIGHT",
+              "PLAY_AUDIO:fx:switch2",
+              "SWITCH:ON:ENABLE",
+              "GLOBAL:SWITCH:LAMP:ENABLE"
+            ],
+            "SWITCH:ON:DISABLED": [
+              "TURN_DOWN",
+              "PLAY_AUDIO:fx:switch1",
+              "SWITCH:ON:DISABLE",
+              "GLOBAL:SWITCH:LAMP:DISABLE"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "class":"Event",
+      "x":122,
+      "y":400,
+      "width":20,
+      "height":20,
+      "pages":[
+        {
+          "charaID":"lamp",
+          "trigger":"TRIGGER_AUTO_RUN",
+          "light":false,
+          "lightRadius":500,
+          "initialize":[
+            "TURN_LEFT"
+          ]
+        },
+        {
+          "conditions": [
+            "GLOBAL:SWITCH:LAMP:ENABLED"
+          ],
+          "light": true,
+          "lightRadius": 500,
+          "charaID": "lamp",
+          "trigger": "TRIGGER_AUTO_RUN",
+          "initialize": "TURN_DOWN"
+        }
+      ]
+    },
+    {
+      "class":"Event",
+      "x":500,
+      "y":400,
+      "width":20,
+      "height":20,
+      "pages":[
+        {
+          "charaID":"lamp",
+          "trigger":"TRIGGER_AUTO_RUN",
+          "light":false,
+          "lightRadius":500,
+          "initialize":"TURN_LEFT"
+        },
+        {
+          "conditions":[
+            "GLOBAL:SWITCH:LAMP:ENABLED"
+          ],
+          "light" : true,
+          "lightRadius" : 500,
+          "charaID":"lamp",
+          "trigger":"TRIGGER_AUTO_RUN",
+          "initialize":"TURN_DOWN"
+        }
+      ]
+    }
+  ]
+}

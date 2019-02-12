@@ -14,6 +14,8 @@
         self.graphics = options.graphics || {};
         self.fps = options.fps || 60;
         self.listeners = [];
+        self.running = false;
+        self.name = options.name;
 
         if(options.start){
             self.on('start',options.start);
@@ -88,6 +90,9 @@
             if(index !== -1){
                 self.listeners[eventName].splice(index,1);
             }
+        }
+        else{
+            self.listeners = [];
         }
         return self;
     };

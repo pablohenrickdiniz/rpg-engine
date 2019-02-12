@@ -21,6 +21,14 @@
          */
         get:function(id){
             return actors[id]?actors[id]:null;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!actors[id];
         }
     };
 
