@@ -23,9 +23,18 @@
          */
         get:function(id){
             return scenes[id]?scenes[id]:null;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!scenes[id];
         }
     };
 
+    Object.freeze(Scenes);
     Object.defineProperty(Main,'Scenes',{
         /**
          *

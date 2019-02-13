@@ -54,6 +54,7 @@
         }
     };
 
+    Object.freeze(Events);
     Object.defineProperty(root,'Events',{
         /**
          *

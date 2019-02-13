@@ -61,6 +61,7 @@
         }
     };
 
+    Object.freeze(Formulas);
     Object.defineProperty(root,'Formulas',{
         get:function(){
             return Formulas;

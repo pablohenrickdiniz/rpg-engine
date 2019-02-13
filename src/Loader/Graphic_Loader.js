@@ -194,7 +194,8 @@
             }
         }
     };
-
+    
+    Object.freeze(Graphic_Loader);
     Object.defineProperty(w,'Graphic_Loader',{
         /**
          *

@@ -1,29 +1,29 @@
 {
   "graphics":{
     "tilesets":{
-      "forest2":"./Graphics/Tilesets/Town_Village-0034.png",
-      "cavesAndUnderground":"./Graphics/Tilesets/Caves%20&%20Undergrounds%20-%200043.png"
+      "forest2":"Graphics/Tilesets/Town_Village-0034.png",
+      "cavesAndUnderground":"Graphics/Tilesets/Caves%20&%20Undergrounds%20-%200043.png"
     },
     "charasets":{
-      "char01":"./Graphics/Characters/Actor1.png",
-      "male":"./Graphics/Characters/Las2vdS.png",
-      "switch":"./Graphics/Characters/recolored-handle-switches-2.png",
-      "lamp":"./Graphics/Characters/Object%20-%200905.png",
-      "animal":"./Graphics/Characters/Animal.png",
-      "darkness": "./Graphics/Animations/Darkness1.png",
-      "cristal": "./Graphics/Characters/!Crystal.png"
+      "char01":"Graphics/Characters/Actor1.png",
+      "male":"Graphics/Characters/Las2vdS.png",
+      "switch":"Graphics/Characters/recolored-handle-switches-2.png",
+      "lamp":"Graphics/Characters/Object%20-%200905.png",
+      "animal":"Graphics/Characters/Animal.png",
+      "darkness": "Graphics/Animations/Darkness1.png",
+      "cristal": "Graphics/Characters/!Crystal.png"
     },
     "faces":{
-      "face01":"./Graphics/Faces/Actor1.png"
+      "face01":"Graphics/Faces/Actor1.png"
     },
     "icons":{
-      "icon01":"./Graphics/Icons/icons1.png"
+      "icon01":"Graphics/Icons/icons1.png"
     }
   },
   "audios":{
     "fx":{
-      "switch1":"./audio/fx/SWITCH_3.ogg",
-      "switch2":"./audio/fx/SWITCH_4.ogg"
+      "switch1":"Audio/fx/SWITCH_3.ogg",
+      "switch2":"Audio/fx/SWITCH_4.ogg"
     }
   },
   "charas":{

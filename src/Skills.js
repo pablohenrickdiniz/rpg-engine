@@ -21,9 +21,18 @@
          */
 		set:function(id,skill){
 			skills[id] = skill;
+		},
+		/**
+		 *
+		 * @param id
+		 * @returns {boolean}
+		 */
+		has:function(id){
+			return !!skills[id];
 		}
 	};
 
+	Object.freeze(Skills);
 	Object.defineProperty(Main,'Skills',{
         /**
 		 *

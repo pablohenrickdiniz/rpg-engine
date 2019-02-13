@@ -33,6 +33,7 @@
         }
     };
 
+    Object.freeze(Tilesets);
     Object.defineProperty(Main,'Tilesets',{
         /**
          *

@@ -32,6 +32,7 @@
         }
     };
 
+    Object.freeze(Icons);
     Object.defineProperty(Main,'Icons',{
         /**
          *

@@ -85,19 +85,19 @@
      */
     Scene.prototype.off = function(eventName,callback){
         let self = this;
+        
         if(self.listeners[eventName]){
             let index =self.listeners[eventName].indexOf(callback);
             if(index !== -1){
                 self.listeners[eventName].splice(index,1);
             }
         }
-        else{
-            self.listeners = [];
-        }
+
         return self;
     };
 
-    Scene.prototype.step = function(){};
+
+
 
     Object.defineProperty(root,'Scene',{
         /**

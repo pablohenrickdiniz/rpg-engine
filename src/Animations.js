@@ -24,6 +24,7 @@
     	}		
     };
 
+    Object.freeze(Animations);
     Object.defineProperty(Main,'Animations',{
         /**
 		 *

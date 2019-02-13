@@ -87,6 +87,7 @@
         }
     };
 
+    Object.freeze(Switches);
     Object.defineProperty(Main,'Switches',{
         /**
          *

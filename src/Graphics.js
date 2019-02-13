@@ -41,6 +41,7 @@
         }
     };
 
+    Object.freeze(Graphics);
     Object.defineProperty(Main,'Graphics',{
         /**
          *

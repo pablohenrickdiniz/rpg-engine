@@ -4,12 +4,6 @@
 (function (root) {
     let Consts = root.Consts;
     let SWITCH_CONDITION_REGEX = /^(LOCAL|GLOBAL):([A-Za-z0-9]+):(ON|OFF)$/;
-    let triggers = [
-        Consts.TRIGGER_ACTION_BUTTON,
-        Consts.TRIGGER_AUTO_RUN,
-        Consts.TRIGGER_PLAYER_TOUCH
-    ];
-
     /**
      *
      * @param options {object}

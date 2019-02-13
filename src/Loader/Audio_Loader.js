@@ -180,6 +180,7 @@
         }
     };
 
+    Object.freeze(Audio_Loader);
     Object.defineProperty(w,'Audio_Loader',{
         /**
          *

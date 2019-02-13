@@ -32,6 +32,7 @@
         }
     };
 
+    Object.freeze(Faces);
     Object.defineProperty(Main,'Faces',{
         /**
          *

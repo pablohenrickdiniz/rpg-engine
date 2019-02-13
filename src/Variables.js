@@ -21,9 +21,18 @@
          */
         get:function(id){
             return variables[id]?variables[id]:null;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!variables[id];
         }
     };
 
+    Object.freeze(Variables);
     Object.defineProperty(Main,'Variables',{
         /**
          *

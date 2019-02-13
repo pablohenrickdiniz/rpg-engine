@@ -4,17 +4,17 @@
 (function (w) {
     let Timer_Ticker = w.Timer_Ticker,
         Game_Timer = new Timer_Ticker(),
-        debug = false;
-
-    let Custom = {};
+        debug = false,
+        baseUrl = '/';
 
     let RPG = {
-        initialize: function () {
+        initialize: function (u) {
             let self = this;
             self.finalize();
             Game_Timer.on('tick',tick);
             Game_Timer.run();
             self.Events.trigger('initialize',[self]);
+            self.baseUrl = u;
         },
         finalize:function(){
             let self = this;
@@ -32,6 +32,21 @@
         }
     }
 
+
+    Object.defineProperty(RPG,'baseUrl',{
+        get:function(){
+            return baseUrl;
+        },
+        set:function(b){
+            if(typeof b === 'string'){
+                if(b.charAt(b.length - 1) !== '/'){
+                    b += '/';
+                }
+                baseUrl = b;
+            }
+        }
+    });
+
     Object.defineProperty(RPG,'Game_Timer',{
         /**
          *
@@ -39,15 +54,6 @@
          */
         get:function(){
             return Game_Timer;
-        }
-    });
-
-    Object.defineProperty(RPG,'Custom',{
-        /**
-         * @returns{{}}
-         */
-        get:function(){
-            return Custom;
         }
     });
 

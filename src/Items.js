@@ -33,6 +33,7 @@
         }
     };
 
+    Object.freeze(Items);
     Object.defineProperty(Main,'Items',{
         /**
          *

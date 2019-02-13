@@ -8,7 +8,7 @@
  * @requires ../System/Screen.js
  */
 (function (root,w) {
-    let Scene_Map_Loader = new root.Scene_Map_Loader(),
+    let Scene_Map_Loader = root.Scene_Map_Loader,
         Scene_Map = root.Scene_Map,
         Scene = root.Scene,
         Main = root.Main,
@@ -45,7 +45,7 @@
                 Main.currentScene = scene;
                 if(scene instanceof Scene_Map){
                     Scene_Map_Loader.load(scene,{
-                        url:'../tests/Database/resources.json',
+                        url:root.baseUrl+'resources.json',
                         name:name,
                         complete:complete,
                         progress:progress
@@ -55,6 +55,7 @@
         }
     };
 
+    Object.freeze(Scene_Manager);
     Object.defineProperty(root,'Scene_Manager',{
         /**
          *

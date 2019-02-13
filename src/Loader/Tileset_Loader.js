@@ -60,6 +60,7 @@
         }
     };
 
+    Object.freeze(Tileset_Loader);
     Object.defineProperty(root,'Tileset_Loader',{
         /**
          *

@@ -32,6 +32,7 @@
         }
     };
 
+    Object.freeze(Actors);
     Object.defineProperty(Main,'Actors',{
         /**
          *

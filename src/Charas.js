@@ -32,6 +32,7 @@
         }
     };
 
+    Object.freeze(Charas);
     Object.defineProperty(Main,'Charas',{
         /**
          *

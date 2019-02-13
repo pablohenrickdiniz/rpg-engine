@@ -25,6 +25,7 @@
         }
     };
 
+    Object.freeze(Maps);
     Object.defineProperty(Main,'Maps',{
         /**
          *

@@ -16,13 +16,13 @@
     <script type="text/javascript" src="../RPG.js"></script>
     <script type="text/javascript" src="../plugins/Mouse/src/mouse.js"></script>
     <script type="text/javascript" src="../plugins/Keyboard/src/keyboard.js"></script>
-    <script type="text/javascript" src="game/ui.js"></script>
-    <script type="text/javascript" src="game/render.js"></script>
-    <script type="text/javascript" src="game/events.js"></script>
+    <script type="text/javascript" src="ui.js"></script>
+    <script type="text/javascript" src="render.js"></script>
+    <script type="text/javascript" src="events.js"></script>
     <script type="text/javascript" src="game/Scenes/intro.js"></script>
     <script type="text/javascript">
         function init() {
-            RPG.initialize();
+            RPG.initialize('http://localhost/rpg-engine/tests/game');
             RPG.Events.on('sceneLoaded',function(name){
                 if(name === 'intro'){
                     let Main = RPG.Main;
