@@ -1,6 +1,7 @@
 /**
  * @requires ../RPG.js
  * @requires ../Loader/Scene_Map_Loader.js
+ * @requires ../Loader/Resource_Loader.js
  * @requires Scene_Map.js
  * @requires Scene.js
  * @requires ../Game/Main.js
@@ -9,6 +10,7 @@
  */
 (function (root,w) {
     let Scene_Map_Loader = root.Scene_Map_Loader,
+        Resource_Loader = root.Resource_Loader,
         Scene_Map = root.Scene_Map,
         Scene = root.Scene,
         Main = root.Main,
@@ -16,42 +18,56 @@
         Screen = w.Screen;
 
     let Scenes = Main.Scenes;
+
+    let progress = function(progress){
+        Events.trigger('sceneProgress',[progress]);
+    };
+
     let Scene_Manager = {
         /**
          *
          * @param name
          */
         call: function (name) {
-            let scene = Scenes.get(name);
-            /**
-             *
-             * @param scene {Scene}
-             */
-            let complete = function(scene){
-                Events.trigger('sceneLoaded',[name]);
+            console.log("call scene "+name+"...");
+            let callback = function(scene){
+                console.log("loading scene "+name+" completed!");
+                Scenes.set(name,scene);
+                let current_scene = Main.currentScene;
+                if(current_scene){
+                    current_scene.end();
+                }
+                Main.currentScene = scene;
+                Events.trigger('sceneLoaded',[scene.name]);
                 scene.start();
+                console.log("screen fadeout...");
                 Screen.fadeOut(2500);
             };
 
-            let progress = function(progress){
-                Events.trigger('sceneProgress',[progress]);
-            };
-
-            let current_scene = Main.currentScene;
-            if(current_scene){
-                current_scene.end();
-            }
-            Screen.fadeIn(1000,function(){
-                Main.currentScene = scene;
-                if(scene instanceof Scene_Map){
-                    Scene_Map_Loader.load(scene,{
-                        url:root.baseUrl+'resources.json',
-                        name:name,
-                        complete:complete,
-                        progress:progress
+            if(!Scenes.has(name)){
+                console.log("scene "+name+" dont't loaded, loading...");
+                console.log("fade in screen...");
+                Screen.fadeIn(1500,function(){
+                    console.log("fade in completed!");
+                    let url = root.baseUrl+'resources.json';
+                    console.log("loading resources url "+url+"...");
+                    Resource_Loader.load(url,{
+                        progress:progress,
+                        complete:function(){
+                            console.log("resource url "+url+" loaded!");
+                            console.log("loading scene file "+name+".json ...");
+                            Scene_Map_Loader.load(name,{
+                                complete:callback
+                            });
+                        }
                     });
-                }
-            });
+                });
+            }
+            else{
+                Screen.fadeIn(1500,function(){
+                    callback(Scenes.get(name));
+                });
+            }
         }
     };
 

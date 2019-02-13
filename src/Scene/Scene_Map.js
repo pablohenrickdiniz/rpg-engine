@@ -21,17 +21,19 @@
 
     /**
      *
-     * @param options {object}
+     * @param name
+     * @param options
      * @constructor
      */
-    let Scene_Map = function (options) {
+    let Scene_Map = function (name,options) {
         let self = this;
         Scene.call(self, options);
+        options  = options || {};
         self.map = options.map || {};
-        self.action = false;
         self.spriteset = new Spriteset_Map(self.map.spriteset || {});
-        self.objs = [];
-        self.objects = options.objects || [];
+        self.objects = [];
+        self.name = name;
+        self.action = false;
         initialize(self);
     };
 
@@ -44,7 +46,7 @@
      */
     Scene_Map.prototype.add = function(object){
         let self = this;
-        self.objs.push(object);
+        self.objects.push(object);
         if(object.body){
             World.add(self.engine.world,object.body);
             if(object instanceof Game_Event){
@@ -66,9 +68,9 @@
      */
     Scene_Map.prototype.remove = function(object){
         let self = this;
-        let index = self.objs.indexOf(object);
+        let index = self.objects.indexOf(object);
         if(index !== -1){
-            self.objs.splice(index,1);
+            self.objects.splice(index,1);
         }
         if(object.body){
             World.remove(self.engine.world,object.body);
@@ -87,7 +89,7 @@
      * @param self {Scene_Map}
      */
     function update(self) {
-        let objs = self.objs;
+        let objs = self.objects;
         let length = objs.length;
         let i;
         for (i = 0; i < length; i++) {
@@ -242,7 +244,6 @@
         Events.off(engine,'collisionActive',self.collisionActive);
         Events.off(engine,'collisionEnd',self.collisionEnd);
         self.off();
-        self.objs = [];
     };
     
     /**

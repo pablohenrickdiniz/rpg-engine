@@ -27,5 +27,36 @@
       "data":[]
     }
   },
-  "objects": []
+  "objects": [
+    {
+      "class":"Event",
+      "x":300,
+      "y":300,
+      "width":30,
+      "height":30,
+      "static":true,
+      "charaID":"darkness",
+      "animationSpeed":10,
+      "pages":[
+        {
+          "through":true
+        }
+      ]
+    },
+    {
+      "class":"Event",
+      "x":500,
+      "y":300,
+      "width":30,
+      "height":64,
+      "static":true,
+      "charaID":"cristal",
+      "animationSpeed":2,
+      "pages":[
+        {
+          "through":false
+        }
+      ]
+    }
+  ]
 }

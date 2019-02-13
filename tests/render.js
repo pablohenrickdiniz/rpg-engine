@@ -84,7 +84,7 @@
             bg_refreshed = true;
         }
 
-        let objs = scene.objs.sort(function(a,b){
+        let objs = scene.objects.sort(function(a,b){
             return a.y-b.y;
         });
 

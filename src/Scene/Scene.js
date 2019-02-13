@@ -10,8 +10,6 @@
     let Scene =  function (options) {
         let self = this;
         options = options || {};
-        self.audios = options.audios || {};
-        self.graphics = options.graphics || {};
         self.fps = options.fps || 60;
         self.listeners = [];
         self.running = false;

@@ -16,6 +16,7 @@
  * @requires ../Items.js
  * @requires ../Icons.js
  * @requires ../Actors.js
+ * @requires ../Scene/Scene_Map.js
  */
 (function (root) {
     let Resource_Loader = root.Resource_Loader,
@@ -33,129 +34,63 @@
         Faces = Main.Faces,
         Items = Main.Items,
         Icons = Main.Icons,
-        Actors = Main.Actors;
+        Actors = Main.Actors,
+        Scene_Map = root.Scene_Map;
     
 
     let Scene_Map_Loader = {
         /**
          *
-         * @param scene
+         * @param name
          * @param options
          */
-        load: function (scene, options) {
-            let url = options.url || 'resources.json';
-            Resource_Loader.load(url+'?=t'+(new Date()).getMilliseconds(),{
-                progress:options.progress,
-                complete:function(data){
-                    let map = scene.map;
-                    let keys;
-                    let length;
-                    let key;
-                    let conf;
+        load: function (name, options) {
+            let url = root.baseUrl + 'Scenes/' + name + '.json' + '?t=' + (new Date()).getTime();
+            Resource_Loader.loadJSON(url, function (data) {
+                let scene = new Scene_Map(name,data);
+                let map = scene.map;
+                let keys;
+                let length;
+                let key;
+                let conf;
 
-                    if(map.tileset && map.tileset.graphicID){
-                        let id = map.tileset.graphicID;
-                        if(!Tileset.has(id)){
-                            let tileset = new Tileset(map.tileset);
-                            Tilesets.set(id,tileset);
-                        }
+                if(map.tileset && map.tileset.graphicID){
+                    let id = map.tileset.graphicID;
+                    if(!Tileset.has(id)){
+                        let tileset = new Tileset(map.tileset);
+                        Tilesets.set(id,tileset);
                     }
+                }
 
-                    if(map.tilesets && map.tilesets instanceof Array){
-                        for(let i =0; i < map.tilesets.length;i++){
-                            if(map.tilesets[i].graphicID){
-                                let id = map.tilesets[i].graphicID;
-                                if(!Tilesets.has(id)){
-                                    let tileset = new Tileset(map.tilesets[i]);
-                                    Tilesets.set(id,tileset);
-                                }
+                if(map.tilesets && map.tilesets instanceof Array){
+                    for(let i =0; i < map.tilesets.length;i++){
+                        if(map.tilesets[i].graphicID){
+                            let id = map.tilesets[i].graphicID;
+                            if(!Tilesets.has(id)){
+                                let tileset = new Tileset(map.tilesets[i]);
+                                Tilesets.set(id,tileset);
                             }
                         }
                     }
+                }
 
-                    if(data.icons && data.icons.constructor === {}.constructor){
-                        keys = Object.keys(data.icons);
-                        length = keys.length;
-                        for(let i =0; i < length;i++){
-                            key = keys[i];
-                            if(!Icons.has(key)){
-                                conf = data.icons[key];
-                                Icons.set(key,new Game_Icon(conf));
-                            }
+                if(data.objects){
+                    length = data.objects.length;
+                    for(let i =0; i < length;i++){
+                        conf = data.objects[i];
+                        switch(conf.class){
+                            case 'Item':
+                                scene.add(new Game_Item(conf));
+                                break;
+                            case 'Event':
+                                scene.add(new Game_Event(conf));
+                                break;
                         }
                     }
+                }
 
-                    if(data.faces && data.faces.constructor === {}.constructor){
-                        keys = Object.keys(data.faces);
-                        length = keys.length;
-                        for(let i =0; i < length;i++){
-                            key = keys[i];
-                            if(!Faces.has(key)){
-                                conf = data.faces[key];
-                                Faces.set(key,new Game_Face(conf));
-                            }
-                        }
-                    }
-
-                    if(data.charas && data.charas.constructor === {}.constructor){
-                        keys = Object.keys(data.charas);
-                        length = keys.length;
-                        for(let i =0; i < length;i++){
-                            key = keys[i];
-                            if(!Charas.has(key)){
-                                conf = data.charas[key];
-                                let chara = new Chara(conf);
-                                Charas.set(key,chara);
-                            }
-                        }
-                    }
-
-                    if(data.items && data.items.constructor === {}.constructor){
-                        keys = Object.keys(data.items);
-                        length = keys.length;
-                        for(let i =0; i < length;i++){
-                            key = keys[i];
-                            if(!Items.has(key)){
-                                conf = data.items[key];
-                                conf = Object.assign({id:key},conf);
-                                Items.set(key,new Item(conf));
-                            }
-                        }
-                    }
-
-                    if(data.actors && data.actors.constructor === {}.constructor){
-                        keys = Object.keys(data.actors);
-                        length = keys.length;
-                        for(let i =0; i < length;i++){
-                            key = keys[i];
-                            let actor = null;
-                            if(!Actors.has(key)){
-                                conf = data.actors[key];
-                                conf.id = key;
-                                actor = new Game_Actor(conf);
-                                Actors.set(key,actor);
-                            }
-                        }
-                    }
-
-                    if(scene.objects){
-                        length = scene.objects.length;
-                        for(let i =0; i < length;i++){
-                            conf = scene.objects[i];
-                            switch(conf.class){
-                                case 'Item':
-                                    scene.add(new Game_Item(conf));
-                                    break;
-                                case 'Event':
-                                    scene.add(new Game_Event(conf));
-                                    break;
-                            }
-                        }
-                    }
-
-                    if(options.complete){
-                        options.complete(scene);
-                    }
+                if(options.complete){
+                    options.complete(scene);
                 }
             });
         }
