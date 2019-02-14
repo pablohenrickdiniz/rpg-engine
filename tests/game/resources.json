@@ -26,6 +26,22 @@
       "switch2":"Audio/fx/SWITCH_4.ogg"
     }
   },
+  "tilesets":{
+    "forest2": {
+      "graphicID":"forest2",
+      "cols":8,
+      "rows":149,
+      "width":256,
+      "height":4768
+    },
+    "cavesAndUnderground": {
+      "graphicID":"cavesAndUnderground",
+      "cols":8,
+      "rows":17,
+      "width":256,
+      "height":544
+    }
+  },
   "charas":{
     "char1":{
       "graphicID":"char01",

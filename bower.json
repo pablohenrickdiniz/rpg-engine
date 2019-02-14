@@ -17,12 +17,10 @@
     "tests"
   ],
   "dependencies": {
-    "app-object": "https://github.com/pablohenrickdiniz/app-object.git",
     "canvas-engine": "https://github.com/pablohenrickdiniz/canvas-engine.git",
     "Keyboard": "https://github.com/pablohenrickdiniz/Keyboard.git",
     "math-lib": "https://github.com/pablohenrickdiniz/math-lib.git",
     "Mouse": "https://github.com/pablohenrickdiniz/Mouse.git",
-    "Matter": "matter-js#^0.12.0",
-    "font-awesome": "^5.7.1"
+    "Matter": "matter-js#^0.12.0"
   }
 }

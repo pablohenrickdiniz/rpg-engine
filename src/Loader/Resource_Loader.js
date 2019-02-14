@@ -10,6 +10,8 @@
  * @requires ../Charas.js
  * @requires ../Game_Icon.js
  * @requires ../System/Audio/Audio.js
+ * @requires ../Tilesets.js
+ * @requires ../Tileset.js
  */
 (function (root, w) {
     let Audios = root.Audio,
@@ -25,7 +27,9 @@
         Game_Face = root.Game_Face,
         Chara = root.Chara,
         Item = root.Item,
-        Game_Actor = root.Game_Actor;
+        Game_Actor = root.Game_Actor,
+        Tilesets = root.Main.Tilesets,
+        Tileset = root.Tileset;
 
     let Resource_Loader = {
         loadJSON:function(url,callback){
@@ -62,6 +66,16 @@
                     count++;
                     if (count >= total) {
                         let keys,length,key,conf;
+                        if(data.tilesets && data.tilesets.constructor === {}.constructor){
+                            keys = Object.keys(data.tilesets);
+                            length = keys.length;
+                            for(i = 0; i < length;i++){
+                                key = keys[i];
+                                if(!Tilesets.has(key)){
+                                    Tilesets.set(key,new Tileset(data.tilesets[key]));
+                                }
+                            }
+                        }
 
                         if(data.icons && data.icons.constructor === {}.constructor){
                             keys = Object.keys(data.icons);
@@ -69,8 +83,7 @@
                             for(i = 0; i < length;i++){
                                 key = keys[i];
                                 if(!Icons.has(key)){
-                                    conf = data.icons[key];
-                                    Icons.set(key,new Game_Icon(conf));
+                                    Icons.set(key,new Game_Icon(data.icons[key]));
                                 }
                             }
                         }
@@ -81,8 +94,7 @@
                             for(i = 0; i < length;i++){
                                 key = keys[i];
                                 if(!Faces.has(key)){
-                                    conf = data.faces[key];
-                                    Faces.set(key,new Game_Face(conf));
+                                    Faces.set(key,new Game_Face(data.faces[key]));
                                 }
                             }
                         }
@@ -93,8 +105,7 @@
                             for(i = 0; i < length;i++){
                                 key = keys[i];
                                 if(!Charas.has(key)){
-                                    conf = data.charas[key];
-                                    Charas.set(key,new Chara(conf));
+                                    Charas.set(key,new Chara(data.charas[key]));
                                 }
                             }
                         }

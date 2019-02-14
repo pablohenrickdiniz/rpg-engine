@@ -22,6 +22,14 @@
          */
         get:function(id){
             return maps[id]?maps[id]:null;
+        },
+        /**
+         *
+         * @param id
+         * @returns {boolean}
+         */
+        has:function(id){
+            return !!maps[id];
         }
     };
 

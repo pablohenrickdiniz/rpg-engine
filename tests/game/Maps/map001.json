@@ -1,0 +1,11 @@
+{
+    "loopX":false,
+    "loopY":false,
+    "width":100,
+    "height":100,
+    "tileWidth":32,
+    "tileHeight":32,
+    "data":[
+        [[["forest2",0,0]]]
+    ]
+}

@@ -1,41 +1,19 @@
 /**
  * @requires ../RPG.js
  * @requires Resource_Loader.js
- * @requires ../Tileset.js
- * @requires ../Game/Main.s
- * @requires ../Chara.js
- * @requires ../Game_Actor.js
- * @requires ../Game_Face.js
- * @requires ../Item.js
- * @requires ../Game_Icon.js
  * @requires ../Game_Item.js
  * @requires ../Game_Event.js
- * @requires ../Tilesets.js
- * @requires ../Charas.js
- * @requires ../Faces.js
- * @requires ../Items.js
- * @requires ../Icons.js
- * @requires ../Actors.js
  * @requires ../Scene/Scene_Map.js
+ * @requires ../Maps.js
+ * @requires ../Spriteset_Map.js
  */
 (function (root) {
     let Resource_Loader = root.Resource_Loader,
-        Tileset = root.Tileset,
-        Main = root.Main,
-        Chara = root.Chara,
-        Game_Actor = root.Game_Actor,
-        Game_Face = root.Game_Face,
-        Item = root.Item,
-        Game_Icon = root.Game_Icon,
         Game_Item = root.Game_Item,
         Game_Event = root.Game_Event,
-        Tilesets = Main.Tilesets,
-        Charas  = Main.Charas,
-        Faces = Main.Faces,
-        Items = Main.Items,
-        Icons = Main.Icons,
-        Actors = Main.Actors,
-        Scene_Map = root.Scene_Map;
+        Scene_Map = root.Scene_Map,
+        Maps = root.Main.Maps,
+        Spriteset_Map = root.Spriteset_Map;
     
 
     let Scene_Map_Loader = {
@@ -45,52 +23,43 @@
          * @param options
          */
         load: function (name, options) {
-            let url = root.baseUrl + 'Scenes/' + name + '.json' + '?t=' + (new Date()).getTime();
-            Resource_Loader.loadJSON(url, function (data) {
-                let scene = new Scene_Map(name,data);
-                let map = scene.map;
-                let keys;
-                let length;
-                let key;
-                let conf;
+            let url = root.baseUrl + 'Scenes/' + name + '.json?t=' + (new Date()).getTime();
+            Resource_Loader.loadJSON(url, function (sceneData) {
+                let callback = function(map){
+                    let length;
+                    let conf;
 
-                if(map.tileset && map.tileset.graphicID){
-                    let id = map.tileset.graphicID;
-                    if(!Tileset.has(id)){
-                        let tileset = new Tileset(map.tileset);
-                        Tilesets.set(id,tileset);
-                    }
-                }
-
-                if(map.tilesets && map.tilesets instanceof Array){
-                    for(let i =0; i < map.tilesets.length;i++){
-                        if(map.tilesets[i].graphicID){
-                            let id = map.tilesets[i].graphicID;
-                            if(!Tilesets.has(id)){
-                                let tileset = new Tileset(map.tilesets[i]);
-                                Tilesets.set(id,tileset);
+                    let scene = new Scene_Map(name,map);
+                    if(sceneData.objects){
+                        length = sceneData.objects.length;
+                        for(let i =0; i < length;i++){
+                            conf = sceneData.objects[i];
+                            switch(conf.class){
+                                case 'Item':
+                                    scene.add(new Game_Item(conf));
+                                    break;
+                                case 'Event':
+                                    scene.add(new Game_Event(conf));
+                                    break;
                             }
                         }
                     }
-                }
 
-                if(data.objects){
-                    length = data.objects.length;
-                    for(let i =0; i < length;i++){
-                        conf = data.objects[i];
-                        switch(conf.class){
-                            case 'Item':
-                                scene.add(new Game_Item(conf));
-                                break;
-                            case 'Event':
-                                scene.add(new Game_Event(conf));
-                                break;
-                        }
+                    if(options.complete){
+                        options.complete(scene);
                     }
-                }
+                };
 
-                if(options.complete){
-                    options.complete(scene);
+                if(!Maps.has(sceneData.map)){
+                    let url = root.baseUrl+"Maps/"+sceneData.map+".json?t="+ (new Date()).getTime();
+                    Resource_Loader.loadJSON(url,function(mapData){
+                        let map = new Spriteset_Map(mapData);
+                        Maps.set(sceneData.map,map);
+                        callback(map);
+                    });
+                }
+                else{
+                    callback(Maps.get(sceneData.map));
                 }
             });
         }

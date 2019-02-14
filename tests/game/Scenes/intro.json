@@ -1,32 +1,5 @@
 {
-  "class": "Scene_Map",
-  "map": {
-    "loop_x":false,
-    "loop_y":false,
-    "tilesets":[
-      {
-        "graphicID":"forest2",
-        "cols":8,
-        "rows":149,
-        "width":256,
-        "height":4768
-      },
-      {
-        "graphicID":"cavesAndUnderground",
-        "cols":8,
-        "rows":17,
-        "width":256,
-        "height":544
-      }
-    ],
-    "spriteset":{
-      "width":100,
-      "height":100,
-      "tileWidth":32,
-      "tileHeight":32,
-      "data":[]
-    }
-  },
+  "map": "map001",
   "objects": [
     {
       "class":"Event",

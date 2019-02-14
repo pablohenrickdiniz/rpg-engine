@@ -49,7 +49,7 @@
                 console.log("fade in screen...");
                 Screen.fadeIn(1500,function(){
                     console.log("fade in completed!");
-                    let url = root.baseUrl+'resources.json';
+                    let url = root.baseUrl+'resources.json?t='+(new Date()).getTime();
                     console.log("loading resources url "+url+"...");
                     Resource_Loader.load(url,{
                         progress:progress,

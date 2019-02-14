@@ -13,12 +13,13 @@
         let self = this;
         initialize(self);
         options = options || {};
-        self.width = options.width || 10;
-        self.height = options.height || 10;
-        self.tileWidth = options.tileWidth || 32;
-        self.tileHeight = options.tileHeight || 32;
-        self.data =  options.data || [];
-        self.cache = [];
+        self.width = options.width;
+        self.height = options.height;
+        self.tileWidth = options.tileWidth;
+        self.tileHeight = options.tileHeight;
+        self.data =  options.data;
+        self.loopX = options.loopX;
+        self.loopY = options.loopY;
     };
     /**
      *
@@ -48,7 +49,7 @@
     };
 
     function setCache(self,i,j,k,t){
-        if(self.cache[k] === undefined){
+        if(!self.cache[k]){
             let canvas = document.createElement('canvas');
             canvas.width = self.realWidth;
             canvas.height  = self.realHeight;
@@ -142,11 +143,38 @@
      * @param self {Spriteset_Map}
      */
     function initialize(self){
-        let width = 0;
-        let height = 0;
+        let width = 10;
+        let height = 10;
         let tileWidth  = 32;
         let tileHeight = 32;
+        let loopX = false;
+        let loopY = false;
         let cache = [];
+        let data = [];
+        
+        Object.defineProperty(self,'data',{
+            get:function(){
+                return data;
+            },
+            set:function(d){
+                if(d instanceof Array && d !== data){
+                    data = d;
+                    cache = [];
+                    updateCache(self);
+                }
+            }
+        });
+
+        Object.defineProperty(self,'cache',{
+            get:function(){
+                return cache;
+            },
+            set:function(c){
+                if(c instanceof Array){
+                     cache = c;
+                }
+            }
+        });
 
         Object.defineProperty(self,'tileWidth',{
             get:function(){
@@ -238,6 +266,24 @@
             }
         });
 
+
+        Object.defineProperty(self,'loopX',{
+            get:function(){
+                return loopX;
+            },
+            set:function(l){
+                loopX = !!l;
+            }
+        });
+
+        Object.defineProperty(self,'loopY',{
+            get:function(){
+                return loopY;
+            },
+            set:function(l){
+                loopY = !!l;
+            }
+        });
     }
 
     Object.defineProperty(root,'Spriteset_Map',{

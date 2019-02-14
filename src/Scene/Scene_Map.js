@@ -1,7 +1,6 @@
 /**
  * @requires ../RPG.js
  * @requires Scene.js
- * @requires ../Spriteset_Map.js
  * @requires ../Game_Object.js
  * @requires ../Tile.js
  * @requires ../Game_Graphic.js
@@ -10,7 +9,6 @@
  */
 (function (root,w) {
     let Scene = root.Scene,
-        Spriteset_Map = root.Spriteset_Map,
         Game_Object = root.Game_Object,
         Matter = w.Matter,
         Engine = Matter.Engine,
@@ -22,15 +20,13 @@
     /**
      *
      * @param name
-     * @param options
+     * @param map
      * @constructor
      */
-    let Scene_Map = function (name,options) {
+    let Scene_Map = function (name,map) {
         let self = this;
-        Scene.call(self, options);
-        options  = options || {};
-        self.map = options.map || {};
-        self.spriteset = new Spriteset_Map(self.map.spriteset || {});
+        Scene.call(self);
+        self.map = map;
         self.objects = [];
         self.name = name;
         self.action = false;
@@ -110,10 +106,10 @@
         };
         let size = 20;
         World.add(engine.world,[
-            Bodies.rectangle(self.spriteset.realWidth/2, -size/2, self.spriteset.realWidth, size, { isStatic: true,friction: 0 }),
-            Bodies.rectangle(self.spriteset.realWidth+size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true,friction:0 }),
-            Bodies.rectangle(self.spriteset.realWidth/2, self.spriteset.realHeight+(size/2), self.spriteset.realWidth, size, { isStatic: true,friction:0}),
-            Bodies.rectangle(-size/2, self.spriteset.realHeight/2, size, self.spriteset.realHeight, { isStatic: true, friction:0})
+            Bodies.rectangle(self.map.realWidth/2, -size/2, self.map.realWidth, size, { isStatic: true,friction: 0 }),
+            Bodies.rectangle(self.map.realWidth+size/2, self.map.realHeight/2, size, self.map.realHeight, { isStatic: true,friction:0 }),
+            Bodies.rectangle(self.map.realWidth/2, self.map.realHeight+(size/2), self.map.realWidth, size, { isStatic: true,friction:0}),
+            Bodies.rectangle(-size/2, self.map.realHeight/2, size, self.map.realHeight, { isStatic: true, friction:0})
         ]);
 
         let collisionStart = function(event){

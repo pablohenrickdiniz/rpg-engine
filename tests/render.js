@@ -58,26 +58,22 @@
         if(!bg_refreshed){
             let sx = Screen.x;
             let sy = Screen.y;
-            let spriteset = scene.spriteset;
-            let width = Math.min(Screen.width,spriteset.realWidth);
-            let height = Math.min(Screen.height,spriteset.realHeight);
             let map = scene.map;
+            let width = Math.min(Screen.width,map.realWidth);
+            let height = Math.min(Screen.height,map.realHeight);
 
-            if(!map.loop_x){
+            if(!map.loopX){
                 sx = Math.max(sx,0);
             }
 
-            if(!map.loop_y) {
+            if(!map.loopY) {
                 sy = Math.max(sy, 0);
             }
 
-            let images = spriteset.getArea(sx,sy,width,height);
+            let images = map.getArea(sx,sy,width,height);
             let layers = Object.keys(images);
             for(let i = 0; i < layers.length;i++){
                 let layer = layers[i];
-
-
-
                 Screen.getLayer(layer > 1?Consts.FOREGROUND_LAYER:Consts.BACKGROUND_LAYER, layer).context.putImageData(images[layer],0,0,0,0,width,height);
             }
 
@@ -404,15 +400,15 @@
     function focus(scene,obj){
         let graphic = obj.graphic;
         if(graphic){
-            let spriteset = scene.spriteset;
-            let viewport_width = Math.min(Screen.width, spriteset.realWidth);
-            let viewport_height = Math.min(Screen.height, spriteset.realHeight);
+            let map = scene.map;
+            let viewport_width = Math.min(Screen.width, map.realWidth);
+            let viewport_height = Math.min(Screen.height, map.realHeight);
             let viewport_x = (obj.x) - (viewport_width / 2);
             let viewport_y = (obj.y) - (viewport_height / 2);
-            let max_screen_x = spriteset.realWidth - viewport_width;
-            let max_screen_y = spriteset.realHeight - viewport_height;
+            let max_screen_x = map.realWidth - viewport_width;
+            let max_screen_y = map.realHeight - viewport_height;
 
-            if(!scene.map.loop_x){
+            if(!scene.map.loopX){
                 if (viewport_x < 0) {
                     viewport_x = 0;
                 }
@@ -421,7 +417,7 @@
                 }
             }
 
-            if(!scene.map.loop_y){
+            if(!scene.map.loopY){
                 if (viewport_y < 0) {
                     viewport_y = 0;
                 }
