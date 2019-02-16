@@ -70,4 +70,4 @@
             return Tileset_Loader;
         }
     });
-})(RPG,window);
+})(RPG,this);

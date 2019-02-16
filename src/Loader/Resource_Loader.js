@@ -284,4 +284,4 @@
         }
     });
 })
-(RPG, window);
+(RPG, this);

@@ -182,4 +182,4 @@
             return Game_Slot;
         }
     });
-})(RPG,window);
+})(RPG,this);

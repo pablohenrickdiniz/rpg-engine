@@ -205,4 +205,4 @@
             return Graphic_Loader;
         }
     });
-})(window);
+})(this);

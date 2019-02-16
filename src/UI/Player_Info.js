@@ -184,4 +184,4 @@
            return Player_Info;
        }
     });
-})(window,RPG);
+})(this,RPG);

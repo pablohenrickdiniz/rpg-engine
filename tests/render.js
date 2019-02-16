@@ -3,7 +3,8 @@
         Consts = root.Consts,
         Tile = root.Tile,
         Game_Graphic = root.Game_Graphic,
-        Main = root.Main;
+        Main = root.Main,
+        Tilesets = root.Main.Tilesets;
 
     let clear_queue = [];
     let bg_refreshed = false;
@@ -52,6 +53,26 @@
 
     /**
      *
+     * @param options
+     * @returns {{si: Number, sj: Number, ei: Number, ej: Number}}
+     */
+    function getAreaInterval(options) {
+        let x = options.x || 0;
+        let y = options.y || 0;
+        let width = options.width || 0;
+        let height = options.height || 0;
+        let tileWidth = options.tileWidth || 32;
+        let tileHeight = options.tileHeight || 32;
+
+        let si = parseInt(Math.floor(y / tileHeight));
+        let sj = parseInt(Math.floor(x / tileWidth));
+        let ei = parseInt(Math.ceil((y + height) / tileHeight));
+        let ej = parseInt(Math.ceil((x + width) / tileWidth));
+        return {si: si, sj: sj, ei: ei, ej: ej};
+    }
+
+    /**
+     *
      * @param scene {Scene}
      */
     function draw(scene){
@@ -59,8 +80,12 @@
             let sx = Screen.x;
             let sy = Screen.y;
             let map = scene.map;
-            let width = Math.min(Screen.width,map.realWidth);
-            let height = Math.min(Screen.height,map.realHeight);
+            let rw = map.realWidth;
+            let rh = map.realHeight;
+            let width = Math.min(Screen.width,rw,rw-sx);
+            let height = Math.min(Screen.height,rh,rh-sy);
+            let tw = map.tileWidth;
+            let th = map.tileHeight;
 
             if(!map.loopX){
                 sx = Math.max(sx,0);
@@ -70,11 +95,25 @@
                 sy = Math.max(sy, 0);
             }
 
-            let images = map.getArea(sx,sy,width,height);
-            let layers = Object.keys(images);
-            for(let i = 0; i < layers.length;i++){
-                let layer = layers[i];
-                Screen.getLayer(layer > 1?Consts.FOREGROUND_LAYER:Consts.BACKGROUND_LAYER, layer).context.putImageData(images[layer],0,0,0,0,width,height);
+            let int = getAreaInterval({x:sx,y:sy,width:width,height:height});
+
+            for(let i = int.si,r = 0; i <= int.ei;i++,r++){
+                for(let j = int.sj,c = 0; j <= int.ej;j++,c++){
+                    let tiles = map.get(i,j);
+                    if(tiles instanceof  Array){
+                        tiles = [tiles];
+                    }
+                    let layers = Object.keys(tiles);
+                    for(let l = 0; l < layers.length;l++){
+                        let layer = layers[l];
+                        let tile = tiles[layer];
+                        let t = Tilesets.get(tile[0]).get(tile[1],tile[2]);
+                        let ctx = Screen.getLayer(layer > 1?Consts.FOREGROUND_LAYER:Consts.BACKGROUND_LAYER, layer).context;
+                        let dx =  parseInt(tw*c - (Screen.x % tw));
+                        let dy =  parseInt(th*r - (Screen.y % th));
+                        ctx.drawImage(t.image,t.sx,t.sy,tw,th,dx,dy,tw,th);
+                    }
+                }
             }
 
             bg_refreshed = true;
@@ -585,4 +624,4 @@
         });
     }
     */
-})(RPG,window);
+})(RPG,this);

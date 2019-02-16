@@ -60,4 +60,4 @@
             return Text;
         }
     });
-})(window);
+})(this);

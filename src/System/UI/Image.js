@@ -58,4 +58,4 @@
            return Image;
        }
     });
-})(window);
+})(this);

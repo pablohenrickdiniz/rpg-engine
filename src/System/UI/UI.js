@@ -68,4 +68,4 @@
             return UI;
         }
     });
-})(window);
+})(this);

@@ -2,7 +2,9 @@
   "graphics":{
     "tilesets":{
       "forest2":"Graphics/Tilesets/Town_Village-0034.png",
-      "cavesAndUnderground":"Graphics/Tilesets/Caves%20&%20Undergrounds%20-%200043.png"
+      "cavesAndUnderground":"Graphics/Tilesets/Caves%20&%20Undergrounds%20-%200043.png",
+      "sea-&-beach": "Graphics/Tilesets/sea-&-beach.png",
+      "snow": "Graphics/Tilesets/snow.png"
     },
     "charasets":{
       "char01":"Graphics/Characters/Actor1.png",
@@ -40,6 +42,16 @@
       "rows":17,
       "width":256,
       "height":544
+    },
+    "sea-&-beach": {
+      "graphicID":"sea-&-beach",
+      "cols":8,
+      "rows":53
+    },
+    "snow": {
+      "graphicID": "snow",
+      "cols": 8,
+      "rows": 39
     }
   },
   "charas":{

@@ -95,4 +95,4 @@
            return Progress_Bar;
        }
     });
-})(window);
+})(this);

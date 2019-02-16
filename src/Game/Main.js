@@ -66,6 +66,9 @@
             if(id !== currentPlayerID){
                 currentPlayerID = id;
                 let actor = Main.Actors.get(id);
+                if(currentScene){
+                    currentScene.add(actor);
+                }
                 Events.trigger('playerChanged',[actor]);
             }
         }

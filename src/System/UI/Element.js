@@ -728,4 +728,4 @@
             return Element;
         }
     })
-})(window);
+})(this);

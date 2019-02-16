@@ -5,7 +5,7 @@
  * @requires ../Game_Event.js
  * @requires ../Scene/Scene_Map.js
  * @requires ../Maps.js
- * @requires ../Spriteset_Map.js
+ * @requires ../Map.js
  */
 (function (root) {
     let Resource_Loader = root.Resource_Loader,
@@ -13,7 +13,7 @@
         Game_Event = root.Game_Event,
         Scene_Map = root.Scene_Map,
         Maps = root.Main.Maps,
-        Spriteset_Map = root.Spriteset_Map;
+        Map = root.Map;
     
 
     let Scene_Map_Loader = {
@@ -53,7 +53,7 @@
                 if(!Maps.has(sceneData.map)){
                     let url = root.baseUrl+"Maps/"+sceneData.map+".json?t="+ (new Date()).getTime();
                     Resource_Loader.loadJSON(url,function(mapData){
-                        let map = new Spriteset_Map(mapData);
+                        let map = new Map(mapData);
                         Maps.set(sceneData.map,map);
                         callback(map);
                     });

@@ -89,4 +89,4 @@
         w.removeEventListener('resize',windowresize);
         Game_Timer.off('tick',tick);
     });
-})(RPG,window);
+})(RPG,this);

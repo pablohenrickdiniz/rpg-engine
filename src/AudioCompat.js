@@ -1,5 +1,5 @@
-(function (w) {
-    if (!w.Audio) {
+(function (global) {
+    if (!global.Audio) {
         (function (w) {
             let context = new (w.AudioContext || w.webkitAudioContext)();
             /**
@@ -168,15 +168,15 @@
                     return Audio;
                 }
             });
-        })(w);
+        })(global);
     }
     else {
-        if (!w.Audio.prototype.stop) {
+        if (!global.Audio.prototype.stop) {
             /**
              *
              * @returns {w.Audio}
              */
-            w.Audio.prototype.stop = function () {
+            global.Audio.prototype.stop = function () {
                 let self = this;
                 self.pause();
                 self.currentTime = 0;
@@ -184,4 +184,4 @@
             };
         }
     }
-})(window);
+})(this);

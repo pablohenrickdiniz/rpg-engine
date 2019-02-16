@@ -53,4 +53,4 @@
            return Menu_Item;
        }
     });
-})(window);
+})(this);

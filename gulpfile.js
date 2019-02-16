@@ -10,7 +10,7 @@ function es(){
         .pipe(resolveDependencies({
             pattern: /\* @requires [\s-]*(.*\.js)/g
         }))
-        .pipe(concat('RPG.js'))
+        .pipe(concat('index.js'))
         .pipe(strip())
        // .pipe(terser())
         .pipe(gulp.dest('./'));

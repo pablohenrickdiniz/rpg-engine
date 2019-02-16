@@ -161,4 +161,4 @@
             return Timer_Ticker;
         }
     });
-})(window);
+})(this);

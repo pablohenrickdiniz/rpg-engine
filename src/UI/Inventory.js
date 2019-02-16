@@ -177,4 +177,4 @@
             return Inventory;
         }
     });
-})(window,RPG);
+})(this,RPG);

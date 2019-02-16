@@ -153,4 +153,4 @@
             return Slot;
         }
     });
-})(window,RPG);
+})(this,RPG);

@@ -125,4 +125,4 @@
             return Window;
         }
     });
-})(window);
+})(this);

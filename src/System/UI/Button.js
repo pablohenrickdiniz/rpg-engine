@@ -57,4 +57,4 @@
             return Button;
         }
     });
-})(window);
+})(this);

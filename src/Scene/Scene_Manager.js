@@ -81,4 +81,4 @@
             return Scene_Manager;
         }
     });
-})(RPG,window);
+})(RPG,this);
