@@ -2,8 +2,6 @@
  * @requires ../RPG.js
  * @requires ../Loader/Scene_Map_Loader.js
  * @requires ../Loader/Resource_Loader.js
- * @requires Scene_Map.js
- * @requires Scene.js
  * @requires ../Game/Main.js
  * @requires ../System/Events.js
  * @requires ../System/Screen.js
@@ -11,8 +9,6 @@
 (function (root,w) {
     let Scene_Map_Loader = root.Scene_Map_Loader,
         Resource_Loader = root.Resource_Loader,
-        Scene_Map = root.Scene_Map,
-        Scene = root.Scene,
         Main = root.Main,
         Events = root.Events,
         Screen = w.Screen;

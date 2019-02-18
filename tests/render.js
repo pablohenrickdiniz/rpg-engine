@@ -100,18 +100,23 @@
             for(let i = int.si,r = 0; i <= int.ei;i++,r++){
                 for(let j = int.sj,c = 0; j <= int.ej;j++,c++){
                     let tiles = map.get(i,j);
-                    if(tiles instanceof  Array){
-                        tiles = [tiles];
-                    }
-                    let layers = Object.keys(tiles);
-                    for(let l = 0; l < layers.length;l++){
-                        let layer = layers[l];
-                        let tile = tiles[layer];
-                        let t = Tilesets.get(tile[0]).get(tile[1],tile[2]);
-                        let ctx = Screen.getLayer(layer > 1?Consts.FOREGROUND_LAYER:Consts.BACKGROUND_LAYER, layer).context;
-                        let dx =  parseInt(tw*c - (Screen.x % tw));
-                        let dy =  parseInt(th*r - (Screen.y % th));
-                        ctx.drawImage(t.image,t.sx,t.sy,tw,th,dx,dy,tw,th);
+                    if(tiles){
+                        if(tiles[0] && typeof tiles[0] === 'string'){
+                            tiles = [tiles];
+                        }
+                        let layers = Object.keys(tiles);
+                        for(let l = 0; l < layers.length;l++){
+                            let layer = layers[l];
+                            let tile = tiles[layer];
+                            let tileset = Tilesets.get(tile[0]);
+                            if(tileset !== null){
+                                let t = tileset.get(tile[1],tile[2]);
+                                let ctx = Screen.getLayer(layer > 1?Consts.FOREGROUND_LAYER:Consts.BACKGROUND_LAYER, layer).context;
+                                let dx =  parseInt(tw*c - (Screen.x % tw));
+                                let dy =  parseInt(th*r - (Screen.y % th));
+                                ctx.drawImage(t.image,t.sx,t.sy,tw,th,dx,dy,tw,th);
+                            }
+                        }
                     }
                 }
             }
@@ -154,7 +159,7 @@
             let y = b.min.y;
             let width = b.max.x-x;
             let height = b.max.y-y;
-            let layer = Screen.getLayer(Consts.UI_LAYER,0);
+            let layer = Screen.getLayer(Consts.EFFECT_LAYER,0);
             let ctx = layer.context;
 
             if(body.label === 'Rectangle Body'){

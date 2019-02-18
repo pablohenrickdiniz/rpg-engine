@@ -30,8 +30,8 @@
         self.width = options.width || 32;
         self.height = options.height || 32;
         self.layer = options.layer || 2;
-        self.hSpeed = options.hSpeed || 0.02;
-        self.vSpeed = options.vSpeed || 0.02;
+        self.hSpeed = options.hSpeed || 2;
+        self.vSpeed = options.vSpeed || 2;
         self.currentAnimation = null;
         self.through = options.through || false;
         self.light = options.light;
@@ -41,7 +41,6 @@
         self.focused = false;
         self.name = options.name || '';
         self.listeners = [];
-        self.steps = 0;
         self.charaID = options.charaID || null;
     };
 
@@ -136,18 +135,6 @@
         return self;
     };
 
-    /**
-     *
-     * @param properties {object}
-     * @returns {object}
-     */
-    Game_Object.prototype.clone = function(properties){
-        properties = properties || {};
-        let id = ID;
-        ID++;
-        return Object.assign({object_id:id},properties,this);
-    };
-
     Game_Object.prototype.update = function () {};
 
     /**
@@ -159,7 +146,7 @@
     Game_Object.prototype.move = function (x, y) {
         let self = this;
         let body = self.body;
-        Body.applyForce(body,{x:body.position.x,y:body.position.y},{x:x,y:y});
+        Body.setVelocity( body, {x: x, y: y});
         return self;
     };
 
@@ -544,6 +531,7 @@
         });
 
         Object.defineProperty(self,'type',{
+            configurable:true,
             /**
              *
              * @returns {string}

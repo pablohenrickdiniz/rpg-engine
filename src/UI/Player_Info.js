@@ -87,14 +87,14 @@
             let self = this;
             mpBar.total = self.maxMP;
             mpBar.progress = self.MP;
-            mpBar.text = [self.MP,'/',self.maxMP].join('');
+            mpBar.text = [parseInt(self.MP),'/',self.maxMP].join('');
         };
 
         let hpChange  = function(){
             let self = this;
             hpBar.total = self.maxHP;
             hpBar.progress = self.HP;
-            hpBar.text = [self.HP,'/',self.maxHP].join('');
+            hpBar.text = [parseInt(self.HP),'/',self.maxHP].join('');
         };
 
         let levelChange = function(){

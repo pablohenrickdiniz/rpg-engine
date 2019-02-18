@@ -32,9 +32,9 @@
     "forest2": {
       "graphicID":"forest2",
       "cols":8,
-      "rows":149,
+      "rows":51,
       "width":256,
-      "height":4768
+      "height":1632
     },
     "cavesAndUnderground": {
       "graphicID":"cavesAndUnderground",
@@ -102,6 +102,13 @@
       "sWidth": 96,
       "sHeight": 128,
       "sy": 256
+    },
+    "dog": {
+      "graphicID": "animal",
+      "rows": 4,
+      "cols": 3,
+      "sWidth": 96,
+      "sHeight": 128
     }
   },
   "faces":{
@@ -113,12 +120,12 @@
   },
   "actors":{
     "1":{
-      "x":300,
-      "y":200,
+      "x":100,
+      "y":100,
       "charaID":"char1",
       "faceID":"face01",
-      "vSpeed":0.001,
-      "hSpeed":0.001,
+      "vSpeed":5,
+      "hSpeed":5,
       "animationSpeed":6,
       "startFrame":0,
       "type":"Player",

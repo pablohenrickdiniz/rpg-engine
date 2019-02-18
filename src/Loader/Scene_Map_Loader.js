@@ -6,6 +6,7 @@
  * @requires ../Scene/Scene_Map.js
  * @requires ../Maps.js
  * @requires ../Map.js
+ * @requires ../Actors.js
  */
 (function (root) {
     let Resource_Loader = root.Resource_Loader,
@@ -13,7 +14,8 @@
         Game_Event = root.Game_Event,
         Scene_Map = root.Scene_Map,
         Maps = root.Main.Maps,
-        Map = root.Map;
+        Map = root.Map,
+        Actors = root.Main.Actors;
     
 
     let Scene_Map_Loader = {
@@ -41,6 +43,11 @@
                                 case 'Event':
                                     scene.add(new Game_Event(conf));
                                     break;
+                                default:
+                                    if(root.Objects[conf.class]){
+                                        let className = root.Objects[conf.class];
+                                        scene.add(new className(conf));
+                                    }
                             }
                         }
                     }

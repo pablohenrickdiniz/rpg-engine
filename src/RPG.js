@@ -21,7 +21,8 @@
             Game_Timer.stop();
             Game_Timer.off('tick',tick);
             self.Events.trigger('finalize',[self]);
-        }
+        },
+        Objects:{}
     };
 
     function tick(){

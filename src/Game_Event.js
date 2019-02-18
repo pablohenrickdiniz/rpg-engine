@@ -341,6 +341,17 @@
             }
         });
 
+        Object.defineProperty(self,'type',{
+            configurable:true,
+            /**
+             *
+             * @returns {string}
+             */
+            get:function(){
+                return 'Game_Event';
+            }
+        });
+
         Events.on('globalSwitchChanged',function(){
             self.updateCurrentPage();
         });

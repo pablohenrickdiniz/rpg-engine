@@ -39,13 +39,14 @@
         self.inventory = options.inventory;
         self.shadow = options.shadow || true;
         self.faceID = options.faceID;
-        self.invulnerable = options.invulnerable || true;
-        self.steps = 0;
         self.scene = options.scene;
+        self.turnDown();
+        self.stop();
     };
 
     Game_Actor.prototype = Object.create(Game_Object.prototype);
     Game_Actor.prototype.constructor = Game_Actor;
+
     /**
      *
      * @param direction {number}
@@ -290,14 +291,8 @@
 
     Game_Actor.prototype.update = function(){
         let self = this;
-        if(self.steps < 60){
-            self.steps++;
-        }
-        else{
-            self.steps = 0;
-            self.HP += self.regenHPRate;
-            self.MP += self.regenMPRate;
-        }
+        self.HP += self.regenHPRate*0.016;
+        self.MP += self.regenMPRate*0.016;
     };
 
     /**
@@ -500,7 +495,7 @@
              * @param hp {number}
              */
             set:function(hp){
-                hp = parseInt(hp);
+                hp = parseFloat(hp);
                 if(!isNaN(hp) && hp >= 0){
                     hp = Math.min(hp,self.maxHP);
                     if(hp !== points.HP){
@@ -524,7 +519,7 @@
              * @param mp {number}
              */
             set:function(mp){
-                mp = parseInt(mp);
+                mp = parseFloat(mp);
                 if(!isNaN(mp) && mp >= 0){
                     mp = Math.min(mp,self.maxMP);
                     if(mp !== points.MP){
