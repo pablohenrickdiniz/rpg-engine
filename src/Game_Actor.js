@@ -293,6 +293,7 @@
         let self = this;
         self.HP += self.regenHPRate*0.016;
         self.MP += self.regenMPRate*0.016;
+        self.trigger('update');
     };
 
     /**

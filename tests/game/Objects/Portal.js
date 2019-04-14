@@ -18,8 +18,10 @@
                 {
                     through: true,
                     touch:function(obj){
-                        obj.x = Math.random()*500;
-                        obj.y = Math.random()*500
+                        // let minX = obj.width/2;
+                        // let minY = obj.height/2;
+                        // obj.x = Math.max(Math.random()*2000,minX);
+                        // obj.y = Math.max(Math.random()*2000,minY);
                     }
                 }
             ]

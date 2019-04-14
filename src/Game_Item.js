@@ -7,7 +7,6 @@
  */
 (function (root) {
     let Game_Event = root.Game_Event,
-        Consts = root.Consts,
         Main = root.Main,
         Items = Main.Items;
 
@@ -27,8 +26,7 @@
         self.pages = [{
             through:options.through || true,
             static: options.static || true,
-            trigger: options.trigger || Consts.TRIGGER_PLAYER_TOUCH,
-            script:function(actor){
+            touch:function(actor){
                 let amount = actor.inventory.addItem(self.item,self.amount);
                 if(amount > 0){
                     self.amount = amount;

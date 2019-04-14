@@ -2,7 +2,7 @@
   "map": "map001",
   "objects": [
     {
-      "class": "[Portal]",
+      "class": "Portal",
       "x": 300,
       "y": 300
     },

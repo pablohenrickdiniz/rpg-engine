@@ -12,8 +12,14 @@
             width: 30,
             height: 30,
             charaID: "dog",
-            animationSpeed: 3
+            animationSpeed: 3,
+            vSpeed:5,
+            hSpeed:5
         });
+        setInterval(function(){
+       //     self.lookToPlayer();
+         //   self.stepForward();
+        },100);
     };
 
     Dog.prototype = Object.create(Game_Actor.prototype);
